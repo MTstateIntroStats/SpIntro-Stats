@@ -1,7 +1,5 @@
 # IntroStatShinyApps
 Web Apps built in R/Shiny to provide permutation tests and bootstrap confidence intervals for use in Intro Stat class.
-# IntroStatShinyApps
----------------------
 
 We are now teaching introductory statistics at Montana State
 University using active learning lessons which get students right
