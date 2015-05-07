@@ -1,0 +1,16 @@
+{
+    "contents" : "library(shiny)\n#library(dichromat)\n#library(scales)\n#library(ggplot2)\n\n\nshinyUI(pageWithSidebar(\n  \n  headerPanel(\"Normal and t Probability Look Up\"),\n  \n  sidebarPanel(\n    helpText(\"Either enter  \"),\n    textInput('z.txt', label='a Standardized Value: ', value=\" \"),\n    helpText(\"Or \"),\n    textInput('prob.txt', 'a Probability: ', \" \"),\n    selectInput(\"area\", \"To go into which area? \", \n                c(\"Lower\",\"Upper\",\"Extremes\",\"Center\"), NA),\n    selectInput(\"dist\", \"Distribution: \",c(\"Normal\",\"t\"), \"Normal\"),\n    conditionalPanel( \n      condition = \"input.dist =='t'\", \n      numericInput(\"df\", \"t degrees of freedom?\", 10 )\n    )\n\n  ),\n  \n  mainPanel(\n    plotOutput('plot')\n  )\n))",
+    "created" : 1425823893289.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3933798606",
+    "id" : "DCF148FE",
+    "lastKnownWriteTime" : 1426116055,
+    "path" : "~/consult/spinners/t-NormalProbComputer/ui.R",
+    "project_path" : "ui.R",
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}
