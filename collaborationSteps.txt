@@ -1,0 +1,12 @@
+1.  Go to github .com and create an account.
+
+2.  Download and install git 
+ http://git-scm.com/downloads
+
+Check to be sure Rstudio is up to date.
+
+Use Rstudio to
+Clone my IntroStatWebApps to a new directory (where will it live?)
+
+
+
