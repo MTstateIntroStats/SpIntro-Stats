@@ -1,89 +1,141 @@
 library(markdown)
+library(shiny)
+library(shinythemes)
 
-shinyUI(
-  navbarPage("Variable Type:",
-    ####   One Categorical  -----------------------------------
+  ##  User should choose a variable type, then 
+    ## load Data  and
+    ## describe, test, or estimate
+
+shinyUI(navbarPage("Variable Type:", id="top-nav", collapsable=TRUE,
+                   theme = shinytheme("spacelab"),
+
+    ####   One Categorical  ---------------------------------------------------
     navbarMenu("One Categorical",
        tabPanel("Descriptives",
-          verbatimTextOutput("Describe 1 Cat")
+          h6("Table the categories")
        ),
        tabPanel("Test",
-         verbatimTextOutput("Test 1 Proportion")
+         h6("Test 1 Proportion")
        ),
        tabPanel("Estimate",
-         verbatimTextOutput("Estimate 1Proportions")
+         h6("Estimate 1Proportions")
        ),
-       tabPanel("Normal Distribution",
-         verbatimTextOutput("Normal Approx")
+       tabPanel("Normal Distribution" ,
+         h6("Normal Approx")
+       )
     ),
-    ####   One Quantitative  -----------------------------------
+    
+    ####   One Quantitative  -------------------------------------------------
     navbarMenu("One Quantitative",
       tabPanel("Descriptives",
-        verbatimTextOutput("Describe 1 Quantitative")
+        h6("Describe 1 Quantitative")
       ),
       tabPanel("Test",
-        verbatimTextOutput("Test 1 mean")
+        h6("Test 1 mean")
       ),
       tabPanel("Estimate",
-        verbatimTextOutput("Estimate 1 mean")
+        h6("Estimate 1 mean")
       ),
       tabPanel("Bootstrap Demo",
-        verbatimTextOutput("BootStrap Demo")
+        h6("BootStrap Demo")
       ),
       tabPanel("Normal Distribution",
-        verbatimTextOutput("t distribution")
+        h6("t distribution")
       )                         
     ),
     
-    ####   Two Categorical  -----------------------------------
+    ####   Two Categorical  -------------------------------------------------
     navbarMenu("Two Cat.",
       tabPanel("Descriptives",
-        verbatimTextOutput("Describe 2 Cat")
+        h6("Describe 2 Cat")
       ),
       tabPanel("Test",
-        verbatimTextOutput("Test Equality of 2 Proportions")
+        h6("Test Equality of 2 Proportions")
       ),
       tabPanel("Estimate",
-        verbatimTextOutput("Estimate Difference in Proportions")
+        h6("Estimate Difference in Proportions")
       ),
       tabPanel("Normal Distribution",
-       verbatimTextOutput("Normal Approx")
+       h6("Normal Approx")
       )
-  ),
-  ####   Two Quantitative -----------------------------------
-  navbarMenu("Two Quant.",
-    tabPanel("Descriptives",
-      verbatimTextOutput("Describe 2 Quant")
     ),
-    tabPanel("Test",
-      verbatimTextOutput("Test Slope/Correlation")
+    ####   Two Quantitative -------------------------------------------------
+    navbarMenu("Two Quant.",
+      tabPanel("Descriptives",
+        h6("Describe 2 Quant")
+      ),
+      tabPanel("Test",
+        h6("Test Slope/Correlation")
+      ),
+      tabPanel("Estimate Slope/Correlation",
+        h6("Estimate Difference in Proportions")
+      ),
+      tabPanel("t- Distribution",
+        h6("Normal Approx")
+      )
     ),
-    tabPanel("Estimate Slope/Correlation",
-      verbatimTextOutput("Estimate Difference in Proportions")
+    ####   1 categorical & 1 quantitative  -----------------------------------
+    navbarMenu("One of Each",
+      tabPanel("Descriptives",
+        h6("Describe")
+      ),
+      tabPanel("Test",
+        h6("Test Equality of 2 Means")
+      ),
+      tabPanel("Estimate",
+        h6("Estimate Difference in Means")
+      ),
+      tabPanel("t Distribution",
+        h6("t Approx")
+      )
     ),
-    tabPanel("t- Distribution",
-      verbatimTextOutput("Normal Approx")
-    )
-  ),
-  ####   One of Each  -----------------------------------
-  navbarMenu("One of Each",
-    tabPanel("Descriptives",
-       verbatimTextOutput("Describe")
-    ),
-    tabPanel("Test",
-       verbatimTextOutput("Test Equality of 2 Means")
-    ),
-    tabPanel("Estimate",
-       verbatimTextOutput("Estimate Difference in Means")
-    ),
-    tabPanel("t Distribution",
-       verbatimTextOutput("t Approx")
-    )
-  ),
-  ####   Theory  -----------------------------------
-  navbarMenu("Theoretical Tools",
-    tabPanel("Probabilities"),
-    tabPanel("Power")
-  )       
- )
+    ####   ----  Other Tools  ------------------------------------------------
+    navbarMenu("Other Tools",
+      tabPanel("Probabilities",
+             ## ui.r from probability finder
+           titlePanel("Normal and t Probability Look Up"),
+               column(4, inputPanel(
+               #helpText("Either enter  "),
+               textInput('prb_z_txt', label='Standardized Value: ', value=" "),
+               #helpText("Or "),
+               textInput('prb_prob_txt', 'or  Probability: ', " "),
+               selectInput("prb_area", "To go into which area? ", 
+                           c("Lower","Upper","Extremes","Center"), NA),
+               selectInput("prb_dist", "Distribution: ",c("Normal","t"), "Normal"),
+               conditionalPanel( 
+                 condition = "prb_input.dist =='t'", 
+                 numericInput("prb_df", "t degrees of freedom?", 10 )
+               )
+               )),   
+           ##  sidebarPanel appears, but no plot.
+           ##  dist'n shows 'normal' by default, but conditional box for t df appears.
+             column(8,
+               plotOutput('probPlot')
+             )
+           ),
+    tabPanel("Power",
+      ##ui.r from power app
+        #  Application title
+        titlePanel("Power Demo"),
+        # Sidebar with sliders that demonstrate various available options
+        column(4, inputPanel(
+          sliderInput("pwr_n", "SampleSize:", 
+                      min=4, max=50, value=10),
+          # std deviation
+          sliderInput("pwr_sd", "Standard Deviation:", 
+                      min = 0.4, max = 3.2, value = 1.0, step= 0.2),
+          # 
+          sliderInput("pwr_altMean", "Alternative Mean:",
+                      min = 0, max = 8, value = 2, step=.1),
+          # alpha level
+          sliderInput("pwr_alpha", "Significance Level:", 
+                      min = 0.01, max = .15, value = .04, step= 0.01)    
+        # Show a table summarizing the values entered
+        
+        ),
+        column(8, plotOutput("powerPlot"),
+                  tableOutput("values")
+        ))
+    ))
+  )
 )

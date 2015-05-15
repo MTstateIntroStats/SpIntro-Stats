@@ -1,0 +1,34 @@
+This shiny app uses navbar nicely, integrates options with plots.
+  (too much going on?  too wide?)
+https://github.com/gammarama/intRo/
+in ui.R:
+
+ navbarPage("intRo", id="top-nav", theme = shinytheme("united"),
+  and fluidRow
+  puts editor frame in bottom of window
+
+
+
+another nice navbar:
+https://gallery.shinyapps.io/CDCPlot/
+
+Lots of comments in code.
+Uses columns and fluidRow()
+
+
+In server.R: builds 3 plots  (based on navbar selection?)
+output$plot1  
+  for Disease plots
+  ui contains:   column(8, plotOutput('plot1'))
+output$plot2
+  for  infreq reptd disease
+     column(8, plotOutput('plot2'))
+output$plot3
+  for  weekly mortality
+      column(8, plotOutput('plot3'))
+each is at the end of a tabPanel
+
+
+
+
+
