@@ -1,6 +1,18 @@
 shinyServer(function(input, output, session) {
   ## Data Input    -----------------------------------------------------------
-  
+
+  ##  code from https://github.com/jrowen/rhandsontable/blob/master/inst/examples/shiny.R
+#   output$dataTable <- renderRHandsontable({
+#     if (is.null(input$dataTable)) {
+#       DF = data.frame(val = 1:10, bool = TRUE, nm = LETTERS[1:10],
+#                       dt = seq(from = Sys.Date(), by = "days", length.out = 10),
+#                       stringsAsFactors = F)
+#     } else {
+#       DF = hot_to_r(input$dataTable)
+#     }
+#     rhandsontable(DF, useTypes = as.logical(input$useType))
+#   })
+#   
   ## 1 Categorical  -----------------------------------------------------------
   
   ## 1 Quantitative -----------------------------------------------------------
@@ -118,7 +130,6 @@ shinyServer(function(input, output, session) {
     
   }, height=300)
   
-})
   ## End of code for z-t probabilities and quantiles. ------------------------
 
   ##  Start of code for Power web app  ---------------------------------------
@@ -186,5 +197,5 @@ output$values <- renderTable({
 })    
 
  ## End of power code ---------------------------------------------------------
-
 })
+

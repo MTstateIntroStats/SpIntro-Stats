@@ -1,32 +1,34 @@
 library(markdown)
 library(shiny)
-library(shinythemes)
+## library(rhandsontable)
 
   ##  User should choose a variable type, then 
     ## load Data  and
     ## describe, test, or estimate
+  ## https://github.com/jrowen/rhandsontable/blob/master/inst/examples/shiny.R
 
-shinyUI(navbarPage("Variable Type:", id="top-nav", collapsable=TRUE,
+shinyUI(navbarPage("Variable Type:", id="top-nav", collapsible=TRUE,
                    theme = shinytheme("spacelab"),
 
     ####   One Categorical  ---------------------------------------------------
-    navbarMenu("One Categorical",
+    navbarMenu("One Categ.",
        tabPanel("Descriptives",
-          h6("Table the categories")
+   ##             rHandsontableOutput("dataTable"),
+                h6("Table the categories")
        ),
        tabPanel("Test",
          h6("Test 1 Proportion")
        ),
        tabPanel("Estimate",
-         h6("Estimate 1Proportions")
-       ),
-       tabPanel("Normal Distribution" ,
-         h6("Normal Approx")
+         h6("Estimate 1 Proportions")
+        ),
+        tabPanel("Normal Distribution" ,
+          h6("Normal Approx")
        )
     ),
     
     ####   One Quantitative  -------------------------------------------------
-    navbarMenu("One Quantitative",
+    navbarMenu("One Quant.",
       tabPanel("Descriptives",
         h6("Describe 1 Quantitative")
       ),
@@ -39,7 +41,7 @@ shinyUI(navbarPage("Variable Type:", id="top-nav", collapsable=TRUE,
       tabPanel("Bootstrap Demo",
         h6("BootStrap Demo")
       ),
-      tabPanel("Normal Distribution",
+      tabPanel("t Distribution",
         h6("t distribution")
       )                         
     ),
@@ -68,10 +70,10 @@ shinyUI(navbarPage("Variable Type:", id="top-nav", collapsable=TRUE,
         h6("Test Slope/Correlation")
       ),
       tabPanel("Estimate Slope/Correlation",
-        h6("Estimate Difference in Proportions")
-      ),
-      tabPanel("t- Distribution",
-        h6("Normal Approx")
+        h6("Estimate Slope and Correlation")
+#       ),
+#       tabPanel("t- Distribution",
+#         h6("Normal Approx")
       )
     ),
     ####   1 categorical & 1 quantitative  -----------------------------------
@@ -114,10 +116,11 @@ shinyUI(navbarPage("Variable Type:", id="top-nav", collapsable=TRUE,
              )
            ),
     tabPanel("Power",
-      ##ui.r from power app
+      ## ui.r from power app
         #  Application title
         titlePanel("Power Demo"),
         # Sidebar with sliders that demonstrate various available options
+        fluidRow(
         column(4, inputPanel(
           sliderInput("pwr_n", "SampleSize:", 
                       min=4, max=50, value=10),
@@ -130,12 +133,11 @@ shinyUI(navbarPage("Variable Type:", id="top-nav", collapsable=TRUE,
           # alpha level
           sliderInput("pwr_alpha", "Significance Level:", 
                       min = 0.01, max = .15, value = .04, step= 0.01)    
-        # Show a table summarizing the values entered
-        
-        ),
-        column(8, plotOutput("powerPlot"),
-                  tableOutput("values")
-        ))
-    ))
+        )),
+        column(8, plotOutput("powerPlot"))),
+      # Show a table summarizing the values entered
+        fluidRow(column(8, offset = 4, tableOutput("values")))
+    )
   )
+)
 )
