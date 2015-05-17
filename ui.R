@@ -37,10 +37,10 @@ shinyUI(navbarPage("Variable Type:", id="top-nav", collapsible=TRUE,
                    textInput('prb_prob_txt', 'or  Probability: ', " "),
                    selectInput("prb_area", "To go into which area? ", 
                                c("Lower","Upper","Extremes","Center"), NA),
-                   selectInput("prb_dist", "Distribution: ",c("Normal"), "Normal"),
-                   conditionalPanel( 
-                     condition = "input.prb_dist =='t'", 
-                     numericInput("prb_df", "t degrees of freedom?", 10 ))
+                   selectInput("prb_dist", "Distribution: ",c("Normal"), "Normal")
+#                    conditionalPanel( 
+#                      condition = "input.prb_dist =='t'", 
+#                      numericInput("prb_df", "t degrees of freedom?", 10 ))
                  )),   
                  column(8,
                         plotOutput('probPlot1')
@@ -171,11 +171,11 @@ shinyUI(navbarPage("Variable Type:", id="top-nav", collapsible=TRUE,
              textInput('prb_prob_txt', 'or  Probability: ', " "),
              selectInput("prb_area", "To go into which area? ", 
                          c("Lower","Upper","Extremes","Center"), NA),
-             selectInput("prb_dist", "Distribution: ",c("Normal","t"), "Normal"),
-             conditionalPanel( 
-               condition = "input.prb_dist =='t'", 
+             selectInput("prb_dist", "Distribution: ",c("Normal","t"), "t"),
+            # conditionalPanel( 
+            #   condition = "input.prb_dist =='t'", 
                numericInput("prb_df", "t degrees of freedom?", 10 )
-             )
+             #)
            )),   
            ##  dist'n shows 'normal' by default, but conditional box for t df appears.
            column(8,
