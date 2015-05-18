@@ -1,6 +1,7 @@
 library(markdown)
 library(shiny) 
 library(shinythemes)
+library(knitr)
 ## library(rhandsontable)
 
   ##  User should choose a variable type, then 
@@ -19,8 +20,12 @@ shinyUI(navbarPage("Variable Type:", id="top-nav", collapsible=TRUE,
     ####   One Categorical  ---------------------------------------------------
     navbarMenu("One Categ.",        
        tabPanel("Descriptives", value="1catDescrp",
-   ##             rHandsontableOutput("dataTable"),
-                h6("Table the categories")
+                column(4, inputPanel(
+                  textInput('cat1_n', label='Total Number: ', value="0"),
+                  textInput('cat1_y', label='Number of Successes: ', value="0")
+                )),
+                column(4, 
+                       plotOutput('cat1Plot'))
        ),
        tabPanel("Test", value="1catTest",
          h6("Test 1 Proportion")
@@ -84,9 +89,19 @@ shinyUI(navbarPage("Variable Type:", id="top-nav", collapsible=TRUE,
     ),
     
     ####   Two Categorical  -------------------------------------------------
-    navbarMenu("Two Cat.",
+    navbarMenu("Two Categ.",
       tabPanel("Descriptives", value="2catDescrp",
-        h6("Describe 2 Cat")
+               column(4, inputPanel(
+                 textInput('cat2_n1', label='Group 1 Total: ', value="0"),
+                 textInput('cat2_y1', label='Group 1 Successes: ', value="0"),
+                 textInput('cat2_n2', label='Group 2 Total: ', value="0"),
+                 textInput('cat2_y2', label='Group 2 Successes: ', value="0")
+               )),
+               column(4, 
+                      plotOutput('cat2Plot')),
+               column(4,
+                      h6("Proportions:"),
+                      tableOutput('cat2Summary'))
       ),
       tabPanel("Test", value="2catTest",
         h6("Test Equality of 2 Proportions")

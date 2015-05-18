@@ -14,11 +14,59 @@ shinyServer(function(input, output, session) {
 #   })
 #   
   ## 1 Categorical  -----------------------------------------------------------
+    
+    ## Descriptives:  plot a bar chart of the successes / failures
+    output$cat1Plot <-   renderPlot({ 
+      ##  pull inputs and convert to numeric:
+      y1 <- as.numeric(input$cat1_y)
+      n1 <- as.numeric(input$cat1_n)
+      phat1 <- y1/n1
+      countTable <- as.table(matrix(c( y1, n1 - y1), 1, 2,
+                                    dimnames = list(NULL, c("Success","Failure"))))
+      ## make plot
+      par(mar=c(24,40,10,35)/10)
+      barplot(countTable, ylab = "Count")
+      axis(4, at=c(0, phat1) * n1, c(0, round(phat1,2)), las=2)
+      mtext(side=4, "Probability", line = 2)
+    }, height=200)
+      
+        
   
   ## 1 Quantitative -----------------------------------------------------------
   
   ## 2 Categorical -----------------------------------------------------------
-  
+    ## Descriptives:  plot a bar chart of the successes / failures
+    output$cat2Plot <-   renderPlot({ 
+      ##  pull inputs and convert to numeric:
+      y21 <- as.numeric(input$cat2_y1)
+      n21 <- as.numeric(input$cat2_n1)
+      phat21 <- y21/n21
+      y22 <- as.numeric(input$cat2_y2)
+      n22 <- as.numeric(input$cat2_n2)
+      phat22 <- y22/n22
+      countTable <- as.table(matrix(c( y21, y22, n21 - y21, n22 -y22), 2, 2,
+                                    dimnames = list(c("Group 1", "Group 2"),
+                                                    c("Success","Failure"))))
+      ## make plot
+      par(mar=c(24,40,10,35)/10)
+      barplot(t(prop.table(countTable,1)), ylab = "Proportion", main = "")
+      text(c(y21, y22, n21, n22), x=c(.7,1.9,.7,1.9), y = c(phat21,phat22,.92,.92) + .05)
+    }, height=360)
+
+    output$cat2Summary <-   renderTable({ 
+      ##  pull inputs and convert to numeric:
+      y21 <- as.numeric(input$cat2_y1)
+      n21 <- as.numeric(input$cat2_n1)
+      phat21 <- y21/n21
+      y22 <- as.numeric(input$cat2_y2)
+      n22 <- as.numeric(input$cat2_n2)
+      phat22 <- y22/n22
+      countTable <- as.table(matrix(c( y21, y22, n21 - y21, n22 -y22), 2, 2,
+                                    dimnames = list(c("Group 1", "Group 2"),
+                                                    c("Success","Failure"))))
+      round(t(prop.table(countTable,1)), digits=3)
+    })
+
   ## 2 Quantitative -----------------------------------------------------------
   
   ## 1 categorical & 1 quantitative   ---------------------------------------
