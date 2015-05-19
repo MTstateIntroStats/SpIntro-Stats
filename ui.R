@@ -13,7 +13,7 @@ library(knitr)
 
 shinyUI(navbarPage("Variable Type:", id="top-nav", collapsible=TRUE,
                    theme = shinytheme("spacelab"),
-
+    ## EXTRA COMMENT
     ## empty tabPanel to avoid printing "tab-pane active"               
     tabPanel(""), 
     
