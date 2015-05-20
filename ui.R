@@ -35,7 +35,7 @@ shinyUI(navbarPage("Variable Type:", id="top-nav", collapsible=TRUE,
         ),
         tabPanel("Normal Distribution" , value="1catNormal",
                  titlePanel("Normal Probabilities"),
-                 column(4, inputPanel(
+                 column(3, inputPanel(
                    #helpText("Either enter  "),
                    textInput('prb_z_txt', label='Standardized Value: ', value=" "),
                    #helpText("Or "),
@@ -47,7 +47,7 @@ shinyUI(navbarPage("Variable Type:", id="top-nav", collapsible=TRUE,
 #                      condition = "input.prb_dist =='t'", 
 #                      numericInput("prb_df", "t degrees of freedom?", 10 ))
                  )),   
-                 column(8,
+                 column(9,
                         plotOutput('probPlot1')
                  )  #,
                  #h6("Normal Approx")
