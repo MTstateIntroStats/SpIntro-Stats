@@ -30,30 +30,323 @@ shinyServer(function(input, output, session) {
       mtext(side=4, "Probability", line = 2)
     }, height=200)
       
-        
+  output$normalProbPlot1 <-    renderPlot({ 
+  par(mar=c(24,1,1,1)/10)
+  z <- absz <- prob <- yrr <- xrr <- NA
+  x <- -300:300 / 50
+    
+  ## setup transparent colors
+  grn <- rgb(0, 1, 0, alpha=.4)
+  rd  <- rgb(1, 0, 0, alpha=.5)
+  blu <- rgb(0, 0, 1, alpha=.4)
+  
+  ## convert text to numeric  
+  prob <- as.numeric(input$cat1_prob_txt)
+  z <- as.numeric(input$cat1_z_txt)
+  
+  ##  this loop should run when user changes prob
+  if(!is.na(prob) ){
+    ## given prob, find z
+    if(input$cat1_area == "Lower"){ ##  left tail
+      z <-  qnorm(prob)
+      if(z < min(x))  x <- c(1.01 * z, x)
+      ## rejection region in x dimension
+      xrr <- c(x[x < z], z, z)
+      ## density curve over xrr:
+      yrr <- c( dnorm(xrr[-length(xrr)]), 0)
+    } else if(input$cat1_area == "Upper"){   ## right tail        
+      z <- qnorm(1 - prob) 
+      if(z > max(x))  x <- c(x, 1.01 * z)
+      xrr <- c(z, z, x[x > z])
+      yrr <- c(0, dnorm(xrr[-1]))
+    } else if(input$cat1_area == "Center"){
+      z <- abs(qnorm( (1 - prob)/2) )
+      if(z < min(x))  x <- c(1.01 * z, x)       
+      if(z > max(x))  x <- c(x, 1.01 * z)
+      xrr <- seq(-z, z, length=100)
+      yrr <- c(0, dnorm(xrr[2:99]), 0)
+    } else if(input$cat1_area == "Extremes"){
+      z <- abs(qnorm(1-prob) )
+      if(z < min(x))  x <- c(1.01 * z, x)       
+      if(z > max(x))  x <- c(x, 1.01 * z)
+      xrr <- c(-z, x[x < -z], -z)
+      yrr <- c(0,  dnorm(xrr[-1]))
+    }
+    absz <- abs(z)
+    
+  } else if(!is.na(z)){
+    ##  find probability
+    absz <- abs(z)
+    maxX <- pmax(z, 6)
+    minX <- pmin(z, -6)
+    x <- seq(minX, maxX, length=200)
+    prob <-  1 - pnorm(z) 
+    xrr <- c(z, z, x[x > z])  ## right tail
+    yrr <- c(0,  dnorm(xrr[-1]) )
+    if(input$cat1_area == "Lower"){         ##  left tail
+      prob =  pnorm(z) 
+      xrr <- c(z, x[x < z], z)
+      yrr <- c(0,  dnorm(xrr[-1]))
+    } else if (input$cat1_area == "Extremes"){ ##  extremes
+      xrr <- c( -absz, x[x < -absz], -absz)
+      yrr <- c(0, dnorm(xrr[-1]))
+      prob = pnorm(-absz) 
+      #yrr <- c(yrr, NA,NA, rev(yrr))
+      #xrr <- c(xrr, NA,NA, rev(-xrr))
+    } else if (input$cat1_area == "Center"){   ##  center
+      xrr <- seq(-absz, absz, length=100)
+      yrr <- c(0, dnorm(xrr), 0)
+      xrr <- c(-absz, xrr, absz)
+      prob <- diff( pnorm(c(-absz,absz)) )
+    }
+  } else {
+    ## do nothing.  Wait for user to supply prob or z.
+  }
+  plot(x, dnorm(x), type = "l", bty='n', xlab="Z Score", ylab="", yaxt="n")
+  abline(h=0)
+  max.height <- dnorm(0) *.9
+  text.height <- pmin(max.height, (max(yrr) +  max.height)/2)
+  segments(x0= z, y0 = 0, x1= z, y1= text.height*.95)
+  
+  if(input$cat1_area == "Extremes") {  ## extremes
+    polygon(xrr, yrr, col = rd)
+    polygon(-xrr, yrr, col = rd)
+    segments(x0= -z, y0 = 0, x1 = -z, y1 = text.height*.9)
+    text(x= c(-absz - 4, absz + 4)/2 , y= max(yrr)/2 + .02, 
+         round(prob, 3), col = "darkblue")
+    place.x <- c(-absz, absz)
+    if(absz < 1) place.x <- place.x/absz * .8
+    text(place.x, y = text.height, round(c(-absz,absz),3))
+  } else if (input$cat1_area == "Center") {   ## fill & label center
+    polygon(xrr, yrr, col = grn)
+    text(x=0, y= text.height, round(prob,3))
+    segments(x0= -z, y0 = 0, x1 = -z, y1 = text.height*.9)
+    place.x <- c(-absz, absz)
+    if(absz < 1) place.x <- place.x/absz * .8
+    text(place.x, y=text.height, round(c(-absz,absz),3))
+  } else {          ## show tails
+    polygon(xrr, yrr, col = rd)
+    text( z, y = text.height, round(z, 3))
+    text(x= sign(z) * (absz+4) / 2 , y= max(yrr) / 2 + 0.02, 
+         round(prob,3), col = "darkblue")
+  }
+  
+}, height=300)
+
   
   ## 1 Quantitative -----------------------------------------------------------
+
+  output$tProbPlot1 <-    renderPlot({ 
+  par(mar=c(24,1,1,1)/10)
+  z <- absz <- prob <- yrr <- xrr <- NA
+  x <- -300:300 / 50
   
+  ## setup transparent colors
+  grn <- rgb(0, 1, 0, alpha=.4)
+  rd  <- rgb(1, 0, 0, alpha=.5)
+  blu <- rgb(0, 0, 1, alpha=.4)
+  
+  ## convert text to numeric  
+  prob <- as.numeric(input$quant1_prob_txt)
+  z <- as.numeric(input$quant1_z_txt)
+  df <- as.numeric(input$quant1_df)
+  
+  ##  this loop should run when user changes prob
+  if(!is.na(prob) ){
+    ## given prob, find z
+    if(input$quant1_area == "Lower"){ ##  left tail
+      z <-  qt(prob, df)
+      if(z < min(x))  x <- c(1.01 * z, x)
+      ## rejection region in x dimension
+      xrr <- c(x[x < z], z, z)
+      ## density curve over xrr:
+      yrr <- c( dt(xrr[-length(xrr)], df), 0)
+    } else if(input$quant1_area == "Upper"){   ## right tail        
+      z <- qt(1 - prob, df) 
+      if(z > max(x))  x <- c(x, 1.01 * z)
+      xrr <- c(z, z, x[x > z])
+      yrr <- c(0, dt(xrr[-1], df))
+    } else if(input$quant1_area == "Center"){
+      z <- abs(qt( (1 - prob)/2, df) )
+      if(z < min(x))  x <- c(1.01 * z, x)       
+      if(z > max(x))  x <- c(x, 1.01 * z)
+      xrr <- seq(-z, z, length=100)
+      yrr <- c(0, dt(xrr[2:99], df), 0)
+    } else if(input$quant1_area == "Extremes"){
+      z <- abs(qt(1-prob, df) )
+      if(z < min(x))  x <- c(1.01 * z, x)       
+      if(z > max(x))  x <- c(x, 1.01 * z)
+      xrr <- c(-z, x[x < -z], -z)
+      yrr <- c(0,  dt(xrr[-1], df))
+    }
+    absz <- abs(z)
+    
+  } else if(!is.na(z)){
+    ##  find probability
+    absz <- abs(z)
+    maxX <- pmax(z, 6)
+    minX <- pmin(z, -6)
+    x <- seq(minX, maxX, length=200)
+    prob <-  1 - pt(z, df) 
+    xrr <- c(z, z, x[x > z])  ## right tail
+    yrr <- c(0,  dt(xrr[-1], df) )
+    if(input$quant1_area == "Lower"){         ##  left tail
+      prob =  pt(z, df) 
+      xrr <- c(z, x[x < z], z)
+      yrr <- c(0,  dt(xrr[-1], df))
+    } else if (input$quant1_area == "Extremes"){ ##  extremes
+      xrr <- c( -absz, x[x < -absz], -absz)
+      yrr <- c(0, dt(xrr[-1], df))
+      prob = pt(-absz, df) 
+      #yrr <- c(yrr, NA,NA, rev(yrr))
+      #xrr <- c(xrr, NA,NA, rev(-xrr))
+    } else if (input$quant1_area == "Center"){   ##  center
+      xrr <- seq(-absz, absz, length=100)
+      yrr <- c(0, dt(xrr, df), 0)
+      xrr <- c(-absz, xrr, absz)
+      prob <- diff( pt(c(-absz,absz), df) )
+    }
+  } else {
+    ## do nothing.  Wait for user to supply prob or z.
+  }
+  plot(x, dt(x, df), type = "l", bty='n', xlab="Z Score", ylab="", yaxt="n")
+  abline(h=0)
+  max.height <- dt(0, df) *.9
+  text.height <- pmin(max.height, (max(yrr) +  max.height)/2)
+  segments(x0= z, y0 = 0, x1= z, y1= text.height*.95)
+  
+  if(input$quant1_area == "Extremes") {  ## extremes
+    polygon(xrr, yrr, col = rd)
+    polygon(-xrr, yrr, col = rd)
+    segments(x0= -z, y0 = 0, x1 = -z, y1 = text.height*.9)
+    text(x= c(-absz - 4, absz + 4)/2 , y= max(yrr)/2 + .02, 
+         round(prob, 3), col = "darkblue")
+    place.x <- c(-absz, absz)
+    if(absz < 1) place.x <- place.x/absz * .8
+    text(place.x, y = text.height, round(c(-absz,absz),3))
+  } else if (input$quant1_area == "Center") {   ## fill & label center
+    polygon(xrr, yrr, col = grn)
+    text(x=0, y= text.height, round(prob,3))
+    segments(x0= -z, y0 = 0, x1 = -z, y1 = text.height*.9)
+    place.x <- c(-absz, absz)
+    if(absz < 1) place.x <- place.x/absz * .8
+    text(place.x, y=text.height, round(c(-absz,absz),3))
+  } else {          ## show tails
+    polygon(xrr, yrr, col = rd)
+    text( z, y = text.height, round(z, 3))
+    text(x= sign(z) * (absz+4) / 2 , y= max(yrr) / 2 + 0.02, 
+         round(prob,3), col = "darkblue")
+  }
+}, height=300)
+
+
   ## 2 Categorical -----------------------------------------------------------
     ## Descriptives:  plot a bar chart of the successes / failures
-    output$cat2Plot <-   renderPlot({ 
-      ##  pull inputs and convert to numeric:
-      y21 <- as.numeric(input$cat2_y1)
-      n21 <- as.numeric(input$cat2_n1)
-      phat21 <- y21/n21
-      y22 <- as.numeric(input$cat2_y2)
-      n22 <- as.numeric(input$cat2_n2)
-      phat22 <- y22/n22
-      countTable <- as.table(matrix(c( y21, y22, n21 - y21, n22 -y22), 2, 2,
-                                    dimnames = list(c("Group 1", "Group 2"),
-                                                    c("Success","Failure"))))
-      ## make plot
-      par(mar=c(24,40,10,35)/10)
-      barplot(t(prop.table(countTable,1)), ylab = "Proportion", main = "")
-      text(c(y21, y22, n21, n22), x=c(.7,1.9,.7,1.9), y = c(phat21,phat22,.92,.92) + .05)
-    }, height=360)
 
-    output$cat2Summary <-   renderTable({ 
+  output$normalProbPlot2 <-    renderPlot({ 
+  par(mar=c(24,1,1,1)/10)
+  z <- absz <- prob <- yrr <- xrr <- NA
+  x <- -300:300 / 50
+  
+  ## setup transparent colors
+  grn <- rgb(0, 1, 0, alpha=.4)
+  rd  <- rgb(1, 0, 0, alpha=.5)
+  blu <- rgb(0, 0, 1, alpha=.4)
+  
+  ## convert text to numeric  
+  prob <- as.numeric(input$cat2_prob_txt)
+  z <- as.numeric(input$cat2_z_txt)
+  
+  ##  this loop should run when user changes prob
+  if(!is.na(prob) ){
+    ## given prob, find z
+    if(input$cat2_area == "Lower"){ ##  left tail
+      z <-  qnorm(prob)
+      if(z < min(x))  x <- c(1.01 * z, x)
+      ## rejection region in x dimension
+      xrr <- c(x[x < z], z, z)
+      ## density curve over xrr:
+      yrr <- c( dnorm(xrr[-length(xrr)]), 0)
+    } else if(input$cat2_area == "Upper"){   ## right tail        
+      z <- qnorm(1 - prob) 
+      if(z > max(x))  x <- c(x, 1.01 * z)
+      xrr <- c(z, z, x[x > z])
+      yrr <- c(0, dnorm(xrr[-1]))
+    } else if(input$cat2_area == "Center"){
+      z <- abs(qnorm( (1 - prob)/2) )
+      if(z < min(x))  x <- c(1.01 * z, x)       
+      if(z > max(x))  x <- c(x, 1.01 * z)
+      xrr <- seq(-z, z, length=100)
+      yrr <- c(0, dnorm(xrr[2:99]), 0)
+    } else if(input$cat2_area == "Extremes"){
+      z <- abs(qnorm(1-prob) )
+      if(z < min(x))  x <- c(1.01 * z, x)       
+      if(z > max(x))  x <- c(x, 1.01 * z)
+      xrr <- c(-z, x[x < -z], -z)
+      yrr <- c(0,  dnorm(xrr[-1]))
+    }
+    absz <- abs(z)
+    
+  } else if(!is.na(z)){
+    ##  find probability
+    absz <- abs(z)
+    maxX <- pmax(z, 6)
+    minX <- pmin(z, -6)
+    x <- seq(minX, maxX, length=200)
+    prob <-  1 - pnorm(z) 
+    xrr <- c(z, z, x[x > z])  ## right tail
+    yrr <- c(0,  dnorm(xrr[-1]) )
+    if(input$cat2_area == "Lower"){         ##  left tail
+      prob =  pnorm(z) 
+      xrr <- c(z, x[x < z], z)
+      yrr <- c(0,  dnorm(xrr[-1]))
+    } else if (input$cat2_area == "Extremes"){ ##  extremes
+      xrr <- c( -absz, x[x < -absz], -absz)
+      yrr <- c(0, dnorm(xrr[-1]))
+      prob = pnorm(-absz) 
+      #yrr <- c(yrr, NA,NA, rev(yrr))
+      #xrr <- c(xrr, NA,NA, rev(-xrr))
+    } else if (input$cat2_area == "Center"){   ##  center
+      xrr <- seq(-absz, absz, length=100)
+      yrr <- c(0, dnorm(xrr), 0)
+      xrr <- c(-absz, xrr, absz)
+      prob <- diff( pnorm(c(-absz,absz)) )
+    }
+  } else {
+    ## do nothing.  Wait for user to supply prob or z.
+  }
+  plot(x, dnorm(x), type = "l", bty='n', xlab="Z Score", ylab="", yaxt="n")
+  abline(h=0)
+  max.height <- dnorm(0) *.9
+  text.height <- pmin(max.height, (max(yrr) +  max.height)/2)
+  segments(x0= z, y0 = 0, x1= z, y1= text.height*.95)
+  
+  if(input$cat2_area == "Extremes") {  ## extremes
+    polygon(xrr, yrr, col = rd)
+    polygon(-xrr, yrr, col = rd)
+    segments(x0= -z, y0 = 0, x1 = -z, y1 = text.height*.9)
+    text(x= c(-absz - 4, absz + 4)/2 , y= max(yrr)/2 + .02, 
+         round(prob, 3), col = "darkblue")
+    place.x <- c(-absz, absz)
+    if(absz < 1) place.x <- place.x/absz * .8
+    text(place.x, y = text.height, round(c(-absz,absz),3))
+  } else if (input$cat2_area == "Center") {   ## fill & label center
+    polygon(xrr, yrr, col = grn)
+    text(x=0, y= text.height, round(prob,3))
+    segments(x0= -z, y0 = 0, x1 = -z, y1 = text.height*.9)
+    place.x <- c(-absz, absz)
+    if(absz < 1) place.x <- place.x/absz * .8
+    text(place.x, y=text.height, round(c(-absz,absz),3))
+  } else {          ## show tails
+    polygon(xrr, yrr, col = rd)
+    text( z, y = text.height, round(z, 3))
+    text(x= sign(z) * (absz+4) / 2 , y= max(yrr) / 2 + 0.02, 
+         round(prob,3), col = "darkblue")
+  }
+  
+}, height=300)
+
+  output$cat2Summary <-   renderTable({ 
       ##  pull inputs and convert to numeric:
       y21 <- as.numeric(input$cat2_y1)
       n21 <- as.numeric(input$cat2_n1)
@@ -68,13 +361,119 @@ shinyServer(function(input, output, session) {
     })
 
   ## 2 Quantitative -----------------------------------------------------------
-  
+
+
   ## 1 categorical & 1 quantitative   ---------------------------------------
   
+  ## Plot t distributions
+  output$tProbPlot2 <-    renderPlot({ 
+  par(mar=c(24,1,1,1)/10)
+  z <- absz <- prob <- yrr <- xrr <- NA
+  x <- -300:300 / 50
+  
+  ## setup transparent colors
+  grn <- rgb(0, 1, 0, alpha=.4)
+  rd  <- rgb(1, 0, 0, alpha=.5)
+  blu <- rgb(0, 0, 1, alpha=.4)
+  
+  ## convert text to numeric  
+  prob <- as.numeric(input$quant2_prob_txt)
+  z <- as.numeric(input$quant2_z_txt)
+  df <- as.numeric(input$quant2_df)
+  
+  ##  this loop should run when user changes prob
+  if(!is.na(prob) ){
+    ## given prob, find z
+    if(input$quant2_area == "Lower"){ ##  left tail
+      z <-  qt(prob, df)
+      if(z < min(x))  x <- c(1.01 * z, x)
+      ## rejection region in x dimension
+      xrr <- c(x[x < z], z, z)
+      ## density curve over xrr:
+      yrr <- c( dt(xrr[-length(xrr)], df), 0)
+    } else if(input$quant2_area == "Upper"){   ## right tail        
+      z <- qt(1 - prob, df) 
+      if(z > max(x))  x <- c(x, 1.01 * z)
+      xrr <- c(z, z, x[x > z])
+      yrr <- c(0, dt(xrr[-1], df))
+    } else if(input$quant2_area == "Center"){
+      z <- abs(qt( (1 - prob)/2, df) )
+      if(z < min(x))  x <- c(1.01 * z, x)       
+      if(z > max(x))  x <- c(x, 1.01 * z)
+      xrr <- seq(-z, z, length=100)
+      yrr <- c(0, dt(xrr[2:99], df), 0)
+    } else if(input$quant2_area == "Extremes"){
+      z <- abs(qt(1-prob, df) )
+      if(z < min(x))  x <- c(1.01 * z, x)       
+      if(z > max(x))  x <- c(x, 1.01 * z)
+      xrr <- c(-z, x[x < -z], -z)
+      yrr <- c(0,  dt(xrr[-1], df))
+    }
+    absz <- abs(z)
+    
+  } else if(!is.na(z)){
+    ##  find probability
+    absz <- abs(z)
+    maxX <- pmax(z, 6)
+    minX <- pmin(z, -6)
+    x <- seq(minX, maxX, length=200)
+    prob <-  1 - pt(z, df) 
+    xrr <- c(z, z, x[x > z])  ## right tail
+    yrr <- c(0,  dt(xrr[-1], df) )
+    if(input$quant2_area == "Lower"){         ##  left tail
+      prob =  pt(z, df) 
+      xrr <- c(z, x[x < z], z)
+      yrr <- c(0,  dt(xrr[-1], df))
+    } else if (input$quant2_area == "Extremes"){ ##  extremes
+      xrr <- c( -absz, x[x < -absz], -absz)
+      yrr <- c(0, dt(xrr[-1], df))
+      prob = pt(-absz, df) 
+      #yrr <- c(yrr, NA,NA, rev(yrr))
+      #xrr <- c(xrr, NA,NA, rev(-xrr))
+    } else if (input$quant2_area == "Center"){   ##  center
+      xrr <- seq(-absz, absz, length=100)
+      yrr <- c(0, dt(xrr, df), 0)
+      xrr <- c(-absz, xrr, absz)
+      prob <- diff( pt(c(-absz,absz), df) )
+    }
+  } else {
+    ## do nothing.  Wait for user to supply prob or z.
+  }
+  plot(x, dt(x, df), type = "l", bty='n', xlab="Z Score", ylab="", yaxt="n")
+  abline(h=0)
+  max.height <- dt(0, df) *.9
+  text.height <- pmin(max.height, (max(yrr) +  max.height)/2)
+  segments(x0= z, y0 = 0, x1= z, y1= text.height*.95)
+  
+  if(input$quant2_area == "Extremes") {  ## extremes
+    polygon(xrr, yrr, col = rd)
+    polygon(-xrr, yrr, col = rd)
+    segments(x0= -z, y0 = 0, x1 = -z, y1 = text.height*.9)
+    text(x= c(-absz - 4, absz + 4)/2 , y= max(yrr)/2 + .02, 
+         round(prob, 3), col = "darkblue")
+    place.x <- c(-absz, absz)
+    if(absz < 1) place.x <- place.x/absz * .8
+    text(place.x, y = text.height, round(c(-absz,absz),3))
+  } else if (input$quant2_area == "Center") {   ## fill & label center
+    polygon(xrr, yrr, col = grn)
+    text(x=0, y= text.height, round(prob,3))
+    segments(x0= -z, y0 = 0, x1 = -z, y1 = text.height*.9)
+    place.x <- c(-absz, absz)
+    if(absz < 1) place.x <- place.x/absz * .8
+    text(place.x, y=text.height, round(c(-absz,absz),3))
+  } else {          ## show tails
+    polygon(xrr, yrr, col = rd)
+    text( z, y = text.height, round(z, 3))
+    text(x= sign(z) * (absz+4) / 2 , y= max(yrr) / 2 + 0.02, 
+         round(prob,3), col = "darkblue")
+  }
+  
+}, height=300)
+
+
   ##  Other Tools -----------------------------------------------------------
   ## Probability plot for t & normal distributions  -------------------------
-  output$probPlot <-  output$probPlot1 <-  output$probPlot2 <-  output$probPlot3 <-  output$probPlot4 <- 
-   renderPlot({ 
+  output$probPlot <-    renderPlot({ 
     par(mar=c(24,1,1,1)/10)
     z <- absz <- prob <- yrr <- xrr <- NA
     x <- -300:300 / 50
@@ -120,8 +519,7 @@ shinyServer(function(input, output, session) {
       }
       absz <- abs(z)
       
-    }
-    if(!is.na(z)){
+    } else if(!is.na(z)){
       ##  find probability
       absz <- abs(z)
       maxX <- pmax(z, 6)
@@ -146,6 +544,8 @@ shinyServer(function(input, output, session) {
         xrr <- c(-absz, xrr, absz)
         prob <- diff(if(input$prb_dist=='Normal') pnorm(c(-absz,absz)) else pt(c(-absz,absz), df))
       }
+    } else {
+      ## do nothing.  Wait for user to supply prob or z.
     }
     plot(x, if(input$prb_dist=='Normal') dnorm(x) else dt(x, df), type = "l", bty='n', xlab="Z Score",
          ylab="", yaxt="n")

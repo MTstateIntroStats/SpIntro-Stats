@@ -11,7 +11,7 @@ library(knitr)
   ## Load data using:
   ## https://github.com/jrowen/rhandsontable/blob/master/inst/examples/shiny.R
 
-shinyUI(navbarPage("Variable Type:", id="top-nav", collapsible=TRUE,
+shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                    theme = shinytheme("spacelab"),
     ## EXTRA COMMENT
     ## empty tabPanel to avoid printing "tab-pane active"               
@@ -41,18 +41,18 @@ shinyUI(navbarPage("Variable Type:", id="top-nav", collapsible=TRUE,
                  titlePanel("Normal Probabilities"),
                  column(3, inputPanel(
                    #helpText("Either enter  "),
-                   textInput('prb_z_txt', label='Standardized Value: ', value=" "),
+                   textInput('cat1_z_txt', label='Standardized Value: ', value=" "),
                    #helpText("Or "),
-                   textInput('prb_prob_txt', 'or  Probability: ', " "),
-                   selectInput("prb_area", "To go into which area? ", 
+                   textInput('cat1_prob_txt', 'or  Probability: ', " "),
+                   selectInput("cat1_area", "To go into which area? ", 
                                c("Lower","Upper","Extremes","Center"), NA),
-                   selectInput("prb_dist", "Distribution: ",c("Normal"), "Normal")
+                   selectInput("cat1_dist", "Distribution: ",c("Normal"), "Normal")
 #                    conditionalPanel( 
 #                      condition = "input.prb_dist =='t'", 
-#                      numericInput("prb_df", "t degrees of freedom?", 10 ))
+#                      numericInput("prb1_df", "t degrees of freedom?", 10 ))
                  )),   
                  column(9,
-                        plotOutput('probPlot1')
+                        plotOutput('normalProbPlot1')
                  )  #,
                  #h6("Normal Approx")
        )
@@ -117,18 +117,18 @@ shinyUI(navbarPage("Variable Type:", id="top-nav", collapsible=TRUE,
                titlePanel("Normal Probabilities"),
                column(4, inputPanel(
                  #helpText("Either enter  "),
-                 textInput('prb_z_txt', label='Standardized Value: ', value=" "),
+                 textInput('cat2_z_txt', label='Standardized Value: ', value=" "),
                  #helpText("Or "),
-                 textInput('prb_prob_txt', 'or  Probability: ', " "),
-                 selectInput("prb_area", "To go into which area? ", 
+                 textInput('cat2_prob_txt', 'or  Probability: ', " "),
+                 selectInput("cat2_area", "To go into which area? ", 
                              c("Lower","Upper","Extremes","Center"), NA),
-                 selectInput("prb_dist", "Distribution: ",c("Normal"), "Normal"),
+                 selectInput("cat2_dist", "Distribution: ",c("Normal"), "Normal"),
                  conditionalPanel( 
                    condition = "input.prb_dist =='t'", 
-                   numericInput("prb_df", "t degrees of freedom?", 10 ))
+                   numericInput("cat2_df", "t degrees of freedom?", 10 ))
                )),   
                column(8,
-                      plotOutput('probPlot4')
+                      plotOutput('normalProbPlot2')
                )  #,
             ##  h6("Normal Approx")
       )
@@ -163,19 +163,18 @@ shinyUI(navbarPage("Variable Type:", id="top-nav", collapsible=TRUE,
                titlePanel("t Probabilities"),
                column(4, inputPanel(
                  #helpText("Either enter  "),
-                 textInput('prb_z_txt', label='Standardized Value: ', value=" "),
+                 textInput('quant2_z_txt', label='Standardized Value: ', value=" "),
                  #helpText("Or "),
-                 textInput('prb_prob_txt', 'or  Probability: ', " "),
-                 selectInput("prb_area", "To go into which area? ", 
+                 textInput('quant2_prob_txt', 'or  Probability: ', " "),
+                 selectInput("quant2_area", "To go into which area? ", 
                              c("Lower","Upper","Extremes","Center"), NA),
-                 selectInput("prb_dist", "Distribution: ",c("t"), "t"),
-                 numericInput("prb_df", "t degrees of freedom?", 10 )
+                 selectInput("quant2_dist", "Distribution: ",c("t"), "t"),
+                 numericInput("quant2_df", "t degrees of freedom?", 10 )
                )),   
                ##  dist'n shows 'normal' by default, but conditional box for t df appears.
                column(8,
-                      plotOutput('probPlot2')
-                )  #,
-#               h6("t test")
+                      plotOutput('tProbPlot2')
+                )  
       )
     ),
     ####   ----  Other Tools  ------------------------------------------------
