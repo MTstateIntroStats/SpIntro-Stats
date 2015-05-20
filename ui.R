@@ -18,14 +18,18 @@ shinyUI(navbarPage("Variable Type:", id="top-nav", collapsible=TRUE,
     tabPanel(""), 
     
     ####   One Categorical  ---------------------------------------------------
-    navbarMenu("One Categ.",        
-       tabPanel("Descriptives", value="1catDescrp",
-                column(4, inputPanel(
+    navbarMenu("One Categ.",  
+       tabPanel("Descriptives", label="1catDescrp",       
+       ##  checkboxInput("get1Data", "Input Data? ", value = FALSE),
+       ##    conditionalPanel(condition = "input.get1Data =='t'",
+                fluidRow(   column(4, inputPanel(
                   textInput('cat1_n', label='Total Number: ', value="0"),
                   textInput('cat1_y', label='Number of Successes: ', value="0")
                 )),
                 column(4, 
                        plotOutput('cat1Plot'))
+                )
+        ##  )
        ),
        tabPanel("Test", value="1catTest",
          h6("Test 1 Proportion")
