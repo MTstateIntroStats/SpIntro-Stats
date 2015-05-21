@@ -14,41 +14,41 @@
     var spinDuration = 400,
         slideDuration = 400;
 
-         var margin = {top: 50, right: 20, bottom: 50, left: 20},
-            w =  540, // - margin.right - margin.left,
-            h = 300, // - margin.top - margin.bottom;       
-            r = 110,          //radius
-            tr = 150,         //text radius
-            ir = 75,         //inner radius 
-            color = d3.scale.ordinal()
-               .range(["#a05d56","#ff8c00","#d0743c","#98abc5", "#8a89a6", 
-                       "#7b6888", "#6b486b" ]),      
-	    dColor = data.drawColor[0]; 
+    var margin = {top: 50, right: 20, bottom: 50, left: 20},
+        w =  540, // - margin.right - margin.left,
+        h = 300, // - margin.top - margin.bottom;       
+        r = 110,          //radius
+        tr = 150,         //text radius
+        ir = 75,         //inner radius 
+        color = d3.scale.ordinal()
+            .range(["#a05d56","#ff8c00","#d0743c","#98abc5", "#8a89a6", 
+                    "#7b6888", "#6b486b" ]),      
+        dColor = data.drawColor[0]; 
 
         var spacing = w / (data.nDraws + 1); //for sampled circles
  
         var pieData = [];
         for (var i=0; i < data.nCat; i++)  { 
             pieData[i]  = { label: data.pieLabels[i] , 
- 			      value: data.pieValues[i]
-			    };
+ 			                      value: data.pieValues[i]
+			      };
 	}
         
-	
         var drawData =  [];
         for (var i=0; i < data.nDraws; i++)  { 
             drawData[i]  = {angle: data.spinAngle[i],
-			      group: data.drawColor[i]};
+			                      group: data.drawColor[i] 
+            };
 	}
 	//console.log(drawData);
 
         //remove the old graph
-          var vis = d3.select(el).select("svg");
-          vis.remove();
-          $(el).html(""); 
+        var vis = d3.select(el).select("svg");
+        vis.remove();
+        $(el).html(""); 
           
-      //append a new one 
-         vis = d3.select(el).append("svg")
+        //append a new one 
+        vis = d3.select(el).append("svg")
             .attr("width",  w) //  + margin.right + margin.left)
             .attr("height", h) // + margin.top + margin.bottom)
             .data([pieData])     
@@ -176,10 +176,11 @@
           .transition()
            .delay( ( slideDuration + spinDuration) * (i+1) )
           .attr("opacity", 1)
+       ;   
 //          .attr("transform", function(d) {
 //              return "rotate(-45)" 
 //            });   // see fiddle:  http://jsfiddle.net/eremita/BujPJ/
-       ;   });
+   });
 
 
     }

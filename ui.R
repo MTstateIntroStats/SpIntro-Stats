@@ -20,33 +20,39 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
     ####   One Categorical  ---------------------------------------------------
     navbarMenu("One Categ.",  
        tabPanel("Descriptives", label="1catDescrp",       
-          ## toggle 'get data' box                
-          tags$button( onClick='function(){
-                                // Get the DOM reference
-                                var contentId = document.getElementById("getcat1Data");
-                               // Toggle 
-                              contentId.style.display == "block" ? contentId.style.display = "none" : 
-                                        contentId.style.display = "block"; 
-  }', "Set / ReSet Data"),
-          div( ID="getcat1Data", style="display:block;", 
+          ## toggle 'get data' box
+#           sidebarPanel(
+#             textInput("cat1_name1", "Category 1:", "Success"),
+#             numericInput("cat1_n1", "Count 1",0),
+#             textInput("cat1_name2", "Category 2:", "Failure"),
+#             numericInput("cat1_n2", "Count 2",0),
+       ##  Input counts and labels
+         fluidRow(
+           column(5,  div( label = "cat1Input",
+          tags$label('Category 1: ', 
+                     tags$input(name='cat1_name1', type='text', value='Success', size='10')),
+          tags$label('Count: ', 
+                     tags$input(name='cat1_n1', type='text', value='0', size='5')),
+          br(),
+          tags$label('Category 2: ', 
+                     tags$input(name='cat1_name2', type='text', value='Failure', size='10')),
+          tags$label('Count: ', 
+                     tags$input(name='cat1_n2', type='text', value='0', size='5')),
+          HTML("&nbsp; &nbsp;"),
+          actionButton("submitButton", "Submit")
+          )),
+          column(3, plotOutput('cat1Plot',width="80%")),
+          column(3, tableOutput("cat1Summary"))       
           
-##    tags$input( name="restartButton",  type="button", value ="Get New Sample ", 
-##             onClick="document.write('Clicked')" ),
-           ## conditionalPanel(condition = (3 < 5),
-                fluidRow(   column(4, textOutput("total"),
-                  tags$label('Total Number: ', 
-                             tags$input(name='cat1_n', type='text', value='0', size='5')),
-                  br(),
-                  tags$label('Number of Successes: ', 
-                             tags$input(name='cat1_y', type='text',  value='0', size='5')),
-                  br()
-                ),
-                column(4,  
-                       plotOutput('cat1Plot'))
-                )
-        #  ),
-        #  h6('Describe data')
-        )
+         )
+#           tags$button( onClick='function(){
+#                                 // Get the DOM reference
+#                                 var contentId = document.getElementById("cat1Input")
+#                                // Toggle 
+#                               contentId.style.display == "block" ? contentId.style.display = "none" : 
+#                                         contentId.style.display = "block"; 
+#   }', "Set / ReSet Data"),
+#           div( ID="getcat1Data", style="display:block;", 
        ),
        tabPanel("Test", value="1catTest",
          h6("Test 1 Proportion")

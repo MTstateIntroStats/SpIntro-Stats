@@ -17,24 +17,66 @@ shinyServer(function(input, output, session) {
 #   
   ## 1 Categorical  -----------------------------------------------------------
     ##  data input
+  cat1 <- reactiveValues(data = NULL)
+
+  observeEvent(input$cat1_getData, {
+    cat1$data <- runif(100)
+  })
+
+  observeEvent(input$cat1_hideData, {
+    cat1$data <- NULL
+  })  
+
+    ##  Using Submit Button
+  data <- reactive({
+      list(run = input$submitButton,
+           counts = as.numeric(c(input$cat1_n1, input$cat1_n2)),
+           names = c(input$cat1_name1, input$cat1_name2)
+      )
+  })
+
+  output$cat1Plot <- renderPlot( {
+    if(input$submitButton ==0) return()
+    isolate( { 
+      dataDF <- data() 
+      ##print(dataDF)
+      phat1 <- dataDF$counts[1]/sum(dataDF$counts)
+      countTable <- as.table(matrix(dataDF$counts, 2,1))
+      rownames(countTable) =  dataDF$names
+       ## make plot
+       par(mar=c(24,40,10,35)/10)
+       barplot(prop.table(countTable), ylab = "Proportion", main = "",xaxt="n")
+     })
+  }, height=120)
+
+
+output$cat1Summary <- renderTable({
+  if(input$submitButton ==0) return()
+  isolate({
+    dataDF <- data()
+    counts <- as.table( matrix(dataDF$counts), 1, 2)
+    dimnames(counts) = list(dataDF$names,"Proportions")
+    prop.table(counts)
+  })
+})
     #output$getCat1Data <- renderUI({
     #  h6("here we are")
     #})
     ## Descriptives:  plot a bar chart of the successes / failures
-    output$cat1Plot <-   renderPlot({ 
-      ##  pull inputs and convert to numeric:
-      y1 <- as.numeric(input$cat1_y)
-      n1 <- as.numeric(input$cat1_n)
-      phat1 <- y1/n1
-      countTable <- as.table(matrix(c( y1, n1 - y1), 1, 2,
-                                    dimnames = list(NULL, c("Success","Failure"))))
-      ## make plot
-      par(mar=c(24,40,10,35)/10)
-      barplot(countTable, ylab = "Count")
-      axis(4, at=c(0, phat1) * n1, c(0, round(phat1,2)), las=2)
-      mtext(side=4, "Probability", line = 2)
-    }, height=200)
       
+  output$cat2Summary <-   renderTable({ 
+    ##  pull inputs and convert to numeric:
+    y21 <- as.numeric(input$cat2_y1)
+    n21 <- as.numeric(input$cat2_n1)
+    phat21 <- y21/n21
+    y22 <- as.numeric(input$cat2_y2)
+    n22 <- as.numeric(input$cat2_n2)
+    phat22 <- y22/n22
+    countTable <- as.table(matrix(c( y21, y22, n21 - y21, n22 -y22), 2, 2,
+                                dimnames = list(c("Group 1", "Group 2"),
+                                                c("Success","Failure"))))
+    round(t(prop.table(countTable,1)), digits=3)
+  })      
   output$normalProbPlot1 <-    renderPlot({ 
   par(mar=c(24,1,1,1)/10)
   z <- absz <- prob <- yrr <- xrr <- NA
