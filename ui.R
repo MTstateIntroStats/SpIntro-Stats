@@ -19,7 +19,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
     
     ####   One Categorical  ---------------------------------------------------
     navbarMenu("One Categ.",  
-       tabPanel("Descriptives", label="1catDescrp",       
+       tabPanel("Data Entry", label="1catDescrp",       
           ## toggle 'get data' box
 #           sidebarPanel(
 #             textInput("cat1_name1", "Category 1:", "Success"),
@@ -28,7 +28,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
 #             numericInput("cat1_n2", "Count 2",0),
        ##  Input counts and labels
          fluidRow(
-           column(5,  div( label = "cat1Input",
+           column(5,  div( label = "cat1Input", height = "300px",
           tags$label('Category 1: ', 
                      tags$input(name='cat1_name1', type='text', value='Success', size='10')),
           tags$label('Count: ', 
@@ -44,7 +44,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
           column(3, plotOutput('cat1Plot',width="80%")),
           column(3, tableOutput("cat1Summary"))       
          ),
-         h6(textOutput('cat1DataIn'))
+         h4(textOutput('cat1DataIn'))
 
 #           tags$button( onClick='function(){
 #                                 // Get the DOM reference
@@ -115,10 +115,10 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
     
     ####   Two Categorical  -------------------------------------------------
     navbarMenu("Two Categ.",
-      tabPanel("Descriptives", value="2catDescrp",
-               fluidRow(
+      tabPanel("Data Entry", value="2catDescrp",
+               fluidRow( height = "200px",
                  column(5,   ##  Inputs
-                        fluidRow(
+                        fluidRow( height = "200px",
                           column(6, offset = 3,
                                  div(
                                  tags$input(name='cat2_grp1', type='text', value='Group1', size='6'),
@@ -138,7 +138,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                  column(4,  plotOutput('cat2Plot', width="90%")),         
                  column(3, tableOutput("cat2Summary"))       
                  ),
-               h6(textOutput('cat2DataIn'))
+               h4(textOutput('cat2DataIn'))
 #                
 #                column(4, inputPanel(
 #                  textInput('cat2_n1', label='Group 1 Total: ', value="0"),
