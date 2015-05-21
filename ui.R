@@ -20,16 +20,33 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
     ####   One Categorical  ---------------------------------------------------
     navbarMenu("One Categ.",  
        tabPanel("Descriptives", label="1catDescrp",       
-       ##  checkboxInput("get1Data", "Input Data? ", value = FALSE),
-       ##    conditionalPanel(condition = "input.get1Data =='t'",
-                fluidRow(   column(4, inputPanel(
-                  textInput('cat1_n', label='Total Number: ', value="0"),
-                  textInput('cat1_y', label='Number of Successes: ', value="0")
-                )),
-                column(4, 
+          ## toggle 'get data' box                
+          tags$button( onClick='function(){
+                                // Get the DOM reference
+                                var contentId = document.getElementById("getcat1Data");
+                               // Toggle 
+                              contentId.style.display == "block" ? contentId.style.display = "none" : 
+                                        contentId.style.display = "block"; 
+  }', "Set / ReSet Data"),
+          div( ID="getcat1Data", style="display:block;", 
+          
+##    tags$input( name="restartButton",  type="button", value ="Get New Sample ", 
+##             onClick="document.write('Clicked')" ),
+           ## conditionalPanel(condition = (3 < 5),
+                fluidRow(   column(4, textOutput("total"),
+                  tags$label('Total Number: ', 
+                             tags$input(name='cat1_n', type='text', value='0', size='5')),
+                  br(),
+                  tags$label('Number of Successes: ', 
+                             tags$input(name='cat1_y', type='text',  value='0', size='5')),
+                  br()
+                ),
+                column(4,  
                        plotOutput('cat1Plot'))
                 )
-        ##  )
+        #  ),
+        #  h6('Describe data')
+        )
        ),
        tabPanel("Test", value="1catTest",
          h6("Test 1 Proportion")
@@ -47,9 +64,6 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                    selectInput("cat1_area", "To go into which area? ", 
                                c("Lower","Upper","Extremes","Center"), NA),
                    selectInput("cat1_dist", "Distribution: ",c("Normal"), "Normal")
-#                    conditionalPanel( 
-#                      condition = "input.prb_dist =='t'", 
-#                      numericInput("prb1_df", "t degrees of freedom?", 10 ))
                  )),   
                  column(9,
                         plotOutput('normalProbPlot1')
@@ -107,12 +121,15 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                       h6("Proportions:"),
                       tableOutput('cat2Summary'))
       ),
+      
       tabPanel("Test", value="2catTest",
         h6("Test Equality of 2 Proportions")
       ),
+      
       tabPanel("Estimate", value="2catEstimate",
         h6("Estimate Difference in Proportions")
       ),
+
       tabPanel("Normal Distribution", value="2catNormal",
                titlePanel("Normal Probabilities"),
                column(4, inputPanel(
@@ -133,14 +150,17 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
             ##  h6("Normal Approx")
       )
     ),
+
     ####   Two Quantitative -------------------------------------------------
     navbarMenu("Two Quant.",
       tabPanel("Descriptives", value="2quantDescrp",
         h6("Describe 2 Quant")
       ),
+      
       tabPanel("Test", value="2quantTest",
         h6("Test Slope/Correlation")
       ),
+
       tabPanel("Estimate Slope/Correlation", value="2quantEstimate",
         h6("Estimate Slope and Correlation")
 #       ),
@@ -148,17 +168,22 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
 #         h6("Normal Approx")
       )
     ),
+
     ####   1 categorical & 1 quantitative  -----------------------------------
     navbarMenu("One of Each",
+               
       tabPanel("Descriptives", value="1cat1quantDescrp",
         h6("Describe 2 means")
       ),
+      
       tabPanel("Test", value="1cat1quantTest",
         h6("Test Equality of 2 Means")
       ),
+      
       tabPanel("Estimate", value="1cat1quantEstimate",
         h6("Estimate Difference in Means")
       ),
+
       tabPanel("t Distribution", value="1cat1quantT",
                titlePanel("t Probabilities"),
                column(4, inputPanel(
@@ -177,6 +202,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                 )  
       )
     ),
+
     ####   ----  Other Tools  ------------------------------------------------
     navbarMenu("Other Tools",
       tabPanel("Probabilities", value = "probabilities",
@@ -200,6 +226,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                   plotOutput('probPlot')
            )
       ),
+      
     tabPanel("Power", value = "Power",
       ## ui.r from power app
         #  Application title
