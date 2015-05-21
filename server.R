@@ -16,46 +16,41 @@ shinyServer(function(input, output, session) {
 #   })
 #   
   ## 1 Categorical  -----------------------------------------------------------
-    ##  data input
-  cat1 <- reactiveValues(data = NULL)
-
-  observeEvent(input$cat1_getData, {
-    cat1$data <- runif(100)
-  })
-
-  observeEvent(input$cat1_hideData, {
-    cat1$data <- NULL
-  })  
-
-    ##  Using Submit Button
-  data <- reactive({
-      list(run = input$submitButton,
-           counts = as.numeric(c(input$cat1_n1, input$cat1_n2)),
-           names = c(input$cat1_name1, input$cat1_name2)
+ 
+    ##  Using Submit Button to keep plots from changing too soon
+  cat1_data <- reactive({
+      data.frame(#run = input$submitButton,
+                counts = as.numeric(c(input$cat1_n1, input$cat1_n2)),
+                names = c(input$cat1_name1, input$cat1_name2)
       )
   })
 
   output$cat1Plot <- renderPlot( {
-    if(input$submitButton ==0) return()
+    if(input$cat1_submitButton ==0) return()
     isolate( { 
-      dataDF <- data() 
-      ##print(dataDF)
-      phat1 <- dataDF$counts[1]/sum(dataDF$counts)
-      countTable <- as.table(matrix(dataDF$counts, 2,1))
-      rownames(countTable) =  dataDF$names
+      cat1_dataDF <- cat1_data() 
+      ## print(dataDF)
+      ## phat1 <- cat1_dataDF$counts[1]/sum(cat1_dataDF$counts)
+      countTable <- as.table(matrix(cat1_dataDF$counts, 2, 1))
+      rownames(countTable) =  cat1_dataDF$names
        ## make plot
-       par(mar=c(24,40,10,35)/10)
+       par(mar=c(24, 40, 10, 35)/10)
        barplot(prop.table(countTable), ylab = "Proportion", main = "",xaxt="n")
      })
   }, height=120)
 
+output$cat1DataIn <- renderText({
+  if(input$cat1_submitButton ==0) return()
+  "Data is entered, you may now choose to estimate or test one proportion."
+})
+
 
 output$cat1Summary <- renderTable({
-  if(input$submitButton ==0) return()
+  if(input$cat1_submitButton ==0) return()
   isolate({
-    dataDF <- data()
-    counts <- as.table( matrix(dataDF$counts), 1, 2)
-    dimnames(counts) = list(dataDF$names,"Proportions")
+    cat1_dataDF <- cat1_data()
+    counts <- as.table( matrix(cat1_dataDF$counts), 1, 2)
+    dimnames(counts) = list(cat1_dataDF$names,"Proportions")
     prop.table(counts)
   })
 })
@@ -63,20 +58,7 @@ output$cat1Summary <- renderTable({
     #  h6("here we are")
     #})
     ## Descriptives:  plot a bar chart of the successes / failures
-      
-  output$cat2Summary <-   renderTable({ 
-    ##  pull inputs and convert to numeric:
-    y21 <- as.numeric(input$cat2_y1)
-    n21 <- as.numeric(input$cat2_n1)
-    phat21 <- y21/n21
-    y22 <- as.numeric(input$cat2_y2)
-    n22 <- as.numeric(input$cat2_n2)
-    phat22 <- y22/n22
-    countTable <- as.table(matrix(c( y21, y22, n21 - y21, n22 -y22), 2, 2,
-                                dimnames = list(c("Group 1", "Group 2"),
-                                                c("Success","Failure"))))
-    round(t(prop.table(countTable,1)), digits=3)
-  })      
+  
   output$normalProbPlot1 <-    renderPlot({ 
   par(mar=c(24,1,1,1)/10)
   z <- absz <- prob <- yrr <- xrr <- NA
@@ -290,36 +272,82 @@ output$cat1Summary <- renderTable({
   ## 2 Categorical -----------------------------------------------------------
 
   ## Descriptives:  plot a bar chart of the successes / failures
-output$cat2Plot <-   renderPlot({ 
-  ##  pull inputs and convert to numeric:
-  y21 <- as.numeric(input$cat2_y1)
-  n21 <- as.numeric(input$cat2_n1)
-  phat21 <- y21/n21
-  y22 <- as.numeric(input$cat2_y2)
-  n22 <- as.numeric(input$cat2_n2)
-  phat22 <- y22/n22
-  countTable <- as.table(matrix(c( y21, y22, n21 - y21, n22 -y22), 2, 2,
-                                dimnames = list(c("Group 1", "Group 2"),
-                                                c("Success","Failure"))))
-  ## make plot
-  par(mar=c(24,40,10,35)/10)
-  barplot(t(prop.table(countTable,1)), ylab = "Proportion", main = "")
-  text(c(y21, y22, n21, n22), x=c(.7,1.9,.7,1.9), y = c(phat21,phat22,.92,.92) + .05)
-}, height=360)
+ cat2_data <- reactive({
+   #print( c(input$cat2_n11, input$cat2_n12, input$cat2_n21, input$cat2_n22)   )
+   #print(c(input$cat2_name1, input$cat2_name2))
+   data.frame(
+     counts = as.numeric(c(input$cat2_n11, input$cat2_n12, input$cat2_n21, input$cat2_n22)),
+     names  = rep(c(input$cat2_name1, input$cat2_name2), 2),
+     groups = rep(c(input$cat2_grp1, input$cat2_grp2), each = 2)
+   )
+ })
 
-output$cat2Summary <-   renderTable({ 
-  ##  pull inputs and convert to numeric:
-  y21 <- as.numeric(input$cat2_y1)
-  n21 <- as.numeric(input$cat2_n1)
-  phat21 <- y21/n21
-  y22 <- as.numeric(input$cat2_y2)
-  n22 <- as.numeric(input$cat2_n2)
-  phat22 <- y22/n22
-  countTable <- as.table(matrix(c( y21, y22, n21 - y21, n22 -y22), 2, 2,
-                                dimnames = list(c("Group 1", "Group 2"),
-                                                c("Success","Failure"))))
-  round(t(prop.table(countTable,1)), digits=3)
+ output$cat2Summary <- renderTable({ 
+  if(input$cat2_submitButton ==0) return()
+  isolate({
+    cat2_dataDF <- cat2_data()
+    #print(cat2_dataDF)
+    counts <- as.table( matrix(cat2_dataDF$counts, 2, 2))
+    colnames(counts) <- cat2_dataDF$names[1:2]
+    rownames(counts) <- cat2_dataDF$groups[c(1,3)]
+    round(t(prop.table(counts, 1)),3)
+  })
+ })
+  
+
+output$cat2Plot <- renderPlot( {
+  if(input$cat2_submitButton ==0) return()
+  isolate( { 
+    cat2_dataDF <- cat2_data()
+    #print(cat2_dataDF)
+    counts <- as.table( matrix(cat2_dataDF$counts, 2, 2))
+    colnames(counts) <- cat2_dataDF$names[1:2]
+    rownames(counts) <- cat2_dataDF$groups[c(1,3)]
+    props <- t(prop.table(counts, 1))
+    #print(props)
+    ## make plot
+    par(mar=c(24, 40, 10, 35)/10)
+    barplot(props, ylab = "Proportion", main = "")
+  })
+}, height=180)
+
+
+output$cat2DataIn <- renderText({
+  if(input$cat2_submitButton ==0) return()
+  "Data is entered, you may now choose to estimate or test the difference in two proportions."
 })
+
+
+# output$cat2Plot <-   renderPlot({ 
+#   ##  pull inputs and convert to numeric:
+#   y21 <- as.numeric(input$cat2_y1)
+#   n21 <- as.numeric(input$cat2_n1)
+#   phat21 <- y21/n21
+#   y22 <- as.numeric(input$cat2_y2)
+#   n22 <- as.numeric(input$cat2_n2)
+#   phat22 <- y22/n22
+#   countTable <- as.table(matrix(c( y21, y22, n21 - y21, n22 -y22), 2, 2,
+#                                 dimnames = list(c("Group 1", "Group 2"),
+#                                                 c("Success","Failure"))))
+#   ## make plot
+#   par(mar=c(24,40,10,35)/10)
+#   barplot(t(prop.table(countTable,1)), ylab = "Proportion", main = "")
+#   text(c(y21, y22, n21, n22), x=c(.7,1.9,.7,1.9), y = c(phat21,phat22,.92,.92) + .05)
+# }, height=360)
+# 
+# output$cat2Summary <-   renderTable({ 
+#   ##  pull inputs and convert to numeric:
+#   y21 <- as.numeric(input$cat2_y1)
+#   n21 <- as.numeric(input$cat2_n1)
+#   phat21 <- y21/n21
+#   y22 <- as.numeric(input$cat2_y2)
+#   n22 <- as.numeric(input$cat2_n2)
+#   phat22 <- y22/n22
+#   countTable <- as.table(matrix(c( y21, y22, n21 - y21, n22 -y22), 2, 2,
+#                                 dimnames = list(c("Group 1", "Group 2"),
+#                                                 c("Success","Failure"))))
+#   round(t(prop.table(countTable,1)), digits=3)
+# })
 
   output$normalProbPlot2 <-    renderPlot({ 
   par(mar=c(24,1,1,1)/10)

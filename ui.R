@@ -39,12 +39,13 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
           tags$label('Count: ', 
                      tags$input(name='cat1_n2', type='text', value='0', size='5')),
           HTML("&nbsp; &nbsp;"),
-          actionButton("submitButton", "Submit")
+          actionButton("cat1_submitButton", "Submit")
           )),
           column(3, plotOutput('cat1Plot',width="80%")),
           column(3, tableOutput("cat1Summary"))       
-          
-         )
+         ),
+         h6(textOutput('cat1DataIn'))
+
 #           tags$button( onClick='function(){
 #                                 // Get the DOM reference
 #                                 var contentId = document.getElementById("cat1Input")
@@ -54,13 +55,13 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
 #   }', "Set / ReSet Data"),
 #           div( ID="getcat1Data", style="display:block;", 
        ),
-       tabPanel("Test", value="1catTest",
+       tabPanel("Test", value="cat1_Test",
          h6("Test 1 Proportion")
        ),
-       tabPanel("Estimate", value="1catEstimate",
-         h6("Estimate 1 Proportions")
+       tabPanel("Estimate", value="cat1_Estimate",
+         h6("Estimate 1 Proportion")
         ),
-        tabPanel("Normal Distribution" , value="1catNormal",
+        tabPanel("Normal Distribution" , value="cat1_Normal",
                  titlePanel("Normal Probabilities"),
                  column(3, inputPanel(
                    #helpText("Either enter  "),
@@ -115,17 +116,41 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
     ####   Two Categorical  -------------------------------------------------
     navbarMenu("Two Categ.",
       tabPanel("Descriptives", value="2catDescrp",
-               column(4, inputPanel(
-                 textInput('cat2_n1', label='Group 1 Total: ', value="0"),
-                 textInput('cat2_y1', label='Group 1 Successes: ', value="0"),
-                 textInput('cat2_n2', label='Group 2 Total: ', value="0"),
-                 textInput('cat2_y2', label='Group 2 Successes: ', value="0")
-               )),
-               column(4, 
-                      plotOutput('cat2Plot')),
-               column(4,
-                      h6("Proportions:"),
-                      tableOutput('cat2Summary'))
+               fluidRow(
+                 column(5,   ##  Inputs
+                        fluidRow(
+                          column(6, offset = 3,
+                                 div(
+                                 tags$input(name='cat2_grp1', type='text', value='Group1', size='6'),
+                                 tags$input(name='cat2_grp2', type='text', value='Group2', size='6')
+                                 ))),
+                    div( label = "cat2Input",
+                         tags$input(name='cat2_name1', type='text', value='Success', size='10'),
+                         tags$input(name='cat2_n11', type='text', value='0', size='6'),
+                         tags$input(name='cat2_n12', type='text', value='0', size='6'),
+                        br(),
+                         tags$input(name='cat2_name2', type='text', value='Failure', size='10'),
+                         tags$input(name='cat2_n21', type='text', value='0', size='6'),
+                         tags$input(name='cat2_n22', type='text', value='0', size='6'),
+                        HTML("&nbsp; &nbsp;  &nbsp;"),
+                         actionButton("cat2_submitButton", "Submit")
+                        )),
+                 column(4,  plotOutput('cat2Plot', width="90%")),         
+                 column(3, tableOutput("cat2Summary"))       
+                 ),
+               h6(textOutput('cat2DataIn'))
+#                
+#                column(4, inputPanel(
+#                  textInput('cat2_n1', label='Group 1 Total: ', value="0"),
+#                  textInput('cat2_y1', label='Group 1 Successes: ', value="0"),
+#                  textInput('cat2_n2', label='Group 2 Total: ', value="0"),
+#                  textInput('cat2_y2', label='Group 2 Successes: ', value="0")
+#                )),
+#                column(4, 
+#                       plotOutput('cat2Plot')),
+#                column(4,
+#                       h6("Proportions:"),
+#                       tableOutput('cat2Summary'))
       ),
       
       tabPanel("Test", value="2catTest",
