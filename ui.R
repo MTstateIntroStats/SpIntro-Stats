@@ -17,9 +17,9 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
     ## empty tabPanel to avoid printing "tab-pane active"               
     tabPanel(""), 
     
-    ####   One Categorical  ---------------------------------------------------
+    ####   One Categorical  -----------------------------------------------------   1 cat
     navbarMenu("One Categ.",  
-       tabPanel("Data Entry", label="1catDescrp",       
+       tabPanel("Data Entry / Descriptive Stats", label="1catDescrp",       
           ## toggle 'get data' box
 #           sidebarPanel(
 #             textInput("cat1_name1", "Category 1:", "Success"),
@@ -79,10 +79,54 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
        )
     ),
     
-    ####   One Quantitative  -------------------------------------------------
+    ####   One Quantitative  ----------------------------------------------------  1 Quant
     navbarMenu("One Quant.",
-      tabPanel("Descriptives", value="1quantDescrp",
-        h6("Describe 1 Quantitative")
+      tabPanel("Data Entry / Descriptive Stats", value="1quantDescrp",
+                ## copied from: http://shiny.rstudio.com/gallery/file-upload.html
+               
+               ## Choice to use preloaded data  - built into our own package?
+               ##
+               sidebarPanel(
+                 fileInput('q1_file1', 'Choose CSV File',
+                           accept=c('text/csv', 
+                                    'text/comma-separated-values,text/plain', 
+                                    '.csv')),
+                 tags$hr(),
+                 checkboxInput('q1_header', 'Header', TRUE),
+                 radioButtons('q1_sep', 'Separator',
+                              c(Comma=',',
+                                Semicolon=';',
+                                Tab='\t'),
+                              ','),
+                 radioButtons('q1_quote', 'Quote',
+                              c(None='',
+                                'Double Quote'='"',
+                                'Single Quote'="'"),
+                              '"')
+               ),
+               mainPanel(
+                 tableOutput('q1_dataDF')
+               )
+#         sidebarPanel(
+#           ## choices:  load from URL?  from local spreadsheet file,  paste in with shinyTable
+#           fileInput('file1', 'Choose CSV File',
+#                   accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv')),
+#           tags$hr(),
+#           checkboxInput('q1_header', 'Header', TRUE),
+#           radioButtons('q1_sep', 'Separator',
+#                      c(Comma=',',
+#                        Semicolon=';',
+#                        Tab='\t'),
+#                      'Comma'),
+#           radioButtons('q1_quote', 'Quote',
+#                      c(None='',
+#                        'Double Quote'='"',
+#                        'Single Quote'="'"),
+#                      'Double Quote')
+#         ),
+#         mainPanel(
+#           tableOutput('quant1_dataDF')
+#         )
       ),
       tabPanel("Test", value="1quantTest",
         h6("Test 1 mean")
@@ -115,7 +159,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
     
     ####   Two Categorical  -------------------------------------------------
     navbarMenu("Two Categ.",
-      tabPanel("Data Entry", value="2catDescrp",
+      tabPanel("Data Entry / Descriptive Stats", value="2catDescrp",
                fluidRow( height = "200px",
                  column(5,   ##  Inputs
                         fluidRow( height = "200px",
@@ -184,7 +228,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
 
     ####   Two Quantitative -------------------------------------------------
     navbarMenu("Two Quant.",
-      tabPanel("Descriptives", value="2quantDescrp",
+      tabPanel("Data Entry / Descriptive Stats", value="2quantDescrp",
         h6("Describe 2 Quant")
       ),
       
@@ -203,7 +247,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
     ####   1 categorical & 1 quantitative  -----------------------------------
     navbarMenu("One of Each",
                
-      tabPanel("Descriptives", value="1cat1quantDescrp",
+      tabPanel("Data Entry / Descriptive Stats", value="1cat1quantDescrp",
         h6("Describe 2 means")
       ),
       
