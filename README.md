@@ -17,12 +17,15 @@ inference.
 
 __TODO:__
 
- * A header with menu choices to jump between pages  
-  
- * Data input - using R-handsontable?
+ * Data input - use a form for 1 and 2 categorical variables.  
+  Other types get a choice:  
+     select existing data frame,   
+     Upload a local csv file,  
+     type or copy into a table using rhandsontable  
  
  * Descriptive stats and plots
- 
+     OK for 1 and 2 categorical variables.  
+
  * Permutation Tests:  
    one proportion  
    equality of two proportions  

@@ -19,7 +19,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
     
     ####   One Categorical  -----------------------------------------------------   1 cat
     navbarMenu("One Categ.",  
-       tabPanel("Enter /Describe Data", label="1catDescrp",       
+       tabPanel("Enter /Describe Data", label="1catDataEntry",       
                 h5(textOutput('cat1DataIn')),
                 ##  Input counts and labels         
                 br(),    
@@ -34,7 +34,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                                              tags$input(name='cat1_name2', type='text', value='Failure', size='10')),
                                   tags$label('Count: ', 
                                              tags$input(name='cat1_n2', type='text', value='0', size='5')),
-                                  HTML("&nbsp; &nbsp;")
+                                  HTML("&nbsp; &nbsp;"),
                                   actionButton("cat1_submitButton", "Submit")
                                   )),
                   column(3, plotOutput('cat1Plot',width="80%")),
@@ -54,7 +54,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                    textInput('cat1_z_txt', label='Standardized Value: ', value=" "),
                    #helpText("Or "),
                    textInput('cat1_prob_txt', 'or  Probability: ', " "),
-                   selectInput("cat1_area", "To go into which area? ", 
+                   selectInput("cat1_area", "Which area? ", 
                                c("Lower","Upper","Extremes","Center"), NA),
                    selectInput("cat1_dist", "Distribution: ",c("Normal"), "Normal")
                  )),   
@@ -67,7 +67,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
     
     ####   One Quantitative  ----------------------------------------------------  1 Quant
     navbarMenu("One Quant.",
-      tabPanel("Enter /Describe Data", value="1quantDescrp",
+      tabPanel("Enter /Describe Data", value="1quantDataEntry",
                h5(textOutput('q1DataIn')),
                ## copied from: http://shiny.rstudio.com/gallery/file-upload.html
                h6("testing version"),     
@@ -98,7 +98,6 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                  tableOutput('q1_dataDF')
                )
 #         sidebarPanel(
-#           ## choices:  load from URL?  from local spreadsheet file,  paste in with shinyTable
 #           fileInput('file1', 'Choose CSV File',
 #                   accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv')),
 #           tags$hr(),
@@ -151,7 +150,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
 
     ####   Two Categorical  -------------------------------------------------  --  2 cat
     navbarMenu("Two Categ.",
-      tabPanel("Enter /Describe Data", value="2catDescrp",
+      tabPanel("Enter /Describe Data", value="2catDataEntry",
                h5(textOutput('cat2DataIn')),
                br(),
                fluidRow( 
@@ -234,7 +233,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
 
     ####   Two Quantitative -------------------------------------------------
     navbarMenu("Two Quant.",
-      tabPanel("Enter /Describe Data", value="2quantDescrp",
+      tabPanel("Enter /Describe Data", value="2quantDataEntry",
         h6("Describe 2 Quant - under construction")
       ),
       
@@ -253,7 +252,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
     ####   1 categorical & 1 quantitative  -----------------------------------
     navbarMenu("One of Each",
                
-      tabPanel("Enter /Describe Data", value="1cat1quantDescrp",
+      tabPanel("Enter /Describe Data", value="1cat1quantDataEntry",
         h6("Describe 2 means - under construction")
       ),
       

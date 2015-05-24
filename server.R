@@ -1,9 +1,8 @@
 includeScript("www/helper.js")
 
 shinyServer(function(input, output, session) {
-  ## Data Input    -----------------------------------------------------------
 
-  ##  code from https://github.com/jrowen/rhandsontable/blob/master/inst/examples/shiny.R
+##  code from https://github.com/jrowen/rhandsontable/blob/master/inst/examples/shiny.R
 #   output$dataTable <- renderRHandsontable({
 #     if (is.null(input$dataTable)) {
 #       DF = data.frame(val = 1:10, bool = TRUE, nm = LETTERS[1:10],
@@ -15,6 +14,7 @@ shinyServer(function(input, output, session) {
 #     rhandsontable(DF, useTypes = as.logical(input$useType))
 #   })
 #   
+
   ## 1 Categorical  -----------------------------------------------------------
  
     ##  Using Submit Button to keep plots from changing too soon
@@ -39,25 +39,23 @@ shinyServer(function(input, output, session) {
      })
   }, height=120)
 
-output$cat1DataIn <- renderText({
+  output$cat1DataIn <- renderText({
   if(input$cat1_submitButton ==0) return()
   "Data is entered, you may now choose to estimate or test one proportion."
 })
 
 
-output$cat1Summary <- renderTable({
-  if(input$cat1_submitButton ==0) return()
-  isolate({
-    cat1_dataDF <- cat1_data()
-    counts <- as.table( matrix(cat1_dataDF$counts), 1, 2)
-    dimnames(counts) = list(cat1_dataDF$names,"Proportions")
-    prop.table(counts)
+  output$cat1Summary <- renderTable({
+    if(input$cat1_submitButton ==0) return()
+    isolate({
+      cat1_dataDF <- cat1_data()
+      counts <- as.table( matrix(cat1_dataDF$counts), 1, 2)
+      dimnames(counts) = list(cat1_dataDF$names,"Proportions")
+      prop.table(counts)
+    })
   })
-})
-    #output$getCat1Data <- renderUI({
-    #  h6("here we are")
-    #})
-    ## Descriptives:  plot a bar chart of the successes / failures
+  
+  ## Descriptives:  plot a bar chart of the successes / failures
   
   output$normalProbPlot1 <-    renderPlot({ 
   par(mar=c(24,1,1,1)/10)
@@ -164,23 +162,18 @@ output$cat1Summary <- renderTable({
 
   
   ## 1 Quantitative -----------------------------------------------------------  -- 1 Quant 
-#   output$quant1_dataDF <- renderTable({
-#     inFile <- input$file1
-#     if (is.null(inFile))   return(NULL)
-#     read.csv(inFile)## , header=input$q1_header, sep=input$q1_sep, quote=input$q1_quote)
-#   })
 
-output$q1_dataDF <- renderTable({
+  output$q1_dataDF <- renderTable({
   
-  inFile <- input$q1_file1
+    inFile <- input$q1_file1
   
-  if (is.null(inFile))
-    return(NULL)
+    if (is.null(inFile))
+      return(NULL)
   
-  read.csv(inFile$datapath, header=input$q1_header, sep=input$q1_sep, quote=input$q1_quote)
-})
+    read.csv(inFile$datapath, header=input$q1_header, sep=input$q1_sep, quote=input$q1_quote)
+  })
 
-  ##  last option --
+  ##  t dist'n option --
   output$tProbPlot1 <-    renderPlot({ 
   par(mar=c(24,1,1,1)/10)
   z <- absz <- prob <- yrr <- xrr <- NA
@@ -285,7 +278,7 @@ output$q1_dataDF <- renderTable({
 }, height=300)
 
 
-  ## 2 Categorical -----------------------------------------------------------
+  ## 2 Categorical -----------------------------------------------------------  -- 2 categ
 
   ## Descriptives:  plot a bar chart of the successes / failures
  cat2_data <- reactive({
@@ -309,59 +302,27 @@ output$q1_dataDF <- renderTable({
  })
   
 
-output$cat2Plot <- renderPlot( {
-  if(input$cat2_submitButton ==0) return()
-  isolate( { 
-    cat2_dataDF <- cat2_data()
-    #print(cat2_dataDF)
-    counts <- as.table( matrix(cat2_dataDF$counts, 2, 2))
-    colnames(counts) <- cat2_dataDF$names[1:2]
-    rownames(counts) <- cat2_dataDF$groups[c(1,3)]
-    props <- t(prop.table(counts, 1))
-    #print(props)
-    ## make plot
-    par(mar=c(24, 40, 10, 35)/10)
-    barplot(props, ylab = "Proportion", main = "")
+  output$cat2Plot <- renderPlot( {
+    if(input$cat2_submitButton ==0) return()
+    isolate( { 
+      cat2_dataDF <- cat2_data()
+      #print(cat2_dataDF)
+      counts <- as.table( matrix(cat2_dataDF$counts, 2, 2))
+      colnames(counts) <- cat2_dataDF$names[1:2]
+      rownames(counts) <- cat2_dataDF$groups[c(1,3)]
+      props <- t(prop.table(counts, 1))
+      #print(props)
+      ## make plot
+      par(mar=c(24, 40, 10, 35)/10)
+      barplot(props, ylab = "Proportion", main = "")
+    })
+  }, height=180)
+
+
+  output$cat2DataIn <- renderText({
+    if(input$cat2_submitButton ==0) return()
+    "Data is entered, you may now choose to estimate or test the difference in two proportions."
   })
-}, height=180)
-
-
-output$cat2DataIn <- renderText({
-  if(input$cat2_submitButton ==0) return()
-  "Data is entered, you may now choose to estimate or test the difference in two proportions."
-})
-
-
-# output$cat2Plot <-   renderPlot({ 
-#   ##  pull inputs and convert to numeric:
-#   y21 <- as.numeric(input$cat2_y1)
-#   n21 <- as.numeric(input$cat2_n1)
-#   phat21 <- y21/n21
-#   y22 <- as.numeric(input$cat2_y2)
-#   n22 <- as.numeric(input$cat2_n2)
-#   phat22 <- y22/n22
-#   countTable <- as.table(matrix(c( y21, y22, n21 - y21, n22 -y22), 2, 2,
-#                                 dimnames = list(c("Group 1", "Group 2"),
-#                                                 c("Success","Failure"))))
-#   ## make plot
-#   par(mar=c(24,40,10,35)/10)
-#   barplot(t(prop.table(countTable,1)), ylab = "Proportion", main = "")
-#   text(c(y21, y22, n21, n22), x=c(.7,1.9,.7,1.9), y = c(phat21,phat22,.92,.92) + .05)
-# }, height=360)
-# 
-# output$cat2Summary <-   renderTable({ 
-#   ##  pull inputs and convert to numeric:
-#   y21 <- as.numeric(input$cat2_y1)
-#   n21 <- as.numeric(input$cat2_n1)
-#   phat21 <- y21/n21
-#   y22 <- as.numeric(input$cat2_y2)
-#   n22 <- as.numeric(input$cat2_n2)
-#   phat22 <- y22/n22
-#   countTable <- as.table(matrix(c( y21, y22, n21 - y21, n22 -y22), 2, 2,
-#                                 dimnames = list(c("Group 1", "Group 2"),
-#                                                 c("Success","Failure"))))
-#   round(t(prop.table(countTable,1)), digits=3)
-# })
 
   output$normalProbPlot2 <-    renderPlot({ 
   par(mar=c(24,1,1,1)/10)
@@ -466,10 +427,10 @@ output$cat2DataIn <- renderText({
   
 }, height=300)
 
-  ## 2 Quantitative -----------------------------------------------------------
+  ## 2 Quantitative -----------------------------------------------------------  2 quant
 
 
-  ## 1 categorical & 1 quantitative   ---------------------------------------
+  ## 1 categorical & 1 quantitative   ---------------------------------------  1 cat 1 quant
   
   ## Plot t distributions
   output$tProbPlot2 <-    renderPlot({ 
@@ -689,19 +650,19 @@ output$cat2DataIn <- renderText({
 
   ##  Start of code for Power web app  ---------------------------------------
   ## Reactive expression to create a data frame containing all of the values for POWER
-sliderValues <- reactive({
+ sliderValues <- reactive({
   # Create output
-  data.frame(
-    Setting = c("Sample Size", 
+   data.frame(
+     Setting = c("Sample Size", 
                 "Standard Deviation",
                 "Shift in Mean"),
-    Value = as.character(c(input$pwr_n, 
+     Value = as.character(c(input$pwr_n, 
                            input$pwr_sd,
                            input$pwr_altMean)),
-    Name = c( "Significance Level (alpha)",
+     Name = c( "Significance Level (alpha)",
               "Effect Size",  "Power"
-    ),
-    Output =as.character(c(input$pwr_alpha, 
+     ),
+     Output =as.character(c(input$pwr_alpha, 
                            round(input$pwr_altMean/input$pwr_sd, 3),
                            round(power.t.test(n=input$pwr_n, 
                                               delta=input$pwr_altMean,
@@ -710,9 +671,9 @@ sliderValues <- reactive({
                                               type="one.sample",
                                               alternative="one")$power,
                              3))), 
-    stringsAsFactors=FALSE)
-  }
-)
+     stringsAsFactors=FALSE)
+  })
+
   ## set colors with transparency
  grn <- rgb(0, 1, 0, alpha=.4)
  rd <- rgb(1, 0, 0, alpha=.5)
