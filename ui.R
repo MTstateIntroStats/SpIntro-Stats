@@ -17,50 +17,36 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
     ## empty tabPanel to avoid printing "tab-pane active"               
     tabPanel(""), 
     
-    ####   One Categorical  ---------------------------------------------------
+    ####   One Categorical  -----------------------------------------------------   1 cat
     navbarMenu("One Categ.",  
-       tabPanel("Data Entry", label="1catDescrp",       
-          ## toggle 'get data' box
-#           sidebarPanel(
-#             textInput("cat1_name1", "Category 1:", "Success"),
-#             numericInput("cat1_n1", "Count 1",0),
-#             textInput("cat1_name2", "Category 2:", "Failure"),
-#             numericInput("cat1_n2", "Count 2",0),
-       ##  Input counts and labels
-         fluidRow(
-           column(5,  div( label = "cat1Input", height = "300px",
-          tags$label('Category 1: ', 
-                     tags$input(name='cat1_name1', type='text', value='Success', size='10')),
-          tags$label('Count: ', 
-                     tags$input(name='cat1_n1', type='text', value='0', size='5')),
-          br(),
-          tags$label('Category 2: ', 
-                     tags$input(name='cat1_name2', type='text', value='Failure', size='10')),
-          tags$label('Count: ', 
-                     tags$input(name='cat1_n2', type='text', value='0', size='5')),
-          HTML("&nbsp; &nbsp;"),
-          actionButton("cat1_submitButton", "Submit")
-          )),
-          column(3, plotOutput('cat1Plot',width="80%")),
-          column(3, tableOutput("cat1Summary"))       
-         ),
-         h4(textOutput('cat1DataIn'))
-
-#           tags$button( onClick='function(){
-#                                 // Get the DOM reference
-#                                 var contentId = document.getElementById("cat1Input")
-#                                // Toggle 
-#                               contentId.style.display == "block" ? contentId.style.display = "none" : 
-#                                         contentId.style.display = "block"; 
-#   }', "Set / ReSet Data"),
-#           div( ID="getcat1Data", style="display:block;", 
-       ),
+       tabPanel("Enter /Describe Data", label="1catDescrp",       
+                h5(textOutput('cat1DataIn')),
+                ##  Input counts and labels         
+                br(),    
+                fluidRow(
+                  column(5,  div( label = "cat1Input", height = "300px",
+                                  tags$label('Category 1: ', 
+                                             tags$input(name='cat1_name1', type='text', value='Success', size='10')),
+                                  tags$label('Count: ',
+                                             tags$input(name='cat1_n1', type='text', value='0', size='5')),
+                                  br(),
+                                  tags$label('Category 2: ', 
+                                             tags$input(name='cat1_name2', type='text', value='Failure', size='10')),
+                                  tags$label('Count: ', 
+                                             tags$input(name='cat1_n2', type='text', value='0', size='5')),
+                                  HTML("&nbsp; &nbsp;")
+                                  actionButton("cat1_submitButton", "Submit")
+                                  )),
+                  column(3, plotOutput('cat1Plot',width="80%")),
+                  column(3, tableOutput("cat1Summary"))       
+                  )
+                ),
        tabPanel("Test", value="cat1_Test",
-         h6("Test 1 Proportion")
-       ),
+                h6("Test 1 Proportion - under construction")
+                ),
        tabPanel("Estimate", value="cat1_Estimate",
-         h6("Estimate 1 Proportion")
-        ),
+                h6("Estimate 1 Proportion - under construction")
+                ),
         tabPanel("Normal Distribution" , value="cat1_Normal",
                  titlePanel("Normal Probabilities"),
                  column(3, inputPanel(
@@ -79,19 +65,67 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
        )
     ),
     
-    ####   One Quantitative  -------------------------------------------------
+    ####   One Quantitative  ----------------------------------------------------  1 Quant
     navbarMenu("One Quant.",
-      tabPanel("Descriptives", value="1quantDescrp",
-        h6("Describe 1 Quantitative")
+      tabPanel("Enter /Describe Data", value="1quantDescrp",
+               h5(textOutput('q1DataIn')),
+               ## copied from: http://shiny.rstudio.com/gallery/file-upload.html
+               h6("testing version"),     
+               ## Choices: 
+                 ##  preloaded data  - built into our own package?
+                 ##  read local csv file
+                 ##  open empty table to copy or type in data.
+                 ##
+               sidebarPanel(
+                 fileInput('q1_file1', 'Choose CSV File',
+                           accept=c('text/csv', 
+                                    'text/comma-separated-values,text/plain', 
+                                    '.csv')),
+                 tags$hr(),
+                 checkboxInput('q1_header', 'Check if first row contains column names', TRUE),
+                 radioButtons('q1_sep', 'Separator',
+                              c(Comma=',',
+                                Semicolon=';',
+                                Tab='\t'),
+                              ','),
+                 radioButtons('q1_quote', 'Quote',
+                              c(None='',
+                                'Double Quote'='"',
+                                'Single Quote'="'"),
+                              '"')
+               ),
+               mainPanel(
+                 tableOutput('q1_dataDF')
+               )
+#         sidebarPanel(
+#           ## choices:  load from URL?  from local spreadsheet file,  paste in with shinyTable
+#           fileInput('file1', 'Choose CSV File',
+#                   accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv')),
+#           tags$hr(),
+#           checkboxInput('q1_header', 'Header', TRUE),
+#           radioButtons('q1_sep', 'Separator',
+#                      c(Comma=',',
+#                        Semicolon=';',
+#                        Tab='\t'),
+#                      'Comma'),
+#           radioButtons('q1_quote', 'Quote',
+#                      c(None='',
+#                        'Double Quote'='"',
+#                        'Single Quote'="'"),
+#                      'Double Quote')
+#         ),
+#         mainPanel(
+#           tableOutput('quant1_dataDF')
+#         )
       ),
       tabPanel("Test", value="1quantTest",
-        h6("Test 1 mean")
+        h6("Test 1 mean - under construction")
       ),
       tabPanel("Estimate", value="1quantEstimate",
-        h6("Estimate 1 mean")
+        h6("Estimate 1 mean - under construction")
       ),
       tabPanel("Bootstrap Demo", value="1quantBoot",
-        a(href="BootDemo.html", "Demo of Bootstrap Process")
+        a(href="BootDemo.html", "Click here for a demo of Bootstrap Process")
       ),
       tabPanel("t Distribution",  value="1quantT",
                titlePanel("t Probabilities"),
@@ -113,32 +147,48 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
       )                         
     ),
     
-    ####   Two Categorical  -------------------------------------------------
+    ##  br(),  didn't work inside the navBar
+
+    ####   Two Categorical  -------------------------------------------------  --  2 cat
     navbarMenu("Two Categ.",
-      tabPanel("Data Entry", value="2catDescrp",
-               fluidRow( height = "200px",
+      tabPanel("Enter /Describe Data", value="2catDescrp",
+               h5(textOutput('cat2DataIn')),
+               br(),
+               fluidRow( 
                  column(5,   ##  Inputs
-                        fluidRow( height = "200px",
-                          column(6, offset = 3,
-                                 div(
-                                 tags$input(name='cat2_grp1', type='text', value='Group1', size='6'),
-                                 tags$input(name='cat2_grp2', type='text', value='Group2', size='6')
-                                 ))),
-                    div( label = "cat2Input",
-                         tags$input(name='cat2_name1', type='text', value='Success', size='10'),
-                         tags$input(name='cat2_n11', type='text', value='0', size='6'),
-                         tags$input(name='cat2_n12', type='text', value='0', size='6'),
-                        br(),
-                         tags$input(name='cat2_name2', type='text', value='Failure', size='10'),
-                         tags$input(name='cat2_n21', type='text', value='0', size='6'),
-                         tags$input(name='cat2_n22', type='text', value='0', size='6'),
-                        HTML("&nbsp; &nbsp;  &nbsp;"),
-                         actionButton("cat2_submitButton", "Submit")
-                        )),
+                        fluidRow( 
+                          column(4,
+                               div(
+                                   actionButton("cat2_submitButton", "Submit", height = 15),
+                                   br(),
+                                   tags$input(name='cat2_name1', type='text', value='Success', size='10'),
+                                   br(),
+                                   tags$input(name='cat2_name2', type='text', value='Failure', size='10')
+                               )
+                           ),
+                          column(4,
+                                 div( br(),
+                                   tags$input(name='cat2_grp1', type='text', value='Group1', size='10', height = 20),
+                                   br(), 
+                                   tags$input(name='cat2_n11', type='text', value='0', size='10'),
+                                   br(),
+                                   tags$input(name='cat2_n21', type='text', value='0', size='10')
+                                 )
+                          ),
+                          column(4,
+                                 div(  br(),
+                                   tags$input(name='cat2_grp2', type='text', value='Group2', size='10', height = 20),
+                                   br(),
+                                   tags$input(name='cat2_n12', type='text', value='0', size='10'),
+                                   br(),
+                                   tags$input(name='cat2_n22', type='text', value='0', size='10')
+                                 )
+                          )
+                        )
+                 ),
                  column(4,  plotOutput('cat2Plot', width="90%")),         
                  column(3, tableOutput("cat2Summary"))       
-                 ),
-               h4(textOutput('cat2DataIn'))
+                 )
 #                
 #                column(4, inputPanel(
 #                  textInput('cat2_n1', label='Group 1 Total: ', value="0"),
@@ -154,11 +204,11 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
       ),
       
       tabPanel("Test", value="2catTest",
-        h6("Test Equality of 2 Proportions")
+        h6("Test Equality of 2 Proportions - under construction")
       ),
       
       tabPanel("Estimate", value="2catEstimate",
-        h6("Estimate Difference in Proportions")
+        h6("Estimate Difference in Proportions - under construction")
       ),
 
       tabPanel("Normal Distribution", value="2catNormal",
@@ -184,16 +234,16 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
 
     ####   Two Quantitative -------------------------------------------------
     navbarMenu("Two Quant.",
-      tabPanel("Descriptives", value="2quantDescrp",
-        h6("Describe 2 Quant")
+      tabPanel("Enter /Describe Data", value="2quantDescrp",
+        h6("Describe 2 Quant - under construction")
       ),
       
       tabPanel("Test", value="2quantTest",
-        h6("Test Slope/Correlation")
+        h6("Test Slope/Correlation - under construction")
       ),
 
       tabPanel("Estimate Slope/Correlation", value="2quantEstimate",
-        h6("Estimate Slope and Correlation")
+        h6("Estimate Slope and Correlation - under construction")
 #       ),
 #       tabPanel("t- Distribution", value="2quantT",
 #         h6("Normal Approx")
@@ -203,16 +253,16 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
     ####   1 categorical & 1 quantitative  -----------------------------------
     navbarMenu("One of Each",
                
-      tabPanel("Descriptives", value="1cat1quantDescrp",
-        h6("Describe 2 means")
+      tabPanel("Enter /Describe Data", value="1cat1quantDescrp",
+        h6("Describe 2 means - under construction")
       ),
       
       tabPanel("Test", value="1cat1quantTest",
-        h6("Test Equality of 2 Means")
+        h6("Test Equality of 2 Means - under construction")
       ),
       
       tabPanel("Estimate", value="1cat1quantEstimate",
-        h6("Estimate Difference in Means")
+        h6("Estimate Difference in Means - under construction")
       ),
 
       tabPanel("t Distribution", value="1cat1quantT",

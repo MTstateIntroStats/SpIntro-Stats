@@ -163,8 +163,24 @@ output$cat1Summary <- renderTable({
 }, height=300)
 
   
-  ## 1 Quantitative -----------------------------------------------------------
+  ## 1 Quantitative -----------------------------------------------------------  -- 1 Quant 
+#   output$quant1_dataDF <- renderTable({
+#     inFile <- input$file1
+#     if (is.null(inFile))   return(NULL)
+#     read.csv(inFile)## , header=input$q1_header, sep=input$q1_sep, quote=input$q1_quote)
+#   })
 
+output$q1_dataDF <- renderTable({
+  
+  inFile <- input$q1_file1
+  
+  if (is.null(inFile))
+    return(NULL)
+  
+  read.csv(inFile$datapath, header=input$q1_header, sep=input$q1_sep, quote=input$q1_quote)
+})
+
+  ##  last option --
   output$tProbPlot1 <-    renderPlot({ 
   par(mar=c(24,1,1,1)/10)
   z <- absz <- prob <- yrr <- xrr <- NA
