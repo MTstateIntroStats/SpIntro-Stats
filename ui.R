@@ -20,49 +20,33 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
     ####   One Categorical  -----------------------------------------------------   1 cat
     navbarMenu("One Categ.",  
        tabPanel("Enter /Describe Data", label="1catDescrp",       
-          ## toggle 'get data' box
-#           sidebarPanel(
-#             textInput("cat1_name1", "Category 1:", "Success"),
-#             numericInput("cat1_n1", "Count 1",0),
-#             textInput("cat1_name2", "Category 2:", "Failure"),
-#             numericInput("cat1_n2", "Count 2",0),
-       ##  Input counts and labels
-
-         h5(textOutput('cat1DataIn')),
-         br(),
-         fluidRow(
-           column(5,  div( label = "cat1Input", height = "300px",
-          tags$label('Category 1: ', 
-                     tags$input(name='cat1_name1', type='text', value='Success', size='10')),
-          tags$label('Count: ', 
-                     tags$input(name='cat1_n1', type='text', value='0', size='5')),
-          br(),
-          tags$label('Category 2: ', 
-                     tags$input(name='cat1_name2', type='text', value='Failure', size='10')),
-          tags$label('Count: ', 
-                     tags$input(name='cat1_n2', type='text', value='0', size='5')),
-          HTML("&nbsp; &nbsp;"),
-          actionButton("cat1_submitButton", "Submit")
-          )),
-          column(3, plotOutput('cat1Plot',width="80%")),
-          column(3, tableOutput("cat1Summary"))       
-         )
-
-#           tags$button( onClick='function(){
-#                                 // Get the DOM reference
-#                                 var contentId = document.getElementById("cat1Input")
-#                                // Toggle 
-#                               contentId.style.display == "block" ? contentId.style.display = "none" : 
-#                                         contentId.style.display = "block"; 
-#   }', "Set / ReSet Data"),
-#           div( ID="getcat1Data", style="display:block;", 
-       ),
+                h5(textOutput('cat1DataIn')),
+                ##  Input counts and labels         
+                br(),    
+                fluidRow(
+                  column(5,  div( label = "cat1Input", height = "300px",
+                                  tags$label('Category 1: ', 
+                                             tags$input(name='cat1_name1', type='text', value='Success', size='10')),
+                                  tags$label('Count: ',
+                                             tags$input(name='cat1_n1', type='text', value='0', size='5')),
+                                  br(),
+                                  tags$label('Category 2: ', 
+                                             tags$input(name='cat1_name2', type='text', value='Failure', size='10')),
+                                  tags$label('Count: ', 
+                                             tags$input(name='cat1_n2', type='text', value='0', size='5')),
+                                  HTML("&nbsp; &nbsp;")
+                                  actionButton("cat1_submitButton", "Submit")
+                                  )),
+                  column(3, plotOutput('cat1Plot',width="80%")),
+                  column(3, tableOutput("cat1Summary"))       
+                  )
+                ),
        tabPanel("Test", value="cat1_Test",
-         h6("Test 1 Proportion - under construction")
-       ),
+                h6("Test 1 Proportion - under construction")
+                ),
        tabPanel("Estimate", value="cat1_Estimate",
-         h6("Estimate 1 Proportion - under construction")
-        ),
+                h6("Estimate 1 Proportion - under construction")
+                ),
         tabPanel("Normal Distribution" , value="cat1_Normal",
                  titlePanel("Normal Probabilities"),
                  column(3, inputPanel(
@@ -84,17 +68,21 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
     ####   One Quantitative  ----------------------------------------------------  1 Quant
     navbarMenu("One Quant.",
       tabPanel("Enter /Describe Data", value="1quantDescrp",
-                ## copied from: http://shiny.rstudio.com/gallery/file-upload.html
-               
-               ## Choice to use preloaded data  - built into our own package?
-               ##
+               h5(textOutput('q1DataIn')),
+               ## copied from: http://shiny.rstudio.com/gallery/file-upload.html
+               h6("testing version"),     
+               ## Choices: 
+                 ##  preloaded data  - built into our own package?
+                 ##  read local csv file
+                 ##  open empty table to copy or type in data.
+                 ##
                sidebarPanel(
                  fileInput('q1_file1', 'Choose CSV File',
                            accept=c('text/csv', 
                                     'text/comma-separated-values,text/plain', 
                                     '.csv')),
                  tags$hr(),
-                 checkboxInput('q1_header', 'Header', TRUE),
+                 checkboxInput('q1_header', 'Check if first row contains column names', TRUE),
                  radioButtons('q1_sep', 'Separator',
                               c(Comma=',',
                                 Semicolon=';',
