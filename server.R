@@ -273,9 +273,7 @@ output$cat1Summary <- renderTable({
 
   ## Descriptives:  plot a bar chart of the successes / failures
  cat2_data <- reactive({
-   #print( c(input$cat2_n11, input$cat2_n12, input$cat2_n21, input$cat2_n22)   )
-   #print(c(input$cat2_name1, input$cat2_name2))
-   data.frame(
+    data.frame(
      counts = as.numeric(c(input$cat2_n11, input$cat2_n12, input$cat2_n21, input$cat2_n22)),
      names  = rep(c(input$cat2_name1, input$cat2_name2), 2),
      groups = rep(c(input$cat2_grp1, input$cat2_grp2), each = 2)
