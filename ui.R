@@ -1,8 +1,11 @@
 library(markdown)
 library(shiny) 
 library(shinythemes)
-library(knitr)
-## library(rhandsontable)
+#library(knitr)
+library(rhandsontable)
+
+quant1_contents <- load("data/quant1.RData")
+quant1_blank_DF <- data.frame(V1 = matrix(NA, 10,1))
 
   ##  User should choose a variable type, then 
     ## load Data  and
@@ -19,7 +22,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
     
     ####   One Categorical  -----------------------------------------------------   1 cat
     navbarMenu("One Categ.",  
-       tabPanel("Enter /Describe Data", label="1catDataEntry",       
+       tabPanel("Enter / Describe Data", label="1catDataEntry",       
                 h5(textOutput('cat1DataIn')),
                 ##  Input counts and labels         
                 br(),    
@@ -72,50 +75,52 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                ## copied from: http://shiny.rstudio.com/gallery/file-upload.html
                h6("testing version"),     
                ## Choices: 
-                 ##  preloaded data  - built into our own package?
+                 ##  preloaded data  - save as data/quant1.RData
                  ##  read local csv file
                  ##  open empty table to copy or type in data.
                  ##
-               sidebarPanel(
-                 fileInput('q1_file1', 'Choose CSV File',
+               ##  Existing data is stored in "data/quant1.RData"
+               fluidRow(  
+                 column(4, selectInput('q1_data1', 'Choose Preloaded Data',  choices = as.list(quant1_contents))
+                 )
+               ),
+                hr(),
+               h4("OR"),
+                hr(),
+                ## load local csv file   ------  Need to validate that we have one numeric column, else choose a column?
+               fluidRow(  
+                 column(4,
+                   fileInput('q1_file1', 'Choose CSV File',
                            accept=c('text/csv', 
                                     'text/comma-separated-values,text/plain', 
-                                    '.csv')),
-                 tags$hr(),
-                 checkboxInput('q1_header', 'Check if first row contains column names', TRUE),
-                 radioButtons('q1_sep', 'Separator',
-                              c(Comma=',',
-                                Semicolon=';',
-                                Tab='\t'),
-                              ','),
-                 radioButtons('q1_quote', 'Quote',
-                              c(None='',
-                                'Double Quote'='"',
-                                'Single Quote'="'"),
-                              '"')
+                                    '.csv'))
+                   ),
+                 column(3,
+                   checkboxInput('q1_header', 'Row One is column names', TRUE)
+                   ),
+                 column(3,
+                   radioButtons('q1_sep', 'Separator',
+                                c(Comma=',',
+                                  Semicolon=';',
+                                  Tab='\t'),
+                                ',')
+                   ),
+                 column(2,
+                   radioButtons('q1_quote', 'Quote',
+                                c(None='',
+                                  'Double Quote'='"',
+                                  'Single Quote'="'"),
+                                '"')
+                 )
                ),
-               mainPanel(
+               hr(),
+               h4("OR"),
+               hr(),
+               rHandsontableOutput("q1_blank_DF"),
+               ## Type  or paste in data
+               div(
                  tableOutput('q1_dataDF')
                )
-#         sidebarPanel(
-#           fileInput('file1', 'Choose CSV File',
-#                   accept=c('text/csv', 'text/comma-separated-values,text/plain', '.csv')),
-#           tags$hr(),
-#           checkboxInput('q1_header', 'Header', TRUE),
-#           radioButtons('q1_sep', 'Separator',
-#                      c(Comma=',',
-#                        Semicolon=';',
-#                        Tab='\t'),
-#                      'Comma'),
-#           radioButtons('q1_quote', 'Quote',
-#                      c(None='',
-#                        'Double Quote'='"',
-#                        'Single Quote'="'"),
-#                      'Double Quote')
-#         ),
-#         mainPanel(
-#           tableOutput('quant1_dataDF')
-#         )
       ),
       tabPanel("Test", value="1quantTest",
         h6("Test 1 mean - under construction")
@@ -331,5 +336,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
         fluidRow(column(8, offset = 4, tableOutput("values")))
     )
   )
-)
+)#,
+  #fluidPage(
+  #  h2("title here?"))
 )
