@@ -164,19 +164,44 @@ shinyServer(function(input, output, session) {
   ## 1 Quantitative -----------------------------------------------------------  -- 1 Quant 
 
   output$q1_dataDF <- renderTable({
-  
     inFile <- input$q1_file1
-  
     if (is.null(inFile))
       return(NULL)
-  
     read.csv(inFile$datapath, header=input$q1_header, sep=input$q1_sep, quote=input$q1_quote)
   })
 
-  output$q1_hot <- renderRHandsontable({
-    DF = hot_to_r(input$q1_hot)
-    rhandsontable(DF, useTypes = TRUE)
-  })
+q1_fname = tempfile()
+
+#   # relies on the actionButton to save
+   q1_values = list()
+   q1_setHot = function(x) q1_values[["hot"]] <<- x
+
+# saves after each update
+#values = reactiveValues()
+#setHot = function(x) values[["hot"]] = x
+
+observe({
+  input$q1_saveBtn
+  
+  if (!is.null(q1_values[["hot"]])) {
+    write.csv(q1_values[["hot"]], q1_fname, row.names = FALSE)
+    print(q1_fname)
+  }
+})
+
+output$q1_hot = renderRHandsontable({
+  if (!is.null(input$q1_hot)) {
+    q1_DF = hot_to_r(input$q1_hot)
+    q1_setHot(q1_DF)
+    rhandsontable(q1_DF) %>%
+      hot_table(highlightCol = TRUE, highlightRow = TRUE)
+  } else {
+    q1_DF = read.csv("~/R/x86_64-pc-linux-gnu-library/3.1/rhandsontable/examples/mtcars.csv", stringsAsFactors = FALSE)[,c(5,7)]
+    q1_setHot(q1_DF)    
+    rhandsontable(q1_DF[,1:2], height = 230) %>%
+      hot_table(highlightCol = TRUE, highlightRow = TRUE)
+  }
+})
 
   ##  t dist'n option --
   output$tProbPlot1 <-    renderPlot({ 
@@ -433,6 +458,45 @@ shinyServer(function(input, output, session) {
 }, height=300)
 
   ## 2 Quantitative -----------------------------------------------------------  2 quant
+  output$q2_dataDF <- renderTable({
+    inFile <- input$q2_file1
+    if (is.null(inFile))
+      return(NULL)
+    read.csv(inFile$datapath, header=input$q2_header, sep=input$q2_sep, quote=input$q2_quote)
+  })
+
+q2_fname = tempfile()
+
+#   # relies on the actionButton to save
+q2_values = list()
+q2_setHot = function(x) q2_values[["hot"]] <<- x
+
+# saves after each update
+#values = reactiveValues()
+#setHot = function(x) values[["hot"]] = x
+
+observe({
+  input$q2_saveBtn
+  
+  if (!is.null(q2_values[["hot"]])) {
+    write.csv(q2_values[["hot"]], q2_fname, row.names = FALSE)
+    print(q2_fname)
+  }
+})
+
+output$q2_hot = renderRHandsontable({
+  if (!is.null(input$q2_hot)) {
+    q2_DF = hot_to_r(input$q2_hot)
+    q2_setHot(q2_DF)
+    rhandsontable(q2_DF) %>%
+      hot_table(highlightCol = TRUE, highlightRow = TRUE)
+  } else {
+    q2_DF = read.csv("~/R/x86_64-pc-linux-gnu-library/3.1/rhandsontable/examples/mtcars.csv", stringsAsFactors = FALSE)[,c(5,7)]
+    q2_setHot(q2_DF)    
+    rhandsontable(q2_DF[,1:2], height = 230) %>%
+      hot_table(highlightCol = TRUE, highlightRow = TRUE)
+  }
+})
 
 
   ## 1 categorical & 1 quantitative   ---------------------------------------  1 cat 1 quant
