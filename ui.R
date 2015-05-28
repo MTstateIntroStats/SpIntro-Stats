@@ -9,6 +9,7 @@ library(ggplot2)
 
 
 quant1_contents <- load("data/quant1.RData")
+quant2_contents <- load("data/quant2.RData")
 
 
   ##  User should choose a variable type, then 
@@ -128,7 +129,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                hr(),
                fluidRow(
                  column(8, 
-                       plotOutput('q1_Plot',width="80%") ),
+                       plotOutput('q1_Plot') ),
                  column(3, 
                        tableOutput('q1_Summary'))
                )
@@ -256,7 +257,8 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                ##
                ##  Existing data is stored in "data/quant2.RData"
                fluidRow(  
-                 column(4, selectInput('q2_data1', 'Choose Preloaded Data',  choices = as.list(quant1_contents))
+                 column(4, selectInput('q2_data1', 'Choose Preloaded Data',  choices = as.list(quant2_contents)),
+                    column(4, actionButton("q2_useExistingBtn", "Use These Data"))      
                  )
                ),
                hr(),
@@ -269,7 +271,9 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                         fileInput('q2_file1', 'Choose CSV File',
                                   accept=c('text/csv', 
                                            'text/comma-separated-values,text/plain', 
-                                           '.csv'))
+                                           '.csv')),
+                        br(),
+                        actionButton("q2_useFileBtn", "Use These Data")
                  ),
                  column(3,
                         checkboxInput('q2_header', 'Row One is column names', TRUE)
@@ -296,13 +300,17 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                  column(4, 
                         rHandsontableOutput("q2_hot")),
                  column(4,
-                        actionButton("q2_saveBtn", "Save Data"))
+                        actionButton("q2_useHotBtn", "Use These Data"))
+               ),
+               hr(),
+               fluidRow(
+                 column(8, 
+                        plotOutput('q2_Plot') ),
+                 column(3, 
+                        tableOutput('q2_Summary'))
                )
                
-               # div(
-               #   tableOutput('q2_dataDF')
-               # )
-               
+             
       ),
       
       tabPanel("Test", value="2quantTest",
