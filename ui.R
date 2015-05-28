@@ -3,9 +3,13 @@ library(shiny)
 library(shinythemes)
 #library(knitr)
 library(rhandsontable)
+library(gridExtra)
+library(ggplot2)
+##source("helpers.R")
+
 
 quant1_contents <- load("data/quant1.RData")
-quant1_blank_DF <- data.frame(V1 = matrix(NA, 10,1))
+
 
   ##  User should choose a variable type, then 
     ## load Data  and
@@ -40,8 +44,8 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                                   HTML("&nbsp; &nbsp;"),
                                   actionButton("cat1_submitButton", "Submit")
                                   )),
-                  column(3, plotOutput('cat1Plot',width="80%")),
-                  column(3, tableOutput("cat1Summary"))       
+                  column(3, plotOutput('cat1_Plot',width="80%")),
+                  column(3, tableOutput("cat1_Summary"))       
                   )
                 ),
        tabPanel("Test", value="cat1_Test",
@@ -77,10 +81,10 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                  ##
                ##  Existing data is stored in "data/quant1.RData"
                fluidRow(  
-                 column(4, selectInput('q1_data1', 'Choose Preloaded Data',  choices = as.list(quant1_contents))
-                 )
+                 column(4, selectInput('q1_data1', 'Choose Preloaded Data',  choices = as.list(quant1_contents))),
+                 column(4, actionButton("q1_useExistingBtn", "Use These Data"))
                ),
-                hr(),
+               hr(),
                h4("OR"),
               
                 ## load local csv file   ------  Need to validate that we have one numeric column, else choose a column?
@@ -90,7 +94,9 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                    fileInput('q1_file1', 'Choose CSV File',
                            accept=c('text/csv', 
                                     'text/comma-separated-values,text/plain', 
-                                    '.csv'))
+                                    '.csv')),
+                   br(),
+                   actionButton("q1_useFileBtn", "Use These Data")
                    ),
                  column(3,
                    checkboxInput('q1_header', 'Row One is column names', TRUE)
@@ -111,18 +117,21 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                  )
                ),
                hr(),
-               h4("OR"),   ## Editable table option -----------------------
-       
+               h4("OR "),   ## Editable table option -----------------------
+               h4("Edit the values in column 2.  Column 1 will be ignored.  To paste, use Cntrl-V or Cmd-V(on a mac)"), 
                fluidRow(
                  column(4, 
                         rHandsontableOutput("q1_hot")),
                  column(4,
-                        actionButton("q1_saveBtn", "Save Data"))
+                        actionButton("q1_useHotBtn", "Use These Data"))
+               ),
+               hr(),
+               fluidRow(
+                 column(8, 
+                       plotOutput('q1_Plot',width="80%") ),
+                 column(3, 
+                       tableOutput('q1_Summary'))
                )
-               
-              # div(
-              #   tableOutput('q1_dataDF')
-              # )
       ),
       tabPanel("Test", value="1quantTest",
         h6("Test 1 mean - under construction")
