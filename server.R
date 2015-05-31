@@ -1,5 +1,8 @@
 includeScript("www/helper.js")
 
+quant1_contents <- load("data/quant1.RData")
+quant2_contents <- load("data/quant2.RData")
+
 shinyServer(function(input, output, session) {
 
 ##  code from https://github.com/jrowen/rhandsontable/blob/master/inst/examples/shiny.R
@@ -24,7 +27,9 @@ shinyServer(function(input, output, session) {
                 names = c(input$cat1_name1, input$cat1_name2)
       )
   })
-
+  
+  ## Descriptives:  plot a bar chart of the successes / failures
+  
   output$cat1_Plot <- renderPlot( {
     if(input$cat1_submitButton ==0) return()
     isolate( { 
@@ -54,8 +59,6 @@ shinyServer(function(input, output, session) {
       prop.table(counts)
     })
   })
-  
-  ## Descriptives:  plot a bar chart of the successes / failures
   
   output$normalProbPlot1 <-    renderPlot({ 
   par(mar=c(24,1,1,1)/10)
@@ -164,9 +167,10 @@ shinyServer(function(input, output, session) {
   ## 1 Quantitative -----------------------------------------------------------  -- 1 Quant 
 
 
-  # use  actionButtons to grab the 3 types of input
+  # use  selectInput to grab the 2 types of input
    q1_values = list()
    q1_setHot = function(x) q1_values[["hot"]] <<- x
+   q1_setHot(read.csv("data/dummyData.csv", stringsAsFactors = FALSE, head = TRUE) )
 
   output$q1_hot = renderRHandsontable({
     if (!is.null(input$q1_hot)) {
@@ -177,63 +181,91 @@ shinyServer(function(input, output, session) {
     } else {
       ## seems that HOT needs at least 2 columns, so column 1 is just row numbers.
       q1_DF = read.csv("data/dummyData.csv", stringsAsFactors = FALSE, head = TRUE)
+      #cat("loading \n")
+      #print(q1_DF)
       q1_setHot(q1_DF)    
-      rhandsontable(q1_DF, height = 230) %>%
+      rhandsontable(q1_values[["hot"]], height = 200) %>%
         hot_table(highlightCol = TRUE, highlightRow = TRUE)
     }
   })
 
-  q1_data <- reactive({
-    if(input$q1_useHotBtn != 0){
-      as.numeric(q1_values[["hot"]][,2])
-    } else 
-      if (input$q1_useExistingBtn != 0){
-        as.numeric(eval(parse( text = input$q1_data1)))
-      } else 
-        if (input$q1_useFileBtn != 0){
-          ##print(input$q1_file1)
-          as.numeric(read.csv(input$q1_file1$datapath, header=input$q1_header, sep=input$q1_sep, quote=input$q1_quote)[,1])
-        } else  NULL
-  })
+#  q1_source <- reactive({ 
+#     if (input$q1_useLddBtn != 0){
+#         "existing"
+#     } else 
+# #         if (input$q1_useFileBtn != 0){
+# #           "file"
+# #     } else 
+#       if(input$q1_useHotBtn != 0){
+#         "hot"
+#     } else  NULL
+#   })
 
+q1_data <- reactive({
+  if(input$q1_entry == "Pre-Loaded Data") {
+    DF <- eval(parse( text = input$q1_data1))
+    data.frame(x=DF)
+  } else if(input$q1_entry == "Type/Paste into Data Table"){
+    DF = data.frame(x=as.numeric(q1_values[["hot"]][,2]))
+    print(DF)
+    data.frame( x = as.numeric(unlist(DF)))
+  } else  NULL
+})
+
+
+#     if(input$q1_useHotBtn != 0){
+#       as.numeric(q1_values[["hot"]][,2])
+#     } else 
+#       if (input$q1_useExistingBtn != 0){
+#         as.numeric(eval(parse( text = input$q1_data1)))
+#       } else 
+#         if (input$q1_useFileBtn != 0){
+#           ##print(input$q1_file1)
+#           as.numeric(read.csv(input$q1_file1$datapath, header=input$q1_header, sep=input$q1_sep, quote=input$q1_quote)[,1])
+#         } else  NULL
+  
+  
   output$q1_Plot <- renderPlot( {
-  if(input$q1_useHotBtn == 0 && input$q1_useExistingBtn == 0 && input$q1_useFileBtn == 0) 
-    return()
-  isolate( { 
+    if( input$q1_entry == " ")  return()
+     #if(input$q1_useLddBtn == 0 && input$q1_useHotBtn == 0)  ## && input$q1_useFileBtn == 0) 
+       #isolate( { 
     q1_dataDF <- q1_data() 
-    ## print(q1_dataDF)
     ## make plot
-    q1_plot1 <- ggplot() +geom_boxplot(aes(y= q1_dataDF, x = q1_dataDF)) +
-                      theme_bw() + xlab("") + ylab("") + scale_x_continuous(breaks = c(-1,1000)) +  coord_flip()
+    q1_plot1 <- 
+      qplot(x = x, y=x, data = q1_dataDF,  geom ="boxplot") + theme_bw() + xlab("") + ylab("") + 
+                  scale_x_continuous(breaks = c(-1,1000)) +  coord_flip()
     #par(mar=c(24, 40, 10, 35)/10, mfrow=c(2,1))
     #boxplot(q1_dataDF, horizontal = TRUE, main = "")
     # Plot stacked x values. 
-    x <- sort(q1_dataDF)
+    x <- sort(q1_dataDF$x)
+    ## print(x)
     z <- cut(x, breaks = nclass.Sturges(x) ^2 )
     y <- unlist(tapply(x, z, function(x) 1:length(x)))
     tempDF <- data.frame(x, y=y[!is.na(y)])
     myBlue <- rgb(0, 100/256, 224/256, alpha = .8)  
     q1_plot2 <- qplot(data=tempDF, x=x, y=y, colour = I(myBlue), size = I(4)) + theme_bw() 
     grid.arrange(q1_plot1, q1_plot2, heights = c(1,3)/4, ncol=1)
-  })
+  #})
 }, height=360)
 
 
   output$q1_Summary <- renderTable({
-    if(input$q1_useHotBtn == 0 && input$q1_useExistingBtn == 0 && input$q1_useFileBtn == 0) 
-      return()
-    isolate({
+    if( input$q1_entry == " ")  return()
+    #if(input$q1_useLddBtn == 0 && input$q1_useHotBtn == 0) ## && input$q1_useFileBtn == 0) 
+    # return()
+    #isolate({
       q1_dataDF <- q1_data()
-      DF <- rbind(mean = mean(q1_dataDF, na.rm = TRUE ),
-                   sd = sd(q1_dataDF, na.rm = TRUE),
-                   min = min(q1_dataDF),
-                   Q1 = quantile(q1_dataDF, .25),
-                   median = median(q1_dataDF),
-                   Q3 = quantile(q1_dataDF, .75),
-                   max = max(q1_dataDF))
+      ## print(q1_dataDF)
+      DF <- rbind(mean = mean(q1_dataDF$x, na.rm = TRUE ),
+                   sd = sd(q1_dataDF$x, na.rm = TRUE),
+                   min = min(q1_dataDF$x),
+                   Q1 = quantile(q1_dataDF$x, .25),
+                   median = median(q1_dataDF$x),
+                   Q3 = quantile(q1_dataDF$x, .75),
+                   max = max(q1_dataDF$x))
       colnames(DF) <- NULL
       DF
-    })
+    #})
   })
 
 

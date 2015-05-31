@@ -7,10 +7,11 @@ library(gridExtra)
 library(ggplot2)
 ##source("helpers.R")
 
+load("data/quant1.RData")
+load("data/quant2.RData")
 
 quant1_contents <- load("data/quant1.RData")
 quant2_contents <- load("data/quant2.RData")
-
 
   ##  User should choose a variable type, then 
     ## load Data  and
@@ -82,50 +83,62 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                  ##
                ##  Existing data is stored in "data/quant1.RData"
                fluidRow(  
-                 column(4, selectInput('q1_data1', 'Choose Preloaded Data',  choices = as.list(quant1_contents))),
-                 column(4, actionButton("q1_useExistingBtn", "Use These Data"))
+                 column(6, selectInput('q1_entry', 'Data Entry method:', 
+                                       list(" ", "Pre-Loaded Data","Type/Paste into Data Table"), selected = " ",
+                                       selectize = FALSE))
                ),
-               hr(),
-               h4("OR"),
+               conditionalPanel('input.q1_entry == "Pre-Loaded Data"',
+                 column(4, selectInput('q1_data1', 'Available Datasets',  choices = as.list(quant1_contents)))
+                 #,
+                 #column(4, actionButton("q1_useLddBtn", "Use These Data"))
+               ),
+               conditionalPanel('input.q1_entry == "Type/Paste into Data Table"',
+                 h4("Edit the values in Column 2.  Column 1 will be ignored.  To paste, use Cntrl-V or Cmd-V(on a mac)"), 
+                 fluidRow(
+                   column(4, 
+                          rHandsontableOutput("q1_hot")) 
+                   #,
+                   # column(4, actionButton("q1_useHotBtn", "Use These Data"))
+               )
+               ),
+      
               
-                ## load local csv file   ------  Need to validate that we have one numeric column, else choose a column?
+#                hr(),
+#                h4("OR"),
+#               
+                ## load local csv file   ------  
+                 ## TODO  --  Need to validate that we have one numeric column, else choose a column?
                 ## copied from: http://shiny.rstudio.com/gallery/file-upload.html    
-               fluidRow(  
-                 column(4,
-                   fileInput('q1_file1', 'Choose CSV File',
-                           accept=c('text/csv', 
-                                    'text/comma-separated-values,text/plain', 
-                                    '.csv')),
-                   br(),
-                   actionButton("q1_useFileBtn", "Use These Data")
-                   ),
-                 column(3,
-                   checkboxInput('q1_header', 'Row One is column names', TRUE)
-                   ),
-                 column(3,
-                   radioButtons('q1_sep', 'Separator',
-                                c(Comma=',',
-                                  Semicolon=';',
-                                  Tab='\t'),
-                                ',')
-                   ),
-                 column(2,
-                   radioButtons('q1_quote', 'Quote',
-                                c(None='',
-                                  'Double Quote'='"',
-                                  'Single Quote'="'"),
-                                '"')
-                 )
-               ),
-               hr(),
-               h4("OR "),   ## Editable table option -----------------------
-               h4("Edit the values in column 2.  Column 1 will be ignored.  To paste, use Cntrl-V or Cmd-V(on a mac)"), 
-               fluidRow(
-                 column(4, 
-                        rHandsontableOutput("q1_hot")),
-                 column(4,
-                        actionButton("q1_useHotBtn", "Use These Data"))
-               ),
+#                fluidRow(  
+#                  column(4,
+#                    fileInput('q1_file1', 'Choose CSV File',
+#                            accept=c('text/csv', 
+#                                     'text/comma-separated-values,text/plain', 
+#                                     '.csv')),
+#                    br(),
+#                    actionButton("q1_useFileBtn", "Use These Data")
+#                    ),
+#                  column(3,
+#                    checkboxInput('q1_header', 'Row One is column names', TRUE)
+#                    ),
+#                  column(3,
+#                    radioButtons('q1_sep', 'Separator',
+#                                 c(Comma=',',
+#                                   Semicolon=';',
+#                                   Tab='\t'),
+#                                 ',')
+#                    ),
+#                  column(2,
+#                    radioButtons('q1_quote', 'Quote',
+#                                 c(None='',
+#                                   'Double Quote'='"',
+#                                   'Single Quote'="'"),
+#                                 '"')
+#                  )
+#                ),
+#                hr(),
+#                h4("OR "),   ## Editable table option -----------------------
+#                
                hr(),
                fluidRow(
                  column(8, 
