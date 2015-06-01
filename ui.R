@@ -22,8 +22,8 @@ quant2_contents <- load("data/quant2.RData")
 
 shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                    theme = shinytheme("spacelab"),
-    ## EXTRA COMMENT
-    ## empty tabPanel to avoid printing "tab-pane active"               
+    ## 
+    ## use empty tabPanel to avoid printing "tab-pane active"               
     tabPanel(""), 
     
     ####   One Categorical  -----------------------------------------------------   1 cat
@@ -82,63 +82,22 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                  ##  open empty table to copy or type in data.
                  ##
                ##  Existing data is stored in "data/quant1.RData"
+               h4("How do you want to input data?"),
                fluidRow(  
+#                  column(3, actionButton("q1_useLddBtn", "Use pre-loaded data") ), 
+#                  column(3, actionButton("q1_useCSVBtn", "Load a local CSV file") ), 
+#                  column(3, actionButton("q1_useHotBtn", "Type or paste into a table") ) 
+                 
                  column(6, selectInput('q1_entry', 'Data Entry method:', 
-                                       list(" ", "Pre-Loaded Data","Type/Paste into Data Table"), selected = " ",
-                                       selectize = FALSE))
+                                      list(" ", "Pre-Loaded Data","Local CSV File","Type/Paste into Data Table"), 
+                                      selected = " ",
+                                      selectize = FALSE))
                ),
-               conditionalPanel('input.q1_entry == "Pre-Loaded Data"',
-                 column(4, selectInput('q1_data1', 'Available Datasets',  choices = as.list(quant1_contents)))
-                 #,
-                 #column(4, actionButton("q1_useLddBtn", "Use These Data"))
-               ),
-               conditionalPanel('input.q1_entry == "Type/Paste into Data Table"',
-                 h4("Edit the values in Column 2.  Column 1 will be ignored.  To paste, use Cntrl-V or Cmd-V(on a mac)"), 
-                 fluidRow(
-                   column(4, 
-                          rHandsontableOutput("q1_hot")) 
-                   #,
-                   # column(4, actionButton("q1_useHotBtn", "Use These Data"))
-               )
-               ),
+               
+               ## Need to use Dynamic UI instead of condition panels
+               
+               uiOutput("q1_ui"),
       
-              
-#                hr(),
-#                h4("OR"),
-#               
-                ## load local csv file   ------  
-                 ## TODO  --  Need to validate that we have one numeric column, else choose a column?
-                ## copied from: http://shiny.rstudio.com/gallery/file-upload.html    
-#                fluidRow(  
-#                  column(4,
-#                    fileInput('q1_file1', 'Choose CSV File',
-#                            accept=c('text/csv', 
-#                                     'text/comma-separated-values,text/plain', 
-#                                     '.csv')),
-#                    br(),
-#                    actionButton("q1_useFileBtn", "Use These Data")
-#                    ),
-#                  column(3,
-#                    checkboxInput('q1_header', 'Row One is column names', TRUE)
-#                    ),
-#                  column(3,
-#                    radioButtons('q1_sep', 'Separator',
-#                                 c(Comma=',',
-#                                   Semicolon=';',
-#                                   Tab='\t'),
-#                                 ',')
-#                    ),
-#                  column(2,
-#                    radioButtons('q1_quote', 'Quote',
-#                                 c(None='',
-#                                   'Double Quote'='"',
-#                                   'Single Quote'="'"),
-#                                 '"')
-#                  )
-#                ),
-#                hr(),
-#                h4("OR "),   ## Editable table option -----------------------
-#                
                hr(),
                fluidRow(
                  column(8, 

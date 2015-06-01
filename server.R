@@ -3,6 +3,7 @@ includeScript("www/helper.js")
 quant1_contents <- load("data/quant1.RData")
 quant2_contents <- load("data/quant2.RData")
 
+
 shinyServer(function(input, output, session) {
 
 ##  code from https://github.com/jrowen/rhandsontable/blob/master/inst/examples/shiny.R
@@ -166,8 +167,76 @@ shinyServer(function(input, output, session) {
   
   ## 1 Quantitative -----------------------------------------------------------  -- 1 Quant 
 
+ ## user selects an input method.
+  ## renderUI changes to get appropriate inputs.
 
-  # use  selectInput to grab the 2 types of input
+ output$q1_ui <- renderUI({
+  if (is.null(input$q1_entry))
+    return()
+  switch( input$q1_entry,
+          "Pre-Loaded Data" ={ 
+            fluidRow(  
+              column(4, selectInput('q1_data1', 'Available Datasets',  choices = as.list(quant1_contents))
+                     ),
+              column(4, actionButton("q1_useLddBtn", "Use These Data") )
+            )
+          },
+          "Local CSV File" ={
+            ## copied from: http://shiny.rstudio.com/gallery/file-upload.html    
+            fluidRow(  
+              column(4, fileInput('q1_file1', 'Choose CSV File',
+                                  accept=c('text/csv', 
+                                           'text/comma-separated-values,text/plain', 
+                                           '.csv')) ,
+                     br(),
+                     actionButton("q1_useCSVBtn", "Use These Data")
+              ),
+              column(3, checkboxInput('q1_header', 'Row One is column names', TRUE)
+              ),
+              column(3, radioButtons('q1_sep', 'Separator',
+                                     c(Comma=',', Semicolon=';', Tab='\t'),
+                                     ',')
+              ),
+              column(2, radioButtons('q1_quote', 'Quote',
+                                     c(None='', 'Double Quote'='"','Single Quote'="'"),
+                                     '"')
+              )
+            )
+            
+          },
+          "Type/Paste into Data Table" = {
+            #h4("Edit the values in Column 2.  Column 1 will be ignored.  To paste, use Cntrl-V or Cmd-V(on a mac)"), 
+            fluidRow(
+              column(4, 
+                     rHandsontableOutput("q1_hot")) 
+              ,
+               column(4, actionButton("q1_useHotBtn", "Use These Data"))
+            )
+            
+          }, 
+          NULL
+          )
+ })
+                 
+ ##  grab data according to input method
+ q1 <- reactiveValues(data = NULL)
+
+ observeEvent(  input$q1_useLddBtn, {
+   DF <- eval(parse( text = input$q1_data1))
+   q1$data <- data.frame(x=DF)
+ })
+
+ observeEvent(  input$q1_useCSVBtn,{
+   q1$data <- data.frame( x = as.numeric(read.csv(input$q1_file1$datapath, header=input$q1_header,
+                                                  sep=input$q1_sep, quote=input$q1_quote)[,1]))
+ })
+
+ observeEvent(  input$q1_useHotBtn,{
+   DF = data.frame(x=as.numeric(q1_values[["hot"]][,2]))
+   # print(DF)
+   q1$data <- data.frame( x = as.numeric(unlist(DF)))
+ })
+
    q1_values = list()
    q1_setHot = function(x) q1_values[["hot"]] <<- x
    q1_setHot(read.csv("data/dummyData.csv", stringsAsFactors = FALSE, head = TRUE) )
@@ -189,28 +258,6 @@ shinyServer(function(input, output, session) {
     }
   })
 
-#  q1_source <- reactive({ 
-#     if (input$q1_useLddBtn != 0){
-#         "existing"
-#     } else 
-# #         if (input$q1_useFileBtn != 0){
-# #           "file"
-# #     } else 
-#       if(input$q1_useHotBtn != 0){
-#         "hot"
-#     } else  NULL
-#   })
-
-q1_data <- reactive({
-  if(input$q1_entry == "Pre-Loaded Data") {
-    DF <- eval(parse( text = input$q1_data1))
-    data.frame(x=DF)
-  } else if(input$q1_entry == "Type/Paste into Data Table"){
-    DF = data.frame(x=as.numeric(q1_values[["hot"]][,2]))
-    print(DF)
-    data.frame( x = as.numeric(unlist(DF)))
-  } else  NULL
-})
 
 
 #     if(input$q1_useHotBtn != 0){
@@ -226,18 +273,18 @@ q1_data <- reactive({
   
   
   output$q1_Plot <- renderPlot( {
-    if( input$q1_entry == " ")  return()
+    if( is.null(q1$data))  return()
      #if(input$q1_useLddBtn == 0 && input$q1_useHotBtn == 0)  ## && input$q1_useFileBtn == 0) 
        #isolate( { 
-    q1_dataDF <- q1_data() 
+    ## q1_dataDF <- q1_data() 
     ## make plot
     q1_plot1 <- 
-      qplot(x = x, y=x, data = q1_dataDF,  geom ="boxplot") + theme_bw() + xlab("") + ylab("") + 
+      qplot(x = x, y=x, data = q1$data,  geom ="boxplot") + theme_bw() + xlab("") + ylab("") + 
                   scale_x_continuous(breaks = c(-1,1000)) +  coord_flip()
     #par(mar=c(24, 40, 10, 35)/10, mfrow=c(2,1))
     #boxplot(q1_dataDF, horizontal = TRUE, main = "")
     # Plot stacked x values. 
-    x <- sort(q1_dataDF$x)
+    x <- sort(q1$data$x)
     ## print(x)
     z <- cut(x, breaks = nclass.Sturges(x) ^2 )
     y <- unlist(tapply(x, z, function(x) 1:length(x)))
@@ -250,19 +297,18 @@ q1_data <- reactive({
 
 
   output$q1_Summary <- renderTable({
-    if( input$q1_entry == " ")  return()
-    #if(input$q1_useLddBtn == 0 && input$q1_useHotBtn == 0) ## && input$q1_useFileBtn == 0) 
-    # return()
+    if( is.null(q1$data))  
+      return()
     #isolate({
-      q1_dataDF <- q1_data()
+      #q1_dataDF <- q1_data()
       ## print(q1_dataDF)
-      DF <- rbind(mean = mean(q1_dataDF$x, na.rm = TRUE ),
-                   sd = sd(q1_dataDF$x, na.rm = TRUE),
-                   min = min(q1_dataDF$x),
-                   Q1 = quantile(q1_dataDF$x, .25),
-                   median = median(q1_dataDF$x),
-                   Q3 = quantile(q1_dataDF$x, .75),
-                   max = max(q1_dataDF$x))
+      DF <- rbind(mean = mean(q1$data$x, na.rm = TRUE ),
+                   sd = sd(q1$data$x, na.rm = TRUE),
+                   min = min(q1$data$x),
+                   Q1 = quantile(q1$data$x, .25),
+                   median = median(q1$data$x),
+                   Q3 = quantile(q1$data$x, .75),
+                   max = max(q1$data$x))
       colnames(DF) <- NULL
       DF
     #})
