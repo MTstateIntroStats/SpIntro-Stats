@@ -468,6 +468,29 @@ shinyServer(function(input, output, session) {
     "Data is entered, you may now choose to estimate or test the difference in two proportions."
   })
 
+    
+  output$cat2Test <- renderPlot({
+    if(input$cat2_submitButton == 0) return()
+    
+    ##  pull inputs and convert to numeric:
+    shuffle_count <- as.numeric(input$shuffle_count)
+    y21 <- as.numeric(input$cat2_y1)
+    n21 <- as.numeric(input$cat2_n1)
+    y22 <- as.numeric(input$cat2_y2)
+    n22 <- as.numeric(input$cat2_n2)
+    phat_m <- (y21+y22)/(n21+n22)
+    
+    ##  use phat_m to shuffle
+    y21_new <- rbinom(shuffle_count, n21, phat_m)
+    y22_new <- (y21+y22) - y21_new
+    diff_prop <- (y21_new/n21) - (y22_new/n22)
+    
+    ##  plot difference in proportions for the shuffles
+    num_shuffle <- 1:shuffle_count
+    breaks <- ordered(unique(diff_prop))
+    
+  }, height=360)
+
   output$normalProbPlot2 <-    renderPlot({ 
   par(mar=c(24,1,1,1)/10)
   z <- absz <- prob <- yrr <- xrr <- NA

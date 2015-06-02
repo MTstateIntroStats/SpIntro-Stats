@@ -191,8 +191,29 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
 #                       tableOutput('cat2Summary'))
       ),
       
-      tabPanel("Test", value="2catTest",
-        h6("Test Equality of 2 Proportions - under construction")
+tabPanel("Test", value="2catTest",
+         shinyUI(fluidPage(
+           
+           title = "Randomization Distribution",
+           
+           plotOutput('cat2Test'),
+           
+           hr(),
+           
+           fluidRow(
+             column(4, inputPanel(
+               textInput('cat2_n1', label='Group 1 Total: ', value="0"),
+               textInput('cat2_y1', label='Group 1 Successes: ', value="0"),
+               textInput('cat2_n2', label='Group 2 Total: ', value="0"),
+               textInput('cat2_y2', label='Group 2 Successes: ', value="0"))),
+             
+             column(4, inputPanel(
+               selectInput("shuffles", "Number of Shuffles", c(1,10,100,1000))
+             ))
+           )
+           )
+        )
+         
       ),
       
       tabPanel("Estimate", value="2catEstimate",
