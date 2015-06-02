@@ -1,10 +1,10 @@
-library(markdown)
 library(shiny) 
 library(shinythemes)
-#library(knitr)
 library(rhandsontable)
 library(gridExtra)
 library(ggplot2)
+#library(markdown)
+#library(knitr)
 ##source("helpers.R")
 
 load("data/quant1.RData")
@@ -228,52 +228,19 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                ##  open empty table to copy or type in data.
                ##
                ##  Existing data is stored in "data/quant2.RData"
+               h4("How do you want to input data?"),
                fluidRow(  
-                 column(4, selectInput('q2_data1', 'Choose Preloaded Data',  choices = as.list(quant2_contents)),
-                    column(4, actionButton("q2_useExistingBtn", "Use These Data"))      
-                 )
+                 
+                 column(6, selectInput('q2_entry', 'Data Entry method:', 
+                                       list(" ", "Pre-Loaded Data","Local CSV File","Type/Paste into Data Table"), 
+                                       selected = " ",
+                                       selectize = FALSE))
                ),
-               hr(),
-               h4("OR"),
                
-               ## load local csv file   ------  Need to validate that we have one numeric column, else choose a column?
-               ## copied from: http://shiny.rstudio.com/gallery/file-upload.html    
-               fluidRow(  
-                 column(4,
-                        fileInput('q2_file1', 'Choose CSV File',
-                                  accept=c('text/csv', 
-                                           'text/comma-separated-values,text/plain', 
-                                           '.csv')),
-                        br(),
-                        actionButton("q2_useFileBtn", "Use These Data")
-                 ),
-                 column(3,
-                        checkboxInput('q2_header', 'Row One is column names', TRUE)
-                 ),
-                 column(3,
-                        radioButtons('q2_sep', 'Separator',
-                                     c(Comma=',',
-                                       Semicolon=';',
-                                       Tab='\t'),
-                                     ',')
-                 ),
-                 column(2,
-                        radioButtons('q2_quote', 'Quote',
-                                     c(None='',
-                                       'Double Quote'='"',
-                                       'Single Quote'="'"),
-                                     '"')
-                 )
-               ),
-               hr(),
-               h4("OR"),   ## Editable table option -----------------------
+               ## Need to use Dynamic UI instead of condition panels
                
-               fluidRow(
-                 column(4, 
-                        rHandsontableOutput("q2_hot")),
-                 column(4,
-                        actionButton("q2_useHotBtn", "Use These Data"))
-               ),
+               uiOutput("q2_ui"),
+               
                hr(),
                fluidRow(
                  column(8, 
@@ -281,9 +248,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                  column(3, 
                         tableOutput('q2_Summary'))
                )
-               
-             
-      ),
+               ),
       
       tabPanel("Test", value="2quantTest",
         h6("Test Slope/Correlation - under construction")

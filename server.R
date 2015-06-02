@@ -2,7 +2,8 @@ includeScript("www/helper.js")
 
 quant1_contents <- load("data/quant1.RData")
 quant2_contents <- load("data/quant2.RData")
-
+load("data/quant1.RData")
+load("data/quant2.RData")
 
 shinyServer(function(input, output, session) {
 
@@ -246,7 +247,7 @@ shinyServer(function(input, output, session) {
       q1_DF = hot_to_r(input$q1_hot)
       q1_setHot(q1_DF)
       rhandsontable(q1_DF) %>%
-        hot_table(highlightCol = TRUE, highlightRow = TRUE)
+        hot_table(highlightCol = TRUE, highlightRow = TRUE, copyPaste = TRUE, pasteMode = "shift_down")
     } else {
       ## seems that HOT needs at least 2 columns, so column 1 is just row numbers.
       q1_DF = read.csv("data/dummyData.csv", stringsAsFactors = FALSE, head = TRUE)
@@ -308,7 +309,8 @@ shinyServer(function(input, output, session) {
                    Q1 = quantile(q1$data$x, .25),
                    median = median(q1$data$x),
                    Q3 = quantile(q1$data$x, .75),
-                   max = max(q1$data$x))
+                   max = max(q1$data$x),
+                   length = length(q1$data$x))
       colnames(DF) <- NULL
       DF
     #})
@@ -571,7 +573,79 @@ shinyServer(function(input, output, session) {
 
   ## 2 Quantitative -----------------------------------------------------------  2 quant
 
-# use  actionButtons to grab the 3 types of input
+# use  selectInput to grab the 3 types of input
+output$q2_ui <- renderUI({
+  if (is.null(input$q2_entry))
+    return()
+  switch( input$q2_entry,
+          "Pre-Loaded Data" ={ 
+            fluidRow(  
+              column(4, selectInput('q2_data1', 'Available Datasets',  choices = as.list(quant2_contents))
+              ),
+              column(4, actionButton("q2_useLddBtn", "Use These Data") )
+            )
+          },
+          "Local CSV File" ={
+            ## copied from: http://shiny.rstudio.com/gallery/file-upload.html    
+            fluidRow(  
+              column(4, fileInput('q2_file1', 'Choose CSV File',
+                                  accept=c('text/csv', 
+                                           'text/comma-separated-values,text/plain', 
+                                           '.csv')) ,
+                     br(),
+                     actionButton("q2_useCSVBtn", "Use These Data")
+              ),
+              column(3, checkboxInput('q2_header', 'Row One is column names', TRUE)
+              ),
+              column(3, radioButtons('q2_sep', 'Separator',
+                                     c(Comma=',', Semicolon=';', Tab='\t'),
+                                     ',')
+              ),
+              column(2, radioButtons('q2_quote', 'Quote',
+                                     c(None='', 'Double Quote'='"','Single Quote'="'"),
+                                     '"')
+              )
+            )
+            
+          },
+          "Type/Paste into Data Table" = {
+            #h4("Edit the values in Column 2.  Column 1 will be ignored.  To paste, use Cntrl-V or Cmd-V(on a mac)"), 
+            fluidRow(
+              column(4, 
+                     rHandsontableOutput("q2_hot")) 
+              ,
+              column(4, actionButton("q2_useHotBtn", "Use These Data"))
+            )
+            
+          }, 
+          NULL
+  )
+})
+
+##  grab data according to input method
+q2 <- reactiveValues(data = NULL)
+
+observeEvent(  input$q2_useLddBtn, {
+  DF <- eval(parse( text = input$q2_data1))
+  names(DF) <- c("x","y")
+  q2$data <- data.frame(DF)
+})
+
+observeEvent(  input$q2_useCSVBtn,{
+  DF <- read.csv(input$q2_file1$datapath, header=input$q2_header,
+                      sep=input$q2_sep, quote=input$q2_quote)
+  names(DF) <- c("x","y")
+  q2$data <- data.frame(DF)
+  
+})
+
+observeEvent(  input$q2_useHotBtn,{
+  DF <- data.frame(q2_values[["hot"]])
+  # print(DF)
+  names(DF) <- c("x","y")
+  q2$data <- data.frame(DF)
+})
+
 q2_values = list()
 q2_setHot = function(x) q2_values[["hot"]] <<- x
 
@@ -590,57 +664,43 @@ output$q2_hot = renderRHandsontable({
   }
 })
 
-q2_data <- reactive({
-  if(input$q2_useHotBtn != 0){
-    as.numeric(q2_values[["hot"]][,2])
-  } else 
-    if (input$q2_useExistingBtn != 0){
-      as.numeric(eval(parse( text = input$q2_data1)))
-    } else 
-      if (input$q2_useFileBtn != 0){
-        ##print(input$q2_file1)
-        as.numeric(read.csv(input$q2_file1$datapath, header=input$q2_header, sep=input$q2_sep, quote=input$q2_quote)[,1])
-      } else  NULL
-})
-
 output$q2_Plot <- renderPlot( {
-  if(input$q2_useHotBtn == 0 && input$q2_useExistingBtn == 0 && input$q2_useFileBtn == 0) 
+  if( is.null(q2$data)) 
     return()
-  isolate( { 
-    q2_dataDF <- q2_data() 
+  #isolate( { 
+    #q2_dataDF <- q2_data() 
     ## print(q2_dataDF)
     ## make plot
-    q2_plot1 <- ggplot() +geom_boxplot(aes(y= q2_dataDF, x = q2_dataDF)) +
+    q2_plot1 <- ggplot(data = q2$data) +geom_boxplot(aes(y= x, x = x)) +
       theme_bw() + xlab("") + ylab("") + scale_x_continuous(breaks = c(-1,1000)) +  coord_flip()
+    q2_plot2 <- ggplot(data = q2$data) +geom_boxplot(aes(y= y, x = y)) +
+    theme_bw() + xlab("") + ylab("") + scale_x_continuous(breaks = c(-1,1000)) +  coord_flip()
     #par(mar=c(24, 40, 10, 35)/10, mfrow=c(2,1))
     #boxplot(q2_dataDF, horizontal = TRUE, main = "")
-    # Plot stacked x values. 
-    x <- sort(q2_dataDF)
-    z <- cut(x, breaks = nclass.Sturges(x) ^2 )
-    y <- unlist(tapply(x, z, function(x) 1:length(x)))
-    tempDF <- data.frame(x, y=y[!is.na(y)])
     myBlue <- rgb(0, 100/256, 224/256, alpha = .8)  
-    q2_plot2 <- qplot(data=tempDF, x=x, y=y, colour = I(myBlue), size = I(4)) + theme_bw() 
-    grid.arrange(q2_plot1, q2_plot2, heights = c(1,3)/4, ncol=1)
-  })
-}, height=360)
+    q2_plot3 <- qplot(data= q2$data, x=x, y=y, colour = I(myBlue), size = I(4)) + theme_bw() 
+    grid.arrange(q2_plot1, q2_plot2, q2_plot3, heights = c(1, 1, 3)/5, ncol=1)
+  #})
+}, height=400)
 
 
 output$q2_Summary <- renderTable({
-  if(input$q2_useHotBtn == 0 && input$q2_useExistingBtn == 0 && input$q2_useFileBtn == 0) 
+  if( is.null(q2$data))  
+    #if(input$q2_useHotBtn == 0 && input$q2_useExistingBtn == 0 && input$q2_useFileBtn == 0) 
     return()
-  isolate({
-    q2_dataDF <- q2_data()
-    DF <- rbind(mean = mean(q2_dataDF, na.rm = TRUE ),
-                sd = sd(q2_dataDF, na.rm = TRUE),
-                min = min(q2_dataDF),
-                q2 = quantile(q2_dataDF, .25),
-                median = median(q2_dataDF),
-                Q3 = quantile(q2_dataDF, .75),
-                max = max(q2_dataDF))
-    colnames(DF) <- NULL
+  #isolate({
+    #q2_dataDF <- q2_data()
+    DF <- rbind(mean   = apply(q2$data, 2, mean, na.rm = TRUE ),
+                sd     = apply(q2$data, 2, sd, na.rm = TRUE),
+                min    = apply(q2$data, 2, min),
+                Q1     = apply(q2$data, 2, quantile, .25),
+                median = apply(q2$data, 2, median),
+                Q3     = apply(q2$data, 2, quantile, .75),
+                max    = apply(q2$data, 2, max),
+                length = apply(q2$data, 2,length))
+    colnames(DF) <- c("x","y")
     DF
-  })
+  #})
 })
 
   ## 1 categorical & 1 quantitative   ---------------------------------------  1 cat 1 quant
