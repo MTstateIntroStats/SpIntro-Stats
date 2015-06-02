@@ -471,9 +471,12 @@ shinyServer(function(input, output, session) {
     
   output$cat2Test <- renderPlot({
     if(input$cat2_submitButton == 0) return()
+    if(input$cat2_shuffleButton == 0) return()
     
-    ##  pull inputs and convert to numeric:
-    shuffles <- as.numeric(input$shuffles)
+    ##  changes the value of shuffles whenever the shuffle button is pressed:
+    shuffles <- eventReactive(input$shuffleButton, {
+      input$shuffles
+    })
     phat_m <- (input$cat2_n11 + input$cat2_n12)/(input$cat2_n21 + input$cat2_n22)
     
     ##  use phat_m to shuffle

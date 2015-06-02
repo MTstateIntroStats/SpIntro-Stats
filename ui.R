@@ -202,17 +202,24 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
            hr(),
            
            fluidRow(
-             column(3, tableOutput("cat2Summary")),
+             column(3, 
+                    tableOutput("cat2Summary"), 
+                    br(),
+                    p("Relative Frequencies for Input Data")),
              
-             column(4, inputPanel(
-               selectInput("shuffles", "Number of Shuffles", c(1,10,100,1000))
-             ))
+             column(4, 
+                    div(br(),
+                        numericInput('cat2_shuffles', "Shuffles:", min=0, max=10000, value=10),
+                        br(),
+                        actionButton("cat2_shuffleButton", "Shuffle!"), 
+                        p("Click the button to shuffle the data.")
+                        )
+                    )
+             )
+            )
            )
-           )
-        )
-         
-      ),
-      
+          ),
+          
 
       tabPanel("Estimate", value="2catEstimate",
         h6("Estimate Difference in Proportions - under construction")
