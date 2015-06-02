@@ -422,7 +422,7 @@ shinyServer(function(input, output, session) {
 }, height=300)
 
 
-  ## 2 Categorical -----------------------------------------------------------  -- 2 categ
+  ## 2 Categorical ------------------------------------------------------------- 2 categ
 
   ## Descriptives:  plot a bar chart of the successes / failures
  cat2_data <- reactive({
@@ -473,21 +473,18 @@ shinyServer(function(input, output, session) {
     if(input$cat2_submitButton == 0) return()
     
     ##  pull inputs and convert to numeric:
-    shuffle_count <- as.numeric(input$shuffle_count)
-    y21 <- as.numeric(input$cat2_y1)
-    n21 <- as.numeric(input$cat2_n1)
-    y22 <- as.numeric(input$cat2_y2)
-    n22 <- as.numeric(input$cat2_n2)
-    phat_m <- (y21+y22)/(n21+n22)
+    shuffles <- as.numeric(input$shuffles)
+    phat_m <- (input$cat2_n11 + input$cat2_n12)/(input$cat2_n21 + input$cat2_n22)
     
     ##  use phat_m to shuffle
-    y21_new <- rbinom(shuffle_count, n21, phat_m)
-    y22_new <- (y21+y22) - y21_new
-    diff_prop <- (y21_new/n21) - (y22_new/n22)
+    n11_new <- rbinom(shuffles, input$cat2_n21, phat_m)
+    n22_new <- (input$cat2_n21 + input$cat2_n22) - n21_new
+    diff_prop <- (n21_new/input$cat2_n21) - (n22_new/input$cat2_n22)
     
     ##  plot difference in proportions for the shuffles
     num_shuffle <- 1:shuffle_count
     breaks <- ordered(unique(diff_prop))
+    hist(diff_prop, breaks=breaks, xlab = "Difference in Proportions", ylab = "Counts", main = "Randomization Distribution")
     
   }, height=360)
 
