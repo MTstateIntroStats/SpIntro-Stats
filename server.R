@@ -697,7 +697,9 @@ output$q2_Summary <- renderTable({
                 median = apply(q2$data, 2, median),
                 Q3     = apply(q2$data, 2, quantile, .75),
                 max    = apply(q2$data, 2, max),
-                length = apply(q2$data, 2,length))
+                length = apply(q2$data, 2, length),
+                correlation = c(cor(q2$data$x, q2$data$y), NA),
+                beta.hat = round(coef(lm(y ~ x, data = q2$data)),3))
     colnames(DF) <- c("x","y")
     DF
   #})
