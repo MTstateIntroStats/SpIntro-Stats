@@ -422,7 +422,7 @@ shinyServer(function(input, output, session) {
 }, height=300)
 
 
-  ## 2 Categorical -----------------------------------------------------------  -- 2 categ
+  ## 2 Categorical ------------------------------------------------------------- 2 categ
 
   ## Descriptives:  plot a bar chart of the successes / failures
  cat2_data <- reactive({
@@ -467,6 +467,29 @@ shinyServer(function(input, output, session) {
     if(input$cat2_submitButton ==0) return()
     "Data is entered, you may now choose to estimate or test the difference in two proportions."
   })
+
+    
+  output$cat2Test <- renderPlot({
+    if(input$cat2_submitButton == 0) return()
+    if(input$cat2_shuffleButton == 0) return()
+    
+    ##  changes the value of shuffles whenever the shuffle button is pressed:
+    shuffles <- eventReactive(input$shuffleButton, {
+      input$shuffles
+    })
+    phat_m <- (input$cat2_n11 + input$cat2_n12)/(input$cat2_n21 + input$cat2_n22)
+    
+    ##  use phat_m to shuffle
+    n11_new <- rbinom(shuffles, input$cat2_n21, phat_m)
+    n22_new <- (input$cat2_n21 + input$cat2_n22) - n21_new
+    diff_prop <- (n21_new/input$cat2_n21) - (n22_new/input$cat2_n22)
+    
+    ##  plot difference in proportions for the shuffles
+    num_shuffle <- 1:shuffle_count
+    breaks <- ordered(unique(diff_prop))
+    hist(diff_prop, breaks=breaks, xlab = "Difference in Proportions", ylab = "Counts", main = "Randomization Distribution")
+    
+  }, height=360)
 
   output$normalProbPlot2 <-    renderPlot({ 
   par(mar=c(24,1,1,1)/10)
