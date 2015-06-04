@@ -2,8 +2,14 @@ includeScript("www/helper.js")
 
 quant1_contents <- load("data/quant1.RData")
 quant2_contents <- load("data/quant2.RData")
-load("data/quant1.RData")
-load("data/quant2.RData")
+cat1quant1_contents <- load("data/cat1quant1.RData")
+
+for(ff in system("ls data/*.RData", intern=T)) load(ff)
+
+ ##  These were created to hold sample data with:
+ ##  save(birthWeights, REDvsCntrl, REDvsREDA, REDAvsCntrl, file = "data/cat1quant1.RData")
+ ##  save(birthweights, geyser2011, file="data/quant1.RData")
+ ##  save(shuttle, womenRateMen, menRateWomen, file = "data/quant2.RData")
 
 shinyServer(function(input, output, session) {
 
@@ -220,21 +226,24 @@ shinyServer(function(input, output, session) {
  })
                  
  ##  grab data according to input method
- q1 <- reactiveValues(data = NULL)
+ q1 <- reactiveValues(data = NULL, names = NULL)
 
  observeEvent(  input$q1_useLddBtn, {
    DF <- eval(parse( text = input$q1_data1))
-   q1$data <- data.frame(x=DF)
+   q1$data <- DF
+   q1$names <- names(DF)
  })
 
  observeEvent(  input$q1_useCSVBtn,{
-   q1$data <- data.frame( x = as.numeric(read.csv(input$q1_file1$datapath, header=input$q1_header,
-                                                  sep=input$q1_sep, quote=input$q1_quote)[,1]))
+   DF <-  read.csv(input$q1_file1$datapath, header=input$q1_header, sep=input$q1_sep, quote=input$q1_quote)
+   q1$names <- if(is.null(names(DF)) | "V1" %in% names(DF)){ "x"} else {names(DF)[1]}
+   q1$data <- data.frame(DF[, 1])
  })
 
  observeEvent(  input$q1_useHotBtn,{
    DF = data.frame(x=as.numeric(q1_values[["hot"]][,2]))
    # print(DF)
+   q1$names <- names(DF)
    q1$data <- data.frame( x = as.numeric(unlist(DF)))
  })
 
@@ -261,37 +270,26 @@ shinyServer(function(input, output, session) {
 
 
 
-#     if(input$q1_useHotBtn != 0){
-#       as.numeric(q1_values[["hot"]][,2])
-#     } else 
-#       if (input$q1_useExistingBtn != 0){
-#         as.numeric(eval(parse( text = input$q1_data1)))
-#       } else 
-#         if (input$q1_useFileBtn != 0){
-#           ##print(input$q1_file1)
-#           as.numeric(read.csv(input$q1_file1$datapath, header=input$q1_header, sep=input$q1_sep, quote=input$q1_quote)[,1])
-#         } else  NULL
-  
-  
   output$q1_Plot <- renderPlot( {
     if( is.null(q1$data))  return()
      #if(input$q1_useLddBtn == 0 && input$q1_useHotBtn == 0)  ## && input$q1_useFileBtn == 0) 
        #isolate( { 
-    ## q1_dataDF <- q1_data() 
+    DF <- q1$data
+    names(DF)[ncol(DF)] <- "x"
     ## make plot
     q1_plot1 <- 
-      qplot(x = x, y=x, data = q1$data,  geom ="boxplot") + theme_bw() + xlab("") + ylab("") + 
+      qplot(x = x, y=x, data = DF,  geom ="boxplot") + theme_bw() + xlab("") + ylab(q1$names) + 
                   scale_x_continuous(breaks = c(-1,1000)) +  coord_flip()
     #par(mar=c(24, 40, 10, 35)/10, mfrow=c(2,1))
     #boxplot(q1_dataDF, horizontal = TRUE, main = "")
     # Plot stacked x values. 
-    x <- sort(q1$data$x)
+    x <- sort(q1$data[,1])
     ## print(x)
     z <- cut(x, breaks = nclass.Sturges(x) ^2 )
-    y <- unlist(tapply(x, z, function(x) 1:length(x)))
-    tempDF <- data.frame(x, y=y[!is.na(y)])
+    w <- unlist(tapply(x, z, function(x) 1:length(x)))
+    tempDF <- data.frame(x, w=w[!is.na(w)])
     myBlue <- rgb(0, 100/256, 224/256, alpha = .8)  
-    q1_plot2 <- qplot(data=tempDF, x=x, y=y, colour = I(myBlue), size = I(4)) + theme_bw() 
+    q1_plot2 <- qplot(data=tempDF, x=x, y=w, colour = I(myBlue), size = I(4)) + theme_bw() + xlab(q1$names)
     grid.arrange(q1_plot1, q1_plot2, heights = c(1,3)/4, ncol=1)
   #})
 }, height=360)
@@ -303,15 +301,15 @@ shinyServer(function(input, output, session) {
     #isolate({
       #q1_dataDF <- q1_data()
       ## print(q1_dataDF)
-      DF <- rbind(mean = mean(q1$data$x, na.rm = TRUE ),
-                   sd = sd(q1$data$x, na.rm = TRUE),
-                   min = min(q1$data$x),
-                   Q1 = quantile(q1$data$x, .25),
-                   median = median(q1$data$x),
-                   Q3 = quantile(q1$data$x, .75),
-                   max = max(q1$data$x),
-                   length = length(q1$data$x))
-      colnames(DF) <- NULL
+      DF <- rbind(mean = mean(q1$data[, 1], na.rm = TRUE ),
+                   sd = sd(q1$data[, 1], na.rm = TRUE),
+                   min = min(q1$data[, 1]),
+                   Q1 = quantile(q1$data[, 1], .25),
+                   median = median(q1$data[, 1]),
+                   Q3 = quantile(q1$data[, 1], .75),
+                   max = max(q1$data[, 1]),
+                   length = length(q1$data[, 1]))
+      colnames(DF) <- q1$names
       DF
     #})
   })
@@ -643,21 +641,22 @@ output$q2_ui <- renderUI({
           }, 
           NULL
   )
+  ##  Need to grab names from the data input
 })
 
 ##  grab data according to input method
-q2 <- reactiveValues(data = NULL)
+q2 <- reactiveValues(data = NULL, names = NULL)
 
 observeEvent(  input$q2_useLddBtn, {
   DF <- eval(parse( text = input$q2_data1))
-  names(DF) <- c("x","y")
+  q2$names <- names(DF) 
   q2$data <- data.frame(DF)
 })
 
 observeEvent(  input$q2_useCSVBtn,{
   DF <- read.csv(input$q2_file1$datapath, header=input$q2_header,
                       sep=input$q2_sep, quote=input$q2_quote)
-  names(DF) <- c("x","y")
+  q2$names <- names(DF)
   q2$data <- data.frame(DF)
   
 })
@@ -665,7 +664,7 @@ observeEvent(  input$q2_useCSVBtn,{
 observeEvent(  input$q2_useHotBtn,{
   DF <- data.frame(q2_values[["hot"]])
   # print(DF)
-  names(DF) <- c("x","y")
+  q2$names <- names(DF) 
   q2$data <- data.frame(DF)
 })
 
@@ -691,17 +690,19 @@ output$q2_Plot <- renderPlot( {
   if( is.null(q2$data)) 
     return()
   #isolate( { 
-    #q2_dataDF <- q2_data() 
-    ## print(q2_dataDF)
+    ## need to allow user to switch predictor and response
     ## make plot
-    q2_plot1 <- ggplot(data = q2$data) +geom_boxplot(aes(y= x, x = x)) +
-      theme_bw() + xlab("") + ylab("") + scale_x_continuous(breaks = c(-1,1000)) +  coord_flip()
-    q2_plot2 <- ggplot(data = q2$data) +geom_boxplot(aes(y= y, x = y)) +
-    theme_bw() + xlab("") + ylab("") + scale_x_continuous(breaks = c(-1,1000)) +  coord_flip()
+    DF <- q2$data
+    names(DF) <- c("x","y")
+    q2_plot1 <- ggplot(data = DF) +geom_boxplot(aes(y= x, x = x)) +
+      theme_bw() + ylab(q2$names[1]) + xlab("") + scale_x_continuous(breaks = c(-1,1000)) +  coord_flip()
+    q2_plot2 <- ggplot(data = DF) +geom_boxplot(aes(y= y, x = y)) +
+    theme_bw() + ylab(q2$names[2]) + xlab("") + scale_x_continuous(breaks = c(-1,1000)) +  coord_flip()
     #par(mar=c(24, 40, 10, 35)/10, mfrow=c(2,1))
     #boxplot(q2_dataDF, horizontal = TRUE, main = "")
     myBlue <- rgb(0, 100/256, 224/256, alpha = .8)  
-    q2_plot3 <- qplot(data= q2$data, x=x, y=y, colour = I(myBlue), size = I(4)) + theme_bw() 
+    q2_plot3 <- qplot(data= DF, x=x, y=y, colour = I(myBlue), size = I(4)) + theme_bw() +
+                  xlab(q2$names[1]) + ylab(q2$names[2])
     grid.arrange(q2_plot1, q2_plot2, q2_plot3, heights = c(1, 1, 3)/5, ncol=1)
   #})
 }, height=400)
@@ -712,7 +713,9 @@ output$q2_Summary <- renderTable({
     #if(input$q2_useHotBtn == 0 && input$q2_useExistingBtn == 0 && input$q2_useFileBtn == 0) 
     return()
   #isolate({
-    #q2_dataDF <- q2_data()
+  DF0 <- q2$data
+  names(DF0) <- c("x","y")
+    ##  Allow switch in predictor/response
     DF <- rbind(mean   = apply(q2$data, 2, mean, na.rm = TRUE ),
                 sd     = apply(q2$data, 2, sd, na.rm = TRUE),
                 min    = apply(q2$data, 2, min),
@@ -721,15 +724,182 @@ output$q2_Summary <- renderTable({
                 Q3     = apply(q2$data, 2, quantile, .75),
                 max    = apply(q2$data, 2, max),
                 length = apply(q2$data, 2, length),
-                correlation = c(cor(q2$data$x, q2$data$y), NA),
-                beta.hat = round(coef(lm(y ~ x, data = q2$data)),3))
-    colnames(DF) <- c("x","y")
+                correlation = c(cor(q2$data[,1], q2$data[,2]), NA),
+                beta.hat = round(coef(lm(y ~ x, data = DF0)),3))
+    colnames(DF) <- q2$names
     DF
   #})
 })
 
   ## 1 categorical & 1 quantitative   ---------------------------------------  1 cat 1 quant
+
+output$c1q1_ui <- renderUI({
+  if (is.null(input$c1q1_entry))
+    return()
+  switch( input$c1q1_entry,
+          "Pre-Loaded Data" ={ 
+            fluidRow(  
+              column(4, selectInput('c1q1_data1', 'Available Datasets',  choices = as.list(c1q1_contents))
+              ),
+              column(4, actionButton("c1q1_useLddBtn", "Use These Data") )
+            )                           
+          },
+          "Local CSV File" ={
+            ## copied from: http://shiny.rstudio.com/gallery/file-upload.html    
+            fluidRow(  
+              column(4, fileInput('c1q1_file1', 'Choose CSV File',
+                                  accept=c('text/csv', 
+                                           'text/comma-separated-values,text/plain', 
+                                           '.csv')) ,
+                     br(),
+                     actionButton("c1q1_useCSVBtn", "Use These Data")
+              ),
+              column(3, checkboxInput('c1q1_header', 'Row One is column names', TRUE)
+              ),
+              column(3, radioButtons('c1q1_sep', 'Separator',
+                                     c(Comma=',', Semicolon=';', Tab='\t'),
+                                     ',')
+              ),
+              column(2, radioButtons('c1q1_quote', 'Quote',
+                                     c(None='', 'Double Quote'='"','Single Quote'="'"),
+                                     '"')
+              )
+            )
+            ## grab names from data?
+            ## check which is numeric / character
+            
+          },
+          "Type/Paste into Data Table" = {
+            #h4("Edit the values in Column 2.  Column 1 will be ignored.  To paste, use Cntrl-V or Cmd-V(on a mac)"), 
+            fluidRow(
+              column(4, 
+                     rHandsontableOutput("c1q1_hot")) 
+              ,
+              ## allow user to change names of the columns:
+              # column(4,
+              #       )
+              column(4, actionButton("c1q1_useHotBtn", "Use These Data"))
+            )
+            
+          }, 
+          NULL
+  )
+})
+
+##  grab data according to input method
+c1q1 <- reactiveValues(data = NULL, names = c("groups","y"))
+
+observeEvent(  input$c1q1_useLddBtn, {
+  DF <- eval(parse( text = input$c1q1_data1))
+  whichIsFactor <- which(sapply(DF, is.factor))
+  if(length(whichIsFactor) < 1) {
+    whichIsFactor <- which.min(sapply(DF, function(x) length(unique(x))))
+    DF[,whichIsFactor] <- factor( DF[,whichIsFactor])
+  }
+  DF <- DF[, whichIsFactor:(3 - whichIsFactor)]
+  c1q1$names <- names(DF)
+  c1q1$data <- data.frame(DF)
+})
+
+observeEvent(  input$c1q1_useCSVBtn,{
+  DF <- read.csv(input$c1q1_file1$datapath, header=input$c1q1_header,
+                 sep=input$c1q1_sep, quote=input$c1q1_quote)
+  whichIsNumeric <- which(sapply(DF, is.numeric))
+  whichIsFactor <- which(sapply(DF, is.factor))
+  if(length(whichIsFactor) < 1) {
+    whichIsFactor <- which.min(sapply(D,  function(x) length(unique(x))))
+    DF[,whichIsFactor] <- factor( DF[,whichIsFactor])
+  }
+  DF <- DF[, whichIsFactor:(3 - whichIsFactor)]
+  if("V1" %in% names(DF)[1])    names(DF) <- c("group", "y")
+  c1q1$names <- names(DF)
+  c1q1$data <- data.frame(DF)
   
+})
+
+observeEvent(  input$c1q1_useHotBtn,{
+  DF <- data.frame(c1q1_values[["hot"]])
+  # print(DF)
+  names(DF) <- c("group","y")
+  c1q1$names <- names(DF)
+  c1q1$data <- DF
+})
+
+c1q1_values = list()
+c1q1_setHot = function(x) c1q1_values[["hot"]] <<- x
+
+output$c1q1_hot = renderRHandsontable({
+  if (!is.null(input$c1q1_hot)) {
+    c1q1_DF = hot_to_r(input$c1q1_hot)
+    c1q1_setHot(c1q1_DF)
+    rhandsontable(c1q1_DF) %>%
+      hot_table(highlightCol = TRUE, highlightRow = TRUE)
+  } else {
+    ## seems that HOT needs at least 2 columns, so column 1 is just row numbers.
+    c1q1_DF = read.csv("data/dummyDatac1q1.csv", stringsAsFactors = FALSE, head = TRUE)
+    c1q1_setHot(c1q1_DF)    
+    rhandsontable(c1q1_DF, height = 230) %>%
+      hot_table(highlightCol = TRUE, highlightRow = TRUE)
+  }
+})
+
+output$c1q1_Plot <- renderPlot( {
+  if( is.null(c1q1$data)) 
+    return()
+  #isolate( { 
+  ## make plot
+  DF <- c1q1$data
+  names(DF) <- c("group","y")
+  DF[, 1] <- factor(DF[,1])
+  #print(summary(DF))
+  c1q1_plot1 <- qplot(y=y, x=group, data = DF, geom="boxplot") +
+    theme_bw() + xlab("") +  coord_flip() + ylab(c1q1$names[2]) 
+  DF <- DF[order(DF$y), ]
+  nbreaks <- min(c(length(unique(DF$y)), floor(.5*nclass.Sturges(DF$y)^2)))
+  z <- cut(DF$y, breaks =  nbreaks )
+  w <- unlist(tapply(DF$y, list(z, DF$group), function(x) 1:length(x)))
+  w <- w[!is.na(w)]  
+  myBlue <- rgb(0, 100/256, 224/256, alpha = .8)  
+  c1q1_plot2 <- qplot(data= DF, x=y, y=w , colour = I(myBlue), size = I(4))+ facet_wrap( ~group) + 
+    theme_bw() + ylab("Count") + xlab( c1q1$names[2])
+  grid.arrange(c1q1_plot1, c1q1_plot2, heights = c(2,  5)/7, ncol=1)
+  #})
+}, height=400)
+
+
+output$c1q1_Summary1 <- renderTable({
+  if( is.null(c1q1$data))  
+    #if(input$c1q1_useHotBtn == 0 && input$c1q1_useExistingBtn == 0 && input$c1q1_useFileBtn == 0) 
+    return()
+  #isolate({
+  tempDF <- c1q1$data
+  names(tempDF) <- c("group","y")
+  tempDF$group <- factor(tempDF$group)
+  # print(summary(tempDF))
+  DF <- with(tempDF,
+        rbind(mean   = tapply(y, group, mean, na.rm = TRUE ),
+              sd     = tapply(y, group, sd, na.rm = TRUE),
+              min    = tapply(y, group, min),
+              Q1     = tapply(y, group, quantile, .25),
+              median = tapply(y, group, median),
+              Q3     = tapply(y, group, quantile, .75),
+              max    = tapply(y, group, max),
+              length = tapply(y, group, length)
+        ))
+  colnames(DF) <- levels(tempDF$group)
+  DF
+  #})
+})
+
+output$c1q1_Summary2 <- renderTable({
+  if( is.null(c1q1$data))  
+    #if(input$c1q1_useHotBtn == 0 && input$c1q1_useExistingBtn == 0 && input$c1q1_useFileBtn == 0) 
+    return()
+    val <- round( diff(tapply(c1q1$data[, 2], c1q1$data[, 1], mean, na.rm=TRUE)), 3)
+    names(val) <- NULL
+  matrix( -val, ncol= 1, dimnames = list("Difference in Means", c1q1$names[2]))
+})
+
   ## Plot t distributions
   output$tProbPlot2 <-    renderPlot({ 
   par(mar=c(24,1,1,1)/10)
