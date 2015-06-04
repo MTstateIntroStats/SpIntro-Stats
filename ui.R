@@ -6,12 +6,15 @@ library(ggplot2)
 #library(markdown)
 #library(knitr)
 ##source("helpers.R")
+# 
+# load("data/quant1.RData")
+# load("data/quant2.RData")
+# load("data/cat1quant1/.RData")
+# 
+# quant1_contents <- load("data/quant1.RData")
+# quant2_contents <- load("data/quant2.RData")
+# c1q1_contents <- load("data/cat1quant1.RData")
 
-load("data/quant1.RData")
-load("data/quant2.RData")
-
-quant1_contents <- load("data/quant1.RData")
-quant2_contents <- load("data/quant2.RData")
 
   ##  User should choose a variable type, then 
     ## load Data  and
@@ -64,8 +67,8 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                    #helpText("Or "),
                    textInput('cat1_prob_txt', 'or  Probability: ', " "),
                    selectInput("cat1_area", "Which area? ", 
-                               c("Lower","Upper","Extremes","Center"), NA),
-                   selectInput("cat1_dist", "Distribution: ",c("Normal"), "Normal")
+                               c("Lower","Upper","Extremes","Center"), NA)
+                   ##selectInput("cat1_dist", "Distribution: ",c("Normal"), "Normal")
                  )),   
                  column(9,
                         plotOutput('normalProbPlot1')
@@ -84,11 +87,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                ##  Existing data is stored in "data/quant1.RData"
                h4("How do you want to input data?"),
                fluidRow(  
-#                  column(3, actionButton("q1_useLddBtn", "Use pre-loaded data") ), 
-#                  column(3, actionButton("q1_useCSVBtn", "Load a local CSV file") ), 
-#                  column(3, actionButton("q1_useHotBtn", "Type or paste into a table") ) 
-                 
-                 column(6, selectInput('q1_entry', 'Data Entry method:', 
+                 column(6, selectInput('q1_entry', ' ', 
                                       list(" ", "Pre-Loaded Data","Local CSV File","Type/Paste into Data Table"), 
                                       selected = " ",
                                       selectize = FALSE))
@@ -177,18 +176,6 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                  column(4,  plotOutput('cat2Plot', width="90%")),         
                  column(3, tableOutput("cat2Summary"))       
                  )
-#                
-#                column(4, inputPanel(
-#                  textInput('cat2_n1', label='Group 1 Total: ', value="0"),
-#                  textInput('cat2_y1', label='Group 1 Successes: ', value="0"),
-#                  textInput('cat2_n2', label='Group 2 Total: ', value="0"),
-#                  textInput('cat2_y2', label='Group 2 Successes: ', value="0")
-#                )),
-#                column(4, 
-#                       plotOutput('cat2Plot')),
-#                column(4,
-#                       h6("Proportions:"),
-#                       tableOutput('cat2Summary'))
       ),
       
 
@@ -203,7 +190,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
            
            fluidRow(
              column(3, 
-                    tableOutput("cat2Summary"), 
+                    #tableOutput("cat2Summary"), 
                     br(),
                     p("Relative Frequencies for Input Data")),
              
@@ -257,7 +244,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                h4("How do you want to input data?"),
                fluidRow(  
                  
-                 column(6, selectInput('q2_entry', 'Data Entry method:', 
+                 column(6, selectInput('q2_entry', '', 
                                        list(" ", "Pre-Loaded Data","Local CSV File","Type/Paste into Data Table"), 
                                        selected = " ",
                                        selectize = FALSE))
@@ -292,7 +279,29 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
     navbarMenu("One of Each",
                
       tabPanel("Enter /Describe Data", value="1cat1quantDataEntry",
-        h6("Describe 2 means - under construction")
+        ##h6("Describe 2 means - under construction"),
+        h4("How do you want to input data?"),
+        fluidRow(  
+            column(6, selectInput('c1q1_entry', ' ', 
+                                list(" ", "Pre-Loaded Data","Local CSV File","Type/Paste into Data Table"), 
+                                selected = " ",
+                                selectize = FALSE))
+        ),
+        
+        ## Need to use Dynamic UI instead of condition panels
+        
+        uiOutput("c1q1_ui")
+        ,
+        hr(),
+        fluidRow(
+          column(7, 
+                 plotOutput('c1q1_Plot') ),
+          column(5, 
+                 tableOutput('c1q1_Summary1'),
+                 br(),
+                 tableOutput('c1q1_Summary2'))
+        )
+        
       ),
       
       tabPanel("Test", value="1cat1quantTest",
