@@ -47,7 +47,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                                   tags$label('Count: ', 
                                              tags$input(name='cat1_n2', type='text', value='0', size='5')),
                                   HTML("&nbsp; &nbsp;"),
-                                  actionButton("cat1_submitButton", "Submit")
+                                  actionButton("cat1_submitButton", "Use These Data")
                                   )),
                   column(3, plotOutput('cat1_Plot',width="80%")),
                   column(3, tableOutput("cat1_Summary"))       
@@ -85,7 +85,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                  ##  open empty table to copy or type in data.
                  ##
                ##  Existing data is stored in "data/quant1.RData"
-               h4("How do you want to input data?"),
+               h4(textOutput('quant1DataIn')),
                fluidRow(  
                  column(6, selectInput('q1_entry', ' ', 
                                       list(" ", "Pre-Loaded Data","Local CSV File","Type/Paste into Data Table"), 
@@ -146,7 +146,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                         fluidRow( 
                           column(4,
                                div(
-                                   actionButton("cat2_submitButton", "Submit", height = 15),
+                                   actionButton("cat2_submitButton", "Use These Data", height = 15),
                                    br(),
                                    tags$input(name='cat2_name1', type='text', value='Success', size='10'),
                                    br(),
@@ -241,7 +241,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                ##  open empty table to copy or type in data.
                ##
                ##  Existing data is stored in "data/quant2.RData"
-               h4("How do you want to input data?"),
+               h4(textOutput('quant2DataIn')),
                fluidRow(  
                  
                  column(6, selectInput('q2_entry', '', 
@@ -282,8 +282,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
     navbarMenu("One of Each",
                
       tabPanel("Enter /Describe Data", value="1cat1quantDataEntry",
-        ##h6("Describe 2 means - under construction"),
-        h4("How do you want to input data?"),
+       h4(textOutput('c1q1DataIn')),
         fluidRow(  
             column(6, selectInput('c1q1_entry', ' ', 
                                 list(" ", "Pre-Loaded Data","Local CSV File","Type/Paste into Data Table"), 

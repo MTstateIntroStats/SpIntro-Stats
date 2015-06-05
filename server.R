@@ -173,6 +173,8 @@ shinyServer(function(input, output, session) {
 
   
   ## 1 Quantitative -----------------------------------------------------------  -- 1 Quant 
+ output$quant1DataIn <- renderText({ "How would you like to input the data? " 
+  })
 
  ## user selects an input method.
   ## renderUI changes to get appropriate inputs.
@@ -232,12 +234,18 @@ shinyServer(function(input, output, session) {
    DF <- eval(parse( text = input$q1_data1))
    q1$data <- DF
    q1$names <- names(DF)
+   output$quant1DataIn <- renderText({
+          "Data is entered, you may now choose to estimate or test one mean"
+   })
  })
 
  observeEvent(  input$q1_useCSVBtn,{
    DF <-  read.csv(input$q1_file1$datapath, header=input$q1_header, sep=input$q1_sep, quote=input$q1_quote)
    q1$names <- if(is.null(names(DF)) | "V1" %in% names(DF)){ "x"} else {names(DF)[1]}
    q1$data <- data.frame(DF[, 1])
+   output$quant1DataIn <- renderText({
+     "Data is entered, you may now choose to estimate or test one mean"
+   })
  })
 
  observeEvent(  input$q1_useHotBtn,{
@@ -245,6 +253,9 @@ shinyServer(function(input, output, session) {
    # print(DF)
    q1$names <- names(DF)
    q1$data <- data.frame( x = as.numeric(unlist(DF)))
+   output$quant1DataIn <- renderText({
+     "Data is entered, you may now choose to estimate or test one mean"
+   })
  })
 
    q1_values = list()
@@ -313,6 +324,7 @@ shinyServer(function(input, output, session) {
       DF
     #})
   })
+
 
 
   ##  t dist'n option --
@@ -594,6 +606,10 @@ shinyServer(function(input, output, session) {
 
   ## 2 Quantitative -----------------------------------------------------------  2 quant
 
+output$quant2DataIn <- renderText({
+  "How do you want to input the data?"
+})
+
 # use  selectInput to grab the 3 types of input
 output$q2_ui <- renderUI({
   if (is.null(input$q2_entry))
@@ -651,6 +667,9 @@ observeEvent(  input$q2_useLddBtn, {
   DF <- eval(parse( text = input$q2_data1))
   q2$names <- names(DF) 
   q2$data <- data.frame(DF)
+  output$quant2DataIn <- renderText({
+    "Data is entered, you may now choose to estimate or test the true slope or correlation"
+  })
 })
 
 observeEvent(  input$q2_useCSVBtn,{
@@ -658,6 +677,9 @@ observeEvent(  input$q2_useCSVBtn,{
                       sep=input$q2_sep, quote=input$q2_quote)
   q2$names <- names(DF)
   q2$data <- data.frame(DF)
+  output$quant2DataIn <- renderText({
+    "Data is entered, you may now choose to estimate or test the true slope or correlation"
+  })
   
 })
 
@@ -666,6 +688,9 @@ observeEvent(  input$q2_useHotBtn,{
   # print(DF)
   q2$names <- names(DF) 
   q2$data <- data.frame(DF)
+  output$quant2DataIn <- renderText({
+    "Data is entered, you may now choose to estimate or test the true slope or correlation"
+  })
 })
 
 observeEvent(  input$q2_swapXwithY,{
@@ -740,6 +765,10 @@ output$q2_Summary <- renderTable({
 
   ## 1 categorical & 1 quantitative   ---------------------------------------  1 cat 1 quant
 
+output$c1q1DataIn <- renderText({
+  "How do you want to input the data?"
+})
+
 output$c1q1_ui <- renderUI({
   if (is.null(input$c1q1_entry))
     return()
@@ -806,6 +835,9 @@ observeEvent(  input$c1q1_useLddBtn, {
   DF <- DF[, whichIsFactor:(3 - whichIsFactor)]
   c1q1$names <- names(DF)
   c1q1$data <- data.frame(DF)
+  output$c1q1DataIn <- renderText({
+    "Data is entered, you may now choose to estimate or test the true difference in means"
+  })
 })
 
 observeEvent(  input$c1q1_useCSVBtn,{
@@ -821,6 +853,9 @@ observeEvent(  input$c1q1_useCSVBtn,{
   if("V1" %in% names(DF)[1])    names(DF) <- c("group", "y")
   c1q1$names <- names(DF)
   c1q1$data <- data.frame(DF)
+  output$c1q1DataIn <- renderText({
+    "Data is entered, you may now choose to estimate or test the true difference in means"
+  })
   
 })
 
@@ -830,6 +865,9 @@ observeEvent(  input$c1q1_useHotBtn,{
   names(DF) <- c("group","y")
   c1q1$names <- names(DF)
   c1q1$data <- DF
+  output$c1q1DataIn <- renderText({
+    "Data is entered, you may now choose to estimate or test the true difference in means"
+  })
 })
 
 c1q1_values = list()
