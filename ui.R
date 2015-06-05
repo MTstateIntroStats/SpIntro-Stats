@@ -180,33 +180,19 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
       
 
       tabPanel("Test", value="2catTest",
-        shinyUI(fluidPage(
-           
-           title = "Randomization Distribution",
-           
-           plotOutput('cat2Test'),
-           
-           hr(),
-           
-           fluidRow(
+        fluidRow(
              column(3, 
-                    #tableOutput("cat2Summary"), 
-                    br(),
-                    p("Relative Frequencies for Input Data")),
+                    h3("Original Data"),
+                    tableOutput("cat2OriginalData")),
              
-             column(4, 
-                    div(br(),
-                        numericInput('cat2_shuffles', "Shuffles:", min=0, max=10000, value=10),
-                        br(),
-                        actionButton("cat2_shuffleButton", "Shuffle!"), 
-                        p("Click the button to shuffle the data.")
-                        )
-                    )
-             )
-            )
-           )
-          ),
-          
+             column(3,
+                    radioButtons("shuffle", label = h3("Number of Shuffles"),
+                                 choices = list("1" = 1, "10" = 2,
+                                                "100" = 3, "1000" = 4,
+                                                "5000" = 5),selected = 1))
+                      ),
+        plotOutput("cat2Test")
+                    ),
 
       tabPanel("Estimate", value="2catEstimate",
         h6("Estimate Difference in Proportions - under construction")

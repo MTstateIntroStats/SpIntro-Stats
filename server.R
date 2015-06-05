@@ -1,12 +1,10 @@
 includeScript("www/helper.js")
 
-## Practice Push/Pull Comment
-
 quant1_contents <- load("data/quant1.RData")
 quant2_contents <- load("data/quant2.RData")
 c1q1_contents <- load("data/cat1quant1.RData")
 
-for(ff in system("ls data/*.RData", intern=T)) load(ff)
+#for(ff in system("ls data/*.RData", intern=T)) load(ff)
 
  ##  These were created to hold sample data with:
  ##  save(birthWeights, REDvsCntrl, REDvsREDA, REDAvsCntrl, file = "data/cat1quant1.RData")
@@ -451,6 +449,7 @@ shinyServer(function(input, output, session) {
     cat2_dataDF <- cat2_data()
     #print(cat2_dataDF)
     counts <- as.table( matrix(cat2_dataDF$counts, 2, 2))
+    #print(counts)
     colnames(counts) <- cat2_dataDF$names[1:2]
     rownames(counts) <- cat2_dataDF$groups[c(1,3)]
     round(t(prop.table(counts, 1)),3)
@@ -479,27 +478,26 @@ shinyServer(function(input, output, session) {
     if(input$cat2_submitButton ==0) return()
     "Data is entered, you may now choose to estimate or test the difference in two proportions."
   })
+  
+  output$cat2OriginalData <- renderTable({ 
+    if(input$cat2_submitButton ==0) return()
+    isolate({
+      cat2_dataDF <- cat2_data()
+      counts <- as.table( matrix(cat2_dataDF$counts, 2, 2))
+      colnames(counts) <- cat2_dataDF$names[1:2]
+      rownames(counts) <- cat2_dataDF$groups[c(1,3)]
+      round(t(prop.table(counts, 1)), 3)
+    })
+  })
 
-    
   output$cat2Test <- renderPlot({
     if(input$cat2_submitButton == 0) return()
-    if(input$cat2_shuffleButton == 0) return()
     
-    ##  changes the value of shuffles whenever the shuffle button is pressed:
-    shuffles <- eventReactive(input$shuffleButton, {
-      input$shuffles
-    })
-    phat_m <- (input$cat2_n11 + input$cat2_n12)/(input$cat2_n21 + input$cat2_n22)
+    ##  Inputs
+    cat2_dataDF <- cat2_data()
+    counts <- as.table( matrix(cat2_dataDF$counts, 2, 2))
+    phat_m <- (counts[1,1] + counts[1,2])/(sum(counts[1:2, 1:2]))
     
-    ##  use phat_m to shuffle
-    n11_new <- rbinom(shuffles, input$cat2_n21, phat_m)
-    n22_new <- (input$cat2_n21 + input$cat2_n22) - n21_new
-    diff_prop <- (n21_new/input$cat2_n21) - (n22_new/input$cat2_n22)
-    
-    ##  plot difference in proportions for the shuffles
-    num_shuffle <- 1:shuffle_count
-    breaks <- ordered(unique(diff_prop))
-    hist(diff_prop, breaks=breaks, xlab = "Difference in Proportions", ylab = "Counts", main = "Randomization Distribution")
     
   }, height=360)
 
