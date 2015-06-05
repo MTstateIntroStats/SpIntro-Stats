@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+ <meta charset="utf-8">
+<head>
+<title> Bootstrap Resampling </title>
+</head>
+<style>
+
+body {
+  font: 12px sans-serif;
+}
+
+.area {
+  fill: steelblue;
+  fill-opacity: 0.3;
+}
+
+.circle {
+  fill: blue;
+  fill-opacity: 0.3;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #005;
+  shape-rendering: crispEdges;
+}
+
+.overlay {
+  fill: none;
+  pointer-events: all;
+}
+
+
+</style>
+<body>
+
+<header>  <h2> What Does "Confidence" Mean?</h2>
+</header>
+
+<!-- Load D3 -->
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<!-- Load data on textbook costs -->
+
+Suppose that we know the true value of a parameter -- in this case the true proportion of successes, p.
+We could then generate data using the "true p", and create a confidence interval, and check to see if it contains the true value.
+<br>
+Doing it once is not very interesting, but if we do it over and over, we'll get to see how often 
+our interval estimates contain the parameter of interest.
+
+
+	<div data-role="content">
+  	  <div data-role="fieldcontain" style="width: 290px; float: left;">
+            <fieldset data-role="controlgroup" id = "confLevel">
+              <legend>Confidence level:</legend>
+              <input type="radio" name="conf" id="radio-choice-1" onClick = "confidence = .80;"  />
+              <label for="radio-choice-1">80%</label>
+        
+              <input type="radio" name="conf" id="radio-choice-2" onClick = "confidence = .90;"   />
+              <label for="radio-choice-2">90%</label>
+        
+              <input type="radio" name="conf" id="radio-choice-3" onClick = "confidence = .95;"   checked="checked" />
+              <label for="radio-choice-3">95%</label>
+        
+              <input type="radio" name="conf" id="radio-choice-4" onClick = "confidence = .99;"  />
+              <label for="radio-choice-4">99%</label>
+            </fieldset>
+    </div> &nbsp;  &nbsp; &nbsp;  &nbsp;
+	  <div data-role="fieldcontain" style="width: 160px; float: left;">
+            <fieldset id = "nSims">
+              <legend>Number of Intervals: </legend>
+              <input type="radio" name="nnn"
+                     id="radio-c-2" onClick = "nSims = 10; newSim();" checked="checked" />
+              <label for="radio-c-2">10</label>
+              <input type="radio" name="nnn"
+                     id="radio-c-2"  onClick =  "nSims = 100; newSim();" />
+              <label for="radio-c-2">100</label>
+        
+              <input type="radio" name="nnn"
+                     id="radio-c-3"  onClick = "nSims = 500; newSim();" />
+              <label for="radio-c-3">500</label>
+        
+            </fieldset>
+          </div>
+              </div> &nbsp;  &nbsp; &nbsp;  &nbsp;
+    <div data-role="fieldcontain" style="width: 160px; float: left;">
+            <fieldset id = "sampleSize">
+              <legend>Sample Size:</legend>
+              <input type="radio" name="nnn"
+                     id="radio-c-2" onClick = "sampSize = 10; newSim();" />
+              <label for="radio-c-2">10</label>
+              <input type="radio" name="nnn"
+                     id="radio-c-2"  onClick = "sampSize = 20; newSim();" checked="checked" />
+              <label for="radio-c-2">20</label>
+              <input type="radio" name="nnn"
+                     id="radio-c-3"  onClick = "sampSize = 50; newSim();"  />
+              <label for="radio-c-3">50</label>
+        
+            </fieldset>
+          </div>
+	</div>
+	<pre>
+
+	</pre>
+
+<div  style="width: 500px;">
+<script>
+    // cd /home/jimrc/consult/spinners/bootstrap
+    // python -m SimpleHTTPServer
+    // http://localhost:8000/BootDemo.html
+// todo:  add 'start over' button
+//        why do some dots appear one tick to right of where they
+//         should be?  Get rid of space between rows -- use larger circles
+//
+//        show number of resamples
+var   BootCount = 90,   // number of points plotted
+  CI = [],
+  CIline = [],
+  CItext = [],
+  confidence = .95,
+  lowerBd = [],
+  phatArray = [],
+  outcome = [],
+  overlap = 2,
+  Rbox = [],
+  radius = 4,
+  sampSize =  8,
+  sampTime = 300,  
+  sampleText = [],
+  sFontSize = 30,
+  showCI = [],
+  showStats = [],
+  spots=[],
+  spotTime=200,
+  summaryStats = [],
+  tailProb = .025,
+  upperBd = []
+  ypos=0;
+
+
+//  var speed = function(multiplier){
+//             resampTime =  resampTime * multiplier;
+//	   };
+ 
+var margin = {top: 20, right: 20, bottom: 60, left: 30};
+var width = 640 - margin.left - margin.right,   //20 to 590
+    height = 440 - margin.top - margin.bottom;
+var  yht = height* 0.75 - margin.top;          // 250 
+
+  
+// set up storage for resampled Means with (x,y) coords 
+    phatArray[0] = { "x": .5, "y":0};
+for(var i = 1; i < 100 ; i++){
+    phatArray[i] = { "x": .5, "y":0};
+ }
+
+var svg = d3.select("body").append("svg")             // 640w x 440h
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  var x = d3.scale.linear()
+    .range([30, width -20])
+    .domain([0, 1]);
+
+  var y = d3.scale.linear()
+    .range([height* 0.75, margin.top])
+    .domain([0, nSims / 10]);
+
+  
+
+ var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+ var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("right");
+
+   svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0,272)")
+      .call(xAxis);
+       
+   CI = [ {"x": 0, "y": height/4, "txt": "0" },
+              {"x": 1, "y": height/4, "txt": "1" }];
+
+//   CIline = svg.selectAll("g.line")
+//    .data(CI)
+//    .enter().append("line")
+//    .attr("x1", y(12))
+//    .attr("x2", width)
+//    .attr("y1", y(0))
+//    .attr("y2", 28)
+//    .style("stroke-width",2)
+//    .style("stroke","white");
+
+   showCI = svg.append("text")
+     .attr("x",x(.5))
+     .attr("y", height + 54)
+     .text("Based on " + nSims + " simulated " + confidence + "Confidence Intervals")
+     .style("stroke","white");
+
+//   showStats = svg.append("text")
+//     .attr("x",x(28))
+//     .attr("y", height)
+//     .text("Mean ")
+//     .style("stroke","white");
+
+function rescale() {
+    y.domain([0, resampMax + .5]);  // change scale to 0, max(y)
+    svg.select("yAxis")
+         .transition().duration(300).ease("sin-in-out") 
+           .call(yAxis);  
+ }
+
+ 
+
+         svg.append("text")      // create 1 Resample button
+          .attr("x",  4  )
+          .attr("y",height)
+          .attr("font-size", 18 + "px")
+          .style("fill-opacity", 1.0E-6)
+          .text("1 Resample")
+          .transition(this)
+           .delay( sampTime * sampSize)
+           .duration(sampTime)
+           .style("fill-opacity", 1);
+
+      Rbox = svg.append("rect")    // and it's frame and activation
+           .attr("class", "rect")
+           .attr("x", 0)
+           .attr("y", height - 20)
+           .attr("width", 112)
+           .attr("height",30)
+           .attr("rx", 4)
+           .attr("ry", 4)
+           .style("stroke", "blue" )
+           .style("stroke-width",2 )
+           .style("fill","lightblue")
+           .style("fill-opacity", 1.0E-6)
+           .on("click", reSample1);
+
+		reSampleMany(BootCount);})
+          .transition(this)
+           .delay( sampTime * sampSize)
+           .duration(sampTime)
+           .style("fill-opacity", 0.2);
+
+   // Remove old spots rather than transition and redraw CI
+      
+  
+    var reSampleMany = function(BootCount){
+      // shrink down existing means, then call for new resamples
+ 	if(meanDots.length >0){
+          meanDots.transition()
+            .style("fill","white")
+            .remove(function(d) { d.remove;});
+          //remove CIs and text
+          CItext.transition().style("fill","white").remove(function(d) { d.remove;});
+          CIline.transition().style("stroke", "white").style("fill","white"); 
+	}
+        resampleMeans(BootCount);
+	drawCI(BootCount);
+    };
+
+    
+    var resampleMeans = function(BootCount){
+      // sample n from sample with replacement, average them and 
+      //  plop into the array. Repeat count times.  update points.
+       var i =0;   // set up storage for resampled Means with (x,y) coords 
+        // radius: shrinks as # of samples increases
+	radius = (BootCount < 101)? 6:
+	    (BootCount < 501)? 5:
+	    (BootCount < 1001)? 4:
+	    (BootCount < 5001)? 3: 2;
+	oneSample.length = sampSize;
+	resample.length  = sampSize;
+	resampMean.length = BootCount;  
+	meansArray.length = BootCount; 
+      for( var j = 0; j <  BootCount; j++){         
+        // ###  Do the Resampling here ##################	 
+        for( var i =0; i < sampSize; i++){
+          resample[i] =  oneSample[Math.floor(Math.random() * sampSize)].txt + 0.0;
+	};  // close i loop
+        resampMean[j] = d3.mean(resample); // compute mean
+      };   // done resampling##################################
+
+	resampMean.sort(function(a,b){return a - b}) ;   
+          // numeric sort to build bins for y values
+        //console.log(resampMean[99] > resampMean[50]);
+         // start on left with smallest x.
+	//  first dot goes at 0, then add one to each from there
+	var j = 0;
+	while( j <  BootCount ){    
+	    // start a fresh bin
+	    plotX = resampMean[j];
+	    ypos = 0;	
+	    meansArray[j] = {"x": x(resampMean[j++] + 0.0), "y": ypos++};
+            while( (resampMean[j] - plotX < radius/6) & (j < BootCount)){
+		//stay in same bin -- increment yposition
+		meansArray[j] = {"x": x(resampMean[j++] + 0.0), "y": ypos++};
+	    };
+	   // console.log(x(plotX));
+	}
+	//meansArray[BootCount-1]={"x": x(resampMean[BootCount]), "y": 0};
+	resampMax = d3.max(meansArray, function(d) { return d.y;});
+	// change scales to hold all x, all y
+        //x.domain([resampMean[0], resampMean[BootCount-1] ]);
+	y.domain([0, resampMax + .5]);  
+
+	meanDots =  svg.selectAll("g.circle")
+            .data(meansArray);
+	//meanDots.length = BootCount; 
+	meanDots.enter().append("circle")
+            .attr("cx", function(d){ return d.x;} ) 
+            .attr("r", radius ) 
+            .attr("cy", function(d){ return y(d.y);} ) 
+            .style("fill","steelblue")
+            .style("fill-opacity", 0.6);
+    };
+
+
+  // when newSAMPLE is clicked. Clear all and start over
+ function newSim(realP, nSims, sampleSize) {
+    // create phats for the sampling Distn
+    for(var i = 0; i < nSims ; i++){
+      for(var j = 0; j < sampleSize; j++){
+        outcome[j] = Math.floor(Math.random()) <= realP;
+      }
+      phat = Math.sum(outcome);
+      phatArray[i] = { "x": phat, "y":0};
+     }
+     // now plot them?
+     
+     length(phatArray) = nSims;
+
+
+ }
+</script>
+
+</div>
+<div style = "float = left;">
+
+
+ <fieldset id = "Display">
+              <legend>Show: </legend>
+              <input type="radio" name="nnn"
+                     id="radio-disp0" onClick = "showSamplingDistn();" checked="checked" />
+              <label for="radio-disp0">10</label>
+              <input type="radio" name="nnn"
+                     id="radio-disp1"  onClick =  "showCIs();" />
+              <label for="radio-disp1">100</label>
+        </fieldset>
+  
+</div>
+
+<br>
