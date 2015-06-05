@@ -233,7 +233,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
       )
     ),
 
-    ####   Two Quantitative -------------------------------------------------
+    ####   Two Quantitative ------------------------------------------------- -- 2 Quant ----
     navbarMenu("Two Quant.",
                tabPanel("Enter /Describe Data", value="2quantDataEntry",
                ##  preloaded data  - save as data/quant1.RData
@@ -260,6 +260,9 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                         plotOutput('q2_Plot') ),
                  column(3, 
                         tableOutput('q2_Summary'))
+               ),
+               fluidRow( 
+                 column(4, actionButton('q2_swapXwithY', "Swap Variables (X goes to Y)"))
                )
                ),
       

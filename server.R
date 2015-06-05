@@ -2,7 +2,7 @@ includeScript("www/helper.js")
 
 quant1_contents <- load("data/quant1.RData")
 quant2_contents <- load("data/quant2.RData")
-cat1quant1_contents <- load("data/cat1quant1.RData")
+c1q1_contents <- load("data/cat1quant1.RData")
 
 for(ff in system("ls data/*.RData", intern=T)) load(ff)
 
@@ -666,6 +666,13 @@ observeEvent(  input$q2_useHotBtn,{
   # print(DF)
   q2$names <- names(DF) 
   q2$data <- data.frame(DF)
+})
+
+observeEvent(  input$q2_swapXwithY,{
+  if(is.null(q2$data))
+    return()
+  q2$names <- q2$names[2:1]
+  q2$data <- q2$data[, 2:1]
 })
 
 q2_values = list()
