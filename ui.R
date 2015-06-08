@@ -180,6 +180,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
       
 
       tabPanel("Test", value="2catTest",
+        titlePanel("Test for a Difference in Proportions"),       
         fluidRow(
              column(3, 
                     h3("Original Data"),

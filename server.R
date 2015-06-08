@@ -498,6 +498,25 @@ shinyServer(function(input, output, session) {
     counts <- as.table( matrix(cat2_dataDF$counts, 2, 2))
     phat_m <- (counts[1,1] + counts[1,2])/(sum(counts[1:2, 1:2]))
     
+    cat2 <- reactiveValues(data=NULL)
+    
+    ## Function to draw and store difference in proportions
+    ## generate_shuffles <- function(input$shuffle){
+    
+          # shuffles <- input$shuffle
+          # n11.new <- rbinom(shuffles, sum(counts[1:2,1]), phat_m)
+          # n12.new <- (counts[1,1] + counts[1,2]) - n11.new
+    
+          # phat.1 <- n11.new/counts[1:2,1]
+          # phat.2 <- n12.new/counts[1:2,2]
+          # diff.p <- as.data.frame(phat.1 - phat.2)
+    #}
+    
+    ##  Append the data.frame from the function to the cat2$data and reassign to cat2$data
+    
+    
+      
+    
     
   }, height=360)
 
