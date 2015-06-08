@@ -1,4 +1,5 @@
 includeScript("www/helper.js")
+source("helpers.R")
 
 quant1_contents <- load("data/quant1.RData")
 quant2_contents <- load("data/quant2.RData")
@@ -248,7 +249,7 @@ shinyServer(function(input, output, session) {
    })
  })
 
- observeEvent(  input$q1_useHotBtn,{
+ observeEvent(input$q1_useHotBtn,{
    DF = data.frame(x=as.numeric(q1_values[["hot"]][,2]))
    # print(DF)
    q1$names <- names(DF)
@@ -278,8 +279,6 @@ shinyServer(function(input, output, session) {
         hot_table(highlightCol = TRUE, highlightRow = TRUE)
     }
   })
-
-
 
   output$q1_Plot <- renderPlot( {
     if( is.null(q1$data))  return()
@@ -489,36 +488,24 @@ shinyServer(function(input, output, session) {
       round(t(prop.table(counts, 1)), 3)
     })
   })
+  
+  cat2 <- reactiveValues(data=NULL, names=NULL)
+ 
+  ##  Takes inputs, uses shuffle function to generate data, appends generated data
+  ##  to cat2$data
+  observeEvent(input$shuffles, {
+    DF <- generate_shuffles(input$shuffles, phat_m = phat_m,
+                            y1=y1, y2=y2, n1=n1, n2=n2)
+    cat2$data <- rbind(cat2$data, DF)
+  })
+  
+  head(cat2$data)
 
   output$cat2Test <- renderPlot({
     if(input$cat2_submitButton == 0) return()
-    
-    ##  Inputs
-    cat2_dataDF <- cat2_data()
-    counts <- as.table( matrix(cat2_dataDF$counts, 2, 2))
-    phat_m <- (counts[1,1] + counts[1,2])/(sum(counts[1:2, 1:2]))
-    
-    cat2 <- reactiveValues(data=NULL)
-    
-    ## Function to draw and store difference in proportions
-    ## generate_shuffles <- function(input$shuffle){
-    
-          # shuffles <- input$shuffle
-          # n11.new <- rbinom(shuffles, sum(counts[1:2,1]), phat_m)
-          # n12.new <- (counts[1,1] + counts[1,2]) - n11.new
-    
-          # phat.1 <- n11.new/counts[1:2,1]
-          # phat.2 <- n12.new/counts[1:2,2]
-          # diff.p <- as.data.frame(phat.1 - phat.2)
-    #}
-    
-    ##  Append the data.frame from the function to the cat2$data and reassign to cat2$data
-    
-    
-      
-    
-    
-  }, height=360)
+    ##  Make plot
+      #x <- sort(cat2$data[,1])
+     }, height=360)
 
   output$normalProbPlot2 <-    renderPlot({ 
   par(mar=c(24,1,1,1)/10)

@@ -182,18 +182,20 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
       tabPanel("Test", value="2catTest",
         titlePanel("Test for a Difference in Proportions"),       
         fluidRow(
+          fluidRow(
              column(3, 
                     h3("Original Data"),
                     tableOutput("cat2OriginalData")),
              
              column(3,
-                    radioButtons("shuffle", label = h3("Number of Shuffles"),
+                    radioButtons("shuffles", label = h3("Number of Shuffles"),
                                  choices = list("1" = 1, "10" = 2,
                                                 "100" = 3, "1000" = 4,
                                                 "5000" = 5),selected = 1))
                       ),
-        plotOutput("cat2Test")
-                    ),
+        column(4, plotOutput("cat2Test", width = "90%") 
+                    ))
+        ),
 
       tabPanel("Estimate", value="2catEstimate",
         h6("Estimate Difference in Proportions - under construction")
