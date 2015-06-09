@@ -490,16 +490,23 @@ shinyServer(function(input, output, session) {
   })
   
   cat2 <- reactiveValues(data=NULL, names=NULL)
- 
-  ##  Takes inputs, uses shuffle function to generate data, appends generated data
-  ##  to cat2$data
-  observeEvent(input$shuffles, {
-    DF <- generate_shuffles(input$shuffles, phat_m = phat_m,
-                            y1=y1, y2=y2, n1=n1, n2=n2)
-    cat2$data <- rbind(cat2$data, DF)
-  })
   
-  head(cat2$data)
+#   observeEvent(input$shuffles, {
+#     isolate({
+#       cat2_dataDF <- cat2_data()
+#       counts <- as.table( matrix(cat2_dataDF$counts, 2, 2))
+#       y1 <- counts[1,1]
+#       n1 <- counts[1,1] + counts[2,1]
+#       y2 <- counts[1,2]
+#       n2 <- counts[1,2] + counts[2,2]
+#       phat_m <- (y1 + y2)/(n1 + n2)
+#     })
+#     DF <- generate_shuffles(input$shuffles, phat_m = phat_m,
+#                             y1=y1, y2=y2, n1=n1, n2=n2)
+#     cat2$data <- rbind(cat2$data, DF)
+#   })
+#   
+#   head(cat2$data)
 
   output$cat2Test <- renderPlot({
     if(input$cat2_submitButton == 0) return()
