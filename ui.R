@@ -63,23 +63,13 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                     radioButtons("CIdemo_reps", label="Number of simulations", choices = list('10', '100', '1000','10000'), selected = '100', inline = TRUE),
                     ##  next two need to be action buttons so we can keep using the same sample.
                     h5("Choose a confidence level"),
-#                     fluidRow(
-#                       column(3,
-#                              actionButton("CIdemo_80", "80%")),
-#                       column(3,
-#                              actionButton("CIdemo_90", "90%")),
-#                       column(3,
-#                              actionButton("CIdemo_95", "95%")),
-#                       column(3,
-#                              actionButton("CIdemo_99", "99%"))
-#                       ),
                      radioButtons("CIdemo_conf", label="Confidence Level", choices = list('80%', '90%', '95%', '99%'), 
                                   selected = '90%', inline = TRUE) 
-#                     actionButton("CIdemo_showCIs", "Switch to Intervals / Sampling Distribution")
                     ),  
-                   column(7, div( h6("Sampling Distribution:"),
+                   column(7, div( 
+                     h4("Sampling Distribution.  Hover mouse over a point to see CI.", center = TRUE),
                      plotOutput("CIdemo_Plot1",  hover = "CIplot1_hover"),
-                     h6("Confidence Intervals  (green ones cover true p)"),
+                     h4("Confidence Intervals  (green ones cover true p)", center =TRUE),
                      plotOutput("CIdemo_Plot2")
                    ))
                 )

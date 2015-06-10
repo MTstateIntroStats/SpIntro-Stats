@@ -75,40 +75,6 @@ shinyServer(function(input, output, session) {
                 min=pmin(0.5, round(10/n,2)), max=pmax(.5, round(1- 9.9/n,2)), value = .5)
       })
 
-# CIinfo <- reactiveValues( conf = NULL, showCIs = TRUE)
-
-## observeEvent("input$CIdemo_80",{
-#              CIinfo$conf <- 0.80
-#              if(is.null(displayFn)) return
-#              output$CIdemo_Plot <- renderPlot( displayFn() )
-#})
-
-# observeEvent("input$CIdemo_90",{
-#             CIinfo$conf <- 0.90
-#             if(is.null(displayFn)) return
-#             output$CIdemo_Plot <- renderPlot( displayFn() )
-#})
-
-# observeEvent("input$CIdemo_95",{
-#             CIinfo$conf <- 0.95
-#             if(is.null(displayFn)) return
-#             output$CIdemo_Plot <- renderPlot( displayFn() )
-#})
-
-# observeEvent("input$CIdemo_99", {
-#             CIinfo$conf <- 0.99
-#             if(is.null(displayFn)) return
-#             output$CIdemo_Plot <- renderPlot( displayFn() )
-# })
-
-# observeEvent("input$CIdemo_showCIs", {
-#             CIinfo$showCIs <- !CIinfo$showCIs
-#              if(is.null(displayFn)) return
-#              output$CIdemo_Plot <- renderPlot( displayFn() )
-#             }
-#             )
-
-## build a reactive function for the plots and use arguments above?
 
  CIdemoSims <- reactive({
    if(is.null(input$CIdemo_p)) return()
