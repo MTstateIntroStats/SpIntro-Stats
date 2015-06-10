@@ -68,6 +68,118 @@ shinyServer(function(input, output, session) {
     })
   })
   
+  output$inputTrueP <- renderUI({
+    n <- input$CIdemo_n
+    sliderInput("CIdemo_p", "Choose true proportion of successes ", 
+                min=pmin(0.5, round(10/n,2)), max=pmax(.5, round(1- 9.9/n,2)), value = .5)
+      })
+
+# CIinfo <- reactiveValues( conf = NULL, showCIs = TRUE)
+
+## observeEvent("input$CIdemo_80",{
+#              CIinfo$conf <- 0.80
+#              if(is.null(displayFn)) return
+#              output$CIdemo_Plot <- renderPlot( displayFn() )
+#})
+
+# observeEvent("input$CIdemo_90",{
+#             CIinfo$conf <- 0.90
+#             if(is.null(displayFn)) return
+#             output$CIdemo_Plot <- renderPlot( displayFn() )
+#})
+
+# observeEvent("input$CIdemo_95",{
+#             CIinfo$conf <- 0.95
+#             if(is.null(displayFn)) return
+#             output$CIdemo_Plot <- renderPlot( displayFn() )
+#})
+
+# observeEvent("input$CIdemo_99", {
+#             CIinfo$conf <- 0.99
+#             if(is.null(displayFn)) return
+#             output$CIdemo_Plot <- renderPlot( displayFn() )
+# })
+
+# observeEvent("input$CIdemo_showCIs", {
+#             CIinfo$showCIs <- !CIinfo$showCIs
+#              if(is.null(displayFn)) return
+#              output$CIdemo_Plot <- renderPlot( displayFn() )
+#             }
+#             )
+
+## build a reactive function for the plots and use arguments above?
+
+ CIdemoSims <- reactive({
+   if(is.null(input$CIdemo_p)) return()
+   nsims <- as.numeric(input$CIdemo_reps)      
+   radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)
+   ## exactRule <- -log( (1-upperconf) * 2)/input$CIdemo_n
+   ##print(c(input$CIdemo_n, input$CIdemo_p))
+   phats <- sort((1 + rbinom(nsims, as.integer(input$CIdemo_n), input$CIdemo_p))/(2 + input$CIdemo_n))
+   phat.stack <- unlist(tapply(phats, cut(phats, breaks = nclass.Sturges(phats)^2),
+                               function(x) if(length(x) > 0) {1:length(x)} else {NULL}))
+   SEs <- sqrt(pmax(.0099, phats * (1-phats) )/ input$CIdemo_n)
+   phatDF <- data.frame(
+     phat = phats,
+     y = phat.stack[!is.na(phat.stack)],
+     SE = SEs
+#     LB = pmax(0, phats - zstar * SEs),
+#     UB = pmin(1, phats + zstar * SEs)
+   )
+   phatDF$row <- 1:nrow(phatDF)
+#   phatDF$colr <- with(phatDF, ifelse(LB < input$CIdemo_p & UB > input$CIdemo_p, 1, 2))
+   phatDF
+ })
+
+ output$CIdemo_Plot1 <- renderPlot({
+   ##displayFn <-  reactive({
+    if(is.null(input$CIdemo_p)) return()  
+    phatDF <- CIdemoSims()
+    nsims <- as.numeric(input$CIdemo_reps)      
+    radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)
+    par(mar=c(1,2,1,1))
+    isolate({
+      plot(y ~ phat, data= phatDF, col = rgb(70, 130, 180, 127, max = 255), pch=16, bty="l",
+              cex = radius/2, ylab = "", xlab = expression(hat(p)))#, main = "Sampling Distribution")
+    })
+  }, height = 225)
+
+output$CIdemo_Plot2 <- renderPlot({
+  ##displayFn <-  reactive({
+  if(is.null(input$CIdemo_p) || is.null(input$CIdemo_conf)) return() 
+  phatDF <- CIdemoSims()  
+  isolate({
+    upperconf = 1- (1 - as.numeric(substr(input$CIdemo_conf,1,2))/100)/2
+    zstar <- qnorm(upperconf)
+    #print(zstar)
+    phatDF$LB = pmax(0, phatDF$phat - zstar * phatDF$SE)
+    phatDF$UB = pmin(1, phatDF$phat + zstar * phatDF$SE)
+    phatDF$colr <- with(phatDF, ifelse(LB < input$CIdemo_p & UB > input$CIdemo_p, 1, 2))
+    #print(summary(phatDF))
+    coverage = 2 - mean(phatDF$colr) 
+    nsims <- as.numeric(input$CIdemo_reps)      
+    radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)
+    par(mar=c(4,2,2,1))
+    plot(row ~ phat, data = phatDF, col = "white", bty="l", xlim = c(min(phatDF$LB), max(phatDF$UB)),
+         cex = radius/4, ylab = "", # main = "Confidence Intervals",
+         xlab = paste("Coverage rate =", coverage))
+    with(phatDF, segments(LB, row, UB, row, col = c("green","red")[colr] ))
+    points(row ~ phat, data = phatDF, col = rgb(70, 130, 180, 127, max = 255), pch=16)
+    abline(v = input$CIdemo_p, lwd = 2, col = "grey")
+    mtext(side=3, at = input$CIdemo_p, input$CIdemo_p, line=0)
+    text(x = max(phatDF$UB) * .85, y = 0.08 * nsims, paste( sum(phatDF$UB < input$CIdemo_p), "too low"))
+    text(x = min(phatDF$UB) * 0.4 + .1, y= .93 * nsims, paste( sum(phatDF$LB > input$CIdemo_p), "too high"))     
+  })
+  if(!is.null(input$CIplot1_hover)){
+    myY <- subset(phatDF, abs(phatDF$phat - input$CIplot1_hover$x) < .005)[round(input$CIplot1_hover$y),]
+    if(!is.null(myY) & length(myY) > 1){
+      points(x=input$CIplot1_hover$x, y = myY$row, cex=2, col = "blue")
+      segments(myY$LB, myY$row, myY$UB, myY$row, lwd=4, col = "blue")
+    }
+  }
+  
+}, height = 300)
+
   output$normalProbPlot1 <-    renderPlot({ 
   par(mar=c(24,1,1,1)/10)
   z <- absz <- prob <- yrr <- xrr <- NA
@@ -456,7 +568,7 @@ shinyServer(function(input, output, session) {
  })
   
 
-  output$cat2Plot <- renderPlot( {
+ output$cat2Plot <- renderPlot( {
     if(input$cat2_submitButton ==0) return()
     isolate( { 
       cat2_dataDF <- cat2_data()
@@ -738,7 +850,6 @@ output$q2_Plot <- renderPlot( {
     grid.arrange(q2_plot1, q2_plot2, q2_plot3, heights = c(1, 1, 3)/5, ncol=1)
   #})
 }, height=400)
-
 
 output$q2_Summary <- renderTable({
   if( is.null(q2$data))  

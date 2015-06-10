@@ -10,21 +10,16 @@ library(ggplot2)
 # load("data/quant1.RData")
 # load("data/quant2.RData")
 # load("data/cat1quant1/.RData")
-# 
-# quant1_contents <- load("data/quant1.RData")
-# quant2_contents <- load("data/quant2.RData")
-# c1q1_contents <- load("data/cat1quant1.RData")
-
 
   ##  User should choose a variable type, then 
     ## load Data  and
     ## describe, test, or estimate
 
-  ## Load data using:
+  ## Load 'spreadsheet' data using:
   ## https://github.com/jrowen/rhandsontable/blob/master/inst/examples/shiny.R
 
 shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
-                   theme = shinytheme("spacelab"),
+                    theme = shinytheme("spacelab"),
     ## 
     ## use empty tabPanel to avoid printing "tab-pane active"               
     tabPanel(""), 
@@ -59,6 +54,36 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
        tabPanel("Estimate", value="cat1_Estimate",
                 h6("Estimate 1 Proportion - under construction")
                 ),
+       tabPanel("Confidence Interval Demo", value = "cat1_CIdemo",
+                titlePanel("Demo to Illustrate the meaning of 'Confidence' in an Interval"),
+                fluidRow(
+                  column(4, 
+                         sliderInput("CIdemo_n", "Sample Size (number of spins)", min = 21, max = 100, value = 50),
+                         uiOutput("inputTrueP"),
+                    radioButtons("CIdemo_reps", label="Number of simulations", choices = list('10', '100', '1000','10000'), selected = '100', inline = TRUE),
+                    ##  next two need to be action buttons so we can keep using the same sample.
+                    h5("Choose a confidence level"),
+#                     fluidRow(
+#                       column(3,
+#                              actionButton("CIdemo_80", "80%")),
+#                       column(3,
+#                              actionButton("CIdemo_90", "90%")),
+#                       column(3,
+#                              actionButton("CIdemo_95", "95%")),
+#                       column(3,
+#                              actionButton("CIdemo_99", "99%"))
+#                       ),
+                     radioButtons("CIdemo_conf", label="Confidence Level", choices = list('80%', '90%', '95%', '99%'), 
+                                  selected = '90%', inline = TRUE) 
+#                     actionButton("CIdemo_showCIs", "Switch to Intervals / Sampling Distribution")
+                    ),  
+                   column(7, div( h6("Sampling Distribution:"),
+                     plotOutput("CIdemo_Plot1",  hover = "CIplot1_hover"),
+                     h6("Confidence Intervals  (green ones cover true p)"),
+                     plotOutput("CIdemo_Plot2")
+                   ))
+                )
+         ),
         tabPanel("Normal Distribution" , value="cat1_Normal",
                  titlePanel("Normal Probabilities"),
                  column(3, inputPanel(
