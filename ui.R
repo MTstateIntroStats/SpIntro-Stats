@@ -42,7 +42,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                                   tags$label('Count: ', 
                                              tags$input(name='cat1_n2', type='text', value='0', size='5')),
                                   HTML("&nbsp; &nbsp;"),
-                                  actionButton("cat1_submitButton", "Use These Data")
+                                  actionButton("cat1_submitButton", "Use These Data", inverse = FALSE)
                                   )),
                   column(3, plotOutput('cat1_Plot',width="80%")),
                   column(3, tableOutput("cat1_Summary"))       
@@ -61,27 +61,21 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                          sliderInput("CIdemo_n", "Sample Size (number of spins)", min = 21, max = 100, value = 50),
                          uiOutput("inputTrueP"),
                     radioButtons("CIdemo_reps", label="Number of simulations", choices = list('10', '100', '1000','10000'), selected = '100', inline = TRUE),
-                    ##  next two need to be action buttons so we can keep using the same sample.
-                    h5("Choose a confidence level"),
-#                     fluidRow(
-#                       column(3,
-#                              actionButton("CIdemo_80", "80%")),
-#                       column(3,
-#                              actionButton("CIdemo_90", "90%")),
-#                       column(3,
-#                              actionButton("CIdemo_95", "95%")),
-#                       column(3,
-#                              actionButton("CIdemo_99", "99%"))
-#                       ),
-                     radioButtons("CIdemo_conf", label="Confidence Level", choices = list('80%', '90%', '95%', '99%'), 
+                  
+                    ## h5("Choose a confidence level"),
+                     radioButtons("CIdemo_conf", label="Choose a Confidence Level", choices = list('80%', '90%', '95%', '99%'), 
                                   selected = '90%', inline = TRUE) 
-#                     actionButton("CIdemo_showCIs", "Switch to Intervals / Sampling Distribution")
                     ),  
-                   column(7, div( h6("Sampling Distribution:"),
-                     plotOutput("CIdemo_Plot1",  hover = "CIplot1_hover"),
-                     h6("Confidence Intervals  (green ones cover true p)"),
+                   column(7, #div( ## style="height: 300px",
+                     h4("Sampling Distribution.  Hover mouse over a point to see CI.", center = TRUE),
+                     plotOutput("CIdemo_Plot1",  hover = "CIplot1_hover")
+                     )
+                ),
+                fluidRow(
+                  column(7, offset=4,
+                     h4("Confidence Intervals  (green ones cover true p)", center =TRUE),
                      plotOutput("CIdemo_Plot2")
-                   ))
+                   )
                 )
          ),
         tabPanel("Normal Distribution" , value="cat1_Normal",
@@ -137,7 +131,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
         h6("Estimate 1 mean - under construction")
       ),
       tabPanel("Bootstrap Demo", value="1quantBoot",
-        a(href="BootDemo.html", "Click here for a demo of Bootstrap Process")
+        a(href="BootDemo.html","Click to see Bootstrap Demo") 
       ),
       tabPanel("t Distribution",  value="1quantT",
                titlePanel("t Probabilities"),

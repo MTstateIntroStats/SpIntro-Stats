@@ -75,40 +75,6 @@ shinyServer(function(input, output, session) {
                 min=pmin(0.5, round(10/n,2)), max=pmax(.5, round(1- 9.9/n,2)), value = .5)
       })
 
-# CIinfo <- reactiveValues( conf = NULL, showCIs = TRUE)
-
-## observeEvent("input$CIdemo_80",{
-#              CIinfo$conf <- 0.80
-#              if(is.null(displayFn)) return
-#              output$CIdemo_Plot <- renderPlot( displayFn() )
-#})
-
-# observeEvent("input$CIdemo_90",{
-#             CIinfo$conf <- 0.90
-#             if(is.null(displayFn)) return
-#             output$CIdemo_Plot <- renderPlot( displayFn() )
-#})
-
-# observeEvent("input$CIdemo_95",{
-#             CIinfo$conf <- 0.95
-#             if(is.null(displayFn)) return
-#             output$CIdemo_Plot <- renderPlot( displayFn() )
-#})
-
-# observeEvent("input$CIdemo_99", {
-#             CIinfo$conf <- 0.99
-#             if(is.null(displayFn)) return
-#             output$CIdemo_Plot <- renderPlot( displayFn() )
-# })
-
-# observeEvent("input$CIdemo_showCIs", {
-#             CIinfo$showCIs <- !CIinfo$showCIs
-#              if(is.null(displayFn)) return
-#              output$CIdemo_Plot <- renderPlot( displayFn() )
-#             }
-#             )
-
-## build a reactive function for the plots and use arguments above?
 
  CIdemoSims <- reactive({
    if(is.null(input$CIdemo_p)) return()
@@ -138,12 +104,12 @@ shinyServer(function(input, output, session) {
     phatDF <- CIdemoSims()
     nsims <- as.numeric(input$CIdemo_reps)      
     radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)
-    par(mar=c(1,2,1,1))
+    par(mar=c(4,2,1,1))
     isolate({
       plot(y ~ phat, data= phatDF, col = rgb(70, 130, 180, 127, max = 255), pch=16, bty="l",
               cex = radius/2, ylab = "", xlab = expression(hat(p)))#, main = "Sampling Distribution")
     })
-  }, height = 225)
+  }, height = 275)
 
 output$CIdemo_Plot2 <- renderPlot({
   ##displayFn <-  reactive({
@@ -160,7 +126,7 @@ output$CIdemo_Plot2 <- renderPlot({
     coverage = 2 - mean(phatDF$colr) 
     nsims <- as.numeric(input$CIdemo_reps)      
     radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)
-    par(mar=c(4,2,2,1))
+    par(mar=c(4,1,2,1))
     plot(row ~ phat, data = phatDF, col = "white", bty="l", xlim = c(min(phatDF$LB), max(phatDF$UB)),
          cex = radius/4, ylab = "", # main = "Confidence Intervals",
          xlab = paste("Coverage rate =", coverage))
@@ -174,12 +140,12 @@ output$CIdemo_Plot2 <- renderPlot({
   if(!is.null(input$CIplot1_hover)){
     myY <- subset(phatDF, abs(phatDF$phat - input$CIplot1_hover$x) < .005)[round(input$CIplot1_hover$y),]
     if(!is.null(myY) & length(myY) > 1){
-      points(x=input$CIplot1_hover$x, y = myY$row, cex=2, col = "blue")
+      points(x=myY$phat, y = myY$row, cex=2, col = "blue")
       segments(myY$LB, myY$row, myY$UB, myY$row, lwd=4, col = "blue")
     }
   }
   
-}, height = 300)
+}, height = 275)
 
   output$normalProbPlot1 <-    renderPlot({ 
   par(mar=c(24,1,1,1)/10)
@@ -436,7 +402,11 @@ output$CIdemo_Plot2 <- renderPlot({
     #})
   })
 
-
+  output$boot_demo <- renderUI(
+#     includeScript("www/d3.v3.min.js"),
+#     includeScript("www/costs.js"),
+#     includeHTML("www/BootDemo.html")
+    )
 
   ##  t dist'n option --
   output$tProbPlot1 <-    renderPlot({ 
