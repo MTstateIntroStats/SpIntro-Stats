@@ -573,24 +573,83 @@ output$CIdemo_Plot2 <- renderPlot({
   
   cat2 <- reactiveValues(data=NULL, names=NULL)
   
-  #   observeEvent(input$cat2_shuffle, {
-  #     cat2_dataDF <- cat2_data()
-  #     counts <- matrix(cat2_dataDF$counts, nrow = 2, ncol = 2)
-  #     y1 <- counts[1,1]
-  #     n1 <- counts[1,1] + counts[2,1]
-  #     y2 <- counts[1,2]
-  #     n2 <- counts[1,2] + counts[2,2]
-  #     phat_m <- (y1 + y2)/(n1 + n2)
-  #     
-  #     DF <- generate_shuffles(input$num_shuffles, phat_m = phat_m,
-  #                             y1=y1, y2=y2, n1=n1, n2=n2)
-  #     cat2$data <- rbind(cat2$data, DF)
-  #   })
+  observeEvent(input$cat2_shuffle_1, {
+    cat2_dataDF <- cat2_data()
+    counts <- matrix(cat2_dataDF$counts, nrow = 2, ncol = 2)
+    y1 <- counts[1,1]
+    n1 <- counts[1,1] + counts[2,1]
+    y2 <- counts[1,2]
+    n2 <- counts[1,2] + counts[2,2]
+    phat_m <- (y1 + y2)/(n1 + n2)
+    
+    DF <- generate_shuffles(shuffles = 1, phat_m = phat_m,
+                            y1=y1, y2=y2, n1=n1, n2=n2)
+    cat2$data <- rbind(cat2$data, DF)
+  })
   
+  observeEvent(input$cat2_shuffle_10, {
+    cat2_dataDF <- cat2_data()
+    counts <- matrix(cat2_dataDF$counts, nrow = 2, ncol = 2)
+    y1 <- counts[1,1]
+    n1 <- counts[1,1] + counts[2,1]
+    y2 <- counts[1,2]
+    n2 <- counts[1,2] + counts[2,2]
+    phat_m <- (y1 + y2)/(n1 + n2)
+    
+    DF <- generate_shuffles(shuffles = 10, phat_m = phat_m,
+                            y1=y1, y2=y2, n1=n1, n2=n2)
+    cat2$data <- rbind(cat2$data, DF)
+  })
+  
+  observeEvent(input$cat2_shuffle_100, {
+    cat2_dataDF <- cat2_data()
+    counts <- matrix(cat2_dataDF$counts, nrow = 2, ncol = 2)
+    y1 <- counts[1,1]
+    n1 <- counts[1,1] + counts[2,1]
+    y2 <- counts[1,2]
+    n2 <- counts[1,2] + counts[2,2]
+    phat_m <- (y1 + y2)/(n1 + n2)
+    
+    DF <- generate_shuffles(shuffles = 100, phat_m = phat_m,
+                            y1=y1, y2=y2, n1=n1, n2=n2)
+    cat2$data <- rbind(cat2$data, DF)
+  })
+  
+  observeEvent(input$cat2_shuffle_1000, {
+    cat2_dataDF <- cat2_data()
+    counts <- matrix(cat2_dataDF$counts, nrow = 2, ncol = 2)
+    y1 <- counts[1,1]
+    n1 <- counts[1,1] + counts[2,1]
+    y2 <- counts[1,2]
+    n2 <- counts[1,2] + counts[2,2]
+    phat_m <- (y1 + y2)/(n1 + n2)
+    
+    DF <- generate_shuffles(shuffles = 1000, phat_m = phat_m,
+                            y1=y1, y2=y2, n1=n1, n2=n2)
+    cat2$data <- rbind(cat2$data, DF)
+  })
+  
+  observeEvent(input$cat2_shuffle_5000, {
+    cat2_dataDF <- cat2_data()
+    counts <- matrix(cat2_dataDF$counts, nrow = 2, ncol = 2)
+    y1 <- counts[1,1]
+    n1 <- counts[1,1] + counts[2,1]
+    y2 <- counts[1,2]
+    n2 <- counts[1,2] + counts[2,2]
+    phat_m <- (y1 + y2)/(n1 + n2)
+    
+    DF <- generate_shuffles(shuffles = 5000, phat_m = phat_m,
+                            y1=y1, y2=y2, n1=n1, n2=n2)
+    cat2$data <- rbind(cat2$data, DF)
+  })
+  
+  #head(cat2$data)
   
   output$cat2Test <- renderPlot({
     if(input$cat2_submitButton == 0) return()
-    if(input$cat2_shuffle == 0) return()
+    if(input$cat2_shuffle_1 == 0 & input$cat2_shuffle_10 == 0 & 
+       input$cat2_shuffle_100 == 0 & input$cat2_shuffle_1000 == 0 &
+       input$cat2_shuffle_5000 == 0) return()
     ##  Make plot
     #x <- sort(cat2$data[,1])
   }, height=360)
