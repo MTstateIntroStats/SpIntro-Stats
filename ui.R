@@ -61,8 +61,6 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                          sliderInput("CIdemo_n", "Sample Size (number of spins)", min = 21, max = 100, value = 50),
                          uiOutput("inputTrueP"),
                     radioButtons("CIdemo_reps", label="Number of simulations", choices = list('10', '100', '1000','10000'), selected = '100', inline = TRUE),
-<<<<<<< HEAD
-                  
                     ## h5("Choose a confidence level"),
                      radioButtons("CIdemo_conf", label="Choose a Confidence Level", choices = list('80%', '90%', '95%', '99%'), 
                                   selected = '90%', inline = TRUE) 
@@ -74,7 +72,6 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                 ),
                 fluidRow(
                   column(7, offset=4,
-=======
                     ##  next two need to be action buttons so we can keep using the same sample.
                     h5("Choose a confidence level"),
                      radioButtons("CIdemo_conf", label="Confidence Level", choices = list('80%', '90%', '95%', '99%'), 
@@ -83,11 +80,10 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                    column(7, div( 
                      h4("Sampling Distribution.  Hover mouse over a point to see CI.", center = TRUE),
                      plotOutput("CIdemo_Plot1",  hover = "CIplot1_hover"),
->>>>>>> 680ff10dedcc3768918ab84a885bf9f6d400f2dd
                      h4("Confidence Intervals  (green ones cover true p)", center =TRUE),
                      plotOutput("CIdemo_Plot2")
                    )
-                )
+                ) )
          ),
         tabPanel("Normal Distribution" , value="cat1_Normal",
                  titlePanel("Normal Probabilities"),
@@ -205,26 +201,26 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                  ),
                  column(4,  plotOutput('cat2Plot', width="90%")),         
                  column(3, tableOutput("cat2Summary"))       
-                 )
+              )
       ),
       
 
       tabPanel("Test", value="2catTest",
         titlePanel("Test for a Difference in Proportions"),       
-        fluidRow(
-          fluidRow(
-             column(3, 
-                    h3("Original Data"),
-                    tableOutput("cat2OriginalData")),
-             
-             column(3,
-                    radioButtons("shuffles", label = h3("Number of Shuffles"),
-                                 choices = list("1" = 1, "10" = 2,
-                                                "100" = 3, "1000" = 4,
-                                                "5000" = 5),selected = 1))
-                      ),
-        column(4, plotOutput("cat2Test", width = "90%") 
-                    ))
+#         fluidRow(
+#              column(3, 
+#                     h3("Original Data"),
+#                     tableOutput("cat2OriginalData")),
+#              
+#              column(3,
+#                     radioButtons("shuffles", label = h3("Number of Shuffles"),
+#                                  choices = list("1" = 1, "10" = 2,
+#                                                 "100" = 3, "1000" = 4,
+#                                                 "5000" = 5),selected = 1)
+#                       ),
+#             column(6, plotOutput("cat2Test", width = "90%") 
+#                     )
+#             )
         ),
 
       tabPanel("Estimate", value="2catEstimate",
@@ -403,4 +399,4 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
 )
   #fluidPage(
   #  h2("title here?"))
-)
+#)
