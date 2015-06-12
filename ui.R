@@ -65,25 +65,24 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                      radioButtons("CIdemo_conf", label="Choose a Confidence Level", choices = list('80%', '90%', '95%', '99%'), 
                                   selected = '90%', inline = TRUE) 
                     ),  
-                   column(7, #div( ## style="height: 300px",
-                     h4("Sampling Distribution.  Hover mouse over a point to see CI.", center = TRUE),
-                     plotOutput("CIdemo_Plot1",  hover = "CIplot1_hover")
-                     )
-                ),
-                fluidRow(
-                  column(7, offset=4,
-                    ##  next two need to be action buttons so we can keep using the same sample.
-                    h5("Choose a confidence level"),
-                     radioButtons("CIdemo_conf", label="Confidence Level", choices = list('80%', '90%', '95%', '99%'), 
-                                  selected = '90%', inline = TRUE) 
-                    ),  
-                   column(7, div( 
+#                    column(7, #div( ## style="height: 300px",
+#                      h4("Sampling Distribution.  Hover mouse over a point to see CI.", center = TRUE),
+#                      plotOutput("CIdemo_Plot1",  hover = "CIplot1_hover")
+#                      )
+                #),
+                #fluidRow(
+                  column(7, 
+#                     h5("Choose a confidence level"),
+#                      radioButtons("CIdemo_conf", label="Confidence Level", choices = list('80%', '90%', '95%', '99%'), 
+#                                   selected = '90%', inline = TRUE) 
+#                     ),  
+#                    column(7, div( 
                      h4("Sampling Distribution.  Hover mouse over a point to see CI.", center = TRUE),
                      plotOutput("CIdemo_Plot1",  hover = "CIplot1_hover"),
                      h4("Confidence Intervals  (green ones cover true p)", center =TRUE),
                      plotOutput("CIdemo_Plot2")
                    )
-                ) )
+                )
          ),
         tabPanel("Normal Distribution" , value="cat1_Normal",
                  titlePanel("Normal Probabilities"),
@@ -201,26 +200,26 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                  ),
                  column(4,  plotOutput('cat2Plot', width="90%")),         
                  column(3, tableOutput("cat2Summary"))       
-              )
+                 )
       ),
       
 
       tabPanel("Test", value="2catTest",
         titlePanel("Test for a Difference in Proportions"),       
-#         fluidRow(
-#              column(3, 
-#                     h3("Original Data"),
-#                     tableOutput("cat2OriginalData")),
-#              
-#              column(3,
-#                     radioButtons("shuffles", label = h3("Number of Shuffles"),
-#                                  choices = list("1" = 1, "10" = 2,
-#                                                 "100" = 3, "1000" = 4,
-#                                                 "5000" = 5),selected = 1)
-#                       ),
-#             column(6, plotOutput("cat2Test", width = "90%") 
-#                     )
-#             )
+        fluidRow(
+          fluidRow(
+             column(3, 
+                    h3("Original Data"),
+                    tableOutput("cat2OriginalData")),
+             
+             column(3,
+                    radioButtons("shuffles", label = h3("Number of Shuffles"),
+                                 choices = list("1" = 1, "10" = 2,
+                                                "100" = 3, "1000" = 4,
+                                                "5000" = 5),selected = 1))
+                      ),
+        column(4, plotOutput("cat2Test", width = "90%") 
+                    ))
         ),
 
       tabPanel("Estimate", value="2catEstimate",
@@ -399,4 +398,4 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
 )
   #fluidPage(
   #  h2("title here?"))
-#)
+)
