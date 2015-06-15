@@ -65,11 +65,11 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                     ## h5("Choose a confidence level"),
                      radioButtons("CIdemo_conf", label="Choose a Confidence Level", choices = list('80%', '90%', '95%', '99%'), 
                                   selected = '90%', inline = TRUE) 
-                    ),  
-                   column(7, #div( ## style="height: 300px",
-                     h4("Sampling Distribution.  Hover mouse over a point to see CI.", center = TRUE),
-                     plotOutput("CIdemo_Plot1",  hover = "CIplot1_hover")
-                     )
+                    )#,  
+#                    column(7, #div( ## style="height: 300px",
+#                      h4("Sampling Distribution.  Hover mouse over a point to see CI.", center = TRUE),
+#                      plotOutput("CIdemo_Plot1",  hover = "CIplot1_hover")
+#                      )
                 ),
                 fluidRow(
                   column(7, offset=4,
@@ -145,17 +145,16 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                titlePanel("t Probabilities"),
                column(4, inputPanel(
                  #helpText("Either enter  "),
-                 textInput('prb_z_txt', label='Standardized Value: ', value=" "),
+                 textInput('q1_z_txt', label='Standardized Value: ', value=" "),
                  #helpText("Or "),
-                 textInput('prb_prob_txt', 'or  Probability: ', " "),
-                 selectInput("prb_area", "To go into which area? ", 
+                 textInput('q1_prob_txt', 'or  Probability: ', " "),
+                 selectInput("q1_area", "To go into which area? ", 
                              c("Lower","Upper","Extremes","Center"), NA),
-                 selectInput("prb_dist", "Distribution: ",c("t"), "t"),
-                 numericInput("prb_df", "t degrees of freedom?", 10 )
+                 numericInput("q1_df", "t degrees of freedom?", 10 )
                )),   
                ##  dist'n shows 'normal' by default, but conditional box for t df appears.
                column(8,
-                      plotOutput('probPlot3')
+                      plotOutput('tProbPlot1')
                )  #,
                #  h6("t distribution")
       )                         
@@ -236,11 +235,11 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                  #helpText("Or "),
                  textInput('cat2_prob_txt', 'or  Probability: ', " "),
                  selectInput("cat2_area", "To go into which area? ", 
-                             c("Lower","Upper","Extremes","Center"), NA),
-                 selectInput("cat2_dist", "Distribution: ",c("Normal"), "Normal"),
-                 conditionalPanel( 
-                   condition = "input.prb_dist =='t'", 
-                   numericInput("cat2_df", "t degrees of freedom?", 10 ))
+                             c("Lower","Upper","Extremes","Center"), NA)#,
+                 #selectInput("cat2_dist", "Distribution: ",c("Normal"), "Normal"),
+                 #conditionalPanel( 
+                #   condition = "input.prb_dist =='t'", 
+                #   numericInput("cat2_df", "t degrees of freedom?", 10 ))
                )),   
                column(8,
                       plotOutput('normalProbPlot2')
@@ -334,13 +333,13 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                titlePanel("t Probabilities"),
                column(4, inputPanel(
                  #helpText("Either enter  "),
-                 textInput('quant2_z_txt', label='Standardized Value: ', value=" "),
+                 textInput('c1q1_z_txt', label='Standardized Value: ', value=" "),
                  #helpText("Or "),
-                 textInput('quant2_prob_txt', 'or  Probability: ', " "),
-                 selectInput("quant2_area", "To go into which area? ", 
+                 textInput('c1q1_prob_txt', 'or  Probability: ', " "),
+                 selectInput("c1q1_area", "To go into which area? ", 
                              c("Lower","Upper","Extremes","Center"), NA),
-                 selectInput("quant2_dist", "Distribution: ",c("t"), "t"),
-                 numericInput("quant2_df", "t degrees of freedom?", 10 )
+                 #selectInput("c1q1_dist", "Distribution: ",c("t"), "t"),
+                 numericInput("c1q1_df", "t degrees of freedom?", 10 )
                )),   
                ##  dist'n shows 'normal' by default, but conditional box for t df appears.
                column(8,
