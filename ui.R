@@ -73,8 +73,6 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                 
                 fluidRow(
                   column(7, offset=4,
-#                      h4("Sampling Distribution.  Hover mouse over a point to see CI.", center = TRUE),
-#                      plotOutput("CIdemo_Plot1",  hover = "CIplot1_hover"),
                      h4("Confidence Intervals  (green ones cover true p)", center =TRUE),
                      plotOutput("CIdemo_Plot2")
                    )
@@ -273,12 +271,31 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                         tableOutput('q2_Summary'))
                ),
                fluidRow( 
-                 column(4, actionButton('q2_swapXwithY', "Swap Variables (X goes to Y)"))
+                 column(4, uiOutput("q2_swap"))
                )
-               ),
-      
+               ),      
       tabPanel("Test", value="2quantTest",
-        h6("Test Slope/Correlation - under construction")
+        h6("Test Slope/Correlation - under construction"),
+        fluidRow(
+          column(4, tableOutput('q2_TestPrep'),
+                 #radioButtons('q2_Test1orMany', label= "Display: ", list("One or","Many shuffles?"), inline = TRUE),
+                 h5("We start showing one shuffle. How many more?"),
+                 actionButton("q2_shuffle_10", label = "10"),
+                 actionButton("q2_shuffle_100", label = "100"),
+                 actionButton("q2_shuffle_1000", label = "1000"),
+                 actionButton("q2_shuffle_5000", label = "5000"),
+                 radioButtons('q2_TestParam', label = "Parameter: ", list("Slope","Correlation"), inline = TRUE)
+          ),
+          ## for 1 shuffle, show equal size plots of original and reshuffled x,y data
+          ##  for more shuffles, make original data and hover --> shuffle plots smaller, large plot of 
+          ##  sampling distribution for slope / correlation.
+          column(8, plotOutput('q2_TestPlot1'))
+          ),
+         fluidRow(
+           column(8, offset = 4,
+                  plotOutput('q2_TestPlot2', hover = 'q2_Test_hover')
+                  )
+         )
       ),
 
       tabPanel("Estimate Slope/Correlation", value="2quantEstimate",
