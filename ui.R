@@ -60,46 +60,26 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                   column(4, 
                          sliderInput("CIdemo_n", "Sample Size (number of spins)", min = 21, max = 100, value = 50),
                          uiOutput("inputTrueP"),
-                    radioButtons("CIdemo_reps", label="Number of simulations", choices = list('10', '100', '1000','10000'), selected = '100', inline = TRUE),
-                    ## h5("Choose a confidence level"),
-                     radioButtons("CIdemo_conf", label="Choose a Confidence Level", choices = list('80%', '90%', '95%', '99%'), 
-                                  selected = '90%', inline = TRUE) 
-<<<<<<< HEAD
-                    )#,  
-=======
-                    ),  
->>>>>>> 0f8f5336e2352cdd08323ad3c337cf7530b96a73
-#                    column(7, #div( ## style="height: 300px",
-#                      h4("Sampling Distribution.  Hover mouse over a point to see CI.", center = TRUE),
-#                      plotOutput("CIdemo_Plot1",  hover = "CIplot1_hover")
-#                      )
-<<<<<<< HEAD
-                ),
+                         radioButtons("CIdemo_reps", label="Number of simulations", choices = list('10', '100', '1000','10000'), selected = '100', inline = TRUE),
+                         ## h5("Choose a confidence level"),
+                         radioButtons("CIdemo_conf", label="Choose a Confidence Level", choices = list('80%', '90%', '95%', '99%'), 
+                                      selected = '90%', inline = TRUE) 
+                  ),  
+                  
+                  column(7, #div( ## style="height: 300px",
+                         h4("Sampling Distribution.  Hover mouse over a point to see CI.", center = TRUE),
+                         plotOutput("CIdemo_Plot1",  hover = "CIplot1_hover")
+                  )),
+                
                 fluidRow(
                   column(7, offset=4,
-                    ##  next two need to be action buttons so we can keep using the same sample.
-                    h5("Choose a confidence level"),
-                     radioButtons("CIdemo_conf", label="Confidence Level", choices = list('80%', '90%', '95%', '99%'), 
-                                  selected = '90%', inline = TRUE) 
-                    ),  
-                   column(7, div( 
-=======
-                #),
-                #fluidRow(
-                  column(7, 
-#                     h5("Choose a confidence level"),
-#                      radioButtons("CIdemo_conf", label="Confidence Level", choices = list('80%', '90%', '95%', '99%'), 
-#                                   selected = '90%', inline = TRUE) 
-#                     ),  
-#                    column(7, div( 
->>>>>>> 0f8f5336e2352cdd08323ad3c337cf7530b96a73
-                     h4("Sampling Distribution.  Hover mouse over a point to see CI.", center = TRUE),
-                     plotOutput("CIdemo_Plot1",  hover = "CIplot1_hover"),
-                     h4("Confidence Intervals  (green ones cover true p)", center =TRUE),
-                     plotOutput("CIdemo_Plot2")
-                   )
+                         #                      h4("Sampling Distribution.  Hover mouse over a point to see CI.", center = TRUE),
+                         #                      plotOutput("CIdemo_Plot1",  hover = "CIplot1_hover"),
+                         h4("Confidence Intervals  (green ones cover true p)", center =TRUE),
+                         plotOutput("CIdemo_Plot2")
+                  )
                 )
-         ),
+       ),
         tabPanel("Normal Distribution" , value="cat1_Normal",
                  titlePanel("Normal Probabilities"),
                  column(3, inputPanel(
