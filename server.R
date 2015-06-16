@@ -4,8 +4,9 @@ source("helpers.R")
 quant1_contents <- load("data/quant1.RData")
 quant2_contents <- load("data/quant2.RData")
 c1q1_contents <- load("data/cat1quant1.RData")
-
-for(ff in system("ls data/*.RData", intern=T)) load(ff)
+load("data/quant1.RData")
+load("data/quant2.RData")
+load("data/cat1quant1.RData")
 
  ##  These were created to hold sample data with:
  ##  save(birthWeights, REDvsCntrl, REDvsREDA, REDAvsCntrl, file = "data/cat1quant1.RData")
