@@ -275,11 +275,11 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                )
                ),      
       tabPanel("Test", value="2quantTest",
-        h6("Test Slope/Correlation - under construction"),
         fluidRow(
           column(4, tableOutput('q2_TestPrep'),
                  #radioButtons('q2_Test1orMany', label= "Display: ", list("One or","Many shuffles?"), inline = TRUE),
-                 h5("We start showing one shuffle. How many more?"),
+                 h5("We start showing one shuffle."),
+                 h5("How many more?"),
                  actionButton("q2_shuffle_10", label = "10"),
                  actionButton("q2_shuffle_100", label = "100"),
                  actionButton("q2_shuffle_1000", label = "1000"),
@@ -289,13 +289,14 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
           ## for 1 shuffle, show equal size plots of original and reshuffled x,y data
           ##  for more shuffles, make original data and hover --> shuffle plots smaller, large plot of 
           ##  sampling distribution for slope / correlation.
-          column(8, plotOutput('q2_TestPlot1'))
-          ),
-         fluidRow(
-           column(8, offset = 4,
-                  plotOutput('q2_TestPlot2', hover = 'q2_Test_hover')
-                  )
-         )
+          column(3, 
+                 plotOutput('q2_TestPlot1')
+                 ),
+          column(5,
+              # h5("Click on a point to see that shuffle"),
+               plotOutput('q2_TestPlot2', click = 'q2_Test_click')
+              )
+          )
       ),
 
       tabPanel("Estimate Slope/Correlation", value="2quantEstimate",

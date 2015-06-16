@@ -870,7 +870,7 @@ output$q2_ui <- renderUI({
 })
 
 ##  grab data according to input method
-q2 <- reactiveValues(data = NULL, names = NULL, shuffles = NULL, slopes = NULL, corr = NULL)
+q2 <- reactiveValues(data = NULL, names = NULL, slope = NULL, corr = NULL, qr = NULL)
 
 observeEvent(  input$q2_useLddBtn, {
   DF <- eval(parse( text = input$q2_data1))
@@ -981,10 +981,16 @@ output$q2_swap <- renderUI({
 })
    ##############################  -----------------------------------  q2 TESTING
 
+q2Test <- reactiveValues( shuffles = NULL, slopes = NULL, corr = NULL)
+
 output$q2_TestPrep <- renderTable({
   names(q2$data) <- c("x","y")
-  out <- list("Correlation: " = cor(q2$data[,1], q2$data[,2]),
-              "Slope: " = coef(lm(y ~ x, data = q2$data))[2] )
+  fit0 <- lm( y ~ x, q2$data)
+  q2$slope <- coef(fit0)[2]
+  q2$qr <- fit0$qr
+  q2$corr <- cor(q2$data[,1], q2$data[,2])
+  out <- list("Correlation: " =  q2$corr,
+              "Slope: " = q2$slope )
   out <- do.call(rbind, out)
   colnames(out) <- c("Estimate")
   out
@@ -997,78 +1003,95 @@ output$q2_TestPrep <- renderTable({
 # })
 
 output$q2_TestPlot1 <- renderPlot({
-  par(mfrow=c(1,2))
+  par(mfrow=c(2,1), mar = c(2.4,2,4,2))
   DF0 <- q2$data
   colnames(DF0) <- c("x","y")
   plot(y ~ x, data=DF0, xlab = q2$names[1], ylab = q2$names[2], col = blu, pch = 16,
        main = "Original Data")
   lmfit0 <- lm(y ~ x, DF0)
   abline(lmfit0, col = blu)
-  b1hat <- round(coef(lmfit0)[2], 3)
-  rhat0 <- round(cor(DF0$x, DF0$y), 3)
+  b1hat <- round(q2$slope, 3)
+  rhat0 <- round(q2$corr, 3)
   mtext(side = 3,  at = min(DF0$x)*2/3 + max(DF0$x)/3, bquote(hat(beta)[1] == .(b1hat) ))
   mtext(side = 3,  at = min(DF0$x)/3 + max(DF0$x)*2/3, bquote(r == .(rhat0)))
   shuffle <- sample(1:nrow(q2$data))
-  DF1 <- DF0
-  DF1$y <- DF1$y[shuffle]
+  if(!is.null(input$q2Test_click) ){
+    ## grab hovered sample
+    print(input$q2_Test_click)
+    clickX <- input$q2_Test_click$x
+    clickY <- input$q2_Test_click$y
+    nearest <- which( abs(q2Test$slope - clickX) < diff(range(q2Test$slope))/30 & abs(clickY - q2Test$y) < .5 )[1]
+    shuffle <- q2Test$shuffle[nearest,]
+  }
+  DF0$newy <- DF0$y[shuffle]
   plot(y ~ x, data = DF0, xlab = q2$names[1], ylab = q2$names[2], col = "green", pch =16,
        main = "Shuffled Data")
-  points(y ~ x, data = DF1, pch = 16, col = blu)
-  points(y ~ x, data = DF1)
-  arrows(DF0$x, DF0$y, DF0$x, DF1$y, col = "grey", length = .1, angle = 15)
-  lmfit1 <- lm(y ~ x, DF1)
+  points(newy ~ x, data = DF0, pch = 16, col = blu)
+  points(newy ~ x, data = DF0)
+  with(subset(DF0, abs(y - newy) > .0001),
+    arrows(x, y, x, newy, col = "grey", length = .1, angle = 15)
+  )
+  lmfit1 <- lm(newy ~ x, DF0)
   abline(lmfit1)
   beta <- round(coef(lmfit1)[2], 3)
-  rhat1 <- round(cor(DF1$x, DF1$y), 3)
-  mtext(side = 3, at = min(DF1$x)*2/3 + max(DF1$x)/3, bquote(hat(beta)[1] == .(beta) ) )
-  mtext(side = 3,  at = min(DF1$x)/3 + max(DF1$x)*2/3, bquote(r == .(rhat1)))
-})
+  rhat1 <- round(cor(DF0$x, DF0$newy), 3)
+  mtext(side = 3, at = min(DF0$x)*2/3 + max(DF0$x)/3, bquote(hat(beta)[1] == .(beta) ) )
+  mtext(side = 3,  at = min(DF0$x)/3 + max(DF0$x)*2/3, bquote(r == .(rhat1)))
+}, height = 400, width = 300)
 
 observeEvent(input$q2_shuffle_10, {
-  fit0 <- lm(q2$data[, 2] ~ q2$data[, 1])
   newShuffles <- t( sapply(1:10, function(x) sample(1:nrow(q2$data))))
-  q2$shuffles <- rbind(q2$shuffles, newShuffles)
-  q2$slopes <- c(q2$slopes, apply(newShuffles, 1, function(x) coef(lm(q2$data[x,2] ~ q2$data[,1]))[2]) )
+#  print(dim(newShuffles))
+  q2Test$shuffles <- rbind(q2Test$shuffles, newShuffles)
   #print(q2$slopes)
-  q2$corr <- c(q2$corr, apply(newShuffles, 1, function(x) cor(q2$data[,1],q2$data[x, 2])))
-  print(q2$corr)
+ q2Test$slopes <- c(q2Test$slopes, apply(newShuffles, 1, function(x) qr.coef(q2$qr, q2$data[x, 2])[2]))
+ q2Test$corr <- c(q2$Testcorr, apply(newShuffles, 1, function(ndx) cor(q2$data$x, q2$data[ndx, 2])))
 })
+
 observeEvent(input$q2_shuffle_100, {
-  fit0 <- lm(q2$data[, 2] ~ q2$data[, 1])
   newShuffles <- t( sapply(1:100, function(x) sample(1:nrow(q2$data))))
-  q2$shuffles <- rbind(q2$shuffles, newShuffles)
-  q2$slopes <- c(q2$slopes, apply(newShuffles, 1, function(x) coef(lm(q2$data[x,2] ~ q2$data[,1]))[2]) )
-  q2$corr <- c(q2$corr, apply(newShuffles, 1, function(x) cor(q2$data[,1],q2$data[x, 2])))
+#  print(dim(newShuffles))
+  q2Test$shuffles <- rbind(q2Test$shuffles, newShuffles)
+  q2Test$slopes <- c(q2Test$slopes, apply(newShuffles, 1, function(x) qr.coef(q2$qr, q2$data[x, 2])[2]))
+  q2Test$corr <- c(q2Test$corr, apply(newShuffles, 1, function(x) cor(q2$data[,1],q2$data[x, 2])))
 
 })
 observeEvent(input$q2_shuffle_1000, {
-  fit0 <- lm(q2$data[, 2] ~ q2$data[, 1])
   newShuffles <- t( sapply(1:1000, function(x) sample(1:nrow(q2$data))))
-  q2$shuffles <- rbind(q2$shuffles, newShuffles)
-  q2$slopes <- c(q2$slopes, apply(newShuffles, 1, function(x) coef(lm(q2$data[x,2] ~ q2$data[,1]))[2]) )
-  q2$corr <- c(q2$corr, apply(newShuffles, 1, function(x) cor(q2$data[,1],q2$data[x, 2])))
+ # print(dim(newShuffles))
+  q2Test$shuffles <- rbind(q2Test$shuffles, newShuffles)
+  q2Test$slopes <- c(q2Test$slopes, apply(newShuffles, 1, function(x) qr.coef(q2$qr, q2$data[x, 2])[2]))
+  q2Test$corr <- c(q2Test$corr, apply(newShuffles, 1, function(x) cor(q2$data[,1],q2$data[x, 2])))
 
 })
 observeEvent(input$q2_shuffle_5000, {
-  fit0 <- lm(q2$data[, 2] ~ q2$data[, 1])
   newShuffles <- t( sapply(1:5000, function(x) sample(1:nrow(q2$data))))
-  q2$shuffles <- rbind(q2$shuffles, newShuffles)
-  q2$slopes <- c(q2$slopes, apply(newShuffles, 1, function(shf) coef(lm(q2$data[shf,2] ~ q2$data[,1]))[2]) )
-  q2$corr <- c(q2$corr, apply(newShuffles, 1, function(shf) cor(q2$data[,1],q2$data[shf, 2])))
+#  print(dim(newShuffles))
+  q2Test$shuffles <- rbind(q2Test$shuffles, newShuffles)
+  q2Test$slopes <- c(q2Test$slopes, apply(newShuffles, 1, function(x) qr.coef(q2$qr, q2$data[x, 2])[2]))
+  q2Test$corr <- c(q2Test$corr, apply(newShuffles, 1, function(shf) cor(q2$data[,1],q2$data[shf, 2])))
 })
 
 output$q2_TestPlot2 <- renderPlot({
-  if(is.null(input$q2_TestParam) | is.null( q2$shuffles) )
-    return()
-  x <- ifelse(input$q2_TestParam == "Slope", q2$slopes, q2$corr)
-  x <- sort(x)
-  print(summary(x))
-#   z <- cut(x, breaks =   nclass.Sturges(x) )
+  if(is.null( q2Test$shuffles) )
+    return() 
+  parm <-  if(input$q2_TestParam == "Slope") {
+               q2Test$slopes
+           } else { 
+            q2Test$corr
+          }
+  parm <- sort(parm)
+  ## print(summary(parm))
+  z <- cut(parm, breaks = .5*  nclass.Sturges(parm)^2 )
 #  print(summary(z))
-#  y <- unlist(sapply(z, function(v) 1:length(v)))
-#  y <-  y[!is.na(y)]
-  hist(x, ylab = "", xlab = ifelse(input$q2_TestParam == "Slope", "Slope", "Correlation"), main = "")
-})
+  y <- unlist(tapply(z, z, function(v) 1:length(v)))
+  y <-  y[!is.na(y)]
+  q2Test$y <- y
+  nsims <- length(parm)
+  radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)
+  plot(parm, y, ylab = "", cex = radius/2, pch = 16, col = blu,  
+       xlab = ifelse(input$q2_TestParam == "Slope", "Slope", "Correlation"), main = "Sampling Distribution")
+}, height = 400, width = 400)
 
   ## 1 categorical & 1 quantitative   ---------------------------------------  1 cat 1 quant
 
