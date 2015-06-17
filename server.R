@@ -35,6 +35,9 @@ shinyServer(function(input, output, session) {
 
   ## 1 Categorical  -----------------------------------------------------------
  
+    ##  Enter and Describe ---------------------------------- cat 1
+
+{
     ##  Using Submit Button to keep plots from changing too soon
   cat1_data <- reactiveValues(counts = NULL, names = NULL)
   
@@ -150,9 +153,33 @@ output$CIdemo_Plot2 <- renderPlot({
     }
   }
   
-}, height = 275)
+ }, height = 275)
+}
 
-  ## Normal probability computations
+    ##  Test ------------------------------------------------ cat 1
+{ 
+ output$cat1_testUI <- renderUI({
+   if( is.null(cat1_data$counts)){
+     h4(" You must first enter data. Choose 'Enter/Describe Data'.")
+   } else {
+     h4("Under Construction")
+   }
+  })
+}
+
+   ###  estimate phat  -------------------------------------- cat 1
+{
+output$cat1_estimateUI <- renderUI({
+   if( is.null(cat1_data$counts)){
+     h4(" You must first enter data. Choose 'Enter/Describe Data'.")
+   } else {
+     h4("Under Construction")
+   }
+ })
+}
+
+  ## Normal probability computations  ----------------------- cat 1
+{
   ##  Set storage for reactive values
 
 cat1_normalProb <- reactiveValues(prob = NULL, z = NULL, findP = NULL)
@@ -170,25 +197,6 @@ cat1_normalProb <- reactiveValues(prob = NULL, z = NULL, findP = NULL)
     cat1_normalProb$prob <- as.numeric(input$cat1_prob_txt) 
     cat1_normalProb$findP  <- FALSE
   })
-
-###  cat1 --  test mean value  -------------------------------------
-output$cat1_testUI <- renderUI({
-  if( is.null(cat1_data$counts)){
-    h4(" You must first enter data. Choose 'Enter/Describe Data'.")
-  } else {
-    h4("Under Construction")
-  }
-})
-
-###  cat1 --  estimate mean value  -------------------------------------
-output$cat1_estimateUI <- renderUI({
-  if( is.null(cat1_data$counts)){
-    h4(" You must first enter data. Choose 'Enter/Describe Data'.")
-  } else {
-    h4("Under Construction")
-  }
-})
-
 
 output$normalProbPlot1 <- renderPlot({ 
   #print(cat1_normalProb$prob)
@@ -290,10 +298,14 @@ output$normalProbPlot1 <- renderPlot({
   }
   
 }, height=300)
-
+}
   
   ## 1 Quantitative -----------------------------------------------------------  -- 1 Quant 
- output$quant1DataIn <- renderText({ "How would you like to input the data? " 
+ 
+##  Enter data    ----------------------------------------- quant 1
+
+{
+output$quant1DataIn <- renderText({ "How would you like to input the data? " 
   })
 
  ## user selects an input method.
@@ -398,7 +410,10 @@ output$normalProbPlot1 <- renderPlot({
         hot_table(highlightCol = TRUE, highlightRow = TRUE)
     }
   })
+}
 
+  ##  Decribe and plot data -------------------------------  quant 1
+{
   output$q1_Plot <- renderPlot( {
     if( is.null(q1$data))  return()
      #if(input$q1_useLddBtn == 0 && input$q1_useHotBtn == 0)  ## && input$q1_useFileBtn == 0) 
@@ -442,15 +457,11 @@ output$normalProbPlot1 <- renderPlot({
       DF
     #})
   })
-
- # output$boot_demo <- renderUI(
-#     includeScript("www/d3.v3.min.js"),
-#     includeScript("www/costs.js"),
-#     includeHTML("www/BootDemo.html")
- #   )
+}
 
 
-###  q1 --  test mean value  -------------------------------------
+  ###  test mean value  ------------------------------------ quant 1
+{
 output$q1_testUI <- renderUI({
   if( is.null(q1$data)){
     h4(" You must first enter data. Choose 'Enter/Describe Data'.")
@@ -458,8 +469,11 @@ output$q1_testUI <- renderUI({
     h4("Under Construction")
   }
 })
+}
 
-###  q1 --  estimate mean value  -------------------------------------
+
+  ###   estimate mean value  ------------------------------- quant 1
+{
 output$q1_estimateUI <- renderUI({
   if( is.null(q1$data)){
     h4(" You must first enter data. Choose 'Enter/Describe Data'.")
@@ -468,9 +482,11 @@ output$q1_estimateUI <- renderUI({
   }
 })
 
-##  t dist'n option --------------------------------------------
+}
 
+  ###  t dist'n option ------------------------------------- quant 1
 
+{
 q1_tProb <- reactiveValues(prob = NULL, z = NULL, findP = NULL)
 
 observeEvent( input$q1_z_txt, {
@@ -589,11 +605,12 @@ observeEvent( input$q1_prob_txt,{
          round(prob,3), col = "darkblue")
   }
 }, height=300)
+}
 
+  ## 2 Categorical ------------------------------------------------------------- 2 cat
 
-  ## 2 Categorical ------------------------------------------------------------- 2 categ
-
-  ## Descriptives:  plot a bar chart of the successes / failures
+  ## Data Entry --------------------------------------------------------  cat 2
+{
 cat2_data <- reactiveValues(counts = NULL, names = NULL, groups = NULL)
 
 observeEvent(input$cat2_submitButton, {
@@ -602,8 +619,12 @@ observeEvent(input$cat2_submitButton, {
   cat2_data$groups <- rep(c(input$cat2_grp1, input$cat2_grp2), each = 2)
 }
 )
+}
 
- output$cat2Summary <- renderTable({ 
+  ## Summary of data --------------------------------------------------- cat 2
+
+{
+  output$cat2Summary <- renderTable({ 
   if(input$cat2_submitButton == 0) return()
   #isolate({
     #cat2_dataDF <- cat2_data()
@@ -638,8 +659,13 @@ observeEvent(input$cat2_submitButton, {
     if(input$cat2_submitButton ==0) return()
     "Data are entered, you may now choose to estimate or test the difference in two proportions."
   })
+}
 
-###  cat2 --  test mean value  -------------------------------------
+
+  ###  cat2 --  test equality of proportions  -------------------------- cat 2
+
+{
+
 # output$cat2_testUI <- renderUI({
 #   if( is.null(cat2_data$counts)){
 #     h4(" You must first enter data. Choose 'Enter/Describe Data'.")
@@ -743,33 +769,36 @@ observeEvent(input$cat2_submitButton, {
     #hist(cat2$data[,1], main = "", xlab = "Difference in p hats")
   }, height=360)
 
+}
 
-
-###  cat2 --  estimate mean value  -------------------------------------
-output$cat2_estimateUI <- renderUI({
+  ###  cat2 --  estimate difference in proportions --------------------- cat 2
+{
+ output$cat2_estimateUI <- renderUI({
   if( is.null(cat2_data$counts)){
     h4(" You must first enter data. Choose 'Enter/Describe Data'.")
   } else {
     h4("Under Construction")
   }
-})
+ })
+}
 
+  ### Normal Probs ----------------------------------------------------- cat 2  
+{
+ cat2_normalProb <- reactiveValues(prob = NULL, z = NULL, findP = NULL)
 
-cat2_normalProb <- reactiveValues(prob = NULL, z = NULL, findP = NULL)
-
-observeEvent( input$cat2_z_txt, {
+ observeEvent( input$cat2_z_txt, {
   #if(is.null(input$cat2_z_txt)) 
   #  return
   cat2_normalProb$z <- as.numeric(input$cat2_z_txt) 
   cat2_normalProb$findP <- TRUE
-})
+ })
 
-observeEvent( input$cat2_prob_txt,{
+ observeEvent( input$cat2_prob_txt,{
   #if(is.null(input$cat2_p_txt)) 
   #  return
   cat2_normalProb$prob <- as.numeric(input$cat2_prob_txt) 
   cat2_normalProb$findP  <- FALSE
-})
+ })
 
 output$normalProbPlot2 <- renderPlot({ 
   #print(cat2_normalProb$prob)
@@ -871,10 +900,13 @@ output$normalProbPlot2 <- renderPlot({
   }
   
 }, height=300)
+}
 
+ ## 2 Quantitative -----------------------------------------------------------  2 quant
 
-  ## 2 Quantitative -----------------------------------------------------------  2 quant
-
+  ###  Data Entry ------------------------------------------------------------  q2
+   ## need to remove old data if user comes back to data entry 
+{
 output$quant2DataIn <- renderText({
   "How do you want to input the data?"
 })
@@ -979,7 +1011,11 @@ output$q2_hot = renderRHandsontable({
       hot_table(highlightCol = TRUE, highlightRow = TRUE)
   }
 })
+}
+  ###  Data Summary ----------------------------------------------------------  q2
+q2Test <- reactiveValues( shuffles = NULL, slopes = NULL, corr = NULL)
 
+{
 output$q2_Plot <- renderPlot( {
   if( is.null(q2$data)) 
     return()
@@ -1039,9 +1075,9 @@ output$q2_swap <- renderUI({
     return()
   actionButton('q2_swapXwithY', "Swap Variables (X goes to Y)")
 })
-   ##############################  -----------------------------------  q2 TESTING
-
-q2Test <- reactiveValues( shuffles = NULL, slopes = NULL, corr = NULL)
+}
+ ###   TESTING slope / correlation = 0 ---------------------------------------  q2
+{
 
 output$q2_TestPrep <- renderTable({
   names(q2$data) <- c("x","y")
@@ -1056,8 +1092,7 @@ output$q2_TestPrep <- renderTable({
   out
 })
 
- 
- 
+
 output$q2_TestPlot1 <- renderPlot({
   par(mfrow=c(2,1), mar = c(2.4,2,4,2))
   DF0 <- q2$data
@@ -1070,7 +1105,7 @@ output$q2_TestPlot1 <- renderPlot({
   rhat0 <- round(q2$corr, 3)
   mtext(side = 3,  at = min(DF0$x)*2/3 + max(DF0$x)/3, bquote(hat(beta)[1] == .(b1hat) ))
   mtext(side = 3,  at = min(DF0$x)/3 + max(DF0$x)*2/3, bquote(r == .(rhat0)))
-  shuffle <- sample(1:nrow(q2$data))
+  q2Test$shuffles <- shuffle <- sample(1:nrow(q2$data))
   if(!is.null(input$q2Test_click) ){
     ## grab hovered sample
     print(input$q2_Test_click)
@@ -1078,19 +1113,19 @@ output$q2_TestPlot1 <- renderPlot({
     clickY <- input$q2_Test_click$y
     nearest <- which( abs(q2Test$slope - clickX) < diff(range(q2Test$slope))/30 & abs(clickY - q2Test$y) < .5 )[1]
     shuffle <- q2Test$shuffle[nearest,]
-  }
+  }                                     ##  ^^ onclick is not working
   DF0$newy <- DF0$y[shuffle]
-  plot(y ~ x, data = DF0, xlab = q2$names[1], ylab = q2$names[2], col = "green", pch =16,
+  plot(y ~ x, data = DF0, xlab = q2$names[1], ylab = q2$names[2], col = blu, pch =16,
        main = "Shuffled Data")
-  points(newy ~ x, data = DF0, pch = 16, col = blu)
+  points(newy ~ x, data = DF0, pch = 16, col = "green")
   points(newy ~ x, data = DF0)
   with(subset(DF0, abs(y - newy) > .0001),
-    arrows(x, y, x, newy, col = "grey", length = .1, angle = 15)
+    arrows(x, y, x, newy, col = grey(.8), length = .1, angle = 15)
   )
   lmfit1 <- lm(newy ~ x, DF0)
   abline(lmfit1)
-  beta <- round(coef(lmfit1)[2], 3)
-  rhat1 <- round(cor(DF0$x, DF0$newy), 3)
+  q2Test$slopes <- beta <- round(coef(lmfit1)[2], 3)
+  q2Test$corr <- rhat1 <- round(cor(DF0$x, DF0$newy), 3)
   mtext(side = 3, at = min(DF0$x)*2/3 + max(DF0$x)/3, bquote(hat(beta)[1] == .(beta) ) )
   mtext(side = 3,  at = min(DF0$x)/3 + max(DF0$x)*2/3, bquote(r == .(rhat1)))
 }, height = 400, width = 300)
@@ -1101,7 +1136,7 @@ observeEvent(input$q2_shuffle_10, {
   q2Test$shuffles <- rbind(q2Test$shuffles, newShuffles)
   #print(q2$slopes)
  q2Test$slopes <- c(q2Test$slopes, apply(newShuffles, 1, function(x) qr.coef(q2$qr, q2$data[x, 2])[2]))
- q2Test$corr <- c(q2$Testcorr, apply(newShuffles, 1, function(ndx) cor(q2$data$x, q2$data[ndx, 2])))
+ q2Test$corr <- c(q2Test$corr, apply(newShuffles, 1, function(ndx) cor(q2$data$x, q2$data[ndx, 2])))
 })
 
 observeEvent(input$q2_shuffle_100, {
@@ -1138,15 +1173,22 @@ output$q2_TestPlot2 <- renderPlot({
           }
   parm <- sort(parm)
   ## print(summary(parm))
-  z <- cut(parm, breaks = .5*  nclass.Sturges(parm)^2 )
+  if(length(parm) == 1){
+    y <- .5
+    radius <- 4
+  } else {
+    z <- cut(parm, breaks = .5*  nclass.Sturges(parm)^2 )
 #  print(summary(z))
-  y <- unlist(tapply(z, z, function(v) 1:length(v)))
-  y <-  y[!is.na(y)]
-  q2Test$y <- y
-  nsims <- length(parm)
-  radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)
+    y <- unlist(tapply(z, z, function(v) 1:length(v)))
+    y <-  y[!is.na(y)]
+    q2Test$y <- y
+    nsims <- length(parm)
+    radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)
+  }
   plot(parm, y, ylab = "", cex = radius/2, pch = 16, col = blu,  
-       xlab = ifelse(input$q2_TestParam == "Slope", "Slope", "Correlation"), main = "Sampling Distribution")
+        xlab = ifelse(input$q2_TestParam == "Slope", "Slope", "Correlation"), main = "Sampling Distribution")
+  legend("topleft", bty="n", paste(" n = ", length(parm),"\n Mean = ", round(mean(parm),3),
+                                   "\n SE = ", round(sd(parm), 3)))
 }, height = 400, width = 400)
 
   ## q2 test UI -------------------------------------
@@ -1179,8 +1221,9 @@ output$q2_testUI <- renderUI({
   }
 })
 
-
-  ###  q2 Estimate with CI -------------------------------------------------------
+}
+  ###  Estimate slope / correlation with CI ----------------------------------- q2 
+{
 output$q2_estimateUI <- renderUI({
   if( is.null(q2$data)){
     h4(" You must first enter data. Choose 'Enter/Describe Data'.")
@@ -1189,10 +1232,12 @@ output$q2_estimateUI <- renderUI({
   }
 })
 
+}
 
+## 1 categorical & 1 quantitative   ---------------------------------------  1 cat 1 quant
 
-  ## 1 categorical & 1 quantitative   ---------------------------------------  1 cat 1 quant
-
+  ###  Data entry ------------------------------------------------------------ 1c1q
+{
 output$c1q1DataIn <- renderText({
   "How do you want to input the data?"
 })
@@ -1315,7 +1360,9 @@ output$c1q1_hot = renderRHandsontable({
       hot_table(highlightCol = TRUE, highlightRow = TRUE)
   }
 })
-
+}
+  ##  Describe and summarize ------------------------------------------------- 1c1q
+{
 output$c1q1_Plot <- renderPlot( {
   if( is.null(c1q1$data)) 
     return()
@@ -1372,9 +1419,11 @@ output$c1q1_Summary2 <- renderTable({
     names(val) <- NULL
   matrix( -val, ncol= 1, dimnames = list("Difference in Means", c1q1$names[2]))
 })
+}
 
-  ## Plot t distributions -----------------------------------------
+  ##  t distributions -------------------------------------------------------- 1c1q
 
+{
 c1q1_tProb <- reactiveValues(prob = NULL, z = NULL, findP = NULL)
 
 observeEvent( input$c1q1_z_txt, {
@@ -1494,10 +1543,11 @@ output$tProbPlot2 <-    renderPlot({
   }
 }, height=300)
 
+}
 
-  ##  Other Tools -----------------------------------------------------------
-  ## Probability plot for t & normal distributions  -------------------------
-
+  ##  Other Tools ----------------------------------------------------------- Other
+  ## Probability plot for t & normal distributions  -------------------------  Probs
+{
 
 prb_tProb <- reactiveValues(prob = NULL, z = NULL, findP = NULL)
 
@@ -1610,11 +1660,13 @@ observeEvent( input$prb_prob_txt,{
     }
     
   }, height=300)
-  
+} 
+
   ## End of code for z-t probabilities and quantiles. ------------------------
 
-  ##  Start of code for Power web app  ---------------------------------------
-  ## Reactive expression to create a data frame containing all of the values for POWER
+  ##  Start of code for Power web app  --------------------------------------- Power app
+{
+## Reactive expression to create a data frame containing all of the values for POWER
  sliderValues <- reactive({
   # Create output
    data.frame(
@@ -1676,7 +1728,7 @@ output$powerPlot <- renderPlot({
 output$values <- renderTable({
   sliderValues()
 })    
-
+}
  ## End of power code ---------------------------------------------------------
 })
 
