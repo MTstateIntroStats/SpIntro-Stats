@@ -61,29 +61,40 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                          sliderInput("CIdemo_n", "Sample Size (number of spins)", min = 21, max = 100, value = 50),
                          uiOutput("inputTrueP"),
                     radioButtons("CIdemo_reps", label="Number of simulations", choices = list('10', '100', '1000','10000'), selected = '100', inline = TRUE),
-<<<<<<< HEAD
-                  
                     ## h5("Choose a confidence level"),
                      radioButtons("CIdemo_conf", label="Choose a Confidence Level", choices = list('80%', '90%', '95%', '99%'), 
                                   selected = '90%', inline = TRUE) 
+<<<<<<< HEAD
+                    )#,  
+=======
                     ),  
-                   column(7, #div( ## style="height: 300px",
-                     h4("Sampling Distribution.  Hover mouse over a point to see CI.", center = TRUE),
-                     plotOutput("CIdemo_Plot1",  hover = "CIplot1_hover")
-                     )
+>>>>>>> 0f8f5336e2352cdd08323ad3c337cf7530b96a73
+#                    column(7, #div( ## style="height: 300px",
+#                      h4("Sampling Distribution.  Hover mouse over a point to see CI.", center = TRUE),
+#                      plotOutput("CIdemo_Plot1",  hover = "CIplot1_hover")
+#                      )
+<<<<<<< HEAD
                 ),
                 fluidRow(
                   column(7, offset=4,
-=======
                     ##  next two need to be action buttons so we can keep using the same sample.
                     h5("Choose a confidence level"),
                      radioButtons("CIdemo_conf", label="Confidence Level", choices = list('80%', '90%', '95%', '99%'), 
                                   selected = '90%', inline = TRUE) 
                     ),  
                    column(7, div( 
+=======
+                #),
+                #fluidRow(
+                  column(7, 
+#                     h5("Choose a confidence level"),
+#                      radioButtons("CIdemo_conf", label="Confidence Level", choices = list('80%', '90%', '95%', '99%'), 
+#                                   selected = '90%', inline = TRUE) 
+#                     ),  
+#                    column(7, div( 
+>>>>>>> 0f8f5336e2352cdd08323ad3c337cf7530b96a73
                      h4("Sampling Distribution.  Hover mouse over a point to see CI.", center = TRUE),
                      plotOutput("CIdemo_Plot1",  hover = "CIplot1_hover"),
->>>>>>> 680ff10dedcc3768918ab84a885bf9f6d400f2dd
                      h4("Confidence Intervals  (green ones cover true p)", center =TRUE),
                      plotOutput("CIdemo_Plot2")
                    )
@@ -148,17 +159,16 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                titlePanel("t Probabilities"),
                column(4, inputPanel(
                  #helpText("Either enter  "),
-                 textInput('prb_z_txt', label='Standardized Value: ', value=" "),
+                 textInput('q1_z_txt', label='Standardized Value: ', value=" "),
                  #helpText("Or "),
-                 textInput('prb_prob_txt', 'or  Probability: ', " "),
-                 selectInput("prb_area", "To go into which area? ", 
+                 textInput('q1_prob_txt', 'or  Probability: ', " "),
+                 selectInput("q1_area", "To go into which area? ", 
                              c("Lower","Upper","Extremes","Center"), NA),
-                 selectInput("prb_dist", "Distribution: ",c("t"), "t"),
-                 numericInput("prb_df", "t degrees of freedom?", 10 )
+                 numericInput("q1_df", "t degrees of freedom?", 10 )
                )),   
                ##  dist'n shows 'normal' by default, but conditional box for t df appears.
                column(8,
-                      plotOutput('probPlot3')
+                      plotOutput('tProbPlot1')
                )  #,
                #  h6("t distribution")
       )                         
@@ -210,22 +220,24 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
       
 
       tabPanel("Test", value="2catTest",
-        titlePanel("Test for a Difference in Proportions"),       
-        fluidRow(
-          fluidRow(
-             column(3, 
-                    h3("Original Data"),
-                    tableOutput("cat2OriginalData")),
-             
-             column(3,
-                    radioButtons("shuffles", label = h3("Number of Shuffles"),
-                                 choices = list("1" = 1, "10" = 2,
-                                                "100" = 3, "1000" = 4,
-                                                "5000" = 5),selected = 1))
-                      ),
-        column(4, plotOutput("cat2Test", width = "90%") 
-                    ))
-        ),
+               titlePanel("Test for a Difference in Proportions"),       
+               fluidRow(
+                 fluidRow(
+                   column(3, 
+                          h3("Original Data"),
+                          tableOutput("cat2OriginalData")),
+                   
+                   column(4, 
+                          h3("Number of Shuffles"),
+                          actionButton("cat2_shuffle_1", label = "1"),
+                          actionButton("cat2_shuffle_10", label = "10"),
+                          actionButton("cat2_shuffle_100", label = "100"),
+                          actionButton("cat2_shuffle_1000", label = "1000"),
+                          actionButton("cat2_shuffle_5000", label = "5000"))
+                 ),
+                 column(4, plotOutput("cat2Test", width = "90%") 
+                 ))
+      ),
 
       tabPanel("Estimate", value="2catEstimate",
         h6("Estimate Difference in Proportions - under construction")
@@ -239,11 +251,11 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                  #helpText("Or "),
                  textInput('cat2_prob_txt', 'or  Probability: ', " "),
                  selectInput("cat2_area", "To go into which area? ", 
-                             c("Lower","Upper","Extremes","Center"), NA),
-                 selectInput("cat2_dist", "Distribution: ",c("Normal"), "Normal"),
-                 conditionalPanel( 
-                   condition = "input.prb_dist =='t'", 
-                   numericInput("cat2_df", "t degrees of freedom?", 10 ))
+                             c("Lower","Upper","Extremes","Center"), NA)#,
+                 #selectInput("cat2_dist", "Distribution: ",c("Normal"), "Normal"),
+                 #conditionalPanel( 
+                #   condition = "input.prb_dist =='t'", 
+                #   numericInput("cat2_df", "t degrees of freedom?", 10 ))
                )),   
                column(8,
                       plotOutput('normalProbPlot2')
@@ -337,13 +349,13 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                titlePanel("t Probabilities"),
                column(4, inputPanel(
                  #helpText("Either enter  "),
-                 textInput('quant2_z_txt', label='Standardized Value: ', value=" "),
+                 textInput('c1q1_z_txt', label='Standardized Value: ', value=" "),
                  #helpText("Or "),
-                 textInput('quant2_prob_txt', 'or  Probability: ', " "),
-                 selectInput("quant2_area", "To go into which area? ", 
+                 textInput('c1q1_prob_txt', 'or  Probability: ', " "),
+                 selectInput("c1q1_area", "To go into which area? ", 
                              c("Lower","Upper","Extremes","Center"), NA),
-                 selectInput("quant2_dist", "Distribution: ",c("t"), "t"),
-                 numericInput("quant2_df", "t degrees of freedom?", 10 )
+                 #selectInput("c1q1_dist", "Distribution: ",c("t"), "t"),
+                 numericInput("c1q1_df", "t degrees of freedom?", 10 )
                )),   
                ##  dist'n shows 'normal' by default, but conditional box for t df appears.
                column(8,
