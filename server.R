@@ -4,8 +4,9 @@ source("helpers.R")
 quant1_contents <- load("data/quant1.RData")
 quant2_contents <- load("data/quant2.RData")
 c1q1_contents <- load("data/cat1quant1.RData")
-
-for(ff in system("ls data/*.RData", intern=T)) load(ff)
+load("data/quant1.RData")
+load("data/quant2.RData")
+load("data/cat1quant1.RData")
 
  ##  These were created to hold sample data with:
  ##  save(birthWeights, REDvsCntrl, REDvsREDA, REDAvsCntrl, file = "data/cat1quant1.RData")
@@ -35,43 +36,43 @@ shinyServer(function(input, output, session) {
   ## 1 Categorical  -----------------------------------------------------------
  
     ##  Using Submit Button to keep plots from changing too soon
-  cat1_data <- reactive({
-      data.frame(#run = input$submitButton,
-                counts = as.numeric(c(input$cat1_n1, input$cat1_n2)),
-                names = c(input$cat1_name1, input$cat1_name2)
-      )
-  })
+  cat1_data <- reactiveValues(counts = NULL, names = NULL)
+  
+  observeEvent(input$cat1_submitButton, {
+      cat1_data$counts <- as.numeric(c(input$cat1_n1, input$cat1_n2))
+      cat1_data$names <- c(input$cat1_name1, input$cat1_name2)
+  }
+ )
   
   ## Descriptives:  plot a bar chart of the successes / failures
   
   output$cat1_Plot <- renderPlot( {
     if(input$cat1_submitButton ==0) return()
-    isolate( { 
-      cat1_dataDF <- cat1_data() 
+    #isolate( { 
       ## print(dataDF)
       ## phat1 <- cat1_dataDF$counts[1]/sum(cat1_dataDF$counts)
-      countTable <- as.table(matrix(cat1_dataDF$counts, 2, 1))
-      rownames(countTable) =  cat1_dataDF$names
+      countTable <- as.table(matrix(cat1_data$counts, 2, 1))
+      rownames(countTable) =  cat1_data$names
        ## make plot
        par(mar=c(24, 40, 10, 35)/10)
        barplot(prop.table(countTable), ylab = "Proportion", main = "",xaxt="n")
-     })
+     #})
   }, height=120)
 
   output$cat1DataIn <- renderText({
   if(input$cat1_submitButton ==0) return()
-  "Data is entered, you may now choose to estimate or test one proportion."
+  "Data are entered, you may now choose to estimate or test one proportion."
 })
 
 
   output$cat1_Summary <- renderTable({
     if(input$cat1_submitButton ==0) return()
-    isolate({
-      cat1_dataDF <- cat1_data()
-      counts <- as.table( matrix(cat1_dataDF$counts), 1, 2)
-      dimnames(counts) = list(cat1_dataDF$names,"Proportions")
+    #isolate({
+     # cat1_dataDF <- cat1_data
+      counts <- as.table( matrix(cat1_data$counts), 1, 2)
+      dimnames(counts) = list(cat1_data$names,"Proportions")
       prop.table(counts)
-    })
+    #})
   })
   
   output$inputTrueP <- renderUI({
@@ -138,8 +139,8 @@ output$CIdemo_Plot2 <- renderPlot({
     points(row ~ phat, data = phatDF, col = rgb(70, 130, 180, 127, max = 255), pch=16)
     abline(v = input$CIdemo_p, lwd = 2, col = "grey")
     mtext(side=3, at = input$CIdemo_p, input$CIdemo_p, line=0)
-    text(x = max(phatDF$UB) * .85, y = 0.08 * nsims, paste( sum(phatDF$UB < input$CIdemo_p), "too low"))
-    text(x = min(phatDF$UB) * 0.4 + .1, y= .93 * nsims, paste( sum(phatDF$LB > input$CIdemo_p), "too high"))     
+    text(x = phatDF$UB[nsims/2], y = 0.08 * nsims, paste( sum(phatDF$UB < input$CIdemo_p), "too low"))
+    text(x = phatDF$LB[nsims/2], y= .93 * nsims, paste( sum(phatDF$LB > input$CIdemo_p), "too high"))     
   })
   if(!is.null(input$CIplot1_hover)){
     myY <- subset(phatDF, abs(phatDF$phat - input$CIplot1_hover$x) < .005)[round(input$CIplot1_hover$y),]
@@ -169,6 +170,25 @@ cat1_normalProb <- reactiveValues(prob = NULL, z = NULL, findP = NULL)
     cat1_normalProb$prob <- as.numeric(input$cat1_prob_txt) 
     cat1_normalProb$findP  <- FALSE
   })
+
+###  cat1 --  test mean value  -------------------------------------
+output$cat1_testUI <- renderUI({
+  if( is.null(cat1_data$counts)){
+    h4(" You must first enter data. Choose 'Enter/Describe Data'.")
+  } else {
+    h4("Under Construction")
+  }
+})
+
+###  cat1 --  estimate mean value  -------------------------------------
+output$cat1_estimateUI <- renderUI({
+  if( is.null(cat1_data$counts)){
+    h4(" You must first enter data. Choose 'Enter/Describe Data'.")
+  } else {
+    h4("Under Construction")
+  }
+})
+
 
 output$normalProbPlot1 <- renderPlot({ 
   #print(cat1_normalProb$prob)
@@ -279,7 +299,7 @@ output$normalProbPlot1 <- renderPlot({
  ## user selects an input method.
   ## renderUI changes to get appropriate inputs.
 
- output$q1_ui <- renderUI({
+ output$q1_inputUI <- renderUI({
   if (is.null(input$q1_entry))
     return()
   switch( input$q1_entry,
@@ -335,7 +355,7 @@ output$normalProbPlot1 <- renderPlot({
    q1$data <- DF
    q1$names <- names(DF)
    output$quant1DataIn <- renderText({
-          "Data is entered, you may now choose to estimate or test one mean"
+          "Data are entered, you may now choose to estimate or test one mean"
    })
  })
 
@@ -344,7 +364,7 @@ output$normalProbPlot1 <- renderPlot({
    q1$names <- if(is.null(names(DF)) | "V1" %in% names(DF)){ "x"} else {names(DF)[1]}
    q1$data <- data.frame(DF[, 1])
    output$quant1DataIn <- renderText({
-     "Data is entered, you may now choose to estimate or test one mean"
+     "Data are entered, you may now choose to estimate or test one mean"
    })
  })
 
@@ -354,7 +374,7 @@ output$normalProbPlot1 <- renderPlot({
    q1$names <- names(DF)
    q1$data <- data.frame( x = as.numeric(unlist(DF)))
    output$quant1DataIn <- renderText({
-     "Data is entered, you may now choose to estimate or test one mean"
+     "Data are entered, you may now choose to estimate or test one mean"
    })
  })
 
@@ -429,7 +449,26 @@ output$normalProbPlot1 <- renderPlot({
 #     includeHTML("www/BootDemo.html")
  #   )
 
-  ##  t dist'n option --------------------------------------------
+
+###  q1 --  test mean value  -------------------------------------
+output$q1_testUI <- renderUI({
+  if( is.null(q1$data)){
+    h4(" You must first enter data. Choose 'Enter/Describe Data'.")
+  } else {
+    h4("Under Construction")
+  }
+})
+
+###  q1 --  estimate mean value  -------------------------------------
+output$q1_estimateUI <- renderUI({
+  if( is.null(q1$data)){
+    h4(" You must first enter data. Choose 'Enter/Describe Data'.")
+  } else {
+    h4("Under Construction")
+  }
+})
+
+##  t dist'n option --------------------------------------------
 
 
 q1_tProb <- reactiveValues(prob = NULL, z = NULL, findP = NULL)
@@ -555,65 +594,75 @@ observeEvent( input$q1_prob_txt,{
   ## 2 Categorical ------------------------------------------------------------- 2 categ
 
   ## Descriptives:  plot a bar chart of the successes / failures
- cat2_data <- reactive({
-    data.frame(
-     counts = as.numeric(c(input$cat2_n11, input$cat2_n12, input$cat2_n21, input$cat2_n22)),
-     names  = rep(c(input$cat2_name1, input$cat2_name2), 2),
-     groups = rep(c(input$cat2_grp1, input$cat2_grp2), each = 2)
-   )
- })
+cat2_data <- reactiveValues(counts = NULL, names = NULL, groups = NULL)
+
+observeEvent(input$cat2_submitButton, {
+  cat2_data$counts <- as.numeric(c(input$cat2_n11, input$cat2_n12, input$cat2_n21, input$cat2_n22))
+  cat2_data$names <- rep(c(input$cat2_name1, input$cat2_name2), 2)
+  cat2_data$groups <- rep(c(input$cat2_grp1, input$cat2_grp2), each = 2)
+}
+)
 
  output$cat2Summary <- renderTable({ 
   if(input$cat2_submitButton == 0) return()
-  isolate({
-    cat2_dataDF <- cat2_data()
+  #isolate({
+    #cat2_dataDF <- cat2_data()
     #print(cat2_dataDF)
-    counts <- as.table( matrix(cat2_dataDF$counts, 2, 2))
+    counts <- as.table( matrix(cat2_data$counts, 2, 2))
     #print(counts)
-    colnames(counts) <- cat2_dataDF$names[1:2]
-    rownames(counts) <- cat2_dataDF$groups[c(1,3)]
+    colnames(counts) <- cat2_data$names[1:2]
+    rownames(counts) <- cat2_data$groups[c(1,3)]
     round(t(prop.table(counts, 1)),3)
-  })
+  #})
  })
   
 
  output$cat2Plot <- renderPlot( {
     if(input$cat2_submitButton ==0) return()
-    isolate( { 
-      cat2_dataDF <- cat2_data()
+   # isolate( { 
+    #  cat2_dataDF <- cat2_data()
       #print(cat2_dataDF)
-      counts <- as.table( matrix(cat2_dataDF$counts, 2, 2))
-      colnames(counts) <- cat2_dataDF$names[1:2]
-      rownames(counts) <- cat2_dataDF$groups[c(1,3)]
+      counts <- as.table( matrix(cat2_data$counts, 2, 2))
+      colnames(counts) <- cat2_data$names[1:2]
+      rownames(counts) <- cat2_data$groups[c(1,3)]
       props <- t(prop.table(counts, 1))
       #print(props)
       ## make plot
       par(mar=c(24, 40, 10, 35)/10)
       barplot(props, ylab = "Proportion", main = "")
-    })
+    #})
   }, height=180)
 
 
   output$cat2DataIn <- renderText({
     if(input$cat2_submitButton ==0) return()
-    "Data is entered, you may now choose to estimate or test the difference in two proportions."
+    "Data are entered, you may now choose to estimate or test the difference in two proportions."
   })
-  
+
+###  cat2 --  test mean value  -------------------------------------
+# output$cat2_testUI <- renderUI({
+#   if( is.null(cat2_data$counts)){
+#     h4(" You must first enter data. Choose 'Enter/Describe Data'.")
+#   } else {
+#     h4("Under Construction")
+#   }
+# })
+
   output$cat2OriginalData <- renderTable({ 
     if(input$cat2_submitButton ==0) return()
-    isolate({
-      cat2_dataDF <- cat2_data()
-      counts <- as.table( matrix(cat2_dataDF$counts, 2, 2))
-      colnames(counts) <- cat2_dataDF$names[1:2]
-      rownames(counts) <- cat2_dataDF$groups[c(1,3)]
+    #isolate({
+    #  cat2_dataDF <- cat2_data()
+      counts <- as.table( matrix(cat2_data$counts, 2, 2))
+      colnames(counts) <- cat2_data$names[1:2]
+      rownames(counts) <- cat2_data$groups[c(1,3)]
       round(t(prop.table(counts, 1)), 3)
-    })
+    #})
   })
   
   cat2 <- reactiveValues(data=NULL, names=NULL)
   
   observeEvent(input$cat2_shuffle_1, {
-    cat2_dataDF <- cat2_data()
+    cat2_dataDF <- cat2_data
     counts <- matrix(cat2_dataDF$counts, nrow = 2, ncol = 2)
     y1 <- counts[1,1]
     n1 <- counts[1,1] + counts[2,1]
@@ -627,7 +676,7 @@ observeEvent( input$q1_prob_txt,{
   })
   
   observeEvent(input$cat2_shuffle_10, {
-    cat2_dataDF <- cat2_data()
+    cat2_dataDF <- cat2_data
     counts <- matrix(cat2_dataDF$counts, nrow = 2, ncol = 2)
     y1 <- counts[1,1]
     n1 <- counts[1,1] + counts[2,1]
@@ -641,7 +690,7 @@ observeEvent( input$q1_prob_txt,{
   })
   
   observeEvent(input$cat2_shuffle_100, {
-    cat2_dataDF <- cat2_data()
+    cat2_dataDF <- cat2_data
     counts <- matrix(cat2_dataDF$counts, nrow = 2, ncol = 2)
     y1 <- counts[1,1]
     n1 <- counts[1,1] + counts[2,1]
@@ -655,7 +704,7 @@ observeEvent( input$q1_prob_txt,{
   })
   
   observeEvent(input$cat2_shuffle_1000, {
-    cat2_dataDF <- cat2_data()
+    cat2_dataDF <- cat2_data
     counts <- matrix(cat2_dataDF$counts, nrow = 2, ncol = 2)
     y1 <- counts[1,1]
     n1 <- counts[1,1] + counts[2,1]
@@ -669,7 +718,7 @@ observeEvent( input$q1_prob_txt,{
   })
   
   observeEvent(input$cat2_shuffle_5000, {
-    cat2_dataDF <- cat2_data()
+    cat2_dataDF <- cat2_data
     counts <- matrix(cat2_dataDF$counts, nrow = 2, ncol = 2)
     y1 <- counts[1,1]
     n1 <- counts[1,1] + counts[2,1]
@@ -693,6 +742,17 @@ observeEvent( input$q1_prob_txt,{
     #x <- sort(cat2$data[,1])
     #hist(cat2$data[,1], main = "", xlab = "Difference in p hats")
   }, height=360)
+
+
+
+###  cat2 --  estimate mean value  -------------------------------------
+output$cat2_estimateUI <- renderUI({
+  if( is.null(cat2_data$counts)){
+    h4(" You must first enter data. Choose 'Enter/Describe Data'.")
+  } else {
+    h4("Under Construction")
+  }
+})
 
 
 cat2_normalProb <- reactiveValues(prob = NULL, z = NULL, findP = NULL)
@@ -870,14 +930,14 @@ output$q2_ui <- renderUI({
 })
 
 ##  grab data according to input method
-q2 <- reactiveValues(data = NULL, names = NULL, shuffles = NULL, slopes = NULL, corr = NULL)
+q2 <- reactiveValues(data = NULL, names = NULL, slope = NULL, corr = NULL, qr = NULL)
 
 observeEvent(  input$q2_useLddBtn, {
   DF <- eval(parse( text = input$q2_data1))
   q2$names <- names(DF) 
   q2$data <- data.frame(DF)
   output$quant2DataIn <- renderText({
-    "Data is entered, you may now choose to estimate or test the true slope or correlation"
+    "Data are entered, you may now choose to estimate or test the true slope or correlation"
   })
 })
 
@@ -887,7 +947,7 @@ observeEvent(  input$q2_useCSVBtn,{
   q2$names <- names(DF)
   q2$data <- data.frame(DF)
   output$quant2DataIn <- renderText({
-    "Data is entered, you may now choose to estimate or test the true slope or correlation"
+    "Data are entered, you may now choose to estimate or test the true slope or correlation"
   })
   
 })
@@ -898,7 +958,7 @@ observeEvent(  input$q2_useHotBtn,{
   q2$names <- names(DF) 
   q2$data <- data.frame(DF)
   output$quant2DataIn <- renderText({
-    "Data is entered, you may now choose to estimate or test the true slope or correlation"
+    "Data are entered, you may now choose to estimate or test the true slope or correlation"
   })
 })
 
@@ -981,94 +1041,155 @@ output$q2_swap <- renderUI({
 })
    ##############################  -----------------------------------  q2 TESTING
 
+q2Test <- reactiveValues( shuffles = NULL, slopes = NULL, corr = NULL)
+
 output$q2_TestPrep <- renderTable({
   names(q2$data) <- c("x","y")
-  out <- list("Correlation: " = cor(q2$data[,1], q2$data[,2]),
-              "Slope: " = coef(lm(y ~ x, data = q2$data))[2] )
+  fit0 <- lm( y ~ x, q2$data)
+  q2$slope <- coef(fit0)[2]
+  q2$qr <- fit0$qr
+  q2$corr <- cor(q2$data[,1], q2$data[,2])
+  out <- list("Correlation: " =  q2$corr,
+              "Slope: " = q2$slope )
   out <- do.call(rbind, out)
   colnames(out) <- c("Estimate")
   out
 })
 
-# output$q2_TestUI <- renderUI({
-#   if (is.null(q2$data))
-#     return()
-# 
-# })
-
+ 
+ 
 output$q2_TestPlot1 <- renderPlot({
-  par(mfrow=c(1,2))
+  par(mfrow=c(2,1), mar = c(2.4,2,4,2))
   DF0 <- q2$data
   colnames(DF0) <- c("x","y")
   plot(y ~ x, data=DF0, xlab = q2$names[1], ylab = q2$names[2], col = blu, pch = 16,
        main = "Original Data")
   lmfit0 <- lm(y ~ x, DF0)
   abline(lmfit0, col = blu)
-  b1hat <- round(coef(lmfit0)[2], 3)
-  rhat0 <- round(cor(DF0$x, DF0$y), 3)
+  b1hat <- round(q2$slope, 3)
+  rhat0 <- round(q2$corr, 3)
   mtext(side = 3,  at = min(DF0$x)*2/3 + max(DF0$x)/3, bquote(hat(beta)[1] == .(b1hat) ))
   mtext(side = 3,  at = min(DF0$x)/3 + max(DF0$x)*2/3, bquote(r == .(rhat0)))
   shuffle <- sample(1:nrow(q2$data))
-  DF1 <- DF0
-  DF1$y <- DF1$y[shuffle]
+  if(!is.null(input$q2Test_click) ){
+    ## grab hovered sample
+    print(input$q2_Test_click)
+    clickX <- input$q2_Test_click$x
+    clickY <- input$q2_Test_click$y
+    nearest <- which( abs(q2Test$slope - clickX) < diff(range(q2Test$slope))/30 & abs(clickY - q2Test$y) < .5 )[1]
+    shuffle <- q2Test$shuffle[nearest,]
+  }
+  DF0$newy <- DF0$y[shuffle]
   plot(y ~ x, data = DF0, xlab = q2$names[1], ylab = q2$names[2], col = "green", pch =16,
        main = "Shuffled Data")
-  points(y ~ x, data = DF1, pch = 16, col = blu)
-  points(y ~ x, data = DF1)
-  arrows(DF0$x, DF0$y, DF0$x, DF1$y, col = "grey", length = .1, angle = 15)
-  lmfit1 <- lm(y ~ x, DF1)
+  points(newy ~ x, data = DF0, pch = 16, col = blu)
+  points(newy ~ x, data = DF0)
+  with(subset(DF0, abs(y - newy) > .0001),
+    arrows(x, y, x, newy, col = "grey", length = .1, angle = 15)
+  )
+  lmfit1 <- lm(newy ~ x, DF0)
   abline(lmfit1)
   beta <- round(coef(lmfit1)[2], 3)
-  rhat1 <- round(cor(DF1$x, DF1$y), 3)
-  mtext(side = 3, at = min(DF1$x)*2/3 + max(DF1$x)/3, bquote(hat(beta)[1] == .(beta) ) )
-  mtext(side = 3,  at = min(DF1$x)/3 + max(DF1$x)*2/3, bquote(r == .(rhat1)))
-})
+  rhat1 <- round(cor(DF0$x, DF0$newy), 3)
+  mtext(side = 3, at = min(DF0$x)*2/3 + max(DF0$x)/3, bquote(hat(beta)[1] == .(beta) ) )
+  mtext(side = 3,  at = min(DF0$x)/3 + max(DF0$x)*2/3, bquote(r == .(rhat1)))
+}, height = 400, width = 300)
 
 observeEvent(input$q2_shuffle_10, {
-  fit0 <- lm(q2$data[, 2] ~ q2$data[, 1])
   newShuffles <- t( sapply(1:10, function(x) sample(1:nrow(q2$data))))
-  q2$shuffles <- rbind(q2$shuffles, newShuffles)
-  q2$slopes <- c(q2$slopes, apply(newShuffles, 1, function(x) coef(lm(q2$data[x,2] ~ q2$data[,1]))[2]) )
+#  print(dim(newShuffles))
+  q2Test$shuffles <- rbind(q2Test$shuffles, newShuffles)
   #print(q2$slopes)
-  q2$corr <- c(q2$corr, apply(newShuffles, 1, function(x) cor(q2$data[,1],q2$data[x, 2])))
-  print(q2$corr)
+ q2Test$slopes <- c(q2Test$slopes, apply(newShuffles, 1, function(x) qr.coef(q2$qr, q2$data[x, 2])[2]))
+ q2Test$corr <- c(q2$Testcorr, apply(newShuffles, 1, function(ndx) cor(q2$data$x, q2$data[ndx, 2])))
 })
+
 observeEvent(input$q2_shuffle_100, {
-  fit0 <- lm(q2$data[, 2] ~ q2$data[, 1])
   newShuffles <- t( sapply(1:100, function(x) sample(1:nrow(q2$data))))
-  q2$shuffles <- rbind(q2$shuffles, newShuffles)
-  q2$slopes <- c(q2$slopes, apply(newShuffles, 1, function(x) coef(lm(q2$data[x,2] ~ q2$data[,1]))[2]) )
-  q2$corr <- c(q2$corr, apply(newShuffles, 1, function(x) cor(q2$data[,1],q2$data[x, 2])))
+#  print(dim(newShuffles))
+  q2Test$shuffles <- rbind(q2Test$shuffles, newShuffles)
+  q2Test$slopes <- c(q2Test$slopes, apply(newShuffles, 1, function(x) qr.coef(q2$qr, q2$data[x, 2])[2]))
+  q2Test$corr <- c(q2Test$corr, apply(newShuffles, 1, function(x) cor(q2$data[,1],q2$data[x, 2])))
 
 })
 observeEvent(input$q2_shuffle_1000, {
-  fit0 <- lm(q2$data[, 2] ~ q2$data[, 1])
   newShuffles <- t( sapply(1:1000, function(x) sample(1:nrow(q2$data))))
-  q2$shuffles <- rbind(q2$shuffles, newShuffles)
-  q2$slopes <- c(q2$slopes, apply(newShuffles, 1, function(x) coef(lm(q2$data[x,2] ~ q2$data[,1]))[2]) )
-  q2$corr <- c(q2$corr, apply(newShuffles, 1, function(x) cor(q2$data[,1],q2$data[x, 2])))
+ # print(dim(newShuffles))
+  q2Test$shuffles <- rbind(q2Test$shuffles, newShuffles)
+  q2Test$slopes <- c(q2Test$slopes, apply(newShuffles, 1, function(x) qr.coef(q2$qr, q2$data[x, 2])[2]))
+  q2Test$corr <- c(q2Test$corr, apply(newShuffles, 1, function(x) cor(q2$data[,1],q2$data[x, 2])))
 
 })
 observeEvent(input$q2_shuffle_5000, {
-  fit0 <- lm(q2$data[, 2] ~ q2$data[, 1])
   newShuffles <- t( sapply(1:5000, function(x) sample(1:nrow(q2$data))))
-  q2$shuffles <- rbind(q2$shuffles, newShuffles)
-  q2$slopes <- c(q2$slopes, apply(newShuffles, 1, function(shf) coef(lm(q2$data[shf,2] ~ q2$data[,1]))[2]) )
-  q2$corr <- c(q2$corr, apply(newShuffles, 1, function(shf) cor(q2$data[,1],q2$data[shf, 2])))
+#  print(dim(newShuffles))
+  q2Test$shuffles <- rbind(q2Test$shuffles, newShuffles)
+  q2Test$slopes <- c(q2Test$slopes, apply(newShuffles, 1, function(x) qr.coef(q2$qr, q2$data[x, 2])[2]))
+  q2Test$corr <- c(q2Test$corr, apply(newShuffles, 1, function(shf) cor(q2$data[,1],q2$data[shf, 2])))
 })
 
 output$q2_TestPlot2 <- renderPlot({
-  if(is.null(input$q2_TestParam) | is.null( q2$shuffles) )
-    return()
-  x <- ifelse(input$q2_TestParam == "Slope", q2$slopes, q2$corr)
-  x <- sort(x)
-  print(summary(x))
-#   z <- cut(x, breaks =   nclass.Sturges(x) )
+  if(is.null( q2Test$shuffles) )
+    return() 
+  parm <-  if(input$q2_TestParam == "Slope") {
+               q2Test$slopes
+           } else { 
+            q2Test$corr
+          }
+  parm <- sort(parm)
+  ## print(summary(parm))
+  z <- cut(parm, breaks = .5*  nclass.Sturges(parm)^2 )
 #  print(summary(z))
-#  y <- unlist(sapply(z, function(v) 1:length(v)))
-#  y <-  y[!is.na(y)]
-  hist(x, ylab = "", xlab = ifelse(input$q2_TestParam == "Slope", "Slope", "Correlation"), main = "")
+  y <- unlist(tapply(z, z, function(v) 1:length(v)))
+  y <-  y[!is.na(y)]
+  q2Test$y <- y
+  nsims <- length(parm)
+  radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)
+  plot(parm, y, ylab = "", cex = radius/2, pch = 16, col = blu,  
+       xlab = ifelse(input$q2_TestParam == "Slope", "Slope", "Correlation"), main = "Sampling Distribution")
+}, height = 400, width = 400)
+
+  ## q2 test UI -------------------------------------
+output$q2_testUI <- renderUI({
+  if( is.null(q2$data)){
+    h4(" You must first enter data. Choose 'Enter/Describe Data'.")
+  } else {
+     fluidRow(
+       column(4, tableOutput('q2_TestPrep'),
+              #radioButtons('q2_Test1orMany', label= "Display: ", list("One or","Many shuffles?"), inline = TRUE),
+              h5("We start showing one shuffle."),
+              h5("How many more?"),
+              actionButton("q2_shuffle_10", label = "10"),
+              actionButton("q2_shuffle_100", label = "100"),
+              actionButton("q2_shuffle_1000", label = "1000"),
+              actionButton("q2_shuffle_5000", label = "5000"),
+              radioButtons('q2_TestParam', label = "Parameter: ", list("Slope","Correlation"), inline = TRUE)
+       ),
+       ## for 1 shuffle, show equal size plots of original and reshuffled x,y data
+       ##  for more shuffles, make original data and hover --> shuffle plots smaller, large plot of 
+       ##  sampling distribution for slope / correlation.
+       column(3, 
+              plotOutput('q2_TestPlot1')
+       ),
+       column(5,
+              # h5("Click on a point to see that shuffle"),
+              plotOutput('q2_TestPlot2', click = 'q2_Test_click')
+       )
+     )
+  }
 })
+
+
+  ###  q2 Estimate with CI -------------------------------------------------------
+output$q2_estimateUI <- renderUI({
+  if( is.null(q2$data)){
+    h4(" You must first enter data. Choose 'Enter/Describe Data'.")
+  } else {
+    h4("Under Construction")
+  }
+})
+
+
 
   ## 1 categorical & 1 quantitative   ---------------------------------------  1 cat 1 quant
 
@@ -1143,7 +1264,7 @@ observeEvent(  input$c1q1_useLddBtn, {
   c1q1$names <- names(DF)
   c1q1$data <- data.frame(DF)
   output$c1q1DataIn <- renderText({
-    "Data is entered, you may now choose to estimate or test the true difference in means"
+    "Data are entered, you may now choose to estimate or test the true difference in means"
   })
 })
 
@@ -1161,7 +1282,7 @@ observeEvent(  input$c1q1_useCSVBtn,{
   c1q1$names <- names(DF)
   c1q1$data <- data.frame(DF)
   output$c1q1DataIn <- renderText({
-    "Data is entered, you may now choose to estimate or test the true difference in means"
+    "Data are entered, you may now choose to estimate or test the true difference in means"
   })
   
 })
@@ -1173,7 +1294,7 @@ observeEvent(  input$c1q1_useHotBtn,{
   c1q1$names <- names(DF)
   c1q1$data <- DF
   output$c1q1DataIn <- renderText({
-    "Data is entered, you may now choose to estimate or test the true difference in means"
+    "Data are entered, you may now choose to estimate or test the true difference in means"
   })
 })
 
