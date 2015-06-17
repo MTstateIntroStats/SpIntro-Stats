@@ -48,15 +48,15 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                   column(3, tableOutput("cat1_Summary"))       
                   )
                 ),
-       tabPanel("Test", value="cat1_Test",
-                h6("Test 1 Proportion - under construction")
-                ),
-       tabPanel("Estimate", value="cat1_Estimate",
-                h6("Estimate 1 Proportion - under construction")
-                ),
-       tabPanel("Confidence Interval Demo", value = "cat1_CIdemo",
-                titlePanel("Demo to Illustrate the meaning of 'Confidence' in an Interval"),
-                fluidRow(
+    tabPanel("Test", value="cat1_Test",
+                uiOutput('cat1_testUI') 
+    ),
+    tabPanel("Estimate", value="cat1_Estimate",
+             uiOutput('cat1_estimateUI')
+    ),
+   tabPanel("Confidence Interval Demo", value = "cat1_CIdemo",
+            titlePanel("Demo to Illustrate the meaning of 'Confidence' in an Interval"),
+            fluidRow(
                   column(4, 
                          sliderInput("CIdemo_n", "Sample Size (number of spins)", min = 21, max = 100, value = 50),
                          uiOutput("inputTrueP"),
@@ -114,7 +114,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                
                ## Need to use Dynamic UI instead of condition panels
                
-               uiOutput("q1_ui"),
+               uiOutput("q1_inputUI"),
       
                hr(),
                fluidRow(
@@ -125,10 +125,10 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                )
       ),
       tabPanel("Test", value="1quantTest",
-        h6("Test 1 mean - under construction")
+           uiOutput('q1_testUI') 
       ),
       tabPanel("Estimate", value="1quantEstimate",
-        h6("Estimate 1 mean - under construction")
+        uiOutput('q1_estimateUI')
       ),
       tabPanel("Bootstrap Demo", value="1quantBoot",
         a(href="BootDemo.html","Click to see Bootstrap Demo") 
@@ -163,16 +163,14 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                  column(5,   ##  Inputs
                         fluidRow( 
                           column(4,
-                               div(
-                                   actionButton("cat2_submitButton", "Use These Data", height = 15),
-                                   br(),
+                               div( pre(""),
                                    tags$input(name='cat2_name1', type='text', value='Success', size='10'),
                                    br(),
                                    tags$input(name='cat2_name2', type='text', value='Failure', size='10')
                                )
                            ),
                           column(4,
-                                 div( br(),
+                                 div( 
                                    tags$input(name='cat2_grp1', type='text', value='Group1', size='10', height = 20),
                                    br(), 
                                    tags$input(name='cat2_n11', type='text', value='0', size='10'),
@@ -181,7 +179,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                                  )
                           ),
                           column(4,
-                                 div(  br(),
+                                 div(  
                                    tags$input(name='cat2_grp2', type='text', value='Group2', size='10', height = 20),
                                    br(),
                                    tags$input(name='cat2_n12', type='text', value='0', size='10'),
@@ -189,7 +187,12 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                                    tags$input(name='cat2_n22', type='text', value='0', size='10')
                                  )
                           )
-                        )
+                        ),
+                    fluidRow(
+                      column(6, offset = 3,
+                             actionButton("cat2_submitButton", "Use These Data", height = 15)
+                      )
+                    )    
                  ),
                  column(4,  plotOutput('cat2Plot', width="90%")),         
                  column(3, tableOutput("cat2Summary"))       
@@ -218,9 +221,9 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
       ),
 
       tabPanel("Estimate", value="2catEstimate",
-        h6("Estimate Difference in Proportions - under construction")
+               uiOutput('cat2_estimateUI')
       ),
-
+               
       tabPanel("Normal Distribution", value="2catNormal",
                titlePanel("Normal Probabilities"),
                column(4, inputPanel(
@@ -275,32 +278,11 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                )
                ),      
       tabPanel("Test", value="2quantTest",
-        fluidRow(
-          column(4, tableOutput('q2_TestPrep'),
-                 #radioButtons('q2_Test1orMany', label= "Display: ", list("One or","Many shuffles?"), inline = TRUE),
-                 h5("We start showing one shuffle."),
-                 h5("How many more?"),
-                 actionButton("q2_shuffle_10", label = "10"),
-                 actionButton("q2_shuffle_100", label = "100"),
-                 actionButton("q2_shuffle_1000", label = "1000"),
-                 actionButton("q2_shuffle_5000", label = "5000"),
-                 radioButtons('q2_TestParam', label = "Parameter: ", list("Slope","Correlation"), inline = TRUE)
-          ),
-          ## for 1 shuffle, show equal size plots of original and reshuffled x,y data
-          ##  for more shuffles, make original data and hover --> shuffle plots smaller, large plot of 
-          ##  sampling distribution for slope / correlation.
-          column(3, 
-                 plotOutput('q2_TestPlot1')
-                 ),
-          column(5,
-              # h5("Click on a point to see that shuffle"),
-               plotOutput('q2_TestPlot2', click = 'q2_Test_click')
-              )
-          )
+               uiOutput('q2_testUI')
       ),
-
+      
       tabPanel("Estimate Slope/Correlation", value="2quantEstimate",
-        h6("Estimate Slope and Correlation - under construction")
+               uiOutput('q2_estimateUI')
 #       ),
 #       tabPanel("t- Distribution", value="2quantT",
 #         h6("Normal Approx")
@@ -336,13 +318,14 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
       ),
       
       tabPanel("Test", value="1cat1quantTest",
-        h6("Test Equality of 2 Means - under construction")
+               uiOutput('c1q1_testUI')
       ),
       
       tabPanel("Estimate", value="1cat1quantEstimate",
-        h6("Estimate Difference in Means - under construction")
+               uiOutput('c1q1_estimateUI')
       ),
-
+      
+      
       tabPanel("t Distribution", value="1cat1quantT",
                titlePanel("t Probabilities"),
                column(4, inputPanel(
