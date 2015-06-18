@@ -1013,7 +1013,8 @@ output$q2_hot = renderRHandsontable({
 })
 }
   ###  Data Summary ----------------------------------------------------------  q2
-q2Test <- reactiveValues( shuffles = NULL, slopes = NULL, corr = NULL)
+q2Test <- reactiveValues( shuffles = NULL, slopes = NULL, corr = NULL, observed = NULL,
+                          colors = NULL, moreExtremeCount = NULL, pvalue = NULL)
 
 {
 output$q2_Plot <- renderPlot( {
@@ -1030,8 +1031,8 @@ output$q2_Plot <- renderPlot( {
     theme_bw() + ylab(q2$names[2]) + xlab("") + scale_x_continuous(breaks = c(-1,1000)) +  coord_flip()
     #par(mar=c(24, 40, 10, 35)/10, mfrow=c(2,1))
     #boxplot(q2_dataDF, horizontal = TRUE, main = "")
-    myBlue <- rgb(0, 100/256, 224/256, alpha = .8)  
-    q2_plot3 <- qplot(data= DF, x=x, y=y, colour = I(myBlue), size = I(4)) + theme_bw() +
+    #myBlue <- rgb(0, 100/256, 224/256, alpha = .8)  
+    q2_plot3 <- qplot(data= DF, x=x, y=y, colour = I(blu), size = I(4)) + theme_bw() +
                   xlab(q2$names[1]) + ylab(q2$names[2])
     grid.arrange(q2_plot1, q2_plot2, q2_plot3, heights = c(1, 1, 3)/5, ncol=1)
   #})
@@ -1132,11 +1133,10 @@ output$q2_TestPlot1 <- renderPlot({
 
 observeEvent(input$q2_shuffle_10, {
   newShuffles <- t( sapply(1:10, function(x) sample(1:nrow(q2$data))))
-#  print(dim(newShuffles))
   q2Test$shuffles <- rbind(q2Test$shuffles, newShuffles)
-  #print(q2$slopes)
  q2Test$slopes <- c(q2Test$slopes, apply(newShuffles, 1, function(x) qr.coef(q2$qr, q2$data[x, 2])[2]))
  q2Test$corr <- c(q2Test$corr, apply(newShuffles, 1, function(ndx) cor(q2$data$x, q2$data[ndx, 2])))
+ q2Test$colors <- rep(blu, length(q2Test$slopes))
 })
 
 observeEvent(input$q2_shuffle_100, {
@@ -1145,6 +1145,7 @@ observeEvent(input$q2_shuffle_100, {
   q2Test$shuffles <- rbind(q2Test$shuffles, newShuffles)
   q2Test$slopes <- c(q2Test$slopes, apply(newShuffles, 1, function(x) qr.coef(q2$qr, q2$data[x, 2])[2]))
   q2Test$corr <- c(q2Test$corr, apply(newShuffles, 1, function(x) cor(q2$data[,1],q2$data[x, 2])))
+q2Test$colors <- rep(blu, length(q2Test$slopes))
 
 })
 observeEvent(input$q2_shuffle_1000, {
@@ -1153,6 +1154,7 @@ observeEvent(input$q2_shuffle_1000, {
   q2Test$shuffles <- rbind(q2Test$shuffles, newShuffles)
   q2Test$slopes <- c(q2Test$slopes, apply(newShuffles, 1, function(x) qr.coef(q2$qr, q2$data[x, 2])[2]))
   q2Test$corr <- c(q2Test$corr, apply(newShuffles, 1, function(x) cor(q2$data[,1],q2$data[x, 2])))
+ q2Test$colors <- rep(blu, length(q2Test$slopes))
 
 })
 observeEvent(input$q2_shuffle_5000, {
@@ -1161,31 +1163,55 @@ observeEvent(input$q2_shuffle_5000, {
   q2Test$shuffles <- rbind(q2Test$shuffles, newShuffles)
   q2Test$slopes <- c(q2Test$slopes, apply(newShuffles, 1, function(x) qr.coef(q2$qr, q2$data[x, 2])[2]))
   q2Test$corr <- c(q2Test$corr, apply(newShuffles, 1, function(shf) cor(q2$data[,1],q2$data[shf, 2])))
+q2Test$colors <- rep(blu, length(q2Test$slopes))
+})
+
+observeEvent(input$q2_countXtremes, {
+  if(input$q2_TestParam == "Slope") {
+    parm <-  q2Test$slopes
+  } else { 
+    parm <- q2Test$corr
+  }
+  parm <- sort(parm)
+  nsims <- length(parm)
+  threshold <- as.numeric(input$q2_cutoff)
+  if(nsims > 9 & !is.na(input$q2_testDirection)){
+    redValues <-  switch( input$q2_testDirection,
+                        "less" = which(parm <= threshold - 1.0e-10),
+                        "greater" = which(parm >= threshold - 1.0e-10),
+                        "more extreme" = c(which(parm <= -abs(threshold) - 1.0e-10 ), 
+                                           which(parm >= abs(threshold) +1.0e-10 ) )  )
+    q2Test$colors[redValues] <- rd       
+    q2Test$moreExtremeCount  <- length(redValues)
+    q2Test$pvalue <- q2Test$moreExtremeCount/nsims
+  }
 })
 
 output$q2_TestPlot2 <- renderPlot({
   if(is.null( q2Test$shuffles) )
     return() 
-  parm <-  if(input$q2_TestParam == "Slope") {
-               q2Test$slopes
-           } else { 
-            q2Test$corr
-          }
+  if(input$q2_TestParam == "Slope") {
+      parm <-  q2Test$slopes
+      q2Test$observed <- q2$slope
+   } else { 
+      parm <- q2Test$corr
+      q2Test$observed <- q2$corr
+  }
   parm <- sort(parm)
   ## print(summary(parm))
   if(length(parm) == 1){
     y <- .5
     radius <- 4
   } else {
-    z <- cut(parm, breaks = .5*  nclass.Sturges(parm)^2 )
+    z <- cut(parm, breaks = .5 * nclass.Sturges(parm)^2 )
 #  print(summary(z))
     y <- unlist(tapply(z, z, function(v) 1:length(v)))
     y <-  y[!is.na(y)]
     q2Test$y <- y
     nsims <- length(parm)
-    radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)
+    radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
   }
-  plot(parm, y, ylab = "", cex = radius/2, pch = 16, col = blu,  
+  plot(parm, y, ylab = "", cex = radius/2, pch = 16, col = q2Test$colors,  
         xlab = ifelse(input$q2_TestParam == "Slope", "Slope", "Correlation"), main = "Sampling Distribution")
   legend("topleft", bty="n", paste(" n = ", length(parm),"\n Mean = ", round(mean(parm),3),
                                    "\n SE = ", round(sd(parm), 3)))
@@ -1196,6 +1222,7 @@ output$q2_testUI <- renderUI({
   if( is.null(q2$data)){
     h4(" You must first enter data. Choose 'Enter/Describe Data'.")
   } else {
+    fluidPage(
      fluidRow(
        column(4, tableOutput('q2_TestPrep'),
               #radioButtons('q2_Test1orMany', label= "Display: ", list("One or","Many shuffles?"), inline = TRUE),
@@ -1216,8 +1243,32 @@ output$q2_testUI <- renderUI({
        column(5,
               # h5("Click on a point to see that shuffle"),
               plotOutput('q2_TestPlot2', click = 'q2_Test_click')
+              )
+     ),
+     fluidRow(
+       column(2, offset = 3,
+              h4("Count values")
+       ),
+       column(3,
+              selectInput('q2_testDirection', label ="", choices = list("less","more extreme","greater"), 
+                          selected = "more extreme" , selectize = FALSE, width = 200)
+              ),
+       column(1, h4("than ")),
+       column(2,
+              numericInput('q2_cutoff', label="", value = NA )
+              ),
+       column(1,
+              actionButton("q2_countXtremes","Go")
        )
-     )
+     ),
+     if(!is.null(q2Test$moreExtremeCount)){
+       fluidRow(
+         column(6, offset = 6,
+              h4(paste(q2Test$moreExtremeCount, " / ", length(q2Test$slopes), ", p-value =  ", round(q2Test$pvalue,5)))
+         )
+       )
+     }
+    )
   }
 })
 
