@@ -268,9 +268,9 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                
                hr(),
                fluidRow(
-                 column(8, 
+                 column(6, 
                         plotOutput('q2_Plot') ),
-                 column(3, 
+                 column(5, 
                         tableOutput('q2_Summary'))
                ),
                fluidRow( 
@@ -283,9 +283,6 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
       
       tabPanel("Estimate Slope/Correlation", value="2quantEstimate",
                uiOutput('q2_estimateUI')
-#       ),
-#       tabPanel("t- Distribution", value="2quantT",
-#         h6("Normal Approx")
       )
     ),
 
@@ -301,15 +298,13 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                                 selectize = FALSE))
         ),
         
-        ## Need to use Dynamic UI instead of condition panels
-        
         uiOutput("c1q1_ui")
         ,
         hr(),
         fluidRow(
-          column(7, 
-                 plotOutput('c1q1_Plot') ),
           column(5, 
+                 plotOutput('c1q1_Plot') ),
+          column(4, 
                  tableOutput('c1q1_Summary1'),
                  br(),
                  tableOutput('c1q1_Summary2'))
