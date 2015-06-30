@@ -439,7 +439,7 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
   })
 }
 
-  ##  Decribe and plot data -------------------------------  quant 1
+  ##  Describe and plot data -------------------------------  quant 1
 {
   output$q1_Plot <- renderPlot( {
     if( is.null(q1$data))  return()
@@ -1095,13 +1095,26 @@ output$normalProbPlot2 <- renderPlot({
 
   ###  Data Entry ------------------------------------------------------------  q2
    ## need to remove old data if user comes back to data entry 
-{
-output$quant2DataIn <- renderText({
-  "How do you want to input the data?"
-})
+q2Test <- reactiveValues( shuffles = NULL, slopes = NULL, corr = NULL, observed = NULL,
+                          colors = NULL, moreExtremeCount = NULL, pvalue = NULL)
 
-# use  selectInput to grab the 3 types of input
-output$q2_ui <- renderUI({
+
+q2Estimate <- reactiveValues( resamples = NULL,   slopes = NULL,  corr =  NULL,
+                              observed = NULL,    confLevel = NULL, colors = blu,
+                              CI = NULL)
+
+{
+  
+  ##  grab data according to input method
+  q2 <- reactiveValues(data = NULL, names = NULL, intercept = NULL, slope = NULL, 
+                       corr = NULL, qr = NULL)
+  
+  output$quant2DataIn <- renderText({
+  "How do you want to input the data?"
+ })
+
+ # use  selectInput to grab the 3 types of input
+ output$q2_ui <- renderUI({
   if (is.null(input$q2_entry))
     return()
   switch( input$q2_entry,
@@ -1150,23 +1163,34 @@ output$q2_ui <- renderUI({
   ##  Need to grab names from the data input
 })
 
-##  grab data according to input method
-q2 <- reactiveValues(data = NULL, names = NULL, slope = NULL, corr = NULL, qr = NULL)
-
 observeEvent(  input$q2_useLddBtn, {
+  ##  Wipe out any old data  
+  q2Test$shuffles <- q2Test$slopes <- q2Test$corr <- q2Test$observed <- 
+    q2Test$colors <- q2Test$moreExtremeCount <- q2Test$pvalue <- NULL
+  q2Estimate$resamples <- q2Estimate$slopes <- q2Estimate$corr <- q2Estimate$observed <-
+    q2Estimate$CI <- q2Estimate$colors <- NULL
+  
   DF <- eval(parse( text = input$q2_data1))
   q2$names <- names(DF) 
   q2$data <- data.frame(DF)
+  names(q2$data) <- c("x","y")
   output$quant2DataIn <- renderText({
     "Data are entered, you may now choose to estimate or test the true slope or correlation"
   })
 })
 
 observeEvent(  input$q2_useCSVBtn,{
+  ##  Wipe out any old data    
+  q2Test$shuffles <- q2Test$slopes <- q2Test$corr <- q2Test$observed <- 
+    q2Test$colors <- q2Test$moreExtremeCount <- q2Test$pvalue <- NULL
+  q2Estimate$resamples <- q2Estimate$slopes <- q2Estimate$corr <- q2Estimate$observed <-
+    q2Estimate$CI <- q2Estimate$colors <- NULL
+  
   DF <- read.csv(input$q2_file1$datapath, header=input$q2_header,
                       sep=input$q2_sep, quote=input$q2_quote)
   q2$names <- names(DF)
   q2$data <- data.frame(DF)
+  names(q2$data) <- c("x","y")
   output$quant2DataIn <- renderText({
     "Data are entered, you may now choose to estimate or test the true slope or correlation"
   })
@@ -1174,10 +1198,17 @@ observeEvent(  input$q2_useCSVBtn,{
 })
 
 observeEvent(  input$q2_useHotBtn,{
+  ##  Wipe out any old data  
+  q2Test$shuffles <- q2Test$slopes <- q2Test$corr <- q2Test$observed <- 
+    q2Test$colors <- q2Test$moreExtremeCount <- q2Test$pvalue <- NULL
+  q2Estimate$resamples <- q2Estimate$slopes <- q2Estimate$corr <- q2Estimate$observed <-
+    q2Estimate$CI <- q2Estimate$colors <- NULL
+  
   DF <- data.frame(q2_values[["hot"]])
   # print(DF)
   q2$names <- names(DF) 
   q2$data <- data.frame(DF)
+  names(q2$data) <- c("x","y")
   output$quant2DataIn <- renderText({
     "Data are entered, you may now choose to estimate or test the true slope or correlation"
   })
@@ -1201,9 +1232,8 @@ output$q2_hot = renderRHandsontable({
   }
 })
 }
-  ###  Data Summary ----------------------------------------------------------  q2
-q2Test <- reactiveValues( shuffles = NULL, slopes = NULL, corr = NULL, observed = NULL,
-                          colors = NULL, moreExtremeCount = NULL, pvalue = NULL)
+
+###  Data Summary ----------------------------------------------------------  q2
 
 {
 output$q2_Plot <- renderPlot( {
@@ -1213,7 +1243,6 @@ output$q2_Plot <- renderPlot( {
     ## need to allow user to switch predictor and response
     ## make plot
     DF <- q2$data
-    names(DF) <- c("x","y")
     q2_plot1 <- ggplot(data = DF) +geom_boxplot(aes(y= x, x = x)) +
       theme_bw() + ylab(q2$names[1]) + xlab("") + scale_x_continuous(breaks = c(-1,1000)) +  coord_flip()
     q2_plot2 <- ggplot(data = DF) +geom_boxplot(aes(y= y, x = y)) +
@@ -1222,9 +1251,9 @@ output$q2_Plot <- renderPlot( {
     #boxplot(q2_dataDF, horizontal = TRUE, main = "")
     #myBlue <- rgb(0, 100/256, 224/256, alpha = .8)  
     q2_plot3 <- qplot(data= DF, x=x, y=y, colour = I(blu), size = I(4)) + theme_bw() +
-                  xlab(q2$names[1]) + ylab(q2$names[2])
-    grid.arrange(q2_plot1, q2_plot2, q2_plot3, heights = c(1, 1, 3)/5, ncol=1)
-  #})
+                  xlab(q2$names[1]) + ylab(q2$names[2]) 
+    grid.arrange(q2_plot1, q2_plot2, q2_plot3, heights = c(1.5, 1.5, 5)/8, ncol=1)
+  #}
 }, height=400)
 
 output$q2_Summary <- renderTable({
@@ -1232,11 +1261,11 @@ output$q2_Summary <- renderTable({
     #if(input$q2_useHotBtn == 0 && input$q2_useExistingBtn == 0 && input$q2_useFileBtn == 0) 
     return()
   #isolate({
-  DF0 <- q2$data
-  names(DF0) <- c("x","y")
-  lmfit <- lm(y ~ x, data = DF0)
-    ##  Allow switch in predictor/response
-    DF <- rbind(mean   = apply(q2$data, 2, mean, na.rm = TRUE ),
+  fit0 <- lm(y ~ x, data = q2$data)
+  q2$intercept <- coef(fit0)[1]
+  q2$slope <- coef(fit0)[2]
+  q2$corr <- cor(q2$data[,1], q2$data[,2])
+  DF <- rbind(mean   = apply(q2$data, 2, mean, na.rm = TRUE ),
                 sd     = apply(q2$data, 2, sd, na.rm = TRUE),
                 min    = apply(q2$data, 2, min),
                 Q1     = apply(q2$data, 2, quantile, .25),
@@ -1244,9 +1273,9 @@ output$q2_Summary <- renderTable({
                 Q3     = apply(q2$data, 2, quantile, .75),
                 max    = apply(q2$data, 2, max),
                 length = apply(q2$data, 2, length),
-                correlation = c(cor(q2$data[,1], q2$data[,2]), NA),
-                beta.hat = round(coef(lmfit),3),
-                "resid SD" = c(summary(lmfit)$sigma, NA) )
+                correlation = c(q2$corr, NA),
+                beta.hat = round(coef(fit0),3),
+                "resid SD" = c(summary(fit0)$sigma, NA) )
     colnames(DF) <- q2$names
     DF
   #})
@@ -1258,7 +1287,8 @@ observeEvent(  input$q2_swapXwithY,{
     return()
   q2$names <- q2$names[2:1]
   q2$data <- q2$data[, 2:1]
-})
+  names(q2$data) <- c("x","y")
+  })
 
 output$q2_swap <- renderUI({
   if (is.null(q2$data))
@@ -1266,11 +1296,12 @@ output$q2_swap <- renderUI({
   actionButton('q2_swapXwithY', "Swap Variables (X goes to Y)")
 })
 }
- ###   TESTING slope / correlation = 0 ---------------------------------------  q2
+
+###   TESTING slope / correlation = 0 ---------------------------------------  q2
 {
 
 output$q2_TestPrep <- renderTable({
-  names(q2$data) <- c("x","y")
+#  names(q2$data) <- c("x","y")
   fit0 <- lm( y ~ x, q2$data)
   q2$slope <- coef(fit0)[2]
   q2$qr <- fit0$qr
@@ -1284,16 +1315,15 @@ output$q2_TestPrep <- renderTable({
 
 
 output$q2_TestPlot1 <- renderPlot({
+  if(is.null(q2$slope))
+    return()
   par(mfrow=c(2,1), mar = c(2.4,2,4,2))
   DF0 <- q2$data
-  colnames(DF0) <- c("x","y")
+ # colnames(DF0) <- c("x","y")
   plot(y ~ x, data=DF0, xlab = q2$names[1], ylab = q2$names[2], col = blu, pch = 16,
        main = "Original Data")
-  lmfit0 <- lm(y ~ x, DF0)
-  abline(lmfit0, col = blu)
-  b1hat <- round(q2$slope, 3)
-  rhat0 <- round(q2$corr, 3)
-  mtext(side = 3,  at = min(DF0$x)*2/3 + max(DF0$x)/3, bquote(hat(beta)[1] == .(b1hat) ))
+  #lmfit0 <- lm(y ~ x, DF0)
+  abline(q2$intercept, q2$slope)
   mtext(side = 3,  at = min(DF0$x)/3 + max(DF0$x)*2/3, bquote(r == .(rhat0)))
   q2Test$shuffles <- shuffle <- sample(1:nrow(q2$data))
   if(!is.null(input$q2Test_click) ){
@@ -1334,7 +1364,7 @@ observeEvent(input$q2_shuffle_100, {
   q2Test$shuffles <- rbind(q2Test$shuffles, newShuffles)
   q2Test$slopes <- c(q2Test$slopes, apply(newShuffles, 1, function(x) qr.coef(q2$qr, q2$data[x, 2])[2]))
   q2Test$corr <- c(q2Test$corr, apply(newShuffles, 1, function(x) cor(q2$data[,1],q2$data[x, 2])))
-q2Test$colors <- rep(blu, length(q2Test$slopes))
+  q2Test$colors <- rep(blu, length(q2Test$slopes))
 
 })
 observeEvent(input$q2_shuffle_1000, {
@@ -1343,7 +1373,7 @@ observeEvent(input$q2_shuffle_1000, {
   q2Test$shuffles <- rbind(q2Test$shuffles, newShuffles)
   q2Test$slopes <- c(q2Test$slopes, apply(newShuffles, 1, function(x) qr.coef(q2$qr, q2$data[x, 2])[2]))
   q2Test$corr <- c(q2Test$corr, apply(newShuffles, 1, function(x) cor(q2$data[,1],q2$data[x, 2])))
- q2Test$colors <- rep(blu, length(q2Test$slopes))
+  q2Test$colors <- rep(blu, length(q2Test$slopes))
 
 })
 observeEvent(input$q2_shuffle_5000, {
@@ -1352,7 +1382,7 @@ observeEvent(input$q2_shuffle_5000, {
   q2Test$shuffles <- rbind(q2Test$shuffles, newShuffles)
   q2Test$slopes <- c(q2Test$slopes, apply(newShuffles, 1, function(x) qr.coef(q2$qr, q2$data[x, 2])[2]))
   q2Test$corr <- c(q2Test$corr, apply(newShuffles, 1, function(shf) cor(q2$data[,1],q2$data[shf, 2])))
-q2Test$colors <- rep(blu, length(q2Test$slopes))
+  q2Test$colors <- rep(blu, length(q2Test$slopes))
 })
 
 observeEvent(input$q2_countXtremes, {
@@ -1366,10 +1396,10 @@ observeEvent(input$q2_countXtremes, {
   threshold <- as.numeric(input$q2_cutoff)
   if(nsims > 9 & !is.na(input$q2_testDirection)){
     redValues <-  switch( input$q2_testDirection,
-                        "less" = which(parm <= threshold - 1.0e-10),
+                        "less" = which(parm <= threshold + 1.0e-10),
                         "greater" = which(parm >= threshold - 1.0e-10),
-                        "more extreme" = c(which(parm <= -abs(threshold) - 1.0e-10 ), 
-                                           which(parm >= abs(threshold) +1.0e-10 ) )  )
+                        "more extreme" = c(which(parm <= -abs(threshold) + 1.0e-10 ), 
+                                           which(parm >= abs(threshold) -1.0e-10 ) )  )
     q2Test$colors[redValues] <- rd       
     q2Test$moreExtremeCount  <- length(redValues)
     q2Test$pvalue <- q2Test$moreExtremeCount/nsims
@@ -1413,7 +1443,7 @@ output$q2_testUI <- renderUI({
   } else {
     fluidPage(
      fluidRow(
-       column(4, tableOutput('q2_TestPrep'),
+       column(3, tableOutput('q2_TestPrep'),
               #radioButtons('q2_Test1orMany', label= "Display: ", list("One or","Many shuffles?"), inline = TRUE),
               h5("We start showing one shuffle."),
               h5("How many more?"),
@@ -1421,12 +1451,14 @@ output$q2_testUI <- renderUI({
               actionButton("q2_shuffle_100", label = "100"),
               actionButton("q2_shuffle_1000", label = "1000"),
               actionButton("q2_shuffle_5000", label = "5000"),
+              br(),    ########## why does this not add a new line????
+              br(),    ########## why does this not add a new line????
               radioButtons('q2_TestParam', label = "Parameter: ", list("Slope","Correlation"), inline = TRUE)
        ),
        ## for 1 shuffle, show equal size plots of original and reshuffled x,y data
        ##  for more shuffles, make original data and hover --> shuffle plots smaller, large plot of 
        ##  sampling distribution for slope / correlation.
-       column(3, 
+       column(4, 
               plotOutput('q2_TestPlot1')
        ),
        column(5,
@@ -1444,7 +1476,7 @@ output$q2_testUI <- renderUI({
               ),
        column(1, h4("than ")),
        column(2,
-              numericInput('q2_cutoff', label="", value = NA )
+              textInput('q2_cutoff', label="", value = NA )
               ),
        column(1,
               actionButton("q2_countXtremes","Go")
@@ -1464,12 +1496,228 @@ output$q2_testUI <- renderUI({
 }
   ###  Estimate slope / correlation with CI ----------------------------------- q2 
 {
+  output$q2_CIPrep <- renderTable({
+  ##  print("in q2_CIPrep")
+    out <- list("Correlation: " =  q2$corr,
+                "Slope: " = q2$slope )
+    out <- do.call(rbind, out)
+    colnames(out) <- c("Estimate")
+    out
+  })
+  
+  output$q2_EstPlot1 <- renderPlot({
+    if(is.null(q2$slope))
+      return()
+   b1hat <- round(q2$slope, 3)
+   rhat0 <- round(q2$corr, 3)
+   plotOrig <- qplot(x=x, y=y, data=q2$data, xlab = q2$names[1], ylab = q2$names[2], col = I(blu), 
+         main = "Original Data") + theme_bw() + 
+         geom_abline(intercept = q2$intercept, slope = b1hat, colour = blu)
+#    mtext(side = 3,  at = min(q2$data$x)*2/3 + max(q2$data$x)/3, bquote(hat(beta)[1] == .(b1hat) ))
+#    mtext(side = 3,  line = .3, at = min(q2$data$x)/3 + max(q2$data$x)*2/3, bquote(r == .(rhat0)))
+      ## Bootstrap resample 
+#      if(!is.null(input$q2Est_click) ){
+#        ## grab clicked resample
+#        #print(input$q2Est_click$x)
+#        clickX <- input$q2Est_click$x
+#        nearest <- which.min( abs(q2Estimate$slopes - clickX) )
+#        resample <- q2Estimate$resample[nearest,]
+#        DF1 <- q2$data[resample, ]
+#        lmfit1 <- lm(y ~ x, DF1)    
+#      }  else {
+       resample <- sort(sample(1:nrow(q2$data), replace=TRUE))
+       q2Estimate$resamples <-  matrix(resample, nrow=1)
+       DF1 <- q2$data[resample, ]
+       lmfit1 <- lm(y ~ x, DF1)    
+       q2Estimate$slopes <- beta <- round(coef(lmfit1)[2], 3)
+       q2Estimate$corr <- rhat1 <- round(cor(DF1$x, DF1$y), 3)
+#      }
+    DF1$sizes <- rep(table(resample), table(resample))
+    plotNew <- qplot(x=x, y=y, data = DF1,  colour = I(grn), size = factor(DF1$sizes)) + 
+                    labs(x = q2$names[1], y=q2$names[2], title="One Resampled Dataset") + 
+                    theme_bw() + scale_size_discrete( "repeats", range=c(3, 6))+
+                    geom_abline(intercept = coef(lmfit1)[1], slope=coef(lmfit1)[2]) 
+     
+    #mtext(side = 3, at = min(DF1$x)*2/3 + max(DF1$x)/3, bquote(hat(beta)[1] == .(beta) ) )
+    #mtext(side = 3, line = .3,  at = min(DF1$x)/3 + max(DF1$x)*2/3, bquote(r == .(rhat1)))
+    grid.arrange(plotOrig, plotNew, heights = c(4,  4)/8, ncol=1)
+  }, height = 400, width = 300)
+  
+  observeEvent(input$q2_resample_10, {
+    resamples <- t( sapply(1:10, function(x) sample(1:nrow(q2$data), replace = TRUE)))
+    resamples <- resamples[apply(resamples,1, function(ndx) var(q2$data[ndx, 2])) > 1.e-15, ]
+    q2Estimate$resamples <- rbind(q2Estimate$resamples, resamples)
+    q2Estimate$slopes <- c(q2Estimate$slopes, apply(resamples, 1, function(ndx) coef(lm(y ~ x, q2$data[ndx, ]))[2]))
+    q2Estimate$corr <- c(q2Estimate$corr, apply(resamples, 1, function(ndx) cor(q2$data$x[ndx], q2$data$y[ndx])))
+    q2Estimate$colors <- rep(blu, length(q2Estimate$slopes))
+  })
+  
+observeEvent(input$q2_resample_100, {
+  resamples <- t( sapply(1:100, function(x) sample(1:nrow(q2$data), replace = TRUE)))
+  resamples <- resamples[apply(resamples,1, function(ndx) var(q2$data[ndx,2])) > 1.e-15, ]
+  q2Estimate$resamples <- rbind(q2Estimate$resamples, resamples)
+  q2Estimate$slopes <- c(q2Estimate$slopes, apply(resamples, 1, function(ndx) coef(lm(y ~ x, q2$data[ndx, ]))[2]))
+  q2Estimate$corr <- c(q2Estimate$corr, apply(resamples, 1, function(ndx) cor(q2$data$x[ndx], q2$data$y[ndx])))
+  q2Estimate$colors <- rep(blu, length(q2Estimate$slopes))
+})
+
+observeEvent(input$q2_resample_1000, {
+  resamples <- t( sapply(1:1000, function(x) sample(1:nrow(q2$data), replace = TRUE)))
+  resamples <- resamples[apply(resamples,1, function(ndx) var(q2$data[ndx,2])) > 1.e-15, ]
+  q2Estimate$resamples <- rbind(q2Estimate$resamples, resamples)
+  q2Estimate$slopes <- c(q2Estimate$slopes, apply(resamples, 1, function(ndx) coef(lm(y ~ x, q2$data[ndx, ]))[2]))
+  q2Estimate$corr <- c(q2Estimate$corr, apply(resamples, 1, function(ndx) cor(q2$data$x[ndx], q2$data$y[ndx])))
+  q2Estimate$colors <- rep(blu, length(q2Estimate$slopes))
+})
+
+observeEvent(input$q2_resample_5000, {
+  resamples <- t( sapply(1:5000, function(x) sample(1:nrow(q2$data), replace = TRUE)))
+  resamples <- resamples[apply(resamples,1, function(ndx) var(q2$data[ndx,2])) > 1.e-15, ]
+  q2Estimate$resamples <- rbind(q2Estimate$resamples, resamples)
+  q2Estimate$slopes <- c(q2Estimate$slopes, apply(resamples, 1, function(ndx) coef(lm(y ~ x, q2$data[ndx, ]))[2]))
+  q2Estimate$corr <- c(q2Estimate$corr, apply(resamples, 1, function(ndx) cor(q2$data$x[ndx], q2$data$y[ndx])))
+  q2Estimate$colors <- rep(blu, length(q2Estimate$slopes))
+})
+
+output$q2_EstPlot2 <- renderPlot({
+  if(is.null( q2Estimate$resamples) )
+    return() 
+  #print(input$q2_EstParam)
+  if(input$q2_EstParam == "Slope") {
+    parm <-  as.numeric(q2Estimate$slopes)
+    q2Estimate$observed <- q2$slope
+  } else { 
+    parm <- as.numeric(q2Estimate$corr)
+    q2Estimate$observed <- q2$corr
+  }
+  parm <- sort(parm)
+  ## print(summary(parm))
+  if(length(parm) == 1){
+    y <- .5
+    radius <- 4
+    nsims <- 1
+  } else {
+    z <- cut(parm, breaks = .5 * nclass.Sturges(parm)^2 )
+    #  print(summary(z))
+    y <- unlist(tapply(z, z, function(v) 1:length(v)))
+    y <-  y[!is.na(y)]
+    q2Estimate$y <- y
+    nsims <- length(parm)
+    radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
+  }
+  plot(parm, y, ylab = "", cex = radius/2, pch = 16, col = q2Estimate$colors,  
+       xlab = ifelse(input$q2_EstParam == "Slope", "Slope", "Correlation"), main = "RE-Sampling Distribution")
+  legend("topright", bty="n", paste(" n = ", length(parm),"\n Mean = ", round(mean(parm),3),
+                                   "\n SE = ", round(sd(parm), 3)))
+}, height = 400, width = 400)
+
+observeEvent(input$q2_conf80,{
+  if(is.null(q2Estimate$slopes) | (nsims <- length(q2Estimate$slopes)) < 10){
+    return()
+  }
+  q2Estimate$confLevel <- .80
+  q2Estimate$colors <- rep(blu, nsims)
+  tailCount <- floor(nsims * .1)
+  q2Estimate$colors[1:tailCount] <- rd
+  q2Estimate$colors[nsims +1 -(1:tailCount)] <- rd
+  q2Estimate$CI <- if(input$q2_EstParam == "Slope"){
+    sort(q2Estimate$slopes)[c(tailCount, nsims + 1 - tailCount)]
+  } else {
+    sort(q2Estimate$corr)[c(tailCount, nsims + 1 - tailCount)]
+  }
+})
+
+observeEvent(input$q2_conf90,{
+  if(is.null(q2Estimate$slopes) | (nsims <- length(q2Estimate$slopes)) < 10){
+    return()
+  }
+  q2Estimate$confLevel <- .90
+  q2Estimate$colors <- rep(blu, nsims)
+  tailCount <- floor(nsims * .05)
+  q2Estimate$colors[1:tailCount] <- rd
+  q2Estimate$colors[nsims +1 -(1:tailCount)] <- rd
+  q2Estimate$CI <- if(input$q2_EstParam == "Slope"){
+    sort(q2Estimate$slopes)[c(tailCount, nsims+1 -tailCount)]
+  } else {
+    sort(q2Estimate$corr)[c(tailCount, nsims+1 -tailCount)]
+  }
+})
+
+observeEvent(input$q2_conf95,{
+  if(is.null(q2Estimate$slopes) | (nsims <- length(q2Estimate$slopes)) < 10){
+    return()
+  }
+  q2Estimate$confLevel <- .95
+  q2Estimate$colors <- rep(blu, nsims)
+  tailCount <- floor(nsims * .025)
+  q2Estimate$colors[1:tailCount] <- rd
+  q2Estimate$colors[nsims +1 -(1:tailCount)] <- rd
+  q2Estimate$CI <- if(input$q2_EstParam == "Slope"){
+    sort(q2Estimate$slopes)[c(tailCount, nsims+1 -tailCount)]
+  } else {
+    sort(q2Estimate$corr)[c(tailCount, nsims+1 -tailCount)]
+  }
+})
+
+observeEvent(input$q2_conf99,{
+  if(is.null(q2Estimate$slopes) | (nsims <- length(q2Estimate$slopes)) < 10){
+    return()
+  }
+  q2Estimate$confLevel <- .99
+  q2Estimate$colors <- rep(blu, nsims)
+  tailCount <- floor(nsims * .005)
+  q2Estimate$colors[1:tailCount] <- rd
+  q2Estimate$colors[nsims + 1 -(1:tailCount)] <- rd
+  q2Estimate$CI <- if(input$q2_EstParam == "Slope"){
+    sort(q2Estimate$slopes)[c(tailCount, nsims+1 -tailCount)]
+  } else {
+    sort(q2Estimate$corr)[c(tailCount, nsims+1 -tailCount)]
+  }
+})
+
+
+
 output$q2_estimateUI <- renderUI({
   if( is.null(q2$data)){
     h4(" You must first enter data. Choose 'Enter/Describe Data'.")
   } else {
-    h4("Under Construction")
-  }
+    #h4("Under Construction")
+    fluidPage(
+      fluidRow(
+        column(3, tableOutput('q2_CIPrep'),
+               #radioButtons('q2_Test1orMany', label= "Display: ", list("One or","Many shuffles?"), inline = TRUE),
+               h5("We start showing one resample."),
+               h5("How many more?"),
+               actionButton("q2_resample_10", label = "10"),
+               actionButton("q2_resample_100", label = "100"),
+               actionButton("q2_resample_1000", label = "1000"),
+               actionButton("q2_resample_5000", label = "5000"),
+               br(),
+               br(),
+               radioButtons('q2_EstParam', label = "Parameter: ", list("Slope","Correlation"), 
+                            "Slope", inline = TRUE),
+               br(),
+               h5("Select Confidence Level (%)"),
+               actionButton('q2_conf80', label = "80"),
+               actionButton('q2_conf90', label = "90"),
+               actionButton('q2_conf95', label = "95"),
+               actionButton('q2_conf99', label = "99")
+        ),
+        ## for 1 resample, show equal size plots of original and resampled x,y data
+        ##  for more resamples, make original data and hover --> resample plots smaller, large plot of 
+        ##  resampling distribution for slope / correlation.
+        column(4, 
+               plotOutput('q2_EstPlot1')
+        ),
+        column(5,
+               # h5("Click on a point to see that shuffle")
+               plotOutput('q2_EstPlot2', hover = 'q2Est_click'), 
+               if(!is.null(q2Estimate$CI)) {
+                 h5(paste("Interval Estimate: (", round(q2Estimate$CI[1],3),", ",
+                        round(q2Estimate$CI[2], 3),")"))
+               }
+      )
+      ))}
 })
 
 }
@@ -1659,6 +1907,30 @@ output$c1q1_Summary2 <- renderTable({
     names(val) <- NULL
   matrix( -val, ncol= 1, dimnames = list("Difference in Means", c1q1$names[2]))
 })
+}
+
+ ##  test equality of two means   -------------------------------------------- 1c1q
+{
+  output$c1q1_testUI <- renderUI({
+    if( is.null(c1q1$data)){
+      h4(" You must first enter data. Choose 'Enter/Describe Data'.")
+    } else {
+      h4("Under Construction")
+    }
+  })
+  
+}
+
+##  estimate difference between two means  ----------------------------------- 1c1q
+{
+  output$c1q1_estimateUI <- renderUI({
+    if( is.null(c1q1$data)){
+      h4(" You must first enter data. Choose 'Enter/Describe Data'.")
+    } else {
+      h4("Under Construction")
+    }
+  })
+  
 }
 
   ##  t distributions -------------------------------------------------------- 1c1q
