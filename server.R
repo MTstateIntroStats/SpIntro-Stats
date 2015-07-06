@@ -619,6 +619,8 @@ observeEvent(input$cat2_submitButton, {
   cat2_data$groups <- rep(c(input$cat2_grp1, input$cat2_grp2), each = 2)
 }
 )
+
+
 }
 
   ## Summary of data --------------------------------------------------- cat 2
@@ -678,11 +680,11 @@ observeEvent(input$cat2_submitButton, {
                  
                  column(4, 
                         h3("Number of Shuffles"),
-                        actionButton("cat2_shuffle_1", label = "1"),
-                        actionButton("cat2_shuffle_10", label = "10"),
-                        actionButton("cat2_shuffle_100", label = "100"),
-                        actionButton("cat2_shuffle_1000", label = "1000"),
-                        actionButton("cat2_shuffle_5000", label = "5000"))
+                        actionButton("cat2_test_shuffle_1", label = "1"),
+                        actionButton("cat2_test_shuffle_10", label = "10"),
+                        actionButton("cat2_test_shuffle_100", label = "100"),
+                        actionButton("cat2_test_shuffle_1000", label = "1000"),
+                        actionButton("cat2_test_shuffle_5000", label = "5000"))
                ),
                
                hr(),
@@ -729,76 +731,50 @@ observeEvent(input$cat2_submitButton, {
     round(t(prop.table(counts, 1)), 3)
   })
   
-  observeEvent(input$cat2_shuffle_1, {
-    counts <- as.table(matrix(cat2_data$counts, 2, 2))
-    y1 <- counts[1,1]
-    n1 <- counts[1,1] + counts[1,2]
-    y2 <- counts[2,1]
-    n2 <- counts[2,1] + counts[2,2]
-    
-    DF <- cat2_gen_shuffles(shuffles = 1, y1=y1, y2=y2, n1=n1, n2=n2)
-    cat2Test$difprop <- rbind(cat2Test$difprop, DF)
-    cat2Test$colors <- rep(blu, length(cat2Test$difprop))
-    
-    print(cat2Test$difprop)
-    
-  })
-  
-  observeEvent(input$cat2_shuffle_10, {
-    counts <- as.table(matrix(cat2_data$counts, 2, 2))
-    y1 <- counts[1,1]
-    n1 <- counts[1,1] + counts[1,2]
-    y2 <- counts[2,1]
-    n2 <- counts[2,1] + counts[2,2]
-    
-    DF <- cat2_gen_shuffles(shuffles = 10, y1=y1, y2=y2, n1=n1, n2=n2)
-    cat2Test$difprop <- rbind(cat2Test$difprop, DF)
-    cat2Test$colors <- rep(blu, length(cat2Test$difprop))
-    
-    print(cat2Test$difprop)
-    
-  })
-  
-  observeEvent(input$cat2_shuffle_100, {
-    counts <- as.table(matrix(cat2_data$counts, 2, 2))
-    y1 <- counts[1,1]
-    n1 <- counts[1,1] + counts[1,2]
-    y2 <- counts[2,1]
-    n2 <- counts[2,1] + counts[2,2]
-    
-    DF <- cat2_gen_shuffles(shuffles = 100, y1=y1, y2=y2, n1=n1, n2=n2)
+  observeEvent(input$cat2_test_shuffle_1, {
+    DF <- cat2_test_shuffles(shuffles = 1, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
+                            n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
+                            n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
     cat2Test$difprop <- rbind(cat2Test$difprop, DF)
     cat2Test$colors <- rep(blu, length(cat2Test$difprop))
 
-    print(cat2Test$difprop)
   })
   
-  observeEvent(input$cat2_shuffle_1000, {
-    counts <- as.table(matrix(cat2_data$counts, 2, 2))
-    y1 <- counts[1,1]
-    n1 <- counts[1,1] + counts[1,2]
-    y2 <- counts[2,1]
-    n2 <- counts[2,1] + counts[2,2]
-    DF <- cat2_gen_shuffles(shuffles = 1000, y1=y1, y2=y2, n1=n1, n2=n2)
+  observeEvent(input$cat2_test_shuffle_10, {
+    DF <- cat2_test_shuffles(shuffles = 10, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
+                            n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
+                            n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
     cat2Test$difprop <- rbind(cat2Test$difprop, DF)
     cat2Test$colors <- rep(blu, length(cat2Test$difprop))
 
-    print(cat2Test$difprop)
   })
   
-  observeEvent(input$cat2_shuffle_5000, {
-    counts <- as.table(matrix(cat2_data$counts, 2, 2))
-    y1 <- counts[1,1]
-    n1 <- counts[1,1] + counts[1,2]
-    y2 <- counts[2,1]
-    n2 <- counts[2,1] + counts[2,2]
-    
-    DF <- cat2_gen_shuffles(shuffles = 5000, y1=y1, y2=y2, n1=n1, n2=n2)
+  observeEvent(input$cat2_test_shuffle_100, {
+    DF <- cat2_test_shuffles(shuffles = 100, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
+                            n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
+                            n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
     cat2Test$difprop <- rbind(cat2Test$difprop, DF)
     cat2Test$colors <- rep(blu, length(cat2Test$difprop))
 
-    print(cat2Test$difprop)
   })
+  
+  observeEvent(input$cat2_test_shuffle_1000, {
+    DF <- cat2_test_shuffles(shuffles = 1000, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
+                            n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
+                            n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
+    cat2Test$difprop <- rbind(cat2Test$difprop, DF)
+    cat2Test$colors <- rep(blu, length(cat2Test$difprop))
+
+  })
+  
+  observeEvent(input$cat2_test_shuffle_5000, {
+    DF <- cat2_test_shuffles(shuffles = 5000, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
+                            n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
+                            n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
+    cat2Test$difprop <- rbind(cat2Test$difprop, DF)
+    cat2Test$colors <- rep(blu, length(cat2Test$difprop))
+
+    })
   
   observeEvent(input$cat2_countXtremes, {
     x <- sort(cat2Test$difprop)
@@ -823,9 +799,7 @@ observeEvent(input$cat2_submitButton, {
     DF <- rbind(mean = mean(cat2Test$difprop[, 1], na.rm = TRUE ),
                 sd = sd(cat2Test$difprop[, 1], na.rm = TRUE),
                 min = min(cat2Test$difprop[, 1]),
-                Q1 = quantile(cat2Test$difprop[, 1], .25),
                 median = median(cat2Test$difprop[, 1]),
-                Q3 = quantile(cat2Test$difprop[, 1], .75),
                 max = max(cat2Test$difprop[, 1]),
                 length = length(cat2Test$difprop[, 1]))
     colnames(DF) <- "Difference in Proportions"
@@ -840,19 +814,20 @@ observeEvent(input$cat2_submitButton, {
     DF <- sort(cat2Test$difprop)
     
     if(length(DF) == 1){
-      w <- .5
-      radius <- 4
-    } else {
-      
-      nbreaks <- min(c(length(unique(DF)), nclass.Sturges(DF)^2))
+      w <- 0.01
+      radius = 4
+      } 
+    else {
+      nbreaks <- 0.5 * nclass.Sturges(DF)^2
       z <- cut(DF, breaks = nbreaks)
-      w <- unlist(tapply(z, z, function(DF) 1:length(DF)))
+      w <- unlist(tapply(z, z, function(V) 1:length(V)))
       w <- w[!is.na(w)]
+      print(w)
       nsims <- length(DF)
       radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
     }
-    plot(x = DF, y = w, ylab = "", cex = radius/2, pch = 16, col = cat2Test$colors,  
-         xlab = "Difference in Proportions", main = "Sampling Distribution")
+    plot(DF, w, ylab = "", ylim = c(0, max(w)), cex = radius/2, pch = 16, col = cat2Test$colors,  
+         xlab = "Difference in Proportions", main = "Randomization Dotplot for Difference in Proportions")
   }, height = 425, width = 750)
   
   }
