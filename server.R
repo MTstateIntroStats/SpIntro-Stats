@@ -689,8 +689,8 @@ observeEvent(input$cat2_submitButton, {
                
                hr(),
                fluidRow(
-                 column(8, plotOutput('cat2Test_Plot')),
-                 column(4, tableOutput('cat2Test_Summary'))
+                 column(4, plotOutput('cat2Test_Plot1')),
+                 column(8, plotOutput('cat2Test_Plot2'), click = 'cat2_Test_click')
                ), 
                hr(),
                fluidRow(
@@ -703,10 +703,10 @@ observeEvent(input$cat2_submitButton, {
                  ), 
                  column(1, h4(" than ")),
                  column(2, 
-                        numericInput('cat2_cutoff', label = "", value = NA)
+                        numericInput('cat2_test_cutoff', label = "", value = NA)
                  ), 
                  column(1, 
-                        actionButton('cat2_countXtremes', "Go")
+                        actionButton('cat2_test_countXtremes', "Go")
                  )
                ), 
                if(!is.null(cat2Test$moreExtremeCount)){
@@ -733,11 +733,11 @@ observeEvent(input$cat2_submitButton, {
   
   observeEvent(input$cat2_test_shuffle_1, {
     DF <- cat2_test_shuffles(shuffles = 1, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
-                            n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
-                            n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
+                             n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
+                             n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
     cat2Test$difprop <- rbind(cat2Test$difprop, DF)
     cat2Test$colors <- rep(blu, length(cat2Test$difprop))
-
+    
   })
   
   observeEvent(input$cat2_test_shuffle_10, {
@@ -776,10 +776,27 @@ observeEvent(input$cat2_submitButton, {
 
     })
   
-  observeEvent(input$cat2_countXtremes, {
+#   output$cat2Test_Plot1 <- renderPlot({
+#     if(input$cat2_submitButton == 0) return()
+#     if(is.null(cat2Test$difprop)) return()
+#     
+#     cat2Test$difprop <- cat2_test_shuffles(shuffles = 1, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
+#                                            n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
+#                                            n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
+#     if(is.null(input$cat2_Test_click)){
+#       ## grab hovered sample
+#       print(input$cat2_Test_click)
+#       click_diff <- input$cat2_Test_click$difprop
+#       nearest <- which(abs(cat2Test$difprop - click_diff) < 0.001)
+#       
+#     }
+#      
+#   })
+  
+  observeEvent(input$cat2_test_countXtremes, {
     x <- sort(cat2Test$difprop)
     nsims <- length(x)
-    threshold <- as.numeric(input$cat2_cutoff)
+    threshold <- as.numeric(input$cat2_test_cutoff)
     if(nsims > 1 & !is.na(input$cat2_testDirection)){
       redValues <-  switch(input$cat2_testDirection,
                            "less" = which(x <= threshold + 1.0e-10),
@@ -793,28 +810,14 @@ observeEvent(input$cat2_submitButton, {
   })
   
   
-  output$cat2Test_Summary <- renderTable({
-    if(is.null(cat2Test$difprop))  
-      return()
-    DF <- rbind(mean = mean(cat2Test$difprop[, 1], na.rm = TRUE ),
-                sd = sd(cat2Test$difprop[, 1], na.rm = TRUE),
-                min = min(cat2Test$difprop[, 1]),
-                median = median(cat2Test$difprop[, 1]),
-                max = max(cat2Test$difprop[, 1]),
-                length = length(cat2Test$difprop[, 1]))
-    colnames(DF) <- "Difference in Proportions"
-    DF
-    #})
-  })
-  
-  output$cat2Test_Plot <- renderPlot({
+  output$cat2Test_Plot2 <- renderPlot({
     if(input$cat2_submitButton == 0) return()
     if(is.null(cat2Test$difprop)) return()
     
     DF <- sort(cat2Test$difprop)
     
     if(length(DF) == 1){
-      w <- 0.01
+      w <- 1
       radius = 4
       } 
     else {
@@ -822,13 +825,16 @@ observeEvent(input$cat2_submitButton, {
       z <- cut(DF, breaks = nbreaks)
       w <- unlist(tapply(z, z, function(V) 1:length(V)))
       w <- w[!is.na(w)]
-      print(w)
+      #print(w)
+      #print(max(w))
       nsims <- length(DF)
       radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
     }
-    plot(DF, w, ylab = "", ylim = c(0, max(w)), cex = radius/2, pch = 16, col = cat2Test$colors,  
+    plot(DF, w, ylab = "", ylim = c(0.5, max(w)), cex = radius/2, pch = 16, col = cat2Test$colors,  
          xlab = "Difference in Proportions", main = "Randomization Dotplot for Difference in Proportions")
-  }, height = 425, width = 750)
+    legend("topright", bty = "n", paste("n = ", length(DF), "\n Mean = ", round(mean(DF),3), 
+                        "\n SE = ", round(sd(DF),3)))
+    }, height = 450, width = 600)
   
   }
 
