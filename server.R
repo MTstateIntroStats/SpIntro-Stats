@@ -776,22 +776,19 @@ observeEvent(input$cat2_submitButton, {
 
     })
   
-#   output$cat2Test_Plot1 <- renderPlot({
-#     if(input$cat2_submitButton == 0) return()
-#     if(is.null(cat2Test$difprop)) return()
-#     
-#     cat2Test$difprop <- cat2_test_shuffles(shuffles = 1, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
-#                                            n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
-#                                            n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
-#     if(is.null(input$cat2_Test_click)){
-#       ## grab hovered sample
-#       print(input$cat2_Test_click)
-#       click_diff <- input$cat2_Test_click$difprop
-#       nearest <- which(abs(cat2Test$difprop - click_diff) < 0.001)
-#       
-#     }
-#      
-#   })
+  output$cat2Test_Plot1 <- renderPlot({
+    if(input$cat2_submitButton == 0) return()
+    if(is.null(cat2Test$difprop)) return()
+    
+    if(!is.null(input$cat2_Test_click)){
+      ## grab hovered sample
+      print(input$cat2_Test_click)
+      click_diff <- input$cat2_Test_click$difprop
+      nearest <- which(abs(cat2Test$difprop - click_diff) < 0.001)[1]
+      
+    }
+     
+  })
   
   observeEvent(input$cat2_test_countXtremes, {
     x <- sort(cat2Test$difprop)
@@ -831,23 +828,170 @@ observeEvent(input$cat2_submitButton, {
       radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
     }
     plot(DF, w, ylab = "", ylim = c(0.5, max(w)), cex = radius/2, pch = 16, col = cat2Test$colors,  
-         xlab = "Difference in Proportions", main = "Randomization Dotplot for Difference in Proportions")
-    legend("topright", bty = "n", paste("n = ", length(DF), "\n Mean = ", round(mean(DF),3), 
+         xlab = expression(p_1 - p_2), main = "Sampling Distribution")
+    legend("topright", bty = "n", paste(" n = ", length(DF), "\n Mean = ", round(mean(DF),3), 
                         "\n SE = ", round(sd(DF),3)))
     }, height = 450, width = 600)
   
   }
 
   ###  cat2 --  estimate difference in proportions --------------------- cat 2
-{
- output$cat2_estimateUI <- renderUI({
-  if( is.null(cat2_data$counts)){
-    h4(" You must first enter data. Choose 'Enter/Describe Data'.")
-  } else {
-    h4("Under Construction")
+  {
+  output$cat2_estimateUI <- renderUI({
+    if( is.null(cat2_data$counts)){
+      h4(" You must first enter data. Choose 'Enter/Describe Data'.")
+    } else {
+      tabPanel("Estimate", value="2catEstimate",
+               titlePanel("Estimate a Difference in Proportions"),       
+               fluidRow(
+                 column(3, 
+                        h3("Original Data"),
+                        tableOutput("cat2OriginalData")),
+                 
+                 column(4, 
+                        h3("Number of Shuffles"),
+                        actionButton("cat2_estimate_shuffle_1", label = "1"),
+                        actionButton("cat2_estimate_shuffle_10", label = "10"),
+                        actionButton("cat2_estimate_shuffle_100", label = "100"),
+                        actionButton("cat2_estimate_shuffle_1000", label = "1000"),
+                        actionButton("cat2_estimate_shuffle_5000", label = "5000"))
+               ),
+               
+               hr(),
+               fluidRow(
+                 column(4, plotOutput('cat2Estimate_Plot1')),
+                 column(8, plotOutput('cat2Estimate_Plot2'), click = 'cat2_Estimate_click')
+               ), 
+               hr(),
+               fluidRow(
+                 column(2, offset = 2, 
+                        h4("Count values ")), 
+                 column(3, 
+                        selectInput('cat2_estimateDirection', label = "", 
+                                    choices = list("less", "more extreme", "greater"), 
+                                    selected = "more extreme", selectize = FALSE, width = 200)
+                 ), 
+                 column(1, h4(" than ")),
+                 column(2, 
+                        numericInput('cat2_estimate_cutoff', label = "", value = NA)
+                 ), 
+                 column(1, 
+                        actionButton('cat2_estimate_countXtremes', "Go")
+                 )
+               ), 
+               if(!is.null(cat2Estimate$moreExtremeCount)){
+                 fluidRow(
+                   column(6, offset = 6, 
+                          h4(paste(cat2Estimate$moreExtremeCount, " / ", length(cat2Estimate$difprop), ", p-value = ", 
+                                   round(cat2Estimate$pvalue, 5))))
+                 )
+               }
+      )
+    }
+  })
+  
+  cat2Estimate <- reactiveValues(difprop = NULL, phat1 = NULL, phat2 = NULL, observed = NULL, colors = NULL,
+                             moreExtremeCount = NULL, pvalue = NULL)
+  
+  observeEvent(input$cat2_estimate_shuffle_1, {
+    DF <- cat2_estimate_shuffles(shuffles = 1, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
+                             n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
+                             n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
+    cat2Estimate$difprop <- rbind(cat2Estimate$difprop, DF)
+    cat2Estimate$colors <- rep(blu, length(cat2Estimate$difprop))
+    
+    print(cat2Estimate$difprop)
+    
+  })
+  
+  observeEvent(input$cat2_estimate_shuffle_10, {
+    DF <- cat2_estimate_shuffles(shuffles = 10, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
+                                 n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
+                                 n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
+    cat2Estimate$difprop <- rbind(cat2Estimate$difprop, DF)
+    cat2Estimate$colors <- rep(blu, length(cat2Estimate$difprop))
+    
+    print(cat2Estimate$difprop)
+    
+  })
+  
+  observeEvent(input$cat2_estimate_shuffle_100, {
+    DF <- cat2_estimate_shuffles(shuffles = 100, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
+                                 n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
+                                 n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
+    cat2Estimate$difprop <- rbind(cat2Estimate$difprop, DF)
+    cat2Estimate$colors <- rep(blu, length(cat2Estimate$difprop))
+    
+    print(cat2Estimate$difprop)
+    
+  })
+  
+  observeEvent(input$cat2_estimate_shuffle_1000, {
+    DF <- cat2_estimate_shuffles(shuffles = 1000, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
+                                 n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
+                                 n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
+    cat2Estimate$difprop <- rbind(cat2Estimate$difprop, DF)
+    cat2Estimate$colors <- rep(blu, length(cat2Estimate$difprop))
+    
+    print(cat2Estimate$difprop)
+    
+  })
+  
+  observeEvent(input$cat2_estimate_shuffle_5000, {
+    DF <- cat2_estimate_shuffles(shuffles = 5000, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
+                                 n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
+                                 n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
+    cat2Estimate$difprop <- rbind(cat2Estimate$difprop, DF)
+    cat2Estimate$colors <- rep(blu, length(cat2Estimate$difprop))
+    
+    print(cat2Estimate$difprop)
+    
+  })
+  
+  observeEvent(input$cat2_estimate_countXtremes, {
+    x <- sort(cat2Estimate$difprop)
+    nsims <- length(x)
+    threshold <- as.numeric(input$cat2_estimate_cutoff)
+    if(nsims > 1 & !is.na(input$cat2_estimateDirection)){
+      redValues <-  switch(input$cat2_estimateDirection,
+                           "less" = which(x <= threshold + 1.0e-10),
+                           "greater" = which(x >= threshold - 1.0e-10),
+                           "more extreme" = c(which(x <= -abs(threshold) + 1.0e-10 ), 
+                                              which(x >= abs(threshold) -1.0e-10 ) )  )
+      cat2Estimate$colors[redValues] <- rd       
+      cat2Estimate$moreExtremeCount  <- length(redValues)
+      cat2Estimate$pvalue <- cat2Estimate$moreExtremeCount/nsims
+    }
+  })
+  
+  
+  output$cat2Estimate_Plot2 <- renderPlot({
+    if(input$cat2_submitButton == 0) return()
+    if(is.null(cat2Estimate$difprop)) return()
+    
+    DF <- sort(cat2Estimate$difprop)
+    
+    if(length(DF) == 1){
+      w <- 1
+      radius = 4
+    } 
+    else {
+      nbreaks <- 0.5 * nclass.Sturges(DF)^2
+      z <- cut(DF, breaks = nbreaks)
+      w <- unlist(tapply(z, z, function(V) 1:length(V)))
+      w <- w[!is.na(w)]
+      #print(w)
+      #print(max(w))
+      nsims <- length(DF)
+      radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
+    }
+    plot(DF, w, ylab = "", ylim = c(0.5, max(w)), cex = radius/2, pch = 16, col = cat2Estimate$colors,  
+         xlab = expression(p_1 - p_2), main = "Bootstrap Distribution")
+    legend("topright", bty = "n", paste(" n = ", length(DF), "\n Mean = ", round(mean(DF),3), 
+                                        "\n SE = ", round(sd(DF),3)))
+  }, height = 450, width = 600)
+
   }
- })
-}
 
   ### Normal Probs ----------------------------------------------------- cat 2  
 {
