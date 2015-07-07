@@ -1135,7 +1135,8 @@ output$q2_TestPlot1 <- renderPlot({
        main = "Original Data")
   #lmfit0 <- lm(y ~ x, DF0)
   abline(q2$intercept, q2$slope)
-  mtext(side = 3,  at = min(DF0$x)/3 + max(DF0$x)*2/3, bquote(r == .(rhat0)))
+  mtext(side = 3, line=.4, at = min(DF0$x)/3 + max(DF0$x)*2/3, bquote(r == .(round(q2$corr,3))))
+ mtext(side = 3,   at = min(DF0$x)*2/3 + max(DF0$x)/3, bquote(hat(beta)[1] == .(round(q2$slope,3))))
   q2Test$shuffles <- shuffle <- sample(1:nrow(q2$data))
   if(!is.null(input$q2Test_click) ){
     ## grab hovered sample
@@ -1158,7 +1159,7 @@ output$q2_TestPlot1 <- renderPlot({
   q2Test$slopes <- beta <- round(coef(lmfit1)[2], 3)
   q2Test$corr <- rhat1 <- round(cor(DF0$x, DF0$newy), 3)
   mtext(side = 3, at = min(DF0$x)*2/3 + max(DF0$x)/3, bquote(hat(beta)[1] == .(beta) ) )
-  mtext(side = 3,  at = min(DF0$x)/3 + max(DF0$x)*2/3, bquote(r == .(rhat1)))
+  mtext(side = 3, line=.4, at = min(DF0$x)/3 + max(DF0$x)*2/3, bquote(r == .(rhat1)))
 }, height = 400, width = 300)
 
 observeEvent(input$q2_shuffle_10, {
