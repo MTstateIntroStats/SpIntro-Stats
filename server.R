@@ -736,9 +736,9 @@ observeEvent(input$cat2_submitButton, {
                              n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                              n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
     
-    cat2Test$difprop <- rbind(cat2Test$difprop, DF[,3])
-    cat2Test$phat1 <- rbind(cat2Test$phat1, DF[,1])
-    cat2Test$phat2 <- rbind(cat2Test$phat2, DF[,2])
+    cat2Test$difprop <- rbind(cat2Test$difprop, as.matrix(DF[,3]))
+    cat2Test$phat1 <- rbind(cat2Test$phat1, as.matrix(DF[,1]))
+    cat2Test$phat2 <- rbind(cat2Test$phat2, as.matrix(DF[,2]))
     cat2Test$colors <- rep(blu, length(cat2Test$difprop))
     
     print(cat2Test$difprop)
@@ -749,9 +749,9 @@ observeEvent(input$cat2_submitButton, {
                             n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                             n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
     #print(DF)
-    cat2Test$difprop <- rbind(cat2Test$difprop, DF[,3])
-    cat2Test$phat1 <- rbind(cat2Test$phat1, DF[,1])
-    cat2Test$phat2 <- rbind(cat2Test$phat2, DF[,2])
+    cat2Test$difprop <- rbind(cat2Test$difprop, as.matrix(DF[,3]))
+    cat2Test$phat1 <- rbind(cat2Test$phat1, as.matrix(DF[,1]))
+    cat2Test$phat2 <- rbind(cat2Test$phat2, as.matrix(DF[,2]))
     cat2Test$colors <- rep(blu, length(cat2Test$difprop))
 
     print(cat2Test$difprop)
@@ -762,9 +762,9 @@ observeEvent(input$cat2_submitButton, {
                             n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                             n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
     #print(DF)
-    cat2Test$difprop <- rbind(cat2Test$difprop, DF[,3])
-    cat2Test$phat1 <- rbind(cat2Test$phat1, DF[,1])
-    cat2Test$phat2 <- rbind(cat2Test$phat2, DF[,2])
+    cat2Test$difprop <- rbind(cat2Test$difprop, as.matrix(DF[,3]))
+    cat2Test$phat1 <- rbind(cat2Test$phat1, as.matrix(DF[,1]))
+    cat2Test$phat2 <- rbind(cat2Test$phat2, as.matrix(DF[,2]))
     cat2Test$colors <- rep(blu, length(cat2Test$difprop))
 
     print(cat2Test$difprop)
@@ -775,9 +775,9 @@ observeEvent(input$cat2_submitButton, {
                             n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                             n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
     #print(DF)
-    cat2Test$difprop <- rbind(cat2Test$difprop, DF[,3])
-    cat2Test$phat1 <- rbind(cat2Test$phat1, DF[,1])
-    cat2Test$phat2 <- rbind(cat2Test$phat2, DF[,2])
+    cat2Test$difprop <- rbind(cat2Test$difprop, as.matrix(DF[,3]))
+    cat2Test$phat1 <- rbind(cat2Test$phat1, as.matrix(DF[,1]))
+    cat2Test$phat2 <- rbind(cat2Test$phat2, as.matrix(DF[,2]))
     cat2Test$colors <- rep(blu, length(cat2Test$difprop))
 
     print(cat2Test$difprop)
@@ -787,9 +787,9 @@ observeEvent(input$cat2_submitButton, {
     DF <- cat2_test_shuffles(shuffles = 5000, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                             n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                             n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
-    cat2Test$difprop <- rbind(cat2Test$difprop, DF[,3])
-    cat2Test$phat1 <- rbind(cat2Test$phat1, DF[,1])
-    cat2Test$phat2 <- rbind(cat2Test$phat2, DF[,2])
+    cat2Test$difprop <- rbind(cat2Test$difprop, as.matrix(DF[,3]))
+    cat2Test$phat1 <- rbind(cat2Test$phat1, as.matrix(DF[,1]))
+    cat2Test$phat2 <- rbind(cat2Test$phat2, as.matrix(DF[,2]))
     cat2Test$colors <- rep(blu, length(cat2Test$difprop))
     
     print(cat2Test$difprop)
