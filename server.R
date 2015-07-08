@@ -959,7 +959,7 @@ observeEvent(input$cat2_submitButton, {
     cat2Estimate$phat2 <- rbind(cat2Estimate$phat2, as.matrix(DF[,2]))
     cat2Estimate$colors <- rep(blu, length(cat2Estimate$difprop))
     
-    #print(cat2Estimate$difprop)
+    print(cat2Estimate$difprop)
     
   })
   
