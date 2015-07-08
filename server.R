@@ -630,7 +630,7 @@ observeEvent(input$cat2_submitButton, {
   if(input$cat2_submitButton == 0) return()
   #isolate({
     #cat2_dataDF <- cat2_data()
-    #print(cat2_dataDF)
+    print(cat2_data$counts)
     counts <- as.table( matrix(cat2_data$counts, 2, 2))
     #print(counts)
     colnames(counts) <- cat2_data$names[1:2]
@@ -674,7 +674,7 @@ observeEvent(input$cat2_submitButton, {
       tabPanel("Test", value="2catTest",
                titlePanel("Test for a Difference in Proportions"),       
                fluidRow(
-                 column(3, 
+                 column(4, 
                         h3("Original Data"),
                         tableOutput("cat2OriginalData")),
                  
@@ -689,7 +689,9 @@ observeEvent(input$cat2_submitButton, {
                
                hr(),
                fluidRow(
-                 column(4, plotOutput('cat2Test_Plot1')),
+                 column(4, 
+                        h3("Randomization Sample"),
+                      tableOutput('cat2Test_Plot1')),
                  column(8, plotOutput('cat2Test_Plot2'), click = 'cat2_Test_click')
                ), 
                hr(),
@@ -725,23 +727,29 @@ observeEvent(input$cat2_submitButton, {
   
   output$cat2OriginalData <- renderTable({ 
     if(input$cat2_submitButton ==0) return()
-    counts <- as.table(matrix(cat2_data$counts, 2, 2))
-    colnames(counts) <- cat2_data$names[1:2]
+    y1 = cat2_data$counts[1] 
+    y2 = cat2_data$counts[2] 
+    n1= sum(cat2_data$counts[1], cat2_data$counts[3]) 
+    n2= sum(cat2_data$counts[2], cat2_data$counts[4])
+    
+    counts <- as.table(matrix(c(y1, y2, n1, n2, (y1/n1), (y2/n2)), 2, 3))
+    colnames(counts) <- c("Success", "Sample Size", "Proportion")
     rownames(counts) <- cat2_data$groups[c(1,3)]
-    round(t(prop.table(counts, 1)), 3)
+    round(counts, 3)
+    print(counts)
   })
   
   observeEvent(input$cat2_test_shuffle_1, {
     DF <- cat2_test_shuffles(shuffles = 1, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                              n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
-                             n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
+                             n2= sum(cat2_data$counts[2], cat2_data$counts[4]))
     
     cat2Test$difprop <- rbind(cat2Test$difprop, as.matrix(DF[,3]))
     cat2Test$phat1 <- rbind(cat2Test$phat1, as.matrix(DF[,1]))
     cat2Test$phat2 <- rbind(cat2Test$phat2, as.matrix(DF[,2]))
     cat2Test$colors <- rep(blu, length(cat2Test$difprop))
     
-    print(cat2Test$difprop)
+    #print(cat2Test$difprop)
   })
   
   observeEvent(input$cat2_test_shuffle_10, {
@@ -754,7 +762,7 @@ observeEvent(input$cat2_submitButton, {
     cat2Test$phat2 <- rbind(cat2Test$phat2, as.matrix(DF[,2]))
     cat2Test$colors <- rep(blu, length(cat2Test$difprop))
 
-    print(cat2Test$difprop)
+    #print(cat2Test$difprop)
   })
   
   observeEvent(input$cat2_test_shuffle_100, {
@@ -767,7 +775,7 @@ observeEvent(input$cat2_submitButton, {
     cat2Test$phat2 <- rbind(cat2Test$phat2, as.matrix(DF[,2]))
     cat2Test$colors <- rep(blu, length(cat2Test$difprop))
 
-    print(cat2Test$difprop)
+    #print(cat2Test$difprop)
   })
   
   observeEvent(input$cat2_test_shuffle_1000, {
@@ -780,7 +788,7 @@ observeEvent(input$cat2_submitButton, {
     cat2Test$phat2 <- rbind(cat2Test$phat2, as.matrix(DF[,2]))
     cat2Test$colors <- rep(blu, length(cat2Test$difprop))
 
-    print(cat2Test$difprop)
+    #print(cat2Test$difprop)
   })
   
   observeEvent(input$cat2_test_shuffle_5000, {
@@ -792,25 +800,35 @@ observeEvent(input$cat2_submitButton, {
     cat2Test$phat2 <- rbind(cat2Test$phat2, as.matrix(DF[,2]))
     cat2Test$colors <- rep(blu, length(cat2Test$difprop))
     
-    print(cat2Test$difprop)
+    #print(cat2Test$difprop)
 
     })
   
-#   output$cat2Test_Plot1 <- renderPlot({
-#     if(input$cat2_submitButton == 0) return()
-#     if(is.null(cat2Test$difprop)) return()
-#     
+  output$cat2Test_Plot1 <- renderTable({
+    if(input$cat2_submitButton == 0) return()
+    if(is.null(cat2Test$difprop)) return()
+    
+    sample <- sample(1:length(cat2Test$difprop),1)
+    n1 = sum(cat2_data$counts[1], cat2_data$counts[3]) 
+    n2 = sum(cat2_data$counts[2], cat2_data$counts[4])
+    phat1 <- cat2Test$phat1[sample]
+    phat2 <- cat2Test$phat2[sample]
+    y1 = floor(phat1*n1)
+    y2 = floor(phat2*n2) 
+
+    counts <- as.table(matrix(c(y1, y2, n1, n2, (y1/n1), (y2/n2)), 2, 3))
+    colnames(counts) <- c("Success", "Sample Size", "Proportion")
+    rownames(counts) <- cat2_data$groups[c(1,3)]
+    round(counts, 3)
+    print(counts)
 #     if(!is.null(input$cat2_Test_click)){
 #       ## grab hovered sample
 #       print(input$cat2_Test_click)
 #       click_diff <- input$cat2_Test_click$difprop
 #       nearest <- which(abs(cat2Test$difprop - click_diff) < 0.001)[1]
-#       
-#     }
-#      
-#   })
-  
-  observeEvent(input$cat2_test_countXtremes, {
+  })
+
+    observeEvent(input$cat2_test_countXtremes, {
     x <- sort(cat2Test$difprop)
     nsims <- length(x)
     threshold <- as.numeric(input$cat2_test_cutoff)
@@ -842,15 +860,17 @@ observeEvent(input$cat2_submitButton, {
       z <- cut(DF, breaks = nbreaks)
       w <- unlist(tapply(z, z, function(V) 1:length(V)))
       w <- w[!is.na(w)]
-      print(w)
+      #print(w)
       #print(max(w))
       nsims <- length(DF)
       radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
     }
     plot(DF, w, ylab = "", ylim = c(0.5, max(w)), cex = radius/2, pch = 16, col = cat2Test$colors,  
-         xlab = expression(p_1 - p_2), main = "Sampling Distribution")
+         xlab = expression(p_1 - p_2), main = "Sampling Distribution of ")
     legend("topright", bty = "n", paste(" n = ", length(DF), "\n Mean = ", round(mean(DF),3), 
                         "\n SE = ", round(sd(DF),3)))
+    mtext(side = 3, at = 0, adj = 1, line = 0, bquote(hat(p)[1] - hat(p)[2]))
+    mtext(side = 1, at = 0, adj = 0, line = 0, bquote(p[1] == p[2]))
     }, height = 450, width = 600)
   
   }
@@ -864,7 +884,7 @@ observeEvent(input$cat2_submitButton, {
       tabPanel("Estimate", value="2catEstimate",
                titlePanel("Estimate a Difference in Proportions"),       
                fluidRow(
-                 column(3, 
+                 column(4, 
                         h3("Original Data"),
                         tableOutput("cat2OriginalData")),
                  
@@ -879,7 +899,9 @@ observeEvent(input$cat2_submitButton, {
                
                hr(),
                fluidRow(
-                 column(4, plotOutput('cat2Estimate_Plot1')),
+                 column(4, 
+                        h3("Bootstrap Resample"),
+                        tableOutput('cat2Estimate_Plot1')),
                  column(8, plotOutput('cat2Estimate_Plot2'), click = 'cat2_Estimate_click')
                ), 
                hr(),
@@ -917,8 +939,12 @@ observeEvent(input$cat2_submitButton, {
     DF <- cat2_estimate_shuffles(shuffles = 1, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                              n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                              n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
-    cat2Estimate$difprop <- rbind(cat2Estimate$difprop, DF)
+    cat2Estimate$difprop <- rbind(cat2Estimate$difprop, as.matrix(DF[,3]))
+    cat2Estimate$phat1 <- rbind(cat2Estimate$phat1, as.matrix(DF[,1]))
+    cat2Estimate$phat2 <- rbind(cat2Estimate$phat2, as.matrix(DF[,2]))
     cat2Estimate$colors <- rep(blu, length(cat2Estimate$difprop))
+    cat2Estimate$observed <- (cat2_data$counts[1]/sum(cat2_data$counts[1], cat2_data$counts[3])) - 
+                              (cat2_data$counts[2]/sum(cat2_data$counts[1], cat2_data$counts[3]))
     
     print(cat2Estimate$difprop)
     
@@ -928,10 +954,12 @@ observeEvent(input$cat2_submitButton, {
     DF <- cat2_estimate_shuffles(shuffles = 10, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                                  n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                                  n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
-    cat2Estimate$difprop <- rbind(cat2Estimate$difprop, DF)
+    cat2Estimate$difprop <- rbind(cat2Estimate$difprop, as.matrix(DF[,3]))
+    cat2Estimate$phat1 <- rbind(cat2Estimate$phat1, as.matrix(DF[,1]))
+    cat2Estimate$phat2 <- rbind(cat2Estimate$phat2, as.matrix(DF[,2]))
     cat2Estimate$colors <- rep(blu, length(cat2Estimate$difprop))
     
-    print(cat2Estimate$difprop)
+    #print(cat2Estimate$difprop)
     
   })
   
@@ -939,10 +967,12 @@ observeEvent(input$cat2_submitButton, {
     DF <- cat2_estimate_shuffles(shuffles = 100, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                                  n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                                  n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
-    cat2Estimate$difprop <- rbind(cat2Estimate$difprop, DF)
+    cat2Estimate$difprop <- rbind(cat2Estimate$difprop, as.matrix(DF[,3]))
+    cat2Estimate$phat1 <- rbind(cat2Estimate$phat1, as.matrix(DF[,1]))
+    cat2Estimate$phat2 <- rbind(cat2Estimate$phat2, as.matrix(DF[,2]))
     cat2Estimate$colors <- rep(blu, length(cat2Estimate$difprop))
     
-    print(cat2Estimate$difprop)
+    #print(cat2Estimate$difprop)
     
   })
   
@@ -950,10 +980,12 @@ observeEvent(input$cat2_submitButton, {
     DF <- cat2_estimate_shuffles(shuffles = 1000, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                                  n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                                  n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
-    cat2Estimate$difprop <- rbind(cat2Estimate$difprop, DF)
+    cat2Estimate$difprop <- rbind(cat2Estimate$difprop, as.matrix(DF[,3]))
+    cat2Estimate$phat1 <- rbind(cat2Estimate$phat1, as.matrix(DF[,1]))
+    cat2Estimate$phat2 <- rbind(cat2Estimate$phat2, as.matrix(DF[,2]))
     cat2Estimate$colors <- rep(blu, length(cat2Estimate$difprop))
     
-    print(cat2Estimate$difprop)
+    #print(cat2Estimate$difprop)
     
   })
   
@@ -961,10 +993,12 @@ observeEvent(input$cat2_submitButton, {
     DF <- cat2_estimate_shuffles(shuffles = 5000, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                                  n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                                  n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
-    cat2Estimate$difprop <- rbind(cat2Estimate$difprop, DF)
+    cat2Estimate$difprop <- rbind(cat2Estimate$difprop, as.matrix(DF[,3]))
+    cat2Estimate$phat1 <- rbind(cat2Estimate$phat1, as.matrix(DF[,1]))
+    cat2Estimate$phat2 <- rbind(cat2Estimate$phat2, as.matrix(DF[,2]))
     cat2Estimate$colors <- rep(blu, length(cat2Estimate$difprop))
     
-    print(cat2Estimate$difprop)
+    #print(cat2Estimate$difprop)
     
   })
   
@@ -984,6 +1018,24 @@ observeEvent(input$cat2_submitButton, {
     }
   })
   
+  output$cat2Estimate_Plot1 <- renderTable({
+    if(input$cat2_submitButton == 0) return()
+    if(is.null(cat2Estimate$difprop)) return()
+    
+    sample <- sample(1:length(cat2Estimate$difprop),1)
+    phat1 <- cat2Estimate$phat1[sample]
+    phat2 <- cat2Estimate$phat2[sample]
+    counts <- as.table(matrix(c(phat1, 1-phat1, phat2, 1-phat2), 2, 2))
+    rownames(counts) <- cat2_data$names[1:2]
+    colnames(counts) <- cat2_data$groups[c(1,3)]
+    round(counts, 3)
+    
+    #     if(!is.null(input$cat2_Test_click)){
+    #       ## grab hovered sample
+    #       print(input$cat2_Test_click)
+    #       click_diff <- input$cat2_Test_click$difprop
+    #       nearest <- which(abs(cat2Test$difprop - click_diff) < 0.001)[1]
+  })
   
   output$cat2Estimate_Plot2 <- renderPlot({
     if(input$cat2_submitButton == 0) return()
@@ -1006,9 +1058,10 @@ observeEvent(input$cat2_submitButton, {
       radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
     }
     plot(DF, w, ylab = "", ylim = c(0.5, max(w)), cex = radius/2, pch = 16, col = cat2Estimate$colors,  
-         xlab = expression(p_1 - p_2), main = "Bootstrap Distribution")
+         xlab = expression(p_1 - p_2), main = "Bootstrap Distribution of")
     legend("topright", bty = "n", paste(" n = ", length(DF), "\n Mean = ", round(mean(DF),3), 
                                         "\n SE = ", round(sd(DF),3)))
+    mtext(side = 3, at = 0, adj = 1, line = 0, bquote(hat(p)[1] - hat(p)[2]))
   }, height = 450, width = 600)
 
   }
