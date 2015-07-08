@@ -735,60 +735,80 @@ observeEvent(input$cat2_submitButton, {
     DF <- cat2_test_shuffles(shuffles = 1, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                              n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                              n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
-    cat2Test$difprop <- rbind(cat2Test$difprop, DF)
+    
+    cat2Test$difprop <- rbind(cat2Test$difprop, DF[,3])
+    cat2Test$phat1 <- rbind(cat2Test$phat1, DF[,1])
+    cat2Test$phat2 <- rbind(cat2Test$phat2, DF[,2])
     cat2Test$colors <- rep(blu, length(cat2Test$difprop))
     
+    print(cat2Test$difprop)
   })
   
   observeEvent(input$cat2_test_shuffle_10, {
     DF <- cat2_test_shuffles(shuffles = 10, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                             n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                             n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
-    cat2Test$difprop <- rbind(cat2Test$difprop, DF)
+    #print(DF)
+    cat2Test$difprop <- rbind(cat2Test$difprop, DF[,3])
+    cat2Test$phat1 <- rbind(cat2Test$phat1, DF[,1])
+    cat2Test$phat2 <- rbind(cat2Test$phat2, DF[,2])
     cat2Test$colors <- rep(blu, length(cat2Test$difprop))
 
+    print(cat2Test$difprop)
   })
   
   observeEvent(input$cat2_test_shuffle_100, {
     DF <- cat2_test_shuffles(shuffles = 100, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                             n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                             n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
-    cat2Test$difprop <- rbind(cat2Test$difprop, DF)
+    #print(DF)
+    cat2Test$difprop <- rbind(cat2Test$difprop, DF[,3])
+    cat2Test$phat1 <- rbind(cat2Test$phat1, DF[,1])
+    cat2Test$phat2 <- rbind(cat2Test$phat2, DF[,2])
     cat2Test$colors <- rep(blu, length(cat2Test$difprop))
 
+    print(cat2Test$difprop)
   })
   
   observeEvent(input$cat2_test_shuffle_1000, {
     DF <- cat2_test_shuffles(shuffles = 1000, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                             n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                             n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
-    cat2Test$difprop <- rbind(cat2Test$difprop, DF)
+    #print(DF)
+    cat2Test$difprop <- rbind(cat2Test$difprop, DF[,3])
+    cat2Test$phat1 <- rbind(cat2Test$phat1, DF[,1])
+    cat2Test$phat2 <- rbind(cat2Test$phat2, DF[,2])
     cat2Test$colors <- rep(blu, length(cat2Test$difprop))
 
+    print(cat2Test$difprop)
   })
   
   observeEvent(input$cat2_test_shuffle_5000, {
     DF <- cat2_test_shuffles(shuffles = 5000, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                             n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                             n2= sum(cat2_data$counts[1], cat2_data$counts[3]))
-    cat2Test$difprop <- rbind(cat2Test$difprop, DF)
+    cat2Test$difprop <- rbind(cat2Test$difprop, DF[,3])
+    cat2Test$phat1 <- rbind(cat2Test$phat1, DF[,1])
+    cat2Test$phat2 <- rbind(cat2Test$phat2, DF[,2])
     cat2Test$colors <- rep(blu, length(cat2Test$difprop))
+    
+    print(cat2Test$difprop)
 
     })
   
-  output$cat2Test_Plot1 <- renderPlot({
-    if(input$cat2_submitButton == 0) return()
-    if(is.null(cat2Test$difprop)) return()
-    
-    if(!is.null(input$cat2_Test_click)){
-      ## grab hovered sample
-      print(input$cat2_Test_click)
-      click_diff <- input$cat2_Test_click$difprop
-      nearest <- which(abs(cat2Test$difprop - click_diff) < 0.001)[1]
-      
-    }
-     
-  })
+#   output$cat2Test_Plot1 <- renderPlot({
+#     if(input$cat2_submitButton == 0) return()
+#     if(is.null(cat2Test$difprop)) return()
+#     
+#     if(!is.null(input$cat2_Test_click)){
+#       ## grab hovered sample
+#       print(input$cat2_Test_click)
+#       click_diff <- input$cat2_Test_click$difprop
+#       nearest <- which(abs(cat2Test$difprop - click_diff) < 0.001)[1]
+#       
+#     }
+#      
+#   })
   
   observeEvent(input$cat2_test_countXtremes, {
     x <- sort(cat2Test$difprop)
@@ -818,11 +838,11 @@ observeEvent(input$cat2_submitButton, {
       radius = 4
       } 
     else {
-      nbreaks <- 0.5 * nclass.Sturges(DF)^2
+      nbreaks <- 0.5*nclass.Sturges(DF)^2
       z <- cut(DF, breaks = nbreaks)
       w <- unlist(tapply(z, z, function(V) 1:length(V)))
       w <- w[!is.na(w)]
-      #print(w)
+      print(w)
       #print(max(w))
       nsims <- length(DF)
       radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
