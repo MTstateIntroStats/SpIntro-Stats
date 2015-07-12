@@ -676,42 +676,41 @@ observeEvent(input$cat2_submitButton, {
                fluidRow(
                  column(4, 
                         h3("Original Data"),
-                        tableOutput("cat2OriginalData")),
-                 column(4, 
-                        h3("Randomization Sample"),
-                        tableOutput('cat2Test_Plot1')),
-                 
-                 column(4, 
+                        tableOutput("cat2OriginalData"),
+                        h5(paste("Original Difference in proportions: ", 
+                                 round(diff(rev(prop.table(as.table( matrix(cat2_data$counts, 2, 2)), 1)))[1],3))), 
                         h3("Number of Shuffles"),
                         actionButton("cat2_test_shuffle_1", label = "1"),
                         actionButton("cat2_test_shuffle_10", label = "10"),
                         actionButton("cat2_test_shuffle_100", label = "100"),
                         actionButton("cat2_test_shuffle_1000", label = "1000"),
-                        actionButton("cat2_test_shuffle_5000", label = "5000"))
-               ),
-               
-               hr(),
-               fluidRow(
-                  column(6, plotOutput('cat2Test_Plot2'), click = 'cat2_Test_click'),
-                  column(1,  
-                        h4("Count values ")), 
-                  column(2, 
-                        selectInput('cat2_testDirection', label = "", 
-                                    choices = list("less", "more extreme", "greater"), 
-                                    selected = "more extreme", selectize = FALSE, width = 200)
-                 ), 
-                  column(1, h4(" than ")),
-                  column(2, 
-                        numericInput('cat2_test_cutoff', label = "", value = NA)), 
-                  column(1, 
-                        actionButton('cat2_test_countXtremes', "Go")),
+                        actionButton("cat2_test_shuffle_5000", label = "5000"),
+                        h3("Randomization Sample"),
+                        tableOutput('cat2Test_Plot1')
+                 ),
+                 column(8, 
+                        plotOutput('cat2Test_Plot2', click = 'cat2_Test_click'),
+                 
+                        h4("Count values "), 
+                        fluidRow( 
+                          column(4,
+                                 selectInput('cat2_testDirection', label = "", 
+                                             choices = list("less", "more extreme", "greater"), 
+                                             selected = "more extreme", selectize = FALSE, width = 200)
+                          ),
+                           column(2, h4(" than ")),
+                           column(3, 
+                                  numericInput('cat2_test_cutoff', label = "", value = NA)), 
+                          column(2, 
+                                  actionButton('cat2_test_countXtremes', "Go"))
+                        ),
                  
                if(!is.null(cat2Test$moreExtremeCount)){
-                 column(4, offset=2, 
                           h4(paste(cat2Test$moreExtremeCount, " / ", length(cat2Test$difprop), ", p-value = ", 
-                                   round(cat2Test$pvalue, 5))))
-                 }
-      )
+                                   round(cat2Test$pvalue, 5)))
+                 } else { h4(" ")}
+               )
+            )
       )
     }
   })
