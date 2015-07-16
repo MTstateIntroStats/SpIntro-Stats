@@ -91,26 +91,22 @@ shinyServer(function(input, output, session) {
                       h3("Original Data"),
                       tableOutput("cat1OriginalData"),
                       
-                      br(),
+                      h3("Shuffled Sample"),
+                      tableOutput('cat1Test_Table'),
+                      
                       br(),
                       
-                      h5("We start showing one shuffle."),
-                      h5("How many more?"),
+                      h4("We start showing one shuffle."),
+                      h4("How many more?"),
                       
                       actionButton("cat1_test_shuffle_10", label = "10"),
                       actionButton("cat1_test_shuffle_100", label = "100"),
                       actionButton("cat1_test_shuffle_1000", label = "1000"),
-                      actionButton("cat1_test_shuffle_5000", label = "5000"),
-                      
-                      br(),
-                      br(),
-                      
-                      h3("Shuffled Sample"),
-                      tableOutput('cat1Test_Table')),
+                      actionButton("cat1_test_shuffle_5000", label = "5000")
+             ),
                       
                column(8,
-                      h5("Enter null hypothesized value for p."),
-                      textInput("p0", label = "Null hypothesis", value = 0.5),
+                      textInput("null_p", label = "Null hypothesis p = ", value = 0.5),
                       
                       plotOutput('cat1Test_Plot2', click = 'cat1_Test_click'),
                       
@@ -133,12 +129,12 @@ shinyServer(function(input, output, session) {
                       ),
                       
                       if(!is.null(cat1Test$moreExtremeCount)){
-                        h4(paste(cat1Test$moreExtremeCount, " / ", length(cat1Test$difprop), ", p-value = ", 
+                        h4(paste(cat1Test$moreExtremeCount, " / ", length(cat1Test$phat), ", p-value = ", 
                                  round(cat1Test$pvalue, 5)))
                       } else { h4(" ")}
                )
              )
-    ))
+    )
    }
  })
 
@@ -155,7 +151,7 @@ shinyServer(function(input, output, session) {
     
     observeEvent(input$cat1_test_shuffle_10, {
       n1 <- sum(cat1_data$counts[1:2])
-      y1_new <- as.matrix(rbinom(10, cat1_data$counts[1], cat1_data$counts[1]/n1))
+      y1_new <- as.matrix(rbinom(10, sum(cat1_data$counts[1:2]), as.numeric(input$null_p)))
       phat <- round(y1_new/n1, 3)
       cat1Test$phat <- rbind(cat1Test$phat, phat)
       cat2Test$colors <- rep(blu, length(cat1Test$phat))
@@ -163,7 +159,7 @@ shinyServer(function(input, output, session) {
     
     observeEvent(input$cat1_test_shuffle_100, {
       n1 <- sum(cat1_data$counts[1:2])
-      y1_new <- as.matrix(rbinom(100, cat1_data$counts[1], cat1_data$counts[1]/n1))
+      y1_new <- as.matrix(rbinom(100, sum(cat1_data$counts[1:2]), as.numeric(input$null_p)))
       phat <- round(y1_new/n1, 3)
       cat1Test$phat <- rbind(cat1Test$phat, phat)
       cat2Test$colors <- rep(blu, length(cat1Test$phat))
@@ -171,7 +167,7 @@ shinyServer(function(input, output, session) {
     
     observeEvent(input$cat1_test_shuffle_1000, {
       n1 <- sum(cat1_data$counts[1:2])
-      y1_new <- as.matrix(rbinom(1000, cat1_data$counts[1], cat1_data$counts[1]/n1))
+      y1_new <- as.matrix(rbinom(1000, sum(cat1_data$counts[1:2]), as.numeric(input$null_p)))
       phat <- round(y1_new/n1, 3)
       cat1Test$phat <- rbind(cat1Test$phat, phat)
       cat2Test$colors <- rep(blu, length(cat1Test$phat))
@@ -179,7 +175,7 @@ shinyServer(function(input, output, session) {
     
     observeEvent(input$cat1_test_shuffle_5000, {
       n1 <- sum(cat1_data$counts[1:2])
-      y1_new <- as.matrix(rbinom(5000, cat1_data$counts[1], cat1_data$counts[1]/n1))
+      y1_new <- as.matrix(rbinom(5000, sum(cat1_data$counts[1:2]), as.numeric(input$null_p)))
       phat <- round(y1_new/n1, 3)
       cat1Test$phat <- rbind(cat1Test$phat, phat)
       cat2Test$colors <- rep(blu, length(cat1Test$phat))
@@ -190,8 +186,8 @@ shinyServer(function(input, output, session) {
       if(is.null(cat1_data$counts)) return()
       
       n1 <- sum(cat1_data$counts[1:2])
-      y1_new <- as.matrix(rhyper(1, cat1_data$counts[1], cat1_data$counts[2], 
-                                 sum(cat1_data$counts[1:2])))
+      y1_new <- as.matrix(rbinom(1, sum(cat1_data$counts[1:2]), as.numeric(input$null_p)))
+      cat1Test$phat <- round(y1_new/n1, 3)
       cat1Test$colors <- blu
     
       #print(c(y1_new, n1))
@@ -242,8 +238,7 @@ shinyServer(function(input, output, session) {
            xlab = expression(p), main = "Sampling Distribution")
       legend("topright", bty = "n", paste(" n = ", length(DF), "\n Mean = ", round(mean(DF),3), 
                                           "\n SE = ", round(sd(DF),3)))
-      #mtext(side = 1, at = 0, adj = 0, line = 0, bquote(p[1] == p[2]))
-    }, height = 450, width = 600)
+  }, height = 450, width = 600)
 
 }
 
@@ -843,26 +838,25 @@ observeEvent(input$cat2_submitButton, {
                         tableOutput("cat2OriginalData"),
                         h5(paste("Original Difference in proportions: ", 
                                  round(- diff(prop.table(as.table(matrix(cat2_data$counts, 2, 2)), 1))[1], 3))
-                        ), 
-                        br(),
-                        br(),
+                        ),
                         
-                        h5("We start showing one shuffle."),
-                        h5("How many more?"),
-                        
-                        actionButton("cat2_test_shuffle_10", label = "10"),
-                        actionButton("cat2_test_shuffle_100", label = "100"),
-                        actionButton("cat2_test_shuffle_1000", label = "1000"),
-                        actionButton("cat2_test_shuffle_5000", label = "5000"),
-                        
-                        br(),
                         br(),
                         
                         h3("Shuffled Sample"),
                         tableOutput('cat2Test_Table'),
                         h5(paste("Difference in proportions for shuffled data: " , 
-                                 round( as.numeric(cat2Test$difprop[1]), 3)))
-                 ),
+                                 round( as.numeric(cat2Test$difprop[1]), 3))),
+                        br(),
+                        br(),
+                        
+                        h4("We start showing one shuffle."),
+                        h4("How many more?"),
+                        
+                        actionButton("cat2_test_shuffle_10", label = "10"),
+                        actionButton("cat2_test_shuffle_100", label = "100"),
+                        actionButton("cat2_test_shuffle_1000", label = "1000"),
+                        actionButton("cat2_test_shuffle_5000", label = "5000")
+                  ),
                  column(8, 
                         plotOutput('cat2Test_Plot2', click = 'cat2_Test_click'),
                         
@@ -1035,22 +1029,22 @@ observeEvent(input$cat2_submitButton, {
                         h5(paste("Original Difference in proportions: ", 
                                  round(-diff(prop.table(as.table(matrix(cat2_data$counts, 2, 2)), 1))[1],3))), 
                         br(),
-                        br(),
-                        h5("We start showing one resample."),
-                        h5("How many more?"),
                         
-                        #actionButton("cat2_estimate_shuffle_1", label = "1"),
-                        actionButton("cat2_estimate_shuffle_10", label = "10"),
-                        actionButton("cat2_estimate_shuffle_100", label = "100"),
-                        actionButton("cat2_estimate_shuffle_1000", label = "1000"),
-                        actionButton("cat2_estimate_shuffle_5000", label = "5000"),
-                        
-                        br(),
-                        br(),
                         h3("Bootstrap Resample"),
                         tableOutput('cat2Estimate_Table'),
                         h5(paste("Difference in proportions for resampled data: " , 
-                                 round(as.numeric(cat2Estimate$difprop[1]), 3)))
+                                 round(as.numeric(cat2Estimate$difprop[1]), 3))),
+                        
+                        br(),
+                        br(),
+                        
+                        h4("We start showing one resample."),
+                        h4("How many more?"),
+                        
+                        actionButton("cat2_estimate_shuffle_10", label = "10"),
+                        actionButton("cat2_estimate_shuffle_100", label = "100"),
+                        actionButton("cat2_estimate_shuffle_1000", label = "1000"),
+                        actionButton("cat2_estimate_shuffle_5000", label = "5000")
                       ),
                  
                  column(8, 
