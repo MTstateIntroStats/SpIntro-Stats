@@ -78,93 +78,173 @@ shinyServer(function(input, output, session) {
     #})
   })
   
-  output$inputTrueP <- renderUI({
-    n <- input$CIdemo_n
-    sliderInput("CIdemo_p", "Choose true proportion of successes ", 
-                min=pmin(0.5, round(10/n,2)), max=pmax(.5, round(1- 9.9/n,2)), value = .5)
-      })
-
- CIdemoSims <- reactive({
-   if(is.null(input$CIdemo_p)) return()
-   nsims <- as.numeric(input$CIdemo_reps)      
-   radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)
-   ## exactRule <- -log( (1-upperconf) * 2)/input$CIdemo_n
-   ##print(c(input$CIdemo_n, input$CIdemo_p))
-   phats <- sort((1 + rbinom(nsims, as.integer(input$CIdemo_n), input$CIdemo_p))/(2 + input$CIdemo_n))
-   phat.stack <- unlist(tapply(phats, cut(phats, breaks = nclass.Sturges(phats)^2),
-                               function(x) if(length(x) > 0) {1:length(x)} else {NULL}))
-   SEs <- sqrt(pmax(.0099, phats * (1-phats) )/ input$CIdemo_n)
-   phatDF <- data.frame(
-     phat = phats,
-     y = phat.stack[!is.na(phat.stack)],
-     SE = SEs
-#     LB = pmax(0, phats - zstar * SEs),
-#     UB = pmin(1, phats + zstar * SEs)
-   )
-   phatDF$row <- 1:nrow(phatDF)
-#   phatDF$colr <- with(phatDF, ifelse(LB < input$CIdemo_p & UB > input$CIdemo_p, 1, 2))
-   phatDF
- })
-
- output$CIdemo_Plot1 <- renderPlot({
-   ##displayFn <-  reactive({
-    if(is.null(input$CIdemo_p)) return()  
-    phatDF <- CIdemoSims()
-    nsims <- as.numeric(input$CIdemo_reps)      
-    radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)
-    par(mar=c(4,2,1,1))
-    isolate({
-      plot(y ~ phat, data= phatDF, col = rgb(70, 130, 180, 127, max = 255), pch=16, bty="l",
-              cex = radius/2, ylab = "", xlab = expression(hat(p)))#, main = "Sampling Distribution")
-    })
-  }, height = 275)
-
-output$CIdemo_Plot2 <- renderPlot({
-  ##displayFn <-  reactive({
-  if(is.null(input$CIdemo_p) || is.null(input$CIdemo_conf)) return() 
-  phatDF <- CIdemoSims()  
-  isolate({
-    upperconf = 1- (1 - as.numeric(substr(input$CIdemo_conf,1,2))/100)/2
-    zstar <- qnorm(upperconf)
-    #print(zstar)
-    phatDF$LB = pmax(0, phatDF$phat - zstar * phatDF$SE)
-    phatDF$UB = pmin(1, phatDF$phat + zstar * phatDF$SE)
-    phatDF$colr <- with(phatDF, ifelse(LB < input$CIdemo_p & UB > input$CIdemo_p, 1, 2))
-    #print(summary(phatDF))
-    coverage = 2 - mean(phatDF$colr) 
-    nsims <- as.numeric(input$CIdemo_reps)      
-    radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)
-    par(mar=c(4,1,2,1))
-    plot(row ~ phat, data = phatDF, col = "white", bty="l", xlim = c(min(phatDF$LB), max(phatDF$UB)),
-         cex = radius/4, ylab = "", # main = "Confidence Intervals",
-         xlab = paste("Coverage rate =", coverage))
-    with(phatDF, segments(LB, row, UB, row, col = c("green","red")[colr] ))
-    points(row ~ phat, data = phatDF, col = rgb(70, 130, 180, 127, max = 255), pch=16)
-    abline(v = input$CIdemo_p, lwd = 2, col = "grey")
-    mtext(side=3, at = input$CIdemo_p, input$CIdemo_p, line=0)
-    text(x = phatDF$UB[nsims/2], y = 0.08 * nsims, paste( sum(phatDF$UB < input$CIdemo_p), "too low"))
-    text(x = phatDF$LB[nsims/2], y= .93 * nsims, paste( sum(phatDF$LB > input$CIdemo_p), "too high"))     
-  })
-  if(!is.null(input$CIplot1_hover)){
-    myY <- subset(phatDF, abs(phatDF$phat - input$CIplot1_hover$x) < .005)[round(input$CIplot1_hover$y),]
-    if(!is.null(myY) & length(myY) > 1){
-      points(x=myY$phat, y = myY$row, cex=2, col = "blue")
-      segments(myY$LB, myY$row, myY$UB, myY$row, lwd=4, col = "blue")
-    }
-  }
-  
- }, height = 275)
-}
-
-    ##  Test ------------------------------------------------ cat 1
+    ##  Test for single proportion ------------------------------------------------ cat 1
 { 
  output$cat1_testUI <- renderUI({
    if( is.null(cat1_data$counts)){
      h4(" You must first enter data. Choose 'Enter/Describe Data'.")
    } else {
-     h4("Under Construction")
+    tabPanel("Test", value="1catTest",
+             titlePanel("Test for a Single Proportion"),       
+             fluidRow(
+               column(4, 
+                      h3("Original Data"),
+                      tableOutput("cat1OriginalData"),
+                      
+                      br(),
+                      br(),
+                      
+                      h5("We start showing one shuffle."),
+                      h5("How many more?"),
+                      
+                      actionButton("cat1_test_shuffle_10", label = "10"),
+                      actionButton("cat1_test_shuffle_100", label = "100"),
+                      actionButton("cat1_test_shuffle_1000", label = "1000"),
+                      actionButton("cat1_test_shuffle_5000", label = "5000"),
+                      
+                      br(),
+                      br(),
+                      
+                      h3("Shuffled Sample"),
+                      tableOutput('cat1Test_Table')),
+                      
+               column(8,
+                      h5("Enter null hypothesized value for p."),
+                      textInput("p0", label = "Null hypothesis", value = 0.5),
+                      
+                      plotOutput('cat1Test_Plot2', click = 'cat1_Test_click'),
+                      
+                      br(),
+                      br(),
+                      br(),
+                      
+                      h4("Count values "), 
+                      fluidRow( 
+                        column(4,
+                               selectInput('cat1_testDirection', label = "", 
+                                           choices = list("less", "more extreme", "greater"), 
+                                           selected = "more extreme", selectize = FALSE, width = 200)
+                        ),
+                        column(2, h4(" than ")),
+                        column(3, 
+                               textInput('cat1_test_cutoff', label = "", value = NA)), 
+                        column(2, 
+                               actionButton('cat1_test_countXtremes', "Go"))
+                      ),
+                      
+                      if(!is.null(cat1Test$moreExtremeCount)){
+                        h4(paste(cat1Test$moreExtremeCount, " / ", length(cat1Test$difprop), ", p-value = ", 
+                                 round(cat1Test$pvalue, 5)))
+                      } else { h4(" ")}
+               )
+             )
+    ))
    }
-  })
+ })
+
+    cat1Test <- reactiveValues(phat = NULL, colors = NULL, moreExtremeCount = NULL, pvalue = NULL)
+
+    output$cat1OriginalData <- renderTable({ 
+      if(input$cat1_submitButton ==0) return()
+      print(cat1_data$counts)
+      print(cat1_data$names)
+      counts <- as.table( matrix(cat1_data$counts), 1, 2)
+      dimnames(counts) = list(cat1_data$names,"Proportions")
+      prop.table(counts) 
+    })
+    
+    observeEvent(input$cat1_test_shuffle_10, {
+      n1 <- sum(cat1_data$counts[1:2])
+      y1_new <- as.matrix(rbinom(10, cat1_data$counts[1], cat1_data$counts[1]/n1))
+      phat <- round(y1_new/n1, 3)
+      cat1Test$phat <- rbind(cat1Test$phat, phat)
+      cat2Test$colors <- rep(blu, length(cat1Test$phat))
+    })
+    
+    observeEvent(input$cat1_test_shuffle_100, {
+      n1 <- sum(cat1_data$counts[1:2])
+      y1_new <- as.matrix(rbinom(100, cat1_data$counts[1], cat1_data$counts[1]/n1))
+      phat <- round(y1_new/n1, 3)
+      cat1Test$phat <- rbind(cat1Test$phat, phat)
+      cat2Test$colors <- rep(blu, length(cat1Test$phat))
+    })
+    
+    observeEvent(input$cat1_test_shuffle_1000, {
+      n1 <- sum(cat1_data$counts[1:2])
+      y1_new <- as.matrix(rbinom(1000, cat1_data$counts[1], cat1_data$counts[1]/n1))
+      phat <- round(y1_new/n1, 3)
+      cat1Test$phat <- rbind(cat1Test$phat, phat)
+      cat2Test$colors <- rep(blu, length(cat1Test$phat))
+    })
+    
+    observeEvent(input$cat1_test_shuffle_5000, {
+      n1 <- sum(cat1_data$counts[1:2])
+      y1_new <- as.matrix(rbinom(5000, cat1_data$counts[1], cat1_data$counts[1]/n1))
+      phat <- round(y1_new/n1, 3)
+      cat1Test$phat <- rbind(cat1Test$phat, phat)
+      cat2Test$colors <- rep(blu, length(cat1Test$phat))
+    })
+    
+    output$cat1Test_Table <- renderTable({
+      #if(input$cat2_submitButton == 0) return()
+      if(is.null(cat1_data$counts)) return()
+      
+      n1 <- sum(cat1_data$counts[1:2])
+      y1_new <- as.matrix(rhyper(1, cat1_data$counts[1], cat1_data$counts[2], 
+                                 sum(cat1_data$counts[1:2])))
+      cat1Test$colors <- blu
+    
+      #print(c(y1_new, n1))
+      counts <- as.table(matrix(as.numeric(c(y1_new, n1-y1_new)), 2, 1))
+      dimnames(counts) <- list(cat1_data$names,"Proportions")
+      prop.table(counts)
+
+    })
+    
+    observeEvent(input$cat1_test_countXtremes, {
+      x <- sort(cat1Test$phat)
+      nsims <- length(x)
+      threshold <- as.numeric(input$cat1_test_cutoff)
+      if(nsims > 1 & !is.na(input$cat1_testDirection)){
+        redValues <-  switch(input$cat1_testDirection,
+                             "less" = which(x <= threshold + 1.0e-10),
+                             "greater" = which(x >= threshold - 1.0e-10),
+                             "more extreme" = c(which(x <= -abs(threshold) + 1.0e-10 ), 
+                                                which(x >= abs(threshold) -1.0e-10 ) )  )
+        cat1Test$colors[redValues] <- rd       
+        cat1Test$moreExtremeCount  <- length(redValues)
+        cat1Test$pvalue <- cat1Test$moreExtremeCount/nsims
+      }
+    })
+    
+    
+    output$cat1Test_Plot2 <- renderPlot({
+      if(input$cat1_submitButton == 0) return()
+      if(is.null(cat1Test$phat)) return()
+      
+      DF <- sort(cat1Test$phat)
+      
+      if(length(DF) == 1){
+        w <- 1
+        radius = 4
+      } 
+      else {
+        nbreaks <- 0.5*nclass.Sturges(DF)^2
+        z <- cut(DF, breaks = nbreaks)
+        w <- unlist(tapply(z, z, function(V) 1:length(V)))
+        w <- w[!is.na(w)]
+        #print(w)
+        #print(max(w))
+        nsims <- length(DF)
+        radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
+      }
+      plot(DF, w, ylab = "", ylim = c(0.5, max(w)), cex = radius/2, pch = 16, col = cat1Test$colors,  
+           xlab = expression(p), main = "Sampling Distribution")
+      legend("topright", bty = "n", paste(" n = ", length(DF), "\n Mean = ", round(mean(DF),3), 
+                                          "\n SE = ", round(sd(DF),3)))
+      #mtext(side = 1, at = 0, adj = 0, line = 0, bquote(p[1] == p[2]))
+    }, height = 450, width = 600)
+
 }
 
    ###  estimate phat  -------------------------------------- cat 1
@@ -177,6 +257,87 @@ output$cat1_estimateUI <- renderUI({
    }
  })
 }
+  
+  ##  confidence interval demo  -------------------------------------- cat 1
+  
+  output$inputTrueP <- renderUI({
+    n <- input$CIdemo_n
+    sliderInput("CIdemo_p", "Choose true proportion of successes ", 
+                min=pmin(0.5, round(10/n,2)), max=pmax(.5, round(1- 9.9/n,2)), value = .5)
+  })
+  
+  CIdemoSims <- reactive({
+    if(is.null(input$CIdemo_p)) return()
+    nsims <- as.numeric(input$CIdemo_reps)      
+    radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)
+    ## exactRule <- -log( (1-upperconf) * 2)/input$CIdemo_n
+    ##print(c(input$CIdemo_n, input$CIdemo_p))
+    phats <- sort((1 + rbinom(nsims, as.integer(input$CIdemo_n), input$CIdemo_p))/(2 + input$CIdemo_n))
+    phat.stack <- unlist(tapply(phats, cut(phats, breaks = nclass.Sturges(phats)^2),
+                                function(x) if(length(x) > 0) {1:length(x)} else {NULL}))
+    SEs <- sqrt(pmax(.0099, phats * (1-phats) )/ input$CIdemo_n)
+    phatDF <- data.frame(
+      phat = phats,
+      y = phat.stack[!is.na(phat.stack)],
+      SE = SEs
+      #     LB = pmax(0, phats - zstar * SEs),
+      #     UB = pmin(1, phats + zstar * SEs)
+    )
+    phatDF$row <- 1:nrow(phatDF)
+    #   phatDF$colr <- with(phatDF, ifelse(LB < input$CIdemo_p & UB > input$CIdemo_p, 1, 2))
+    phatDF
+  })
+  
+  output$CIdemo_Plot1 <- renderPlot({
+    ##displayFn <-  reactive({
+    if(is.null(input$CIdemo_p)) return()  
+    phatDF <- CIdemoSims()
+    nsims <- as.numeric(input$CIdemo_reps)      
+    radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)
+    par(mar=c(4,2,1,1))
+    isolate({
+      plot(y ~ phat, data= phatDF, col = rgb(70, 130, 180, 127, max = 255), pch=16, bty="l",
+           cex = radius/2, ylab = "", xlab = expression(hat(p)))#, main = "Sampling Distribution")
+    })
+  }, height = 275)
+  
+  output$CIdemo_Plot2 <- renderPlot({
+    ##displayFn <-  reactive({
+    if(is.null(input$CIdemo_p) || is.null(input$CIdemo_conf)) return() 
+    phatDF <- CIdemoSims()  
+    isolate({
+      upperconf = 1- (1 - as.numeric(substr(input$CIdemo_conf,1,2))/100)/2
+      zstar <- qnorm(upperconf)
+      #print(zstar)
+      phatDF$LB = pmax(0, phatDF$phat - zstar * phatDF$SE)
+      phatDF$UB = pmin(1, phatDF$phat + zstar * phatDF$SE)
+      phatDF$colr <- with(phatDF, ifelse(LB < input$CIdemo_p & UB > input$CIdemo_p, 1, 2))
+      #print(summary(phatDF))
+      coverage = 2 - mean(phatDF$colr) 
+      nsims <- as.numeric(input$CIdemo_reps)      
+      radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)
+      par(mar=c(4,1,2,1))
+      plot(row ~ phat, data = phatDF, col = "white", bty="l", xlim = c(min(phatDF$LB), max(phatDF$UB)),
+           cex = radius/4, ylab = "", # main = "Confidence Intervals",
+           xlab = paste("Coverage rate =", coverage))
+      with(phatDF, segments(LB, row, UB, row, col = c("green","red")[colr] ))
+      points(row ~ phat, data = phatDF, col = rgb(70, 130, 180, 127, max = 255), pch=16)
+      abline(v = input$CIdemo_p, lwd = 2, col = "grey")
+      mtext(side=3, at = input$CIdemo_p, input$CIdemo_p, line=0)
+      text(x = phatDF$UB[nsims/2], y = 0.08 * nsims, paste( sum(phatDF$UB < input$CIdemo_p), "too low"))
+      text(x = phatDF$LB[nsims/2], y= .93 * nsims, paste( sum(phatDF$LB > input$CIdemo_p), "too high"))     
+    })
+    if(!is.null(input$CIplot1_hover)){
+      myY <- subset(phatDF, abs(phatDF$phat - input$CIplot1_hover$x) < .005)[round(input$CIplot1_hover$y),]
+      if(!is.null(myY) & length(myY) > 1){
+        points(x=myY$phat, y = myY$row, cex=2, col = "blue")
+        segments(myY$LB, myY$row, myY$UB, myY$row, lwd=4, col = "blue")
+      }
+    }
+    
+  }, height = 275)
+}
+  
 
   ## Normal probability computations  ----------------------- cat 1
 {
