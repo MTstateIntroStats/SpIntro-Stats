@@ -96,8 +96,8 @@ shinyServer(function(input, output, session) {
                       
                       br(),
                       
-                      h4("We start showing one shuffle."),
-                      h4("How many more?"),
+                      h5("We start showing one sample from the null."),
+                      h5("How many more?"),
                       
                       actionButton("cat1_test_shuffle_10", label = "10"),
                       actionButton("cat1_test_shuffle_100", label = "100"),
@@ -119,7 +119,7 @@ shinyServer(function(input, output, session) {
                         column(4,
                                selectInput('cat1_testDirection', label = "", 
                                            choices = list("less", "more extreme", "greater"), 
-                                           selected = "more extreme", selectize = FALSE, width = 200)
+                                           select = "more extreme", selectize = FALSE, width = 200)
                         ),
                         column(2, h4(" than ")),
                         column(3, 
@@ -198,15 +198,16 @@ shinyServer(function(input, output, session) {
     })
     
     observeEvent(input$cat1_test_countXtremes, {
-      x <- sort(cat1Test$phat)
+      x <- sort(as.numeric(cat1Test$phat))
       nsims <- length(x)
+      p0 <- as.numeric(input$null_p)
+      cat1Test$colors <- rep(blu, nsims)
       threshold <- as.numeric(input$cat1_test_cutoff)
       if(nsims > 1 & !is.na(input$cat1_testDirection)){
         redValues <-  switch(input$cat1_testDirection,
-                             "less" = which(x <= threshold + 1.0e-10),
-                             "greater" = which(x >= threshold - 1.0e-10),
-                             "more extreme" = c(which(x <= -abs(threshold) + 1.0e-10 ), 
-                                                which(x >= abs(threshold) -1.0e-10 ) )  )
+                             "less" = which(x < threshold + 1.0e-10),
+                             "greater" = which(x > threshold - 1.0e-10),
+                             "more extreme" = which(abs(x - p0) > abs(threshold - p0) - 1.0e-10 )) 
         cat1Test$colors[redValues] <- rd       
         cat1Test$moreExtremeCount  <- length(redValues)
         cat1Test$pvalue <- cat1Test$moreExtremeCount/nsims
@@ -971,6 +972,7 @@ observeEvent(input$cat2_submitButton, {
     observeEvent(input$cat2_test_countXtremes, {
     x <- sort(cat2Test$difprop)
     nsims <- length(x)
+    cat2Test$colors <- rep(blu, nsims)
     threshold <- as.numeric(input$cat2_test_cutoff)
     if(nsims > 1 & !is.na(input$cat2_testDirection)){
       redValues <-  switch(input$cat2_testDirection,
@@ -1672,6 +1674,7 @@ observeEvent(input$q2_countXtremes, {
   }
   parm <- sort(parm)
   nsims <- length(parm)
+  q2Test$colors <- rep(blu, nsims)
   threshold <- as.numeric(input$q2_cutoff)
   if(nsims > 9 & !is.na(input$q2_testDirection)){
     redValues <-  switch( input$q2_testDirection,
