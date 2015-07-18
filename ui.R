@@ -67,8 +67,8 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                     ),  
                       
                     column(7, #div( ## style="height: 300px",
-                      h4("Sampling Distribution.  Hover mouse over a point to see CI.", center = TRUE),
-                      plotOutput("CIdemo_Plot1",  hover = "CIplot1_hover")
+                      h4("Sampling Distribution.  Click a point to see CI.", center = TRUE),
+                      plotOutput("CIdemo_Plot1",  click = "CIplot1_click")
                     )),
                 
                 fluidRow(

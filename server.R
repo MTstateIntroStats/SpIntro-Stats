@@ -64,8 +64,8 @@ shinyServer(function(input, output, session) {
 
   output$cat1DataIn <- renderText({
   if(input$cat1_submitButton ==0) return()
-  "Data are entered, you may now choose to estimate or test one proportion."
-})
+    "Data are entered, you may now choose to estimate or test one proportion."
+  })
 
 
   output$cat1_Summary <- renderTable({
@@ -77,7 +77,7 @@ shinyServer(function(input, output, session) {
       prop.table(counts)
     #})
   })
-  
+} 
     ##  Test for single proportion ------------------------------------------------ cat 1
 { 
  output$cat1_testUI <- renderUI({
@@ -254,7 +254,7 @@ output$cat1_estimateUI <- renderUI({
 }
   
   ##  confidence interval demo  -------------------------------------- cat 1
-  
+{  
   output$inputTrueP <- renderUI({
     n <- input$CIdemo_n
     sliderInput("CIdemo_p", "Choose true proportion of successes ", 
@@ -322,8 +322,8 @@ output$cat1_estimateUI <- renderUI({
       text(x = phatDF$UB[nsims/2], y = 0.08 * nsims, paste( sum(phatDF$UB < input$CIdemo_p), "too low"))
       text(x = phatDF$LB[nsims/2], y= .93 * nsims, paste( sum(phatDF$LB > input$CIdemo_p), "too high"))     
     })
-    if(!is.null(input$CIplot1_hover)){
-      myY <- subset(phatDF, abs(phatDF$phat - input$CIplot1_hover$x) < .005)[round(input$CIplot1_hover$y),]
+    if(!is.null(input$CIplot1_click)){
+      myY <- subset(phatDF, abs(phatDF$phat - input$CIplot1_click$x) < .005)[round(input$CIplot1_click$y),]
       if(!is.null(myY) & length(myY) > 1){
         points(x=myY$phat, y = myY$row, cex=2, col = "blue")
         segments(myY$LB, myY$row, myY$UB, myY$row, lwd=4, col = "blue")
@@ -1606,7 +1606,7 @@ output$q2_TestPlot1 <- renderPlot({
  mtext(side = 3,   at = min(DF0$x)*2/3 + max(DF0$x)/3, bquote(hat(beta)[1] == .(round(q2$slope,3))))
   q2Test$shuffles <- shuffle <- sample(1:nrow(q2$data))
   if(!is.null(input$q2Test_click) ){
-    ## grab hovered sample
+    ## grab clicked sample
     print(input$q2_Test_click)
     clickX <- input$q2_Test_click$x
     clickY <- input$q2_Test_click$y
@@ -1735,7 +1735,7 @@ output$q2_testUI <- renderUI({
               radioButtons('q2_TestParam', label = "Parameter: ", list("Slope","Correlation"), inline = TRUE)
        ),
        ## for 1 shuffle, show equal size plots of original and reshuffled x,y data
-       ##  for more shuffles, make original data and hover --> shuffle plots smaller, large plot of 
+       ##  for more shuffles, make original data and click --> shuffle plots smaller, large plot of 
        ##  sampling distribution for slope / correlation.
        column(4, 
               plotOutput('q2_TestPlot1')
@@ -1983,14 +1983,14 @@ output$q2_estimateUI <- renderUI({
                actionButton('q2_conf99', label = "99")
         ),
         ## for 1 resample, show equal size plots of original and resampled x,y data
-        ##  for more resamples, make original data and hover --> resample plots smaller, large plot of 
+        ##  for more resamples, make original data and click --> resample plots smaller, large plot of 
         ##  resampling distribution for slope / correlation.
         column(4, 
                plotOutput('q2_EstPlot1')
         ),
         column(5,
                # h5("Click on a point to see that shuffle")
-               plotOutput('q2_EstPlot2', hover = 'q2Est_click'), 
+               plotOutput('q2_EstPlot2', click = 'q2Est_click'), 
                if(!is.null(q2Estimate$CI)) {
                  h5(paste("Interval Estimate: (", round(q2Estimate$CI[1],3),", ",
                         round(q2Estimate$CI[2], 3),")"))
