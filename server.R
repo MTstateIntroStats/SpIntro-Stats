@@ -106,7 +106,8 @@ shinyServer(function(input, output, session) {
              ),
                       
                column(8,
-                      textInput("null_p", label = "Null hypothesis p = ", value = 0.5),
+                      sliderInput("null_p", "Choose true proportion of successes ", 
+                                                  min= 0, max = 1, value = .5),
                       
                       plotOutput('cat1Test_Plot2', click = 'cat1_Test_click'),
                       
@@ -129,8 +130,8 @@ shinyServer(function(input, output, session) {
                       ),
                       
                       if(!is.null(cat1Test$moreExtremeCount)){
-                        h4(paste(cat1Test$moreExtremeCount, " / ", length(cat1Test$phat), ", p-value = ", 
-                                 round(cat1Test$pvalue, 5)))
+                        h4(paste("There are ", cat1Test$moreExtremeCount, " / ", length(cat1Test$phat), input$cat1_testDirection, 
+                                 " than ", cat1Test$cutoff, " , p-value = ", round(cat1Test$pvalue, 5)))
                       } else { h4(" ")}
                )
              )
@@ -138,7 +139,7 @@ shinyServer(function(input, output, session) {
    }
  })
 
-    cat1Test <- reactiveValues(phat = NULL, colors = NULL, moreExtremeCount = NULL, pvalue = NULL)
+    cat1Test <- reactiveValues(phat = NULL, colors = NULL, cutoff = NULL, moreExtremeCount = NULL, pvalue = NULL)
 
     output$cat1OriginalData <- renderTable({ 
       if(input$cat1_submitButton ==0) return()
@@ -202,7 +203,7 @@ shinyServer(function(input, output, session) {
       nsims <- length(x)
       p0 <- as.numeric(input$null_p)
       cat1Test$colors <- rep(blu, nsims)
-      threshold <- as.numeric(input$cat1_test_cutoff)
+      cat1Test$cutoff <- threshold <- as.numeric(input$cat1_test_cutoff)
       if(nsims > 1 & !is.na(input$cat1_testDirection)){
         redValues <-  switch(input$cat1_testDirection,
                              "less" = which(x < threshold + 1.0e-10),
@@ -216,8 +217,7 @@ shinyServer(function(input, output, session) {
     
     
     output$cat1Test_Plot2 <- renderPlot({
-      if(input$cat1_submitButton == 0) return()
-      if(is.null(cat1Test$phat)) return()
+      if(input$cat1_submitButton == 0 | is.na(input$null_p) | is.null(cat1Test$phat)) return()
       
       DF <- sort(cat1Test$phat)
       
@@ -879,8 +879,8 @@ observeEvent(input$cat2_submitButton, {
                         ),
                  
                if(!is.null(cat2Test$moreExtremeCount)){
-                          h4(paste(cat2Test$moreExtremeCount, " / ", length(cat2Test$difprop), ", p-value = ", 
-                                   round(cat2Test$pvalue, 5)))
+                          h4(paste("There are ", cat2Test$moreExtremeCount, " / ", length(cat2Test$difprop), input$cat2_testDirection, 
+                                   " than ", cat2Test$cutoff, " , p-value = ", round(cat2Test$pvalue, 5)))
                  } else { h4(" ")}
                )
             )
@@ -889,7 +889,7 @@ observeEvent(input$cat2_submitButton, {
   })
   
   cat2Test <- reactiveValues(difprop = NULL, phat1 = NULL, phat2 = NULL, observed = NULL, colors = NULL,
-                             moreExtremeCount = NULL, pvalue = NULL)
+                             cutoff = NULL, moreExtremeCount = NULL, pvalue = NULL)
   
   output$cat2OriginalData <- renderTable({ 
     if(input$cat2_submitButton ==0) return()
@@ -973,7 +973,7 @@ observeEvent(input$cat2_submitButton, {
     x <- sort(cat2Test$difprop)
     nsims <- length(x)
     cat2Test$colors <- rep(blu, nsims)
-    threshold <- as.numeric(input$cat2_test_cutoff)
+    cat2Test$cutoff <- threshold <- as.numeric(input$cat2_test_cutoff)
     if(nsims > 1 & !is.na(input$cat2_testDirection)){
       redValues <-  switch(input$cat2_testDirection,
                            "less" = which(x <= threshold + 1.0e-10),
