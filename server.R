@@ -246,12 +246,191 @@ shinyServer(function(input, output, session) {
    ###  estimate phat  -------------------------------------- cat 1
 {
 output$cat1_estimateUI <- renderUI({
-   if( is.null(cat1_data$counts)){
-     h4(" You must first enter data. Choose 'Enter/Describe Data'.")
-   } else {
-     h4("Under Construction")
-   }
- })
+  if( is.null(cat1_data$counts)){
+    h4(" You must first enter data. Choose 'Enter/Describe Data'.")
+  } else {
+    tabPanel("Estimate", value="1catEstimate",
+             titlePanel("Estimate for a Single Proportion"),       
+             fluidRow(
+               column(4, 
+                      h3("Original Data"),
+                      tableOutput("cat1_CIPrep"),
+                      
+                      h3("Bootstrap Resample"),
+                      tableOutput('cat1Estimate_Table'),
+                      
+                      br(),
+                      
+                      h5("We start showing one re-sample."),
+                      h5("How many more?"),
+                      
+                      actionButton("cat1_estimate_shuffle_10", label = "10"),
+                      actionButton("cat1_estimate_shuffle_100", label = "100"),
+                      actionButton("cat1_estimate_shuffle_1000", label = "1000"),
+                      actionButton("cat1_estimate_shuffle_5000", label = "5000")
+               ),
+    
+                   column(8, 
+                      plotOutput('cat1Estimate_Plot2', click = 'cat1_Estimate_click'),
+                      
+                      br(),
+                      br(),
+                      br(),
+                      
+                      #h5("Click on a point to see that resample."),
+                      h5("Select Confidence Level (%)", offset = 2),
+                      fluidRow( 
+                        column(4,  
+                               actionButton('cat1_conf80', label = "80"),
+                               actionButton('cat1_conf90', label = "90"),
+                               actionButton('cat1_conf95', label = "95"),
+                               actionButton('cat1_conf99', label = "99")
+                        ),
+                        
+                        if(!is.null(cat1Estimate$CI)){
+                          h5(paste("Interval Estimate: (", round(cat1Estimate$CI[1],3), ",", 
+                                   round(cat1Estimate$CI[2], 3), ")"))
+                        }
+                      )
+               )
+             )
+    )
+  }
+})
+
+cat1Estimate <- reactiveValues(phat = NULL, observed = NULL, colors = blu, confLevel = NULL, CI = NULL)
+
+output$cat1_CIPrep <- renderTable({ 
+  if(input$cat1_submitButton ==0) return()
+  print(cat1_data$counts)
+  print(cat1_data$names)
+  counts <- as.table( matrix(cat1_data$counts), 1, 2)
+  dimnames(counts) = list(cat1_data$names,"Proportions")
+  prop.table(counts) 
+})
+
+observeEvent(input$cat1_estimate_shuffle_10, {
+  y1_new <- as.matrix(rbinom(10, sum(cat1_data$counts[1:2]), cat1_data$counts[1]/sum(cat1_data$counts[1:2])))
+  phat <- round(y1_new/sum(cat1_data$counts[1:2]), 3)
+  cat1Estimate$phat <- rbind(cat1Estimate$phat, phat)
+  cat1Estimate$colors <- rep(blu, length(cat1Estimate$phat))
+})
+
+observeEvent(input$cat1_estimate_shuffle_100, {
+  y1_new <- as.matrix(rbinom(100, sum(cat1_data$counts[1:2]), cat1_data$counts[1]/sum(cat1_data$counts[1:2])))
+  phat <- round(y1_new/sum(cat1_data$counts[1:2]), 3)
+  cat1Estimate$phat <- rbind(cat1Estimate$phat, phat)
+  cat1Estimate$colors <- rep(blu, length(cat1Estimate$phat))
+})
+
+observeEvent(input$cat1_estimate_shuffle_1000, {
+  y1_new <- as.matrix(rbinom(1000, sum(cat1_data$counts[1:2]), cat1_data$counts[1]/sum(cat1_data$counts[1:2])))
+  phat <- round(y1_new/sum(cat1_data$counts[1:2]), 3)
+  cat1Estimate$phat <- rbind(cat1Estimate$phat, phat)
+  cat1Estimate$colors <- rep(blu, length(cat1Estimate$phat))
+})
+
+observeEvent(input$cat1_estimate_shuffle_5000, {
+  y1_new <- as.matrix(rbinom(5000, sum(cat1_data$counts[1:2]), cat1_data$counts[1]/sum(cat1_data$counts[1:2])))
+  phat <- round(y1_new/sum(cat1_data$counts[1:2]), 3)
+  cat1Estimate$phat <- rbind(cat1Estimate$phat, phat)
+  cat1Estimate$colors <- rep(blu, length(cat1Estimate$phat))
+})
+
+output$cat1Estimate_Table <- renderTable({
+  #if(input$cat1_submitButton == 0) return()
+  if(is.null(cat1_data$counts)) return()
+  
+  n1 <- sum(cat1_data$counts[1:2])
+  y1_new <- as.matrix(rbinom(1, sum(cat1_data$counts[1:2]), cat1_data$counts[1]/sum(cat1_data$counts[1:2])))
+  cat1Estimate$phat <- round(y1_new/n1, 3)
+  cat1Estimate$colors <- blu
+  
+  #print(c(y1_new, n1))
+  counts <- as.table(matrix(as.numeric(c(y1_new, n1-y1_new)), 2, 1))
+  dimnames(counts) <- list(cat1_data$names,"Proportions")
+  prop.table(counts)
+  
+})
+
+observeEvent(input$cat1_conf80,{
+  if(is.null(cat1Estimate$phat) | (nsims <- length(cat1Estimate$phat)) < 10){
+    return()
+  }
+  cat1Estimate$confLevel <- .80
+  cat1Estimate$colors <- rep(blu, nsims)
+  tailCount <- floor(nsims * 0.1)
+  cat1Estimate$colors[1:tailCount] <- rd
+  cat1Estimate$colors[nsims +1 -(1:tailCount)] <- rd
+  cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
+  
+})
+
+observeEvent(input$cat1_conf90,{
+  if(is.null(cat1Estimate$phat) | (nsims <- length(cat1Estimate$phat)) < 10){
+    return()
+  }
+  cat1Estimate$confLevel <- .90
+  cat1Estimate$colors <- rep(blu, nsims)
+  tailCount <- floor(nsims * 0.05)
+  cat1Estimate$colors[1:tailCount] <- rd
+  cat1Estimate$colors[nsims +1 -(1:tailCount)] <- rd
+  cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
+  
+})
+
+observeEvent(input$cat1_conf95,{
+  if(is.null(cat1Estimate$phat) | (nsims <- length(cat1Estimate$phat)) < 10){
+    return()
+  }
+  cat1Estimate$confLevel <- .95
+  cat1Estimate$colors <- rep(blu, nsims)
+  tailCount <- floor(nsims * 0.025)
+  cat1Estimate$colors[1:tailCount] <- rd
+  cat1Estimate$colors[nsims +1 -(1:tailCount)] <- rd
+  cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
+  
+})
+
+observeEvent(input$cat1_conf99,{
+  if(is.null(cat1Estimate$phat) | (nsims <- length(cat1Estimate$phat)) < 10){
+    return()
+  }
+  cat1Estimate$confLevel <- .99
+  cat1Estimate$colors <- rep(blu, nsims)
+  tailCount <- floor(nsims * 0.005)
+  cat1Estimate$colors[1:tailCount] <- rd
+  cat1Estimate$colors[nsims +1 -(1:tailCount)] <- rd
+  cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
+  
+})
+
+
+output$cat1Estimate_Plot2 <- renderPlot({
+  if(input$cat1_submitButton == 0 | is.null(cat1Estimate$phat)) return()
+  
+  DF <- sort(cat1Estimate$phat)
+  
+  if(length(DF) == 1){
+    w <- 1
+    radius = 4
+  } 
+  else {
+    nbreaks <- 0.5*nclass.Sturges(DF)^2
+    z <- cut(DF, breaks = nbreaks)
+    w <- unlist(tapply(z, z, function(V) 1:length(V)))
+    w <- w[!is.na(w)]
+    #print(w)
+    #print(max(w))
+    nsims <- length(DF)
+    radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
+  }
+  plot(DF, w, ylab = "", ylim = c(0.5, max(w)), cex = radius/2, pch = 16, col = cat1Estimate$colors,  
+       xlab = expression(hat(p)), main = "Re-Sampling Distribution")
+  legend("topright", bty = "n", paste(" n = ", length(DF), "\n Mean = ", round(mean(DF),3), 
+                                      "\n SE = ", round(sd(DF),3)))
+}, height = 450, width = 600)
+
 }
   
   ##  confidence interval demo  -------------------------------------- cat 1
