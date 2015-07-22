@@ -1202,7 +1202,7 @@ observeEvent(input$cat2_submitButton, {
       h4(" You must first enter data. Choose 'Enter/Describe Data'.")
     } else {
       tabPanel("Estimate", value="2catEstimate",
-               titlePanel("Estimate for a Difference in Proportions"),       
+               titlePanel("Estimate a Difference in Proportions"),       
                fluidRow(
                  column(4, 
                         h3("Original Data"),
@@ -1246,7 +1246,7 @@ observeEvent(input$cat2_submitButton, {
                           ),
                         
                         if(!is.null(cat2Estimate$CI)){
-                          h5(paste("Interval Estimate: (", round(cat2Estimate$CI[1],3), ",", 
+                          h5(paste(cat2Estimate$confLevel*100, "% Interval Estimate: (", round(cat2Estimate$CI[1],3), ",", 
                                    round(cat2Estimate$CI[2], 3), ")"))
                         }
                         )
@@ -1757,7 +1757,6 @@ output$q2_swap <- renderUI({
 
 ###   TESTING slope / correlation = 0 ---------------------------------------  q2
 {
-
 output$q2_TestPrep <- renderTable({
 #  names(q2$data) <- c("x","y")
   fit0 <- lm( y ~ x, q2$data)
@@ -1902,9 +1901,9 @@ output$q2_testUI <- renderUI({
     h4(" You must first enter data. Choose 'Enter/Describe Data'.")
   } else {
     fluidPage(
+      h3("Test if slope or correlation is zero"),
      fluidRow(
        column(3, tableOutput('q2_TestPrep'),
-              #radioButtons('q2_Test1orMany', label= "Display: ", list("One or","Many shuffles?"), inline = TRUE),
               h5("We start showing one shuffle."),
               h5("How many more?"),
               actionButton("q2_shuffle_10", label = "10"),
@@ -1926,33 +1925,38 @@ output$q2_testUI <- renderUI({
               plotOutput('q2_TestPlot2', click = 'q2_Test_click')
               )
      ),
-     fluidRow(
-       column(2, offset = 3,
-              h4("Count values")
-       ),
-       column(3,
-              selectInput('q2_testDirection', label ="", choices = list("less","more extreme","greater"), 
-                          selected = "more extreme" , selectize = FALSE, width = 200)
-              ),
-       column(1, h4("than ")),
-       column(2,
-              textInput('q2_cutoff', label="", value = NA )
-              ),
-       column(1,
-              actionButton("q2_countXtremes","Go")
-       )
-     ),
-     if(!is.null(q2Test$moreExtremeCount)){
-       fluidRow(
-         column(6, offset = 6,
-              h4(paste(q2Test$moreExtremeCount, " / ", length(q2Test$slopes), ", p-value =  ", round(q2Test$pvalue,5)))
-         )
-       )
-     }
+    uiOutput("slopeTestXtremes"),
+    uiOutput("slopeTestPvalue")
     )
   }
-})
+ })
 
+output$slopeTestPvalue <- renderUI({
+  if(!is.null(q2Test$moreExtremeCount)){
+    fluidRow(
+      column(9, offset = 3,  h4(paste(q2Test$moreExtremeCount, " of ", length(q2Test$slopes), "values are ",input$q2_testDirection," than", as.numeric(input$q2_cutoff),"  p-value =  ", round(q2Test$pvalue,5)))
+      ))
+  }
+})
+                                
+output$slopeTestXtremes <- renderUI({
+fluidRow(
+  column(2, offset = 3,
+         h4("Count values")
+  ),
+  column(3,
+         selectInput('q2_testDirection', label ="", choices = list("less","more extreme","greater"), 
+                     selected = "more extreme" , selectize = FALSE, width = 200)
+  ),
+  column(1, h4("than ")),
+  column(2,
+         textInput('q2_cutoff', label="", value = NA )
+  ),
+  column(1,
+         actionButton("q2_countXtremes","Go")
+  )
+)
+}) 
 }
   ###  Estimate slope / correlation with CI ----------------------------------- q2 
   ##  Need to include more info in interval printout - percent coverage, cor or slope
