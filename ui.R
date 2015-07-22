@@ -95,8 +95,9 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                  #h6("Normal Approx")
        )
     ),
-    
+   
     ####   One Quantitative  ----------------------------------------------------  1 Quant
+
     navbarMenu("One Quant.",
       tabPanel("Enter /Describe Data", value="1quantDataEntry",
                  ##  preloaded data  - save as data/quant1.RData
@@ -155,7 +156,8 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
     ##  br(),  didn't work inside the navBar
 
     ####   Two Categorical  -------------------------------------------------  --  2 cat
-    navbarMenu("Two Categ.",
+
+  navbarMenu("Two Categ.",
       tabPanel("Enter /Describe Data", value="2catDataEntry",
                h5(textOutput('cat2DataIn')),
                br(),
@@ -228,8 +230,9 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
       )
     ),
 
-    ####   Two Quantitative ------------------------------------------------- -- 2 Quant ----
-    navbarMenu("Two Quant.",
+    ####   Two Quantitative ------------------------------------------------- -- 2 Quant 
+
+ navbarMenu("Two Quant.",
                tabPanel("Enter /Describe Data", value="2quantDataEntry",
                ##  preloaded data  - save as data/quant1.RData
                ##  read local csv file
@@ -244,9 +247,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                                        selected = " ",
                                        selectize = FALSE))
                ),
-               
-               ## Need to use Dynamic UI instead of condition panels
-               
+                            
                uiOutput("q2_ui"),
                
                hr(),
@@ -269,8 +270,9 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
       )
     ),
 
-    ####   1 categorical & 1 quantitative  -----------------------------------
-    navbarMenu("One of Each",
+  ####   1 categorical & 1 quantitative  -----------------------------------
+
+  navbarMenu("One of Each",
                
       tabPanel("Enter /Describe Data", value="1cat1quantDataEntry",
        h4(textOutput('c1q1DataIn')),
@@ -324,7 +326,8 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
     ),
 
     ####   ----  Other Tools  ------------------------------------------------
-    navbarMenu("Other Tools",
+
+  navbarMenu("Other Tools",
       tabPanel("Probabilities", value = "probabilities",
              ## ui.r from probability finder
            titlePanel("Normal and t Probability Look Up"),
@@ -371,6 +374,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
         fluidRow(column(8, offset = 4, tableOutput("values")))
     )
   )
+
 )
   #fluidPage(
   #  h2("title here?"))

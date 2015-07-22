@@ -1377,16 +1377,15 @@ output$normalProbPlot2 <- renderPlot({
 
   ###  Data Entry ------------------------------------------------------------  q2
    ## need to remove old data if user comes back to data entry 
-q2Test <- reactiveValues( shuffles = NULL, slopes = NULL, corr = NULL, observed = NULL,
+   q2Test <- reactiveValues( shuffles = NULL, slopes = NULL, corr = NULL, observed = NULL,
                           colors = NULL, moreExtremeCount = NULL, pvalue = NULL)
 
 
-q2Estimate <- reactiveValues( resamples = NULL,   slopes = NULL,  corr =  NULL,
+  q2Estimate <- reactiveValues( resamples = NULL,   slopes = NULL,  corr =  NULL,
                               observed = NULL,    confLevel = NULL, colors = blu,
                               CI = NULL)
 
 {
-  
   ##  grab data according to input method
   q2 <- reactiveValues(data = NULL, names = NULL, intercept = NULL, slope = NULL, 
                        corr = NULL, qr = NULL)
@@ -1607,14 +1606,14 @@ output$q2_TestPlot1 <- renderPlot({
   mtext(side = 3, line=.4, at = min(DF0$x)/3 + max(DF0$x)*2/3, bquote(r == .(round(q2$corr,3))))
  mtext(side = 3,   at = min(DF0$x)*2/3 + max(DF0$x)/3, bquote(hat(beta)[1] == .(round(q2$slope,3))))
   q2Test$shuffles <- shuffle <- sample(1:nrow(q2$data))
-  if(!is.null(input$q2Test_click) ){
+  if(!is.null(input$q2_Test_click) & FALSE ){
     ## grab clicked sample
     print(input$q2_Test_click)
     clickX <- input$q2_Test_click$x
     clickY <- input$q2_Test_click$y
     nearest <- which( abs(q2Test$slope - clickX) < diff(range(q2Test$slope))/30 & abs(clickY - q2Test$y) < .5 )[1]
     shuffle <- q2Test$shuffle[nearest,]
-  }                                     ##  ^^ onclick is not working
+  }         ##  ^^ onclick changes plot1, but also resets to a single shuffle, destroying plot2
   DF0$newy <- DF0$y[shuffle]
   plot(y ~ x, data = DF0, xlab = q2$names[1], ylab = q2$names[2], col = blu, pch =16,
        main = "Shuffled Data")
@@ -1777,6 +1776,7 @@ output$q2_testUI <- renderUI({
 
 }
   ###  Estimate slope / correlation with CI ----------------------------------- q2 
+  ##  Need to include more info in interval printout - percent coverage, cor or slope
 {
   output$q2_CIPrep <- renderTable({
   ##  print("in q2_CIPrep")
@@ -1995,8 +1995,9 @@ output$q2_estimateUI <- renderUI({
                # h5("Click on a point to see that shuffle")
                plotOutput('q2_EstPlot2', click = 'q2Est_click'), 
                if(!is.null(q2Estimate$CI)) {
-                 h5(paste("Interval Estimate: (", round(q2Estimate$CI[1],3),", ",
-                        round(q2Estimate$CI[2], 3),")"))
+                 h5(paste("A ", round(q2Estimate$confLevel * 100), "% Interval Estimate for ", input$q2_EstParam , "is ( " , 
+                          round(q2Estimate$CI[1], 3),", ",
+                          round(q2Estimate$CI[2], 3),")"))
                }
       )
       ))}
