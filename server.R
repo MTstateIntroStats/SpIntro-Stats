@@ -106,7 +106,8 @@ shinyServer(function(input, output, session) {
              ),
                       
                column(8,
-                      textInput("null_p", label = "Null hypothesis p = ", value = 0.5),
+                      sliderInput("null_p", "Choose true proportion of successes ", 
+                                                  min= 0, max = 1, value = .5),
                       
                       plotOutput('cat1Test_Plot2', click = 'cat1_Test_click'),
                       
@@ -129,8 +130,8 @@ shinyServer(function(input, output, session) {
                       ),
                       
                       if(!is.null(cat1Test$moreExtremeCount)){
-                        h4(paste(cat1Test$moreExtremeCount, " / ", length(cat1Test$phat), ", p-value = ", 
-                                 round(cat1Test$pvalue, 5)))
+                        h4(paste("There are ", cat1Test$moreExtremeCount, " / ", length(cat1Test$phat), input$cat1_testDirection, 
+                                 " than ", cat1Test$cutoff, " , p-value = ", round(cat1Test$pvalue, 5)))
                       } else { h4(" ")}
                )
              )
@@ -138,7 +139,7 @@ shinyServer(function(input, output, session) {
    }
  })
 
-    cat1Test <- reactiveValues(phat = NULL, colors = NULL, moreExtremeCount = NULL, pvalue = NULL)
+    cat1Test <- reactiveValues(phat = NULL, colors = NULL, cutoff = NULL, moreExtremeCount = NULL, pvalue = NULL)
 
     output$cat1OriginalData <- renderTable({ 
       if(input$cat1_submitButton ==0) return()
@@ -202,7 +203,7 @@ shinyServer(function(input, output, session) {
       nsims <- length(x)
       p0 <- as.numeric(input$null_p)
       cat1Test$colors <- rep(blu, nsims)
-      threshold <- as.numeric(input$cat1_test_cutoff)
+      cat1Test$cutoff <- threshold <- as.numeric(input$cat1_test_cutoff)
       if(nsims > 1 & !is.na(input$cat1_testDirection)){
         redValues <-  switch(input$cat1_testDirection,
                              "less" = which(x < threshold + 1.0e-10),
@@ -216,8 +217,7 @@ shinyServer(function(input, output, session) {
     
     
     output$cat1Test_Plot2 <- renderPlot({
-      if(input$cat1_submitButton == 0) return()
-      if(is.null(cat1Test$phat)) return()
+      if(input$cat1_submitButton == 0 | is.na(input$null_p) | is.null(cat1Test$phat)) return()
       
       DF <- sort(cat1Test$phat)
       
@@ -246,12 +246,191 @@ shinyServer(function(input, output, session) {
    ###  estimate phat  -------------------------------------- cat 1
 {
 output$cat1_estimateUI <- renderUI({
-   if( is.null(cat1_data$counts)){
-     h4(" You must first enter data. Choose 'Enter/Describe Data'.")
-   } else {
-     h4("Under Construction")
-   }
- })
+  if( is.null(cat1_data$counts)){
+    h4(" You must first enter data. Choose 'Enter/Describe Data'.")
+  } else {
+    tabPanel("Estimate", value="1catEstimate",
+             titlePanel("Estimate for a Single Proportion"),       
+             fluidRow(
+               column(4, 
+                      h3("Original Data"),
+                      tableOutput("cat1_CIPrep"),
+                      
+                      h3("Bootstrap Resample"),
+                      tableOutput('cat1Estimate_Table'),
+                      
+                      br(),
+                      
+                      h5("We start showing one re-sample."),
+                      h5("How many more?"),
+                      
+                      actionButton("cat1_estimate_shuffle_10", label = "10"),
+                      actionButton("cat1_estimate_shuffle_100", label = "100"),
+                      actionButton("cat1_estimate_shuffle_1000", label = "1000"),
+                      actionButton("cat1_estimate_shuffle_5000", label = "5000")
+               ),
+    
+                   column(8, 
+                      plotOutput('cat1Estimate_Plot2', click = 'cat1_Estimate_click'),
+                      
+                      br(),
+                      br(),
+                      br(),
+                      
+                      #h5("Click on a point to see that resample."),
+                      h5("Select Confidence Level (%)", offset = 2),
+                      fluidRow( 
+                        column(4,  
+                               actionButton('cat1_conf80', label = "80"),
+                               actionButton('cat1_conf90', label = "90"),
+                               actionButton('cat1_conf95', label = "95"),
+                               actionButton('cat1_conf99', label = "99")
+                        ),
+                        
+                        if(!is.null(cat1Estimate$CI)){
+                          h5(paste("Interval Estimate: (", round(cat1Estimate$CI[1],3), ",", 
+                                   round(cat1Estimate$CI[2], 3), ")"))
+                        }
+                      )
+               )
+             )
+    )
+  }
+})
+
+cat1Estimate <- reactiveValues(phat = NULL, observed = NULL, colors = blu, confLevel = NULL, CI = NULL)
+
+output$cat1_CIPrep <- renderTable({ 
+  if(input$cat1_submitButton ==0) return()
+  print(cat1_data$counts)
+  print(cat1_data$names)
+  counts <- as.table( matrix(cat1_data$counts), 1, 2)
+  dimnames(counts) = list(cat1_data$names,"Proportions")
+  prop.table(counts) 
+})
+
+observeEvent(input$cat1_estimate_shuffle_10, {
+  y1_new <- as.matrix(rbinom(10, sum(cat1_data$counts[1:2]), cat1_data$counts[1]/sum(cat1_data$counts[1:2])))
+  phat <- round(y1_new/sum(cat1_data$counts[1:2]), 3)
+  cat1Estimate$phat <- rbind(cat1Estimate$phat, phat)
+  cat1Estimate$colors <- rep(blu, length(cat1Estimate$phat))
+})
+
+observeEvent(input$cat1_estimate_shuffle_100, {
+  y1_new <- as.matrix(rbinom(100, sum(cat1_data$counts[1:2]), cat1_data$counts[1]/sum(cat1_data$counts[1:2])))
+  phat <- round(y1_new/sum(cat1_data$counts[1:2]), 3)
+  cat1Estimate$phat <- rbind(cat1Estimate$phat, phat)
+  cat1Estimate$colors <- rep(blu, length(cat1Estimate$phat))
+})
+
+observeEvent(input$cat1_estimate_shuffle_1000, {
+  y1_new <- as.matrix(rbinom(1000, sum(cat1_data$counts[1:2]), cat1_data$counts[1]/sum(cat1_data$counts[1:2])))
+  phat <- round(y1_new/sum(cat1_data$counts[1:2]), 3)
+  cat1Estimate$phat <- rbind(cat1Estimate$phat, phat)
+  cat1Estimate$colors <- rep(blu, length(cat1Estimate$phat))
+})
+
+observeEvent(input$cat1_estimate_shuffle_5000, {
+  y1_new <- as.matrix(rbinom(5000, sum(cat1_data$counts[1:2]), cat1_data$counts[1]/sum(cat1_data$counts[1:2])))
+  phat <- round(y1_new/sum(cat1_data$counts[1:2]), 3)
+  cat1Estimate$phat <- rbind(cat1Estimate$phat, phat)
+  cat1Estimate$colors <- rep(blu, length(cat1Estimate$phat))
+})
+
+output$cat1Estimate_Table <- renderTable({
+  #if(input$cat1_submitButton == 0) return()
+  if(is.null(cat1_data$counts)) return()
+  
+  n1 <- sum(cat1_data$counts[1:2])
+  y1_new <- as.matrix(rbinom(1, sum(cat1_data$counts[1:2]), cat1_data$counts[1]/sum(cat1_data$counts[1:2])))
+  cat1Estimate$phat <- round(y1_new/n1, 3)
+  cat1Estimate$colors <- blu
+  
+  #print(c(y1_new, n1))
+  counts <- as.table(matrix(as.numeric(c(y1_new, n1-y1_new)), 2, 1))
+  dimnames(counts) <- list(cat1_data$names,"Proportions")
+  prop.table(counts)
+  
+})
+
+observeEvent(input$cat1_conf80,{
+  if(is.null(cat1Estimate$phat) | (nsims <- length(cat1Estimate$phat)) < 10){
+    return()
+  }
+  cat1Estimate$confLevel <- .80
+  cat1Estimate$colors <- rep(blu, nsims)
+  tailCount <- floor(nsims * 0.1)
+  cat1Estimate$colors[1:tailCount] <- rd
+  cat1Estimate$colors[nsims +1 -(1:tailCount)] <- rd
+  cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
+  
+})
+
+observeEvent(input$cat1_conf90,{
+  if(is.null(cat1Estimate$phat) | (nsims <- length(cat1Estimate$phat)) < 10){
+    return()
+  }
+  cat1Estimate$confLevel <- .90
+  cat1Estimate$colors <- rep(blu, nsims)
+  tailCount <- floor(nsims * 0.05)
+  cat1Estimate$colors[1:tailCount] <- rd
+  cat1Estimate$colors[nsims +1 -(1:tailCount)] <- rd
+  cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
+  
+})
+
+observeEvent(input$cat1_conf95,{
+  if(is.null(cat1Estimate$phat) | (nsims <- length(cat1Estimate$phat)) < 10){
+    return()
+  }
+  cat1Estimate$confLevel <- .95
+  cat1Estimate$colors <- rep(blu, nsims)
+  tailCount <- floor(nsims * 0.025)
+  cat1Estimate$colors[1:tailCount] <- rd
+  cat1Estimate$colors[nsims +1 -(1:tailCount)] <- rd
+  cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
+  
+})
+
+observeEvent(input$cat1_conf99,{
+  if(is.null(cat1Estimate$phat) | (nsims <- length(cat1Estimate$phat)) < 10){
+    return()
+  }
+  cat1Estimate$confLevel <- .99
+  cat1Estimate$colors <- rep(blu, nsims)
+  tailCount <- floor(nsims * 0.005)
+  cat1Estimate$colors[1:tailCount] <- rd
+  cat1Estimate$colors[nsims +1 -(1:tailCount)] <- rd
+  cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
+  
+})
+
+
+output$cat1Estimate_Plot2 <- renderPlot({
+  if(input$cat1_submitButton == 0 | is.null(cat1Estimate$phat)) return()
+  
+  DF <- sort(cat1Estimate$phat)
+  
+  if(length(DF) == 1){
+    w <- 1
+    radius = 4
+  } 
+  else {
+    nbreaks <- 0.5*nclass.Sturges(DF)^2
+    z <- cut(DF, breaks = nbreaks)
+    w <- unlist(tapply(z, z, function(V) 1:length(V)))
+    w <- w[!is.na(w)]
+    #print(w)
+    #print(max(w))
+    nsims <- length(DF)
+    radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
+  }
+  plot(DF, w, ylab = "", ylim = c(0.5, max(w)), cex = radius/2, pch = 16, col = cat1Estimate$colors,  
+       xlab = expression(hat(p)), main = "Re-Sampling Distribution")
+  legend("topright", bty = "n", paste(" n = ", length(DF), "\n Mean = ", round(mean(DF),3), 
+                                      "\n SE = ", round(sd(DF),3)))
+}, height = 450, width = 600)
+
 }
   
   ##  confidence interval demo  -------------------------------------- cat 1
@@ -879,8 +1058,8 @@ observeEvent(input$cat2_submitButton, {
                         ),
                  
                if(!is.null(cat2Test$moreExtremeCount)){
-                          h4(paste(cat2Test$moreExtremeCount, " / ", length(cat2Test$difprop), ", p-value = ", 
-                                   round(cat2Test$pvalue, 5)))
+                          h4(paste("There are ", cat2Test$moreExtremeCount, " / ", length(cat2Test$difprop), input$cat2_testDirection, 
+                                   " than ", cat2Test$cutoff, " , p-value = ", round(cat2Test$pvalue, 5)))
                  } else { h4(" ")}
                )
             )
@@ -889,7 +1068,7 @@ observeEvent(input$cat2_submitButton, {
   })
   
   cat2Test <- reactiveValues(difprop = NULL, phat1 = NULL, phat2 = NULL, observed = NULL, colors = NULL,
-                             moreExtremeCount = NULL, pvalue = NULL)
+                             cutoff = NULL, moreExtremeCount = NULL, pvalue = NULL)
   
   output$cat2OriginalData <- renderTable({ 
     if(input$cat2_submitButton ==0) return()
@@ -973,7 +1152,7 @@ observeEvent(input$cat2_submitButton, {
     x <- sort(cat2Test$difprop)
     nsims <- length(x)
     cat2Test$colors <- rep(blu, nsims)
-    threshold <- as.numeric(input$cat2_test_cutoff)
+    cat2Test$cutoff <- threshold <- as.numeric(input$cat2_test_cutoff)
     if(nsims > 1 & !is.na(input$cat2_testDirection)){
       redValues <-  switch(input$cat2_testDirection,
                            "less" = which(x <= threshold + 1.0e-10),
