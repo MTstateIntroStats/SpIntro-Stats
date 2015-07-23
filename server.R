@@ -84,60 +84,69 @@ shinyServer(function(input, output, session) {
    if( is.null(cat1_data$counts)){
      h4(" You must first enter data. Choose 'Enter/Describe Data'.")
    } else {
-    tabPanel("Test", value="1catTest",
-             titlePanel("Test for a Single Proportion"),       
-             fluidRow(
-               column(4, 
-                      h3("Original Data"),
-                      tableOutput("cat1OriginalData"),
+       fluidPage(
+          h2("Test for a single proportion"),       
+            fluidRow(
+              column(4, 
+                  h3("Original Data"),
+                  tableOutput("cat1OriginalData"),
                       
-                      h3("Shuffled Sample"),
-                      tableOutput('cat1Test_Table'),
+                  h3("Shuffled Sample"),
+                  tableOutput('cat1Test_Table'),
                       
-                      br(),
+                  br(),
                       
-                      h5("We start showing one sample from the null."),
-                      h5("How many more?"),
+                  h5("We start showing one sample from the null."),
+                  h5("How many more?"),
                       
-                      actionButton("cat1_test_shuffle_10", label = "10"),
-                      actionButton("cat1_test_shuffle_100", label = "100"),
-                      actionButton("cat1_test_shuffle_1000", label = "1000"),
-                      actionButton("cat1_test_shuffle_5000", label = "5000")
+                  actionButton("cat1_test_shuffle_10", label = "10"),
+                  actionButton("cat1_test_shuffle_100", label = "100"),
+                  actionButton("cat1_test_shuffle_1000", label = "1000"),
+                  actionButton("cat1_test_shuffle_5000", label = "5000")
              ),
                       
-               column(8,
-                      sliderInput("null_p", "Choose true proportion of successes ", 
-                                                  min= 0, max = 1, value = .5),
-                      
-                      plotOutput('cat1Test_Plot2', click = 'cat1_Test_click'),
-                      
-                      br(),
-                      br(),
-                      br(),
-                      
-                      h4("Count values "), 
-                      fluidRow( 
-                        column(4,
-                               selectInput('cat1_testDirection', label = "", 
-                                           choices = list("less", "more extreme", "greater"), 
-                                           select = "more extreme", selectize = FALSE, width = 200)
-                        ),
-                        column(2, h4(" than ")),
-                        column(3, 
-                               textInput('cat1_test_cutoff', label = "", value = NA)), 
-                        column(2, 
-                               actionButton('cat1_test_countXtremes', "Go"))
-                      ),
-                      
-                      if(!is.null(cat1Test$moreExtremeCount)){
-                        h4(paste("There are ", cat1Test$moreExtremeCount, " / ", length(cat1Test$phat), input$cat1_testDirection, 
-                                 " than ", cat1Test$cutoff, " , p-value = ", round(cat1Test$pvalue, 5)))
-                      } else { h4(" ")}
-               )
-             )
-    )
-   }
+              column(8,
+                  textInput("null_p", "Choose true proportion of successes ", value = .5),
+                  plotOutput('cat1Test_Plot2', click = 'cat1_Test_click')
+                )
+            ),
+                br(),
+                br(),
+                uiOutput("Cat1TestXtremes"),
+                uiOutput("Cat1TestPvalue")
+        )
+    }
  })
+
+output$Cat1TestPvalue <- renderUI({
+  if(!is.null(cat1Test$moreExtremeCount)){
+    fluidRow(
+      column(8, offset = 3, 
+             h4(paste(cat1Test$moreExtremeCount, " of ", length(cat1Test$phat), "values are ",
+                        cat1Test$direction," than", as.numeric(cat1Test$cutoff),",  p-value =  ", round(cat1Test$pvalue,5)))
+      ))
+  }
+})
+
+output$Cat1TestXtremes <- renderUI({
+  fluidRow(
+    column(2, offset = 3, 
+           h4("Count values")
+    ),
+    column(3,
+           selectInput('cat1_testDirection', label = "", 
+                      choices = list("less", "more extreme", "greater"), 
+                      select = "more extreme", selectize = FALSE, width = 200)
+    ),
+    column(1, h4("than ")),
+    column(2,
+           textInput('cat1_test_cutoff', label = "", value = NA)
+    ),
+    column(1,
+           actionButton('cat1_test_countXtremes', "Go")
+    )
+  )
+})
 
     cat1Test <- reactiveValues(phat = NULL, colors = NULL, cutoff = NULL, moreExtremeCount = NULL, pvalue = NULL)
 
@@ -155,7 +164,7 @@ shinyServer(function(input, output, session) {
       y1_new <- as.matrix(rbinom(10, sum(cat1_data$counts[1:2]), as.numeric(input$null_p)))
       phat <- round(y1_new/n1, 3)
       cat1Test$phat <- rbind(cat1Test$phat, phat)
-      cat2Test$colors <- rep(blu, length(cat1Test$phat))
+      cat1Test$colors <- rep(blu, length(cat1Test$phat))
     })
     
     observeEvent(input$cat1_test_shuffle_100, {
@@ -163,7 +172,7 @@ shinyServer(function(input, output, session) {
       y1_new <- as.matrix(rbinom(100, sum(cat1_data$counts[1:2]), as.numeric(input$null_p)))
       phat <- round(y1_new/n1, 3)
       cat1Test$phat <- rbind(cat1Test$phat, phat)
-      cat2Test$colors <- rep(blu, length(cat1Test$phat))
+      cat1Test$colors <- rep(blu, length(cat1Test$phat))
     })
     
     observeEvent(input$cat1_test_shuffle_1000, {
@@ -171,7 +180,7 @@ shinyServer(function(input, output, session) {
       y1_new <- as.matrix(rbinom(1000, sum(cat1_data$counts[1:2]), as.numeric(input$null_p)))
       phat <- round(y1_new/n1, 3)
       cat1Test$phat <- rbind(cat1Test$phat, phat)
-      cat2Test$colors <- rep(blu, length(cat1Test$phat))
+      cat1Test$colors <- rep(blu, length(cat1Test$phat))
     })
     
     observeEvent(input$cat1_test_shuffle_5000, {
@@ -179,7 +188,7 @@ shinyServer(function(input, output, session) {
       y1_new <- as.matrix(rbinom(5000, sum(cat1_data$counts[1:2]), as.numeric(input$null_p)))
       phat <- round(y1_new/n1, 3)
       cat1Test$phat <- rbind(cat1Test$phat, phat)
-      cat2Test$colors <- rep(blu, length(cat1Test$phat))
+      cat1Test$colors <- rep(blu, length(cat1Test$phat))
     })
     
     output$cat1Test_Table <- renderTable({
@@ -204,6 +213,7 @@ shinyServer(function(input, output, session) {
       p0 <- as.numeric(input$null_p)
       cat1Test$colors <- rep(blu, nsims)
       cat1Test$cutoff <- threshold <- as.numeric(input$cat1_test_cutoff)
+      cat1Test$direction <- input$cat1_testDirection
       if(nsims > 1 & !is.na(input$cat1_testDirection)){
         redValues <-  switch(input$cat1_testDirection,
                              "less" = which(x < threshold + 1.0e-10),
@@ -1010,9 +1020,9 @@ observeEvent(input$cat2_submitButton, {
     if(is.null(cat2_data$counts)){
       h4(" You must first enter data. Choose 'Enter/Describe Data'.")
     } else {
-      tabPanel("Test", value="2catTest",
-               titlePanel("Test for a Difference in Proportions"),       
-               fluidRow(
+      fluidPage(
+        h3("Test if a difference in proportions is zero"),
+        fluidRow(
                  column(4, 
                         h3("Original Data"),
                         tableOutput("cat2OriginalData"),
@@ -1038,37 +1048,50 @@ observeEvent(input$cat2_submitButton, {
                         actionButton("cat2_test_shuffle_5000", label = "5000")
                   ),
                  column(8, 
-                        plotOutput('cat2Test_Plot2', click = 'cat2_Test_click'),
-                        
-                        br(),
-                        br(),
-                        br(),
-                        h4("Count values "), 
-                        fluidRow( 
-                          column(4,
-                                 selectInput('cat2_testDirection', label = "", 
-                                             choices = list("less", "more extreme", "greater"), 
-                                             selected = "more extreme", selectize = FALSE, width = 200)
-                          ),
-                           column(2, h4(" than ")),
-                           column(3, 
-                                  textInput('cat2_test_cutoff', label = "", value = NA)), 
-                          column(2, 
-                                  actionButton('cat2_test_countXtremes', "Go"))
-                        ),
-                 
-               if(!is.null(cat2Test$moreExtremeCount)){
-                          h4(paste("There are ", cat2Test$moreExtremeCount, " / ", length(cat2Test$difprop), input$cat2_testDirection, 
-                                   " than ", cat2Test$cutoff, " , p-value = ", round(cat2Test$pvalue, 5)))
-                 } else { h4(" ")}
-               )
-            )
-      )
-    }
+                        plotOutput('cat2Test_Plot2', click = 'cat2_Test_click')
+                 )
+               ),
+                 uiOutput("Cat2TestXtremes"),
+                 uiOutput("Cat2TestPvalue")
+          )
+      }
   })
+
+output$Cat2TestPvalue <- renderUI({
+  if(!is.null(cat2Test$moreExtremeCount)){
+    fluidRow(
+      column(8, offset = 3,
+          h4(paste(cat2Test$moreExtremeCount, " of ", length(cat2Test$difprop), "values are ",
+              cat2Test$direction," than", as.numeric(cat2Test$cutoff),",  p-value =  ", round(cat2Test$pvalue,5)))
+      )
+    )
+    }
+})
+
+output$Cat2TestXtremes <- renderUI({
+  fluidRow(
+    column(2, offset = 3, 
+           h4("Count values")
+    ),
+    column(3,
+           selectInput('cat2_testDirection', label = "", 
+                       choices = list("less", "more extreme", "greater"), 
+                       select = "more extreme", selectize = FALSE, width = 200)
+    ),
+    column(1, h4("than ")),
+    column(2,
+           textInput('cat2_test_cutoff', label = "", value = NA)
+    ),
+    column(1,
+           actionButton('cat2_test_countXtremes', "Go")
+    )
+  )
+})
+  
+  
   
   cat2Test <- reactiveValues(difprop = NULL, phat1 = NULL, phat2 = NULL, observed = NULL, colors = NULL,
-                             cutoff = NULL, moreExtremeCount = NULL, pvalue = NULL)
+                             cutoff = NULL, direction = NULL, moreExtremeCount = NULL, pvalue = NULL)
   
   output$cat2OriginalData <- renderTable({ 
     if(input$cat2_submitButton ==0) return()
@@ -1153,6 +1176,8 @@ observeEvent(input$cat2_submitButton, {
     nsims <- length(x)
     cat2Test$colors <- rep(blu, nsims)
     cat2Test$cutoff <- threshold <- as.numeric(input$cat2_test_cutoff)
+    cat2Test$direction <- input$cat2_testDirection
+    
     if(nsims > 1 & !is.na(input$cat2_testDirection)){
       redValues <-  switch(input$cat2_testDirection,
                            "less" = which(x <= threshold + 1.0e-10),
@@ -1557,7 +1582,7 @@ output$normalProbPlot2 <- renderPlot({
   ###  Data Entry ------------------------------------------------------------  q2
    ## need to remove old data if user comes back to data entry 
    q2Test <- reactiveValues( shuffles = NULL, slopes = NULL, corr = NULL, observed = NULL,
-                          colors = NULL, moreExtremeCount = NULL, pvalue = NULL)
+                          colors = NULL, moreExtremeCount = NULL, direction = NULL, cutoff = NULL, pvalue = NULL)
 
 
   q2Estimate <- reactiveValues( resamples = NULL,   slopes = NULL,  corr =  NULL,
@@ -1852,7 +1877,8 @@ observeEvent(input$q2_countXtremes, {
   parm <- sort(parm)
   nsims <- length(parm)
   q2Test$colors <- rep(blu, nsims)
-  threshold <- as.numeric(input$q2_cutoff)
+  q2Test$cutoff <- threshold <- as.numeric(input$q2_cutoff)
+  q2Test$direction <- input$q2_testDirection
   if(nsims > 9 & !is.na(input$q2_testDirection)){
     redValues <-  switch( input$q2_testDirection,
                         "less" = which(parm <= threshold + 1.0e-10),
@@ -1934,7 +1960,8 @@ output$q2_testUI <- renderUI({
 output$slopeTestPvalue <- renderUI({
   if(!is.null(q2Test$moreExtremeCount)){
     fluidRow(
-      column(9, offset = 3,  h4(paste(q2Test$moreExtremeCount, " of ", length(q2Test$slopes), "values are ",input$q2_testDirection," than", as.numeric(input$q2_cutoff),"  p-value =  ", round(q2Test$pvalue,5)))
+      column(9, offset = 3,  h4(paste(q2Test$moreExtremeCount, " of ", length(q2Test$slopes), "values are ",
+                                q2Test$direction," than", q2Test$cutoff, ",  p-value =  ", round(q2Test$pvalue,5)))
       ))
   }
 })
