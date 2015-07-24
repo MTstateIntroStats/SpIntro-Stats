@@ -91,7 +91,7 @@ shinyServer(function(input, output, session) {
                   h3("Original Data"),
                   tableOutput("cat1OriginalData"),
                       
-                  h3("Shuffled Sample"),
+                  h3("Sample from Null Hypothesis"),
                   tableOutput('cat1Test_Table'),
                       
                   br(),
@@ -105,8 +105,10 @@ shinyServer(function(input, output, session) {
                   actionButton("cat1_test_shuffle_5000", label = "5000")
              ),
                       
-              column(8,
-                  textInput("null_p", "Choose true proportion of successes ", value = .5),
+              column(8, 
+                     fluidRow(
+                       column(8, h4("True Proportion (Null hypothesis for p):")),
+                       column(2, textInput("null_p", " ", value = .5))),
                   plotOutput('cat1Test_Plot2', click = 'cat1_Test_click')
                 )
             ),
@@ -154,9 +156,11 @@ output$Cat1TestXtremes <- renderUI({
       if(input$cat1_submitButton ==0) return()
       print(cat1_data$counts)
       print(cat1_data$names)
-      counts <- as.table( matrix(cat1_data$counts), 1, 2)
-      dimnames(counts) = list(cat1_data$names,"Proportions")
-      prop.table(counts) 
+      counts <- data.frame( matrix(as.numeric(c(cat1_data$counts, 0, 0)), 2, 2, 
+                                   dimnames = list(cat1_data$names, c("Counts","Proportions"))))
+      counts[,2] <- prop.table(as.table(counts[,1]))
+      counts[,1] <- as.integer(counts[,1])
+      counts
     })
     
     observeEvent(input$cat1_test_shuffle_10, {
@@ -201,10 +205,11 @@ output$Cat1TestXtremes <- renderUI({
       cat1Test$colors <- blu
     
       #print(c(y1_new, n1))
-      counts <- as.table(matrix(as.numeric(c(y1_new, n1-y1_new)), 2, 1))
-      dimnames(counts) <- list(cat1_data$names,"Proportions")
-      prop.table(counts)
-
+      counts <- data.frame( matrix(as.numeric(c(y1_new, n1-y1_new, 0, 0)), 2, 2, 
+                               dimnames = list(cat1_data$names, c("Counts","Proportions"))))
+      counts[,2] <- prop.table(as.table(counts[,1]))
+      counts[,1] <- as.integer(counts[,1])
+      counts
     })
     
     observeEvent(input$cat1_test_countXtremes, {
@@ -246,7 +251,7 @@ output$Cat1TestXtremes <- renderUI({
         radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
       }
       plot(DF, w, ylab = "", ylim = c(0.5, max(w)), cex = radius/2, pch = 16, col = cat1Test$colors,  
-           xlab = expression(p), main = "Sampling Distribution")
+           xlab = expression(hat(p)), main = "Sampling Distribution")
       legend("topright", bty = "n", paste(" n = ", length(DF), "\n Mean = ", round(mean(DF),3), 
                                           "\n SE = ", round(sd(DF),3)))
   }, height = 450, width = 600)
