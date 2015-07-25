@@ -106,11 +106,13 @@ shinyServer(function(input, output, session) {
              ),
                       
               column(8, 
-                     fluidRow(
-                       column(8, h4("True Proportion (Null hypothesis for p):")),
-                       column(2, textInput("null_p", " ", value = .5))),
+                      fluidRow(
+                        column(7, offset =1, h4("True Proportion (Null hypothesis for p):")),
+                        column(2,
+                       tags$div( 
+                                 tags$input(id = "null_p", type = "text", class = "form-control", value = "0.5")))),
                   plotOutput('cat1Test_Plot2', click = 'cat1_Test_click')
-                )
+              )
             ),
                 br(),
                 br(),
@@ -132,17 +134,25 @@ output$Cat1TestPvalue <- renderUI({
 
 output$Cat1TestXtremes <- renderUI({
   fluidRow(
-    column(2, offset = 3, 
+    column(2, offset = 4, 
            h4("Count values")
     ),
     column(3,
-           selectInput('cat1_testDirection', label = "", 
-                      choices = list("less", "more extreme", "greater"), 
-                      select = "more extreme", selectize = FALSE, width = 200)
+           tags$div(style="width: 200px",
+                    tags$select(id='cat1_testDirection',class="form-control",
+                                tags$option( value = "less", "less"),
+                                tags$option( value = "more extreme", "more extreme", selected = TRUE),
+                                tags$option( value = "greater", "greater"))
+           )
+#               selectInput('cat1_testDirection', label = "", 
+#                        choices = list("less", "more extreme", "greater"), 
+#                        select = "more extreme", selectize = FALSE, width = 200)
     ),
     column(1, h4("than ")),
-    column(2,
-           textInput('cat1_test_cutoff', label = "", value = NA)
+    column(1,
+#           textInput('cat1_test_cutoff', label = "", value = NA)
+           tags$div( 
+                tags$input(id = "cat1_test_cutoff", type = "text", class = "form-control", value = NA))
     ),
     column(1,
            actionButton('cat1_test_countXtremes', "Go")
