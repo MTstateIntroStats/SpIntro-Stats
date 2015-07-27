@@ -1128,7 +1128,7 @@ output$Cat2TestPvalue <- renderUI({
     colnames(counts)[1] <- cat2_data$names[1]
     rownames(counts) <- cat2_data$groups[c(1,3)]
     counts
-    })
+  })
   
   observeEvent(input$cat2_test_shuffle_10, {
     DF <- cat2_test_shuffles(shuffles = 10, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
