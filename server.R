@@ -277,7 +277,7 @@ output$cat1_estimateUI <- renderUI({
     h4(" You must first enter data. Choose 'Enter/Describe Data'.")
   } else {
     tabPanel("Estimate", value="1catEstimate",
-             titlePanel("Estimate for a Single Proportion"),       
+             titlePanel("Estimate a Single Proportion"),       
              fluidRow(
                column(4, 
                       h3("Original Data"),
@@ -315,7 +315,7 @@ output$cat1_estimateUI <- renderUI({
                         ),
                         
                         if(!is.null(cat1Estimate$CI)){
-                          h5(paste("Interval Estimate: (", round(cat1Estimate$CI[1],3), ",", 
+                          h5(paste(round(100 * cat1Estimate$confLevel), "% Confidence Interval Estimate: (", round(cat1Estimate$CI[1],3), ",", 
                                    round(cat1Estimate$CI[2], 3), ")"))
                         }
                       )
@@ -329,8 +329,8 @@ cat1Estimate <- reactiveValues(phat = NULL, observed = NULL, colors = blu, confL
 
 output$cat1_CIPrep <- renderTable({ 
   if(input$cat1_submitButton ==0) return()
-  print(cat1_data$counts)
-  print(cat1_data$names)
+  #print(cat1_data$counts)
+  #print(cat1_data$names)
   counts <- as.table( matrix(cat1_data$counts), 1, 2)
   dimnames(counts) = list(cat1_data$names,"Proportions")
   prop.table(counts) 
