@@ -263,9 +263,9 @@ output$Cat1TestXtremes <- renderUI({
         radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
       }
       plot(DF, w, ylab = "", ylim = c(0.5, max(w)), cex = radius/2, pch = 16, col = cat1Test$colors,  
-           xlab = expression(hat(p)), main = "Sampling Distribution")
-      legend("topright", bty = "n", paste(" n = ", length(DF), "\n Mean = ", round(mean(DF),3), 
-                                          "\n SE = ", round(sd(DF),3)))
+           xlab = expression(hat(p)), main = "Resampling Distribution")
+      legend("topright", bty = "n", paste(length(DF), "points \n Mean = ", 
+                                         round(mean(DF),3), "\n SE = ", round(sd(DF),3)))
   }, height = 450, width = 600)
 
 }
@@ -454,8 +454,8 @@ output$cat1Estimate_Plot2 <- renderPlot({
   }
   plot(DF, w, ylab = "", ylim = c(0.5, max(w)), cex = radius/2, pch = 16, col = cat1Estimate$colors,  
        xlab = expression(hat(p)), main = "Re-Sampling Distribution")
-  legend("topright", bty = "n", paste(" n = ", length(DF), "\n Mean = ", round(mean(DF),3), 
-                                      "\n SE = ", round(sd(DF),3)))
+  legend("topright", bty = "n", paste(length(DF), "points \n Mean = ", 
+                                     round(mean(DF),3), "\n SE = ", round(sd(DF),3)))
 }, height = 450, width = 600)
 
 }
@@ -832,7 +832,7 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
 ## --------- 1 quant UI ---------------------------
 
 q1Test <- reactiveValues(shuffles = NULL, mu = NULL, observed = NULL, mu_diff = NULL, confLevel = NULL, colors = NULL, 
-                         moreExtremeCount = NULL, pvalue = NULL, testDirection = NULL, cutoff = NULL)
+                         moreExtremeCount = NULL, pvalue = NULL, direction = NULL, cutoff = NULL)
 
 output$q1_testUI <- renderUI({
   if(is.null(q1$data)){
@@ -873,6 +873,7 @@ output$q1_testUI <- renderUI({
              # h5("Click on a point to see that shuffle"),
              uiOutput('q1_SampDistPlot'),
              br(),
+             br(),
              uiOutput("q1TestXtremes"),
              uiOutput("q1TestPvalue")
           )
@@ -900,19 +901,29 @@ output$q1TestXtremes <- renderUI({
     column(2, offset = 3,
            h4("Count values")
     ),
-    column(3,
-           selectInput('q1_testDirection', label ="", choices = list("less","more extreme","greater"), 
-                       selected = "more extreme" , selectize = FALSE, width = 200)
+    column(4,
+           tags$div(style="width: 200px",
+                    tags$select(id='q1_testDirection', class="form-control",
+                                tags$option( value = "less", "less"),
+                                tags$option( value = "more extreme", "more extreme", selected = TRUE),
+                                tags$option( value = "greater", "greater"))
+           )
     ),
     column(1, h4("than ")),
     column(2,
-           textInput('q1_cutoff', label="", value = NA )
+          tags$div( 
+             tags$input(id = "q1_test_cutoff", type = "text", class = "form-control", value = NA))
     ),
     column(1,
            actionButton("q1_countXtremes","Go")
     )
   )
 })
+  
+output$q1_SampDistPlot <- renderUI({ 
+  plotOutput('q1_TestPlot2') #, click = 'q1_Test_click')
+})
+
 
 # -------- 1 quant test plots ------------------
 
@@ -924,10 +935,11 @@ output$q1_TestPrep1 <- renderPlot({
   z <- cut(x, breaks = nclass.Sturges(x) ^2 )
   w <- unlist(tapply(x, z, function(x) 1:length(x)))
   tempDF <- data.frame(x, w=w[!is.na(w)])
-  myBlue <- rgb(0, 100/256, 224/256, alpha = .8)
-  q1_plot1 <- qplot(data=tempDF, x=x, y=w, colour = I(myBlue), size = I(4), main = "Original Data") + 
+  q1_plot1 <- qplot(data=tempDF, x=x, y=w, colour = I(blu), size = I(4), main = "Original Data") + 
                     theme_bw() + xlab(q1$names)
-  
+ 
+  #mtext(side = 3, at = min(x)*2/3 + max(x)/3, bquote(mu == q1Test$observed))
+
   ## Plot One Shuffle of Shifted Data
   q1Test$mu_diff <- q1Test$observed - as.numeric(input$null_mu)
   shuffle <- sample(x = q1$data[,1] - q1Test$mu_diff, length(q1$data[,1]), replace = TRUE)
@@ -940,10 +952,9 @@ output$q1_TestPrep1 <- renderPlot({
   z <- cut(DF0, breaks = nclass.Sturges(DF0) ^2 )
   w <- unlist(tapply(DF0, z, function(DF0) 1:length(DF0)))
   tempDF <- data.frame(DF0, w=w[!is.na(w)])
-  myBlue <- rgb(0, 100/256, 224/256, alpha = .8)
-  q1_plot2 <- qplot(data = tempDF, x = DF0, y = w, colour = I(myBlue), size = I(4), main = "Shuffled Data") + 
+  q1_plot2 <- qplot(data = tempDF, x = DF0, y = w, colour = I(blu), size = I(4), main = "Resampled Data") + 
     theme_bw() + xlab(q1$names)
-  
+
   grid.arrange(q1_plot1, q1_plot2, heights = c(3,3)/4, ncol=1)
 }, height = 360)
 
@@ -951,7 +962,7 @@ output$q1_TestPrep2 <- renderTable({
   if( is.null(q1$data))  return()
   DF <- rbind(mean = mean(q1$data[, 1], na.rm = TRUE ),
               sd = sd(q1$data[, 1], na.rm = TRUE),
-              length = length(q1$data[, 1]))
+              n = length(q1$data[, 1]))
   colnames(DF) <- q1$names
   DF
 })
@@ -970,7 +981,7 @@ observeEvent(input$q1_test_shuffle_10, {
   newShuffles <- sapply(1:10, function(x) sample(q1$data[,1] - q1Test$mu_diff, length(q1$data[,1]), replace = TRUE))
   q1Test$shuffles <- cbind(q1Test$shuffles, newShuffles)
   q1Test$mu <- c(q1Test$mu, apply(newShuffles, 2, function(x) mean(x)))
-  print(q1Test$mu)
+  #print(q1Test$mu)
   q1Test$colors <- rep(blu, length(q1Test$mu))
 })
 
@@ -1002,19 +1013,19 @@ observeEvent(input$q1_test_shuffle_5000, {
 })
 
 observeEvent(input$q1_countXtremes, {
-  parm <- q1Test$mu
-  parm <- sort(parm)
+  parm <- sort(as.numeric(q1Test$mu))
   nsims <- length(parm)
+  mu0 <- as.numeric(input$null_mu)
   q1Test$colors <- rep(blu, nsims)
-  q1Test$cutoff <- threshold <- as.numeric(input$q1_cutoff)
+  q1Test$cutoff <- threshold <- as.numeric(input$q1_test_cutoff)
   q1Test$direction <- input$q1_testDirection
   if(nsims > 9 & !is.na(input$q1_testDirection)){
     redValues <-  switch( input$q1_testDirection,
                           "less" = which(parm <= threshold + 1.0e-10),
                           "greater" = which(parm >= threshold - 1.0e-10),
-                          "more extreme" = c(which(parm <= -abs(threshold) + 1.0e-10 ), 
-                                             which(parm >= abs(threshold) -1.0e-10 ) )  )
-    q1Test$colors[redValues] <- rd       
+                          "more extreme" = which(abs(parm - mu0) > abs(threshold - mu0) - 1.0e-10 ))
+    q1Test$colors[redValues] <- rd
+    print(q1Test$mu[redValues])
     q1Test$moreExtremeCount  <- length(redValues)
     q1Test$pvalue <- q1Test$moreExtremeCount/nsims
   }
@@ -1023,7 +1034,7 @@ observeEvent(input$q1_countXtremes, {
 output$q1_TestPlot2 <- renderPlot({
   if(is.null(q1Test$mu)) return() 
   parm <- as.matrix(q1Test$mu)
-  print(parm)
+  #print(parm)
   parm <- sort(parm)
   if(length(parm) == 1){
     y <- .5
@@ -1039,10 +1050,10 @@ output$q1_TestPlot2 <- renderPlot({
     radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
   }
   plot(x = parm, y = y, ylim = c(0.5, max(y)), ylab = "", cex = radius/2, pch = 16, col = q1Test$colors,  
-       xlab = expression(mu), main = "Sampling Distribution")
-  legend("topleft", bty = "n", paste(length(parm), " points\n Mean = ", round(mean(parm),3), 
-                                      "\n SE = ", round(sd(parm),3)))
-}, height = 400, width = 400)}
+       xlab = expression(mu), main = "Resampling Distribution")
+  legend("topright", bty = "n", paste(length(parm), "points \n Mean = ", 
+                                     round(mean(parm),3), "\n SE = ", round(sd(parm),3)))
+}, width = 600)}
 
 
   ###   estimate mean value  ------------------------------- quant 1
@@ -1447,8 +1458,8 @@ output$Cat2TestPvalue <- renderUI({
     }
     plot(DF, w, ylab = "", ylim = c(0.5, max(w)), cex = radius/2, pch = 16, col = cat2Test$colors,  
          xlab = expression(p[1] - p[2]), main = "Sampling Distribution")
-    legend("topright", bty = "n", paste(" n = ", length(DF), "\n Mean = ", round(mean(DF),3), 
-                        "\n SE = ", round(sd(DF),3)))
+    legend("topright", bty = "n", paste(length(DF), "points \n Mean = ", 
+                                       round(mean(DF),3), "\n SE = ", round(sd(DF),3)))
     #mtext(side = 1, at = 0, adj = 0, line = 0, bquote(p[1] == p[2]))
     }, width = 600)
   
@@ -1684,8 +1695,8 @@ output$Cat2TestPvalue <- renderUI({
     plot(DF, w, ylab = "", ylim = c(0.5, max(w)), cex = radius/2, pch = 16, col = cat2Estimate$colors,  
          xlab = expression(hat(p)[1] - hat(p)[2]), main = "Re-Sampling Distribution")
     #mtext(side = 1, at = cat2Estimate$observed, line = 0, bquote(hat(p)[1] - hat(p)[2]))
-    legend("topright", bty = "n", paste(" n = ", length(DF), "\n Mean = ", round(mean(DF),3), 
-                                        "\n SE = ", round(sd(DF),3)))
+    legend("topright", bty = "n", paste(length(DF), "points \n Mean = ", 
+                                       round(mean(DF),3), "\n SE = ", round(sd(DF),3)))
     #mtext(side = 3, at = 0, adj = 1, line = 0, bquote(hat(p)[1] - hat(p)[2]))
     }, height = 450, width = 600)
 
@@ -2151,8 +2162,8 @@ output$q2_TestPlot2 <- renderPlot({
   }
   plot(parm, y, ylab = "", cex = radius/2, pch = 16, col = q2Test$colors,  
         xlab = ifelse(input$q2_TestParam == "Slope", "Slope", "Correlation"), main = "Sampling Distribution")
-  legend("topleft", bty="n", paste(" n = ", length(parm),"\n Mean = ", round(mean(parm),3),
-                                   "\n SE = ", round(sd(parm), 3)))
+  legend("topright", bty = "n", paste(length(parm), "points \n Mean = ", 
+                                     round(mean(parm),3), "\n SE = ", round(sd(parm),3)))
 }, height = 400, width = 400)
 
   ## q2 test UI -------------------------------------
@@ -2183,10 +2194,17 @@ output$q2_testUI <- renderUI({
        column(5,
               # h5("Click on a point to see that shuffle"),
               uiOutput('q2_SampDistPlot')
-              )
-     ),
-    uiOutput("slopeTestXtremes"),
-    uiOutput("slopeTestPvalue")
+       )
+     ), 
+     fluidRow(
+       column(8, offset = 3, 
+       br(),
+       br(),
+       
+       uiOutput("slopeTestXtremes"),
+       uiOutput("slopeTestPvalue")
+       )
+     )
     )
   }
  })
@@ -2336,8 +2354,8 @@ output$q2_EstPlot2 <- renderPlot({
   }
   plot(parm, y, ylab = "", cex = radius/2, pch = 16, col = q2Estimate$colors,  
        xlab = ifelse(input$q2_EstParam == "Slope", "Slope", "Correlation"), main = "RE-Sampling Distribution")
-  legend("topright", bty="n", paste(" n = ", length(parm),"\n Mean = ", round(mean(parm),3),
-                                   "\n SE = ", round(sd(parm), 3)))
+  legend("topright", bty = "n", paste(length(parm), "points \n Mean = ", 
+                                     round(mean(parm),3), "\n SE = ", round(sd(parm),3)))
 }, height = 400, width = 400)
 
 observeEvent(input$q2_conf80,{
