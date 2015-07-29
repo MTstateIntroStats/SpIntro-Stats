@@ -866,7 +866,7 @@ output$q1_testUI <- renderUI({
         ),
         column(6, 
                fluidRow(
-                 column(7, offset =1, h4("True Mean (Null hypothesis for mu):")),
+                 column(7, offset =1, h4(HTML("True Mean (Null hypothesis for &mu;):"))),
                  column(2, tags$div( 
                    tags$input(id = "null_mu", type = "text", class = "form-control", value = "0"))
                  ),
@@ -1040,7 +1040,7 @@ output$q1_TestPlot2 <- renderPlot({
   }
   plot(x = parm, y = y, ylim = c(0.5, max(y)), ylab = "", cex = radius/2, pch = 16, col = q1Test$colors,  
        xlab = expression(mu), main = "Sampling Distribution")
-  legend("topleft", bty = "n", paste(" n = ", length(parm), "\n Mean = ", round(mean(parm),3), 
+  legend("topleft", bty = "n", paste(length(parm), " points\n Mean = ", round(mean(parm),3), 
                                       "\n SE = ", round(sd(parm),3)))
 }, height = 400, width = 400)}
 
@@ -2207,20 +2207,19 @@ output$slopeTestPvalue <- renderUI({
 output$slopeTestXtremes <- renderUI({
 fluidRow(
   column(2, offset = 3,
-         h4("Count values")
-  ),
+         h4("Count values")  ),
   column(3,
-         selectInput('q2_testDirection', label ="", choices = list("less","more extreme","greater"), 
-                     selected = "more extreme" , selectize = FALSE, width = 200)
-  ),
+        tags$div(style="width: 200px",
+                 tags$select(id='q2_testDirection',class="form-control",
+                             tags$option( value = "less", "less"),
+                             tags$option( value = "more extreme", "more extreme", selected = TRUE),
+                             tags$option( value = "greater", "greater")))  ),
   column(1, h4("than ")),
-  column(2,
-         textInput('q2_cutoff', label="", value = NA )
-  ),
-  column(1,
-         actionButton("q2_countXtremes","Go")
-  )
-)
+  column(2,           
+        tags$div( 
+          tags$input(id = "q2_cutoff", type = "text", class = "form-control", value = NA)) ),
+  column(1, actionButton("q2_countXtremes","Go")   )
+ )
 }) 
 }
   ###  Estimate slope / correlation with CI ----------------------------------- q2 
