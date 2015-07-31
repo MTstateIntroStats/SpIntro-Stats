@@ -1458,7 +1458,7 @@ output$Cat2TestPvalue <- renderUI({
       radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
     }
     plot(DF, w, ylab = "", ylim = c(0.5, max(w)), cex = radius/2, pch = 16, col = cat2Test$colors,  
-         xlab = expression(p[1] - p[2]), main = "Sampling Distribution")
+         xlab = expression(hat(p)[1] - hat(p)[2]), main = "Sampling Distribution")
     legend("topright", bty = "n", paste(length(DF), "points \n Mean = ", 
                                        round(mean(DF),3), "\n SE = ", round(sd(DF),3)))
     #mtext(side = 1, at = 0, adj = 0, line = 0, bquote(p[1] == p[2]))
