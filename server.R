@@ -835,7 +835,11 @@ output$q1_testUI <- renderUI({
       fluidRow(
         column(4,
                plotOutput("q1_TestPrep1"),
+               #tags$div(
+                # tags$input(id = "q1_TestPrep1", class="shiny-plot-output shiny-bound-output", style = "width: 100%; height:300px")),
                plotOutput("q1_TestPlot1")
+               #tags$div(
+                 #tags$input(id = "q1_TestPlot1", class="shiny-plot-output", style = "width: 100%; height:300px"))
                
 #                h5("We start showing one resample from the shifted data."),
 #                h5("How many more?"),
@@ -857,12 +861,14 @@ output$q1_testUI <- renderUI({
              br(),
              br(),
              
-             h4("We start showing one resample from the shifted data. How many more?"),
+             h4("One resample of shifted data is shown. How many more?"),
              
-             actionButton("q1_test_shuffle_10", label = "10"),
-             actionButton("q1_test_shuffle_100", label = "100"),
-             actionButton("q1_test_shuffle_1000", label = "1000"),
-             actionButton("q1_test_shuffle_5000", label = "5000"),
+             fluidRow(
+               column(2, offset =2, actionButton("q1_test_shuffle_10", label = "10")),
+               column(2, actionButton("q1_test_shuffle_100", label = "100")),
+               column(2, actionButton("q1_test_shuffle_1000", label = "1000")),
+               column(2, actionButton("q1_test_shuffle_5000", label = "5000"))
+             ),
              
              br(),
              br(),
@@ -1036,9 +1042,9 @@ output$q1_estimateUI <- renderUI({
     h4(" You must first enter data. Choose 'Enter/Describe Data'.")
   } else{ 
     fluidPage(
-      h3("Estimate for a single mean."),
+      h3("Estimate a single mean."),
       fluidRow(
-        column(3,
+        column(4,
                fluidRow(
                  column(3, 
                   plotOutput("q1_EstPlot1"),
@@ -1051,30 +1057,33 @@ output$q1_estimateUI <- renderUI({
             br(),
             br(),
             br(),
-            
-            h4("We start showing one resample. How many more?", offset = 2),
-            actionButton("q1_resample_10", label = "10"),
-            actionButton("q1_resample_100", label = "100"),
-            actionButton("q1_resample_1000", label = "1000"),
-            actionButton("q1_resample_5000", label = "5000"),
-            
+            fluidRow( 
+              column(10, offset=2, h4("One resample shown. How many more?")
+                     )
+              ),
+            fluidRow( 
+              column(2, offset=3, actionButton("q1_resample_10", label = "10")),
+              column(2, actionButton("q1_resample_100", label = "100")),
+              column(2, actionButton("q1_resample_1000", label = "1000")),
+              column(2, actionButton("q1_resample_5000", label = "5000"))
+             ),
             br(),
-            br(),
             
-            h4("Select Confidence Level (%)", offset = 2),
               fluidRow( 
-                column(4,  
-                  actionButton('q1_conf80', label = "80"),
-                  actionButton('q1_conf90', label = "90"),
-                  actionButton('q1_conf95', label = "95"),
-                  actionButton('q1_conf99', label = "99")
+                column(5, offset = 2, h4("Select Confidence Level(%)")),  
+                column(1, actionButton('q1_conf80', label = "80")),
+                column(1, actionButton('q1_conf90', label = "90")),
+                column(1, actionButton('q1_conf95', label = "95")),
+                column(1, actionButton('q1_conf99', label = "99"))
                   ),
                         
-                  if(!is.null(q1Estimate$CI)){
-                      h5(paste(q1Estimate$confLevel*100, "% Interval Estimate: (", round(q1Estimate$CI[1],3), ",", 
+              if(!is.null(q1Estimate$CI)){
+                fluidRow( 
+                  column(7, offset = 2,
+                         h4(paste(q1Estimate$confLevel*100, "% Interval Estimate: (", round(q1Estimate$CI[1],3), ",", 
                                    round(q1Estimate$CI[2], 3), ")"))
+                  ))
                       }
-              )
         )
   )
 )
@@ -1095,8 +1104,9 @@ output$q1_EstPlot1 <- renderPlot({
   z <- cut(x, breaks = nclass.Sturges(x) ^2 )
   w <- unlist(tapply(x, z, function(x) 1:length(x)))
   w <- w[!is.na(w)]
+  #par(mar = c(2,2,2,1))
   plot(x=x, y=w, col = blu, pch = 16, main = "Original Data", xlab = q1$names, ylab = "Count")
-  legend("topleft", bty = "n", paste(" n = ", length(x), "\n Mean = ", round(mean(x),3), "\n SE = ", round(sd(x),3)))
+  legend("topleft", bty = "n", paste(" n = ", length(x), "\n Mean = ", round(mean(x),3), "\n SD = ", round(sd(x),3)))
   
 },  height = 300, width = 300)
 
@@ -1105,7 +1115,7 @@ output$q1_EstPlot2 <- renderPlot({
   ## Plot One Resample of Data
   
   shuffle <- sample(x = q1$data[,1], length(q1$data[,1]), replace = TRUE)
-  q1Estimate$shuffles <- as.matrix(shuffle)
+  q1Estimate$shuffles <- as.matrix(shuffle, ncol = 1)
   q1Estimate$mu <- mean(shuffle)
   ### stores samples as columns
   #print(q1Estimate$shuffles)
@@ -1114,8 +1124,9 @@ output$q1_EstPlot2 <- renderPlot({
   z <- cut(DF0, breaks = nclass.Sturges(DF0) ^2 )
   w <- unlist(tapply(DF0, z, function(DF0) 1:length(DF0)))
   w <- w[!is.na(w)]
-  plot(x=DF0, y=w, col = blu, pch = 16, main = "Original Data", xlab = q1$names, ylab = "Count")
-  legend("topleft", bty = "n", paste("\n Mean = ", round(mean(DF0),3), "\n SE = ", round(sd(DF0),3)))
+  #par(mar = c(2,2,2,1))
+  plot(x=DF0, y=w, col = blu, pch = 16, main = "Resampled Data", xlab = q1$names, ylab = "Count")
+  legend("topleft", bty = "n", paste("\n Mean = ", round(mean(DF0),3), "\n SD = ", round(sd(DF0),3)))
 },  height = 300, width = 300)
 
 observeEvent(input$q1_resample_10, {
