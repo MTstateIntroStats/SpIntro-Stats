@@ -125,12 +125,9 @@ shinyServer(function(input, output, session) {
 
 output$Cat1TestPvalue <- renderUI({
   if(!is.null(cat1Test$moreExtremeCount)){
-#     fluidRow(
-#       column(8, offset = 3, 
              h4(paste(cat1Test$moreExtremeCount, " of ", length(cat1Test$phat), "values are ",
                         cat1Test$direction," than", as.numeric(cat1Test$cutoff),",  p-value =  ", round(cat1Test$pvalue,5))
                 )
-#      ))
   }
 })
 
@@ -145,14 +142,9 @@ output$Cat1TestXtremes <- renderUI({
                                 tags$option( value = "less", "less"),
                                 tags$option( value = "more extreme", "more extreme", selected = TRUE),
                                 tags$option( value = "greater", "greater"))
-           )
-#             selectInput('cat1_testDirection', label = "", 
-#                        choices = list("less", "more extreme", "greater"), 
-#                        select = "more extreme", selectize = FALSE, width = 200)
-    ),
+           )),
     column(1, h4("than ")),
     column(2,
-#           textInput('cat1_test_cutoff', label = "", value = NA)
            tags$div( 
                 tags$input(id = "cat1_test_cutoff", type = "text", class = "form-control", value = NA))
     ),
@@ -841,10 +833,9 @@ output$q1_testUI <- renderUI({
   fluidPage(
     h3("Test for a single mean."),
       fluidRow(
-        column(3, 
+        column(4,
                plotOutput("q1_TestPrep1"),
-               
-               br(),
+               plotOutput("q1_TestPlot1"),
                
                h5("We start showing one resample from the shifted data."),
                h5("How many more?"),
@@ -854,51 +845,37 @@ output$q1_testUI <- renderUI({
                actionButton("q1_test_shuffle_1000", label = "1000"),
                actionButton("q1_test_shuffle_5000", label = "5000")
         ),
-        column(1,
-               br(),
-               
-               tableOutput("q1_TestPrep2"),
-               
-               br(),
-               br(),
-               
-               tableOutput("q1_TestTable1")
-        ),
         column(8, 
                fluidRow(
-                 column(7, offset =2, h4(HTML("True Mean (Null hypothesis for &mu;):"))),
+                 column(7, offset =1, h4(HTML("True Mean (Null hypothesis for &mu;):"))),
                  column(2, tags$div( 
                    tags$input(id = "null_mu", type = "text", class = "form-control", value = "0"))
                  ),
              # h5("Click on a point to see that shuffle"),
-             fluidRow(
-               column(8, offset = 2, 
-                      plotOutput('q1_TestPlot2'), #, click = 'q1_Test_click'),
-                      br(),
-                      uiOutput("q1TestXtremes"),
-                      uiOutput("q1TestPvalue")
+             plotOutput('q1_TestPlot2'), #, click = 'q1_Test_click'),
+             br(),
+             br(),
+             br(),
+             uiOutput("q1TestXtremes"),
+             uiOutput("q1TestPvalue")
                ))
 
-          )
         )
     )
-  )
-}
+  }
 })
   
 
 output$q1TestPvalue <- renderUI({
   if(!is.null(q1Test$moreExtremeCount)){
-    fluidRow(
-      column(9, offset = 2,  h4(paste(q1Test$moreExtremeCount, " of ", length(q1Test$mu), "values are ",
-                                      q1Test$direction," than", q1Test$cutoff, ",  p-value =  ", round(q1Test$pvalue,5)))
-      ))
-  }
+    h4(paste(q1Test$moreExtremeCount, " of ", length(q1Test$mu), "values are ",
+                q1Test$direction," than", q1Test$cutoff, ",  p-value =  ", round(q1Test$pvalue,5)))
+      }
 })
 
 output$q1TestXtremes <- renderUI({
-  fluidRow(
-    column(2, offset = 1,
+  fluidRow(offset = 1,
+    column(3,  
            h4("Count values")
     ),
     column(4,
@@ -907,15 +884,14 @@ output$q1TestXtremes <- renderUI({
                                 tags$option( value = "less", "less"),
                                 tags$option( value = "more extreme", "more extreme", selected = TRUE),
                                 tags$option( value = "greater", "greater"))
-           )
-    ),
+           )),
     column(1, h4("than ")),
     column(2,
-          tags$div( 
+           tags$div( 
              tags$input(id = "q1_test_cutoff", type = "text", class = "form-control", value = NA))
     ),
     column(1,
-           actionButton("q1_countXtremes","Go")
+           actionButton('q1_test_countXtremes', "Go")
     )
   )
 })
@@ -926,16 +902,17 @@ output$q1TestXtremes <- renderUI({
 output$q1_TestPrep1 <- renderPlot({
   if(is.null(q1$data)) return()
   q1Test$observed <- mean(q1$data[,1])
+  
   ## Plot Original Data
   x <- sort(q1$data[,1])
   z <- cut(x, breaks = nclass.Sturges(x) ^2 )
   w <- unlist(tapply(x, z, function(x) 1:length(x)))
-  tempDF <- data.frame(x, w=w[!is.na(w)])
-  q1_plot1 <- qplot(data=tempDF, x=x, y=w, colour = I(blu), size = I(4), main = "Original Data") + 
-                    theme_bw() + xlab(q1$names)
- 
-  #mtext(side = 3, at = min(x)*2/3 + max(x)/3, bquote(mu == q1Test$observed))
+  w <- w[!is.na(w)]
+  plot(x=x, y=w, col = blu, pch = 16, main = "Original Data", xlab = q1$names, ylab = "Count")
+  legend("topleft", bty = "n", paste(" n = ", length(x), "\n Mean = ", round(mean(x),3), "\n SE = ", round(sd(x),3)))
+}, height = 300)
 
+output$q1_TestPlot1 <- renderPlot({
   ## Plot One Shuffle of Shifted Data
   q1Test$mu_diff <- q1Test$observed - as.numeric(input$null_mu)
   shuffle <- sample(x = q1$data[,1] - q1Test$mu_diff, length(q1$data[,1]), replace = TRUE)
@@ -948,29 +925,11 @@ output$q1_TestPrep1 <- renderPlot({
   z <- cut(DF0, breaks = nclass.Sturges(DF0) ^2 )
   w <- unlist(tapply(DF0, z, function(DF0) 1:length(DF0)))
   tempDF <- data.frame(DF0, w=w[!is.na(w)])
-  q1_plot2 <- qplot(data = tempDF, x = DF0, y = w, colour = I(blu), size = I(4), main = "One Shifted Resample") + 
-    theme_bw() + xlab(q1$names)
+  plot(data = tempDF, x = DF0, y = w, col = blu, pch = 16, main = "One Shifted Resample", xlab = q1$names, ylab = "Count")
+  legend("topleft", bty = "n", paste(" Mean = ", round(mean(DF0),3), "\n SE = ", round(sd(DF0),3)))
 
-  grid.arrange(q1_plot1, q1_plot2, heights = c(3,3)/4, ncol=1)
-}, height = 360)
+}, height = 300)
 
-output$q1_TestPrep2 <- renderTable({
-  if( is.null(q1$data))  return()
-  DF <- rbind(mean = mean(q1$data[, 1], na.rm = TRUE ),
-              sd = sd(q1$data[, 1], na.rm = TRUE),
-              n = length(q1$data[,1]))
-  colnames(DF) <- q1$names
-  DF
-})
-
-
-output$q1_TestTable1 <- renderTable({
-  if( is.null(q1$data))  return()
-  DF <- rbind(mean = mean(q1Test$shuffles[,1], na.rm = TRUE ),
-              sd = sd(q1Test$shuffles[,1], na.rm = TRUE))
-  colnames(DF) <- q1$names
-  DF
-})
 
 observeEvent(input$q1_test_shuffle_10, {
   newShuffles <- sapply(1:10, function(x) sample(q1$data[,1] - q1Test$mu_diff, length(q1$data[,1]), replace = TRUE))
@@ -1007,7 +966,7 @@ observeEvent(input$q1_test_shuffle_5000, {
   q1Test$colors <- rep(blu, length(q1Test$mu))
 })
 
-observeEvent(input$q1_countXtremes, {
+observeEvent(input$q1_test_countXtremes, {
   parm <- sort(as.numeric(q1Test$mu))
   nsims <- length(parm)
   mu0 <- as.numeric(input$null_mu)
@@ -1132,7 +1091,7 @@ output$q1_EstPlot1 <- renderPlot({
   w <- unlist(tapply(x, z, function(x) 1:length(x)))
   tempDF <- data.frame(x, w=w[!is.na(w)])
   q1_plot1 <- qplot(data=tempDF, x=x, y=w, colour = I(blu), size = I(4), main = "Original Data") + 
-    theme_bw() + xlab(q1$names)
+    theme_bw() + xlab(q1$names) + ylab("Count")
   
   ## Plot One Resample of Data
   
@@ -1147,7 +1106,7 @@ output$q1_EstPlot1 <- renderPlot({
   w <- unlist(tapply(DF0, z, function(DF0) 1:length(DF0)))
   tempDF <- data.frame(DF0, w=w[!is.na(w)])
   q1_plot2 <- qplot(data = tempDF, x = DF0, y = w, colour = I(blu), size = I(4), main = "One Resampled Dataset") + 
-    theme_bw() + xlab(q1$names)
+    theme_bw() + xlab(q1$names) + ylab("Count")
   
   grid.arrange(q1_plot1, q1_plot2, heights = c(3,3)/4, ncol=1)
 }, height = 360)
