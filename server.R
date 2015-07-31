@@ -835,15 +835,15 @@ output$q1_testUI <- renderUI({
       fluidRow(
         column(4,
                plotOutput("q1_TestPrep1"),
-               plotOutput("q1_TestPlot1"),
+               plotOutput("q1_TestPlot1")
                
-               h5("We start showing one resample from the shifted data."),
-               h5("How many more?"),
-               
-               actionButton("q1_test_shuffle_10", label = "10"),
-               actionButton("q1_test_shuffle_100", label = "100"),
-               actionButton("q1_test_shuffle_1000", label = "1000"),
-               actionButton("q1_test_shuffle_5000", label = "5000")
+#                h5("We start showing one resample from the shifted data."),
+#                h5("How many more?"),
+#                
+#                actionButton("q1_test_shuffle_10", label = "10"),
+#                actionButton("q1_test_shuffle_100", label = "100"),
+#                actionButton("q1_test_shuffle_1000", label = "1000"),
+#                actionButton("q1_test_shuffle_5000", label = "5000")
         ),
         column(8, 
                fluidRow(
@@ -853,9 +853,20 @@ output$q1_testUI <- renderUI({
                  ),
              # h5("Click on a point to see that shuffle"),
              plotOutput('q1_TestPlot2'), #, click = 'q1_Test_click'),
+             
              br(),
              br(),
+             
+             h4("We start showing one resample from the shifted data. How many more?"),
+             
+             actionButton("q1_test_shuffle_10", label = "10"),
+             actionButton("q1_test_shuffle_100", label = "100"),
+             actionButton("q1_test_shuffle_1000", label = "1000"),
+             actionButton("q1_test_shuffle_5000", label = "5000"),
+             
              br(),
+             br(),
+             
              uiOutput("q1TestXtremes"),
              uiOutput("q1TestPvalue")
                ))
@@ -910,7 +921,7 @@ output$q1_TestPrep1 <- renderPlot({
   w <- w[!is.na(w)]
   plot(x=x, y=w, col = blu, pch = 16, main = "Original Data", xlab = q1$names, ylab = "Count")
   legend("topleft", bty = "n", paste(" n = ", length(x), "\n Mean = ", round(mean(x),3), "\n SE = ", round(sd(x),3)))
-}, height = 300)
+},  height = 300, width = 300)
 
 output$q1_TestPlot1 <- renderPlot({
   ## Plot One Shuffle of Shifted Data
@@ -928,7 +939,7 @@ output$q1_TestPlot1 <- renderPlot({
   plot(data = tempDF, x = DF0, y = w, col = blu, pch = 16, main = "One Shifted Resample", xlab = q1$names, ylab = "Count")
   legend("topleft", bty = "n", paste(" Mean = ", round(mean(DF0),3), "\n SE = ", round(sd(DF0),3)))
 
-}, height = 300)
+},  height = 300, width = 300)
 
 
 observeEvent(input$q1_test_shuffle_10, {
@@ -1004,7 +1015,7 @@ output$q1_TestPlot2 <- renderPlot({
     radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
   }
   plot(x = parm, y = y, ylim = c(0.5, max(y)), ylab = "", cex = radius/2, pch = 16, col = q1Test$colors,  
-       xlab = expression(mu), main = "Shifted Resampling Distribution")
+       xlab = expression(bar(x)), main = "Shifted Resampling Distribution")
   legend("topright", bty = "n", paste(length(parm), "points \n Mean = ", 
                                      round(mean(parm),3), "\n SE = ", round(sd(parm),3)))
 }, width = 600)
@@ -1027,36 +1038,30 @@ output$q1_estimateUI <- renderUI({
     fluidPage(
       h3("Estimate for a single mean."),
       fluidRow(
-        column(3, 
-               plotOutput("q1_EstPlot1"),
-               
-               br(),
-               
-               h5("We start showing one resample."),
-               h5("How many more?"),
-               
-               actionButton("q1_resample_10", label = "10"),
-               actionButton("q1_resample_100", label = "100"),
-               actionButton("q1_resample_1000", label = "1000"),
-               actionButton("q1_resample_5000", label = "5000")
-        ),
-        column(1,
-               br(),
-               br(),
-               
-               tableOutput("q1_EstTable1"),
-               
-               br(),
-               br(),
-               
-               tableOutput("q1_EstTable2")
-        ),
+        column(3,
+               fluidRow(
+                 column(3, 
+                  plotOutput("q1_EstPlot1"),
+                  plotOutput("q1_EstPlot2")
+                 ))
+               ),
        column(8, 
-            plotOutput('q1Estimate_Plot2', click = 'q1_Estimate_click'),
+            plotOutput('q1_EstPlot3', click = 'q1_Estimate_click'),
+            
             br(),
             br(),
-            #h5("Click on a point to see that resample."),
-            h5("Select Confidence Level (%)", offset = 2),
+            br(),
+            
+            h4("We start showing one resample. How many more?", offset = 2),
+            actionButton("q1_resample_10", label = "10"),
+            actionButton("q1_resample_100", label = "100"),
+            actionButton("q1_resample_1000", label = "1000"),
+            actionButton("q1_resample_5000", label = "5000"),
+            
+            br(),
+            br(),
+            
+            h4("Select Confidence Level (%)", offset = 2),
               fluidRow( 
                 column(4,  
                   actionButton('q1_conf80', label = "80"),
@@ -1089,9 +1094,13 @@ output$q1_EstPlot1 <- renderPlot({
   x <- sort(q1$data[,1])
   z <- cut(x, breaks = nclass.Sturges(x) ^2 )
   w <- unlist(tapply(x, z, function(x) 1:length(x)))
-  tempDF <- data.frame(x, w=w[!is.na(w)])
-  q1_plot1 <- qplot(data=tempDF, x=x, y=w, colour = I(blu), size = I(4), main = "Original Data") + 
-    theme_bw() + xlab(q1$names) + ylab("Count")
+  w <- w[!is.na(w)]
+  plot(x=x, y=w, col = blu, pch = 16, main = "Original Data", xlab = q1$names, ylab = "Count")
+  legend("topleft", bty = "n", paste(" n = ", length(x), "\n Mean = ", round(mean(x),3), "\n SE = ", round(sd(x),3)))
+  
+},  height = 300, width = 300)
+
+output$q1_EstPlot2 <- renderPlot({
   
   ## Plot One Resample of Data
   
@@ -1104,30 +1113,10 @@ output$q1_EstPlot1 <- renderPlot({
   DF0 <- sort(shuffle)
   z <- cut(DF0, breaks = nclass.Sturges(DF0) ^2 )
   w <- unlist(tapply(DF0, z, function(DF0) 1:length(DF0)))
-  tempDF <- data.frame(DF0, w=w[!is.na(w)])
-  q1_plot2 <- qplot(data = tempDF, x = DF0, y = w, colour = I(blu), size = I(4), main = "One Resampled Dataset") + 
-    theme_bw() + xlab(q1$names) + ylab("Count")
-  
-  grid.arrange(q1_plot1, q1_plot2, heights = c(3,3)/4, ncol=1)
-}, height = 360)
-
-output$q1_EstTable1 <- renderTable({
-  if( is.null(q1$data))  return()
-  DF <- rbind(mean = mean(q1$data[, 1], na.rm = TRUE ),
-              sd = sd(q1$data[, 1], na.rm = TRUE),
-              n = length(q1$data[,1]))
-  colnames(DF) <- q1$names
-  DF
-})
-
-
-output$q1_EstTable2 <- renderTable({
-  if( is.null(q1$data))  return()
-  DF <- rbind(mean = mean(q1Estimate$shuffles[,1], na.rm = TRUE ),
-              sd = sd(q1Estimate$shuffles[,1], na.rm = TRUE))
-  colnames(DF) <- q1$names
-  DF
-})
+  w <- w[!is.na(w)]
+  plot(x=DF0, y=w, col = blu, pch = 16, main = "Original Data", xlab = q1$names, ylab = "Count")
+  legend("topleft", bty = "n", paste("\n Mean = ", round(mean(DF0),3), "\n SE = ", round(sd(DF0),3)))
+},  height = 300, width = 300)
 
 observeEvent(input$q1_resample_10, {
   newShuffles <- sapply(1:10, function(x) sample(q1$data[,1], length(q1$data[,1]), replace = TRUE))
@@ -1209,7 +1198,7 @@ observeEvent(input$q1_conf99,{
   q1Estimate$CI <- sort(q1Estimate$mu)[c(tailCount, nsims + 1 - tailCount)]
 })
 
-output$q1Estimate_Plot2 <- renderPlot({
+output$q1_EstPlot3 <- renderPlot({
   if(is.null(q1Estimate$mu)) return() 
   parm <- as.matrix(q1Estimate$mu)
   #print(parm)
@@ -1228,7 +1217,7 @@ output$q1Estimate_Plot2 <- renderPlot({
     radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
   }
   plot(x = parm, y = y, ylim = c(0.5, max(y)), ylab = "", cex = radius/2, pch = 16, col = q1Estimate$colors,  
-       xlab = expression(mu), main = "Resampling Distribution")
+       xlab = expression(bar(x)), main = "Resampling Distribution")
   legend("topright", bty = "n", paste(length(parm), "points \n Mean = ", 
                                       round(mean(parm),3), "\n SE = ", round(sd(parm),3)))
 }, height = 450, width = 600)
