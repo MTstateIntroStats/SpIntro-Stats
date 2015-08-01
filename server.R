@@ -845,14 +845,7 @@ output$q1_testUI <- renderUI({
                #tags$div(
                  #tags$input(id = "q1_TestPlot1", class="shiny-plot-output", style = "width: 100%; height:300px"))
                
-#                h5("We start showing one resample from the shifted data."),
-#                h5("How many more?"),
-#                
-#                actionButton("q1_test_shuffle_10", label = "10"),
-#                actionButton("q1_test_shuffle_100", label = "100"),
-#                actionButton("q1_test_shuffle_1000", label = "1000"),
-#                actionButton("q1_test_shuffle_5000", label = "5000")
-        ),
+                ),
         column(8, 
                fluidRow(
                  column(7, offset =1, h4(HTML("True Mean (Null hypothesis for &mu;):"))),
@@ -867,10 +860,10 @@ output$q1_testUI <- renderUI({
              h4("One resample of shifted data is shown. How many more?"),
              
              fluidRow(
-               column(2, offset =2, actionButton("q1_test_shuffle_10", label = "10")),
-               column(2, actionButton("q1_test_shuffle_100", label = "100")),
-               column(2, actionButton("q1_test_shuffle_1000", label = "1000")),
-               column(2, actionButton("q1_test_shuffle_5000", label = "5000"))
+               column(1, offset = 1, actionButton("q1_test_shuffle_10", label = "10")),
+               column(1, actionButton("q1_test_shuffle_100", label = "100")),
+               column(1, actionButton("q1_test_shuffle_1000", label = "1000")),
+               column(1, actionButton("q1_test_shuffle_5000", label = "5000"))
              ),
              
              br(),
@@ -922,26 +915,15 @@ output$q1TestXtremes <- renderUI({
   )
 })
   
-output$q1_SampDistPlot <- renderUI({ 
-  plotOutput('q1_TestPlot2') #, click = 'q1_Test_click')
-})
 
-
-# -------- 1 quant test plots ------------------
-  ## no longer used?
-output$q1_TestPrep1 <- renderPlot({
-  if(is.null(q1$data)) return()
-  q1_plot1 <- qplot( x=x, y=w, data=tempDF, colour = I(blu), size = I(4), main = "Original Data") + 
-                    theme_bw() + xlab(q1$names)
-  #mtext(side = 3, at = min(x)*2/3 + max(x)/3, bquote(mu == q1Test$observed))
-},  height = 300, width = 300)
+# ----------------------1 quant test plots ------------------------------------------------------------
 
 
 output$q1_TestPlot1 <- renderPlot({
   
   q1Test$observed <- mean(q1$data[,1])
   nn <- nrow(q1$data)
-  par(mfrow = c(2,1), mar = c(3.5,3.5,3,1))
+  par(mfrow = c(2,1), mar = c(4,3.5,3,1))
   ## Plot Original Data
   x <- sort(q1$data[,1])
   z <- cut(x, breaks = nclass.Sturges(x) ^2 )
@@ -1076,6 +1058,8 @@ output$q1_TestPlot2 <- renderPlot({
 
 q1Estimate <- reactiveValues(shuffles = NULL, mu = NULL, observed = NULL, 
                              confLevel = NULL, colors = NULL, colors = NULL, CI = NULL)
+
+
 output$q1_estimateUI <- renderUI({
   if(is.null(q1$data)){
     h4(" You must first enter data. Choose 'Enter/Describe Data'.")
@@ -1084,36 +1068,30 @@ output$q1_estimateUI <- renderUI({
       h3("Estimate a single mean."),
       fluidRow(
         column(4,
-               fluidRow(
-                 column(3, 
-                  plotOutput("q1_EstPlot1"),
-                  plotOutput("q1_EstPlot2")
-                 ))
+                  plotOutput("q1_EstPlot1")
                ),
        column(8, 
             plotOutput('q1_EstimatePlot2', click = 'q1_Estimate_click'),
             
             br(),
             br(),
-            br(),
-            fluidRow( 
-              column(10, offset=2, h4("One resample shown. How many more?")
-                     )
-              ),
-            fluidRow( 
-              column(2, offset=3, actionButton("q1_resample_10", label = "10")),
-              column(2, actionButton("q1_resample_100", label = "100")),
-              column(2, actionButton("q1_resample_1000", label = "1000")),
-              column(2, actionButton("q1_resample_5000", label = "5000"))
-             ),
+            h4("One resample of shifted data is shown. How many more?"),
+            
+            fluidRow(
+              column(1, actionButton("q1_resample_10", label = "10")),
+              column(1, actionButton("q1_resample_100", label = "100")),
+              column(1, actionButton("q1_resample_1000", label = "1000")),
+              column(1, actionButton("q1_resample_5000", label = "5000"))
+            ),
+            
             br(),
             
-              fluidRow( 
-                column(5, offset = 2, h4("Select Confidence Level(%)")),  
-                column(1, actionButton('q1_conf80', label = "80")),
-                column(1, actionButton('q1_conf90', label = "90")),
-                column(1, actionButton('q1_conf95', label = "95")),
-                column(1, actionButton('q1_conf99', label = "99"))
+              fluidRow( offset = 1,
+                        column(5, h4("Select Confidence Level(%)")),  
+                        column(1, actionButton('q1_conf80', label = "80")),
+                        column(1, actionButton('q1_conf90', label = "90")),
+                        column(1, actionButton('q1_conf95', label = "95")),
+                        column(1, actionButton('q1_conf99', label = "99"))
                   ),
                         
               if(!is.null(q1Estimate$CI)){
@@ -1130,14 +1108,13 @@ output$q1_estimateUI <- renderUI({
 })
 
 
-
-
-
 # -------- 1 quant estimate plots ------------------
 
 output$q1_EstPlot1 <- renderPlot({
   if(is.null(q1$data)) return()
   q1Estimate$observed <- mean(q1$data[,1])
+  nn <- nrow(q1$data)
+  par(mfrow = c(2,1), mar = c(4,3.5,3,1))
   
   ## Plot Original Data
   x <- sort(q1$data[,1])
@@ -1146,11 +1123,7 @@ output$q1_EstPlot1 <- renderPlot({
   w <- w[!is.na(w)]
   #par(mar = c(2,2,2,1))
   plot(x=x, y=w, col = blu, pch = 16, main = "Original Data", xlab = q1$names, ylab = "Count")
-  legend("topleft", bty = "n", paste(" n = ", length(x), "\n Mean = ", round(mean(x),3), "\n SD = ", round(sd(x),3)))
-  
-},  height = 300, width = 300)
-
-output$q1_EstPlot2 <- renderPlot({
+  legend("topleft", bty = "n", paste(" n = ", nn, "\n Mean = ", round(mean(x),3), "\n SD = ", round(sd(x),3)))
   
   ## Plot One Resample of Data
   
@@ -1166,8 +1139,8 @@ output$q1_EstPlot2 <- renderPlot({
   w <- w[!is.na(w)]
   #par(mar = c(2,2,2,1))
   plot(x=DF0, y=w, col = blu, pch = 16, main = "Resampled Data", xlab = q1$names, ylab = "Count")
-  legend("topleft", bty = "n", paste("\n Mean = ", round(mean(DF0),3), "\n SD = ", round(sd(DF0),3)))
-},  height = 300, width = 300)
+  legend("topleft", bty = "n", paste(" n = ", nn, "\n Mean = ", round(mean(DF0),3), "\n SD = ", round(sd(DF0),3)))
+},  height = 450, width = 300)
 
 observeEvent(input$q1_resample_10, {
   newShuffles <- sapply(1:10, function(x) sample(q1$data[,1], length(q1$data[,1]), replace = TRUE))
@@ -2879,20 +2852,14 @@ output$c1q1_Summary2 <- renderTable({
           h4(" You must first enter data. Choose 'Enter/Describe Data'.")
         } else{ 
           fluidPage(
-            h3("Test 'Are two means Equal?'"),
+            h3("Test: 'Are two means Equal?'"),
             fluidRow(
               column(4, 
                      plotOutput("c1q1_TestPrep1"),
                      
-                     br(),
+                     br()
                      
-                     h5("We start showing one sample from the null."),
-                     h5("How many more?"),
-                   
-                     actionButton("c1q1_test_shuffle_10", label = "10"),
-                     actionButton("c1q1_test_shuffle_100", label = "100"),
-                     actionButton("c1q1_test_shuffle_1000", label = "1000"),
-                     actionButton("c1q1_test_shuffle_5000", label = "5000")
+                     
               ),
                column(3,
                       br(),
@@ -2905,17 +2872,32 @@ output$c1q1_Summary2 <- renderTable({
                       tableOutput("c1q1_TestTable1")
                ),
                column(5, 
-                      #fluidRow(
-                        h4(HTML("Null hypothesis: &mu;<sub>1</sub> = &mu;<sub>2</sub>")),
+                      fluidRow(
+                        column(5, h4(HTML("Null hypothesis: &mu;<sub>1</sub> = &mu;<sub>2</sub>"))
+                               ),
+                        
                         # h5("Click on a point to see that shuffle"),
                         uiOutput('c1q1_SampDistPlot'),
                         br(),
                         br(),
+                        
+                        h4("We start showing one sample from the null. How many more?"),
+                        fluidRow(
+                          column(2, actionButton("c1q1_test_shuffle_10", label = "10")),
+                          column(2, actionButton("c1q1_test_shuffle_100", label = "100")),
+                          column(2, actionButton("c1q1_test_shuffle_1000", label = "1000")),
+                          column(2, actionButton("c1q1_test_shuffle_5000", label = "5000"))
+                        ), 
+                        
+                        br(),
+                        br(),
+                        
                         uiOutput("c1q1TestXtremes"),
                         uiOutput("c1q1TestPvalue")
                       )
                )
              )
+          )
         }
       })
       
