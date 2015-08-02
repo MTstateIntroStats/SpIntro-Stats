@@ -42,3 +42,11 @@ cat2_estimate_shuffles <- function(shuffles, y1, y2, n1, n2){
   
   return(data)
 }
+
+c1q1_estimate_shuffles <- function(shuffles, ndx1, ndx2){
+  ## create a matrix of shuffled index values.
+  ##  top n1 rows are a resamle from group 1,
+  ##  btm n2 rows, same from group 2
+  rbind( matrix(sample(ndx1, length(ndx1) * shuffles, replace = TRUE), ncol = shuffles), 
+         matrix(sample(ndx2, length(ndx2) * shuffles, replace = TRUE), ncol = shuffles))
+}
