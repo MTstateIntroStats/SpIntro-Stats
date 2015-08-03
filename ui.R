@@ -25,6 +25,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
     tabPanel(""), 
     
     ####   One Categorical  -----------------------------------------------------   1 cat
+{
     navbarMenu("One Categ.",  
        tabPanel("Enter / Describe Data", label="1catDataEntry",       
                 h5(textOutput('cat1DataIn')),
@@ -99,8 +100,8 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
 =======
                       
                     column(7, #div( ## style="height: 300px",
-                      h4("Sampling Distribution.  Hover mouse over a point to see CI.", center = TRUE),
-                      plotOutput("CIdemo_Plot1",  hover = "CIplot1_hover")
+                      h4("Sampling Distribution.  Click a point to see CI.", center = TRUE),
+                      plotOutput("CIdemo_Plot1",  click = "CIplot1_click")
                     )),
                 
                 fluidRow(
@@ -127,9 +128,10 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                  )  #,
                  #h6("Normal Approx")
        )
-    ),
-    
+    )
+}   ,
     ####   One Quantitative  ----------------------------------------------------  1 Quant
+{
     navbarMenu("One Quant.",
       tabPanel("Enter /Describe Data", value="1quantDataEntry",
                  ##  preloaded data  - save as data/quant1.RData
@@ -182,13 +184,37 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                       plotOutput('tProbPlot1')
                )  #,
                #  h6("t distribution")
-      )                         
-    ),
-    
+      ),
+      tabPanel("Power", value = "Power",
+               ## ui.r from power app
+               #  Application title
+               titlePanel("Power Demo"),
+               # Sidebar with sliders that demonstrate various available options
+               fluidRow(
+                 column(4, inputPanel(
+                   sliderInput("pwr_n", "SampleSize:", 
+                               min=4, max=50, value=10),
+                   # std deviation
+                   sliderInput("pwr_sd", "Standard Deviation:", 
+                               min = 0.4, max = 3.2, value = 1.0, step= 0.2),
+                   # 
+                   sliderInput("pwr_altMean", "Alternative Mean:",
+                               min = 0, max = 8, value = 2, step=.1),
+                   # alpha level
+                   sliderInput("pwr_alpha", "Significance Level:", 
+                               min = 0.01, max = .15, value = .04, step= 0.01)    
+                 )),
+                 column(8, plotOutput("powerPlot"))),
+               # Show a table summarizing the values entered
+               fluidRow(column(8, offset = 4, tableOutput("values")))
+      )
+    )
+}    ,
     ##  br(),  didn't work inside the navBar
 
     ####   Two Categorical  -------------------------------------------------  --  2 cat
-    navbarMenu("Two Categ.",
+{
+  navbarMenu("Two Categ.",
       tabPanel("Enter /Describe Data", value="2catDataEntry",
                h5(textOutput('cat2DataIn')),
                br(),
@@ -234,24 +260,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
       
 
       tabPanel("Test", value="2catTest",
-               titlePanel("Test for a Difference in Proportions"),       
-               fluidRow(
-                 fluidRow(
-                   column(3, 
-                          h3("Original Data"),
-                          tableOutput("cat2OriginalData")),
-                   
-                   column(4, 
-                          h3("Number of Shuffles"),
-                          actionButton("cat2_shuffle_1", label = "1"),
-                          actionButton("cat2_shuffle_10", label = "10"),
-                          actionButton("cat2_shuffle_100", label = "100"),
-                          actionButton("cat2_shuffle_1000", label = "1000"),
-                          actionButton("cat2_shuffle_5000", label = "5000"))
-                 ),
-                 column(4, plotOutput("cat2Test", width = "90%") 
-                 ))
-      ),
+               uiOutput('cat2_testUI')),
 
       tabPanel("Estimate", value="2catEstimate",
                uiOutput('cat2_estimateUI')
@@ -276,10 +285,11 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                )  #,
             ##  h6("Normal Approx")
       )
-    ),
-
-    ####   Two Quantitative ------------------------------------------------- -- 2 Quant ----
-    navbarMenu("Two Quant.",
+    )
+} ,
+    ####   Two Quantitative ------------------------------------------------- -- 2 Quant 
+{
+ navbarMenu("Two Quant.",
                tabPanel("Enter /Describe Data", value="2quantDataEntry",
                ##  preloaded data  - save as data/quant1.RData
                ##  read local csv file
@@ -294,9 +304,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                                        selected = " ",
                                        selectize = FALSE))
                ),
-               
-               ## Need to use Dynamic UI instead of condition panels
-               
+                            
                uiOutput("q2_ui"),
                
                hr(),
@@ -317,10 +325,11 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
       tabPanel("Estimate Slope/Correlation", value="2quantEstimate",
                uiOutput('q2_estimateUI')
       )
-    ),
-
-    ####   1 categorical & 1 quantitative  -----------------------------------
-    navbarMenu("One of Each",
+    )
+},
+  ####   1 categorical & 1 quantitative  -----------------------------------
+{
+  navbarMenu("One of Each",
                
       tabPanel("Enter /Describe Data", value="1cat1quantDataEntry",
        h4(textOutput('c1q1DataIn')),
@@ -371,57 +380,9 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                       plotOutput('tProbPlot2')
                 )  
       )
-    ),
-
-    ####   ----  Other Tools  ------------------------------------------------
-    navbarMenu("Other Tools",
-      tabPanel("Probabilities", value = "probabilities",
-             ## ui.r from probability finder
-           titlePanel("Normal and t Probability Look Up"),
-           column(4, inputPanel(
-             #helpText("Either enter  "),
-             textInput('prb_z_txt', label='Standardized Value: ', value=" "),
-             #helpText("Or "),
-             textInput('prb_prob_txt', 'or  Probability: ', " "),
-             selectInput("prb_area", "To go into which area? ", 
-                         c("Lower","Upper","Extremes","Center"), NA),
-             selectInput("prb_dist", "Distribution: ",c("Normal","t"), "t"),
-            # conditionalPanel( 
-            #   condition = "input.prb_dist =='t'", 
-               numericInput("prb_df", "t degrees of freedom?", 10 )
-             #)
-           )),   
-           ##  dist'n shows 'normal' by default, but conditional box for t df appears.
-           column(8,
-                  plotOutput('probPlot')
-           )
-      ),
-      
-    tabPanel("Power", value = "Power",
-      ## ui.r from power app
-        #  Application title
-        titlePanel("Power Demo"),
-        # Sidebar with sliders that demonstrate various available options
-        fluidRow(
-        column(4, inputPanel(
-          sliderInput("pwr_n", "SampleSize:", 
-                      min=4, max=50, value=10),
-          # std deviation
-          sliderInput("pwr_sd", "Standard Deviation:", 
-                      min = 0.4, max = 3.2, value = 1.0, step= 0.2),
-          # 
-          sliderInput("pwr_altMean", "Alternative Mean:",
-                      min = 0, max = 8, value = 2, step=.1),
-          # alpha level
-          sliderInput("pwr_alpha", "Significance Level:", 
-                      min = 0.01, max = .15, value = .04, step= 0.01)    
-        )),
-        column(8, plotOutput("powerPlot"))),
-      # Show a table summarizing the values entered
-        fluidRow(column(8, offset = 4, tableOutput("values")))
     )
-  )
+}
+      
 )
-  #fluidPage(
-  #  h2("title here?"))
 )
+
