@@ -1,0 +1,177 @@
+\documentclass[12pt]{article}
+% Include packages
+%%\usepackage[letterpaper]{geometry} 
+\usepackage{amsmath,amssymb}
+ \usepackage{graphicx}
+% \usepackage{ifthen, comment}
+% \usepackage{soul}
+\usepackage{natbib} 
+\usepackage{color}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\hypersetup{pdftex, colorlinks=true, linkcolor=blue, citecolor=blue, filecolor=blue, urlcolor=blue, pdftitle=Stat216CoursePack, pdfauthor=Jim R-C, pdfsubject=, pdfkeywords=}
+
+ \textwidth = 6.75 in
+ \textheight = 9.25 in
+ \oddsidemargin = 0.0 in
+ \evensidemargin = 0.0 in
+ \topmargin = -.4 in
+
+\parskip = 0.2in
+\parindent = 0.0in
+\addtolength{\topmargin}{-.575in}
+\addtolength{\oddsidemargin}{-.2in}
+\addtolength{\evensidemargin}{-.275in}
+
+
+\newsavebox{\fmbox}
+\newenvironment{fmpage}[1]
+{\begin{lrbox}{\fmbox}\begin{minipage}{#1}}
+{\end{minipage}\end{lrbox}\fbox{\usebox{\fmbox}}}
+
+%\input diagxy
+%\xyoption{curve}
+% Spacing and displaystyle
+\newcommand{\ds}{\displaystyle}
+\newcommand{\vs}[1]{\vspace{#1in}}
+\newcommand{\hs}[1]{\hspace{#1in}}
+\newcommand\textstyleInternetlink[1]{\textcolor{blue}{#1}}
+
+%\fancyhead[RE]{\textit{ \nouppercase{\leftmark}} }
+%\fancyhead[LO]{\textit{ \nouppercase{\rightmark}} }
+
+\fancypagestyle{plain}{ %
+  \fancyhf{} % remove everything
+  \renewcommand{\headrulewidth}{0pt} % remove lines as well
+  \renewcommand{\footrulewidth}{0pt}
+}
+%\includecomment{key}  
+%\includecomment{students} 
+%% To make student version, uncomment this line:
+%\excludecomment{key}  
+%% To run key, comment out this line instead:
+%%\excludecomment{students} 
+
+\begin{document}
+ \begin{titlepage}
+ \vspace*{2in}
+ \begin{center}
+ {\Large \bf  Course Pack of Activities and Notes for Stat 216}\\
+  \ \\
+  {\large\bf Fall 2015} \vspace{.2in}\\
+  {\large Sections:   1, 4, 5, 7, 8, 9,  10, 12, 13, 15, 16, 17, 19,
+    22 \\
+ meeting }\\
+\ \\
+   {\large \bf Monday, Wednesday, and Friday} \\
+  \ \\
+  {\large with two common hour exams, and Common Final}
+
+
+  Department of Mathematical Sciences\\
+  Montana State University\vspace{1in}\\
+ \end{center}
+ \vspace*{\fill}
+ \end{titlepage}
+
+%\newpage
+\thispagestyle{empty}
+\include{MWF-calendar}
+
+
+\def\theTopic{Intro \& Syllabus }
+\def\dayNum{1}
+\def\unitNum{1}
+
+\headheight = .75 in
+\headsep = 0.2 in
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\  Day \dayNum \ Page \thepage }
+}
+\setcounter{page}{1}
+% \newpage
+% \include{U1-D1}
+% \newpage
+% \include{U1-D2}
+% \newpage
+% \include{U1-D3}
+% \newpage
+% \include{U1-D4}
+% \newpage
+% \include{U1-D5}
+% \newpage
+% \include{U1-D6}
+% \newpage
+% \include{U1-D7}
+% \newpage
+% \include{U1-D8}
+%  \newpage
+
+% \def\unitNum{2}
+% \thispagestyle{empty}
+% \vspace*{\fill}
+% \begin{center}
+%   {\huge Unit 2}   %% p 45
+% \end{center}
+% \vspace*{\fill}
+% \newpage
+% \ \ \ \thispagestyle{empty}
+% \newpage
+
+%  \include{U2-D10}
+%  \newpage
+% \include{U2-D11}
+% \newpage
+% \include{U2-D12}
+% \newpage
+% \include{U2-D13}
+% \newpage
+% \include{U2-D14}
+% \newpage
+% \include{U2-D15}
+% \newpage
+% \include{U2-D16}
+% \newpage
+% \include{U2-D17}
+% \newpage
+% \include{U2-D18}
+% \newpage
+% \include{U2-D19}
+% \newpage
+% \include{U2-D20}
+% \newpage
+% \ \ \ \thispagestyle{empty}
+% \newpage
+
+% \def\unitNum{3}
+% \thispagestyle{empty}  %% p 107
+% \vspace*{\fill}
+% \begin{center}
+%   {\huge Unit 3}
+% \end{center}
+% \vspace*{\fill}
+% \newpage
+% \ \ \ \thispagestyle{empty}
+% \newpage
+
+
+% \include{U3-D22}
+% \newpage
+% \include{U3-D23}
+% \newpage
+% \include{U3-D24}
+% \newpage
+% \include{U3-D25}
+% \newpage
+% \include{U3-D26}
+% \newpage
+% \include{U3-D27}
+% \newpage
+% \include{U3-D28}
+% \newpage
+% \include{U3-D29}
+ \end{document}
+

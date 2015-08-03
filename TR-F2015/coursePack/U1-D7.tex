@@ -1,0 +1,145 @@
+
+\def\theTopic{Confidence }
+\def\dayNum{7}
+
+\begin{center}
+\vspace*{-.2in}
+{\bf {\large What Does ``Confidence'' Mean?}}\\
+\end{center}
+
+We've seen that we can obtain several different interval estimates for
+a parameter. \\
+  Each is centered at the statistic (here $\phat$), but they have
+  different widths.
+
+To understand the meaning of the term ``confidence'', you have to step
+back from the data at hand and look at the process we use to create
+the interval.
+\begin{enumerate}
+  \item Select a random sample from a population, measure each unit,
+    and compute a  statistic like $\phat$ from it.
+  \item Resample based on the statistic to create the interval.
+\end{enumerate}
+
+ To check to see how well the techniques work, we have to take a
+ special case where we actually know the true parameter value.
+ Obviously, if we know the value, we don't need to estimate it, but we
+ have another purpose in mind: we will use the true value to generate
+ many samples, then use each sample to estimate the parameter, and
+ finally, we can check to see how well the confidence interval
+ procedure worked by looking at the proportion of intervals which
+ succeed in capturing the parameter value we started with.
+
+ Again go to \url{http://shiny.math.montana.edu/jimrc/IntroStatShinyApps/}
+ and select ``Confidence Interval Demo'' from the ``One Categ'' menu.
+ 
+ The first slider on this page allows us to set the sample size --
+ like the number of rat pairs in the experiment.  Let's start with
+ \fbox{40}.\\
+ The second slider sets the true proportion of successes for each
+ trial or spin (each rat pair).  Let's set that at \fbox{0.75} or 75\%
+ which is close to the observed $\phat$ of the rat study.\\
+ You can then choose the number of times to repeat the process (gather
+ new data and build a confidence interval [CI]: 10, 100, 1000 or 10K
+ times) and the level of confidence you want (80, 90, 95, or 99\%).\\
+ We'll start wih \fbox{100} simulations of a \fbox{90}\% CI.
+
+  The upper plot shows 100  $\phat$'s -- one from each of the 100 simulations.
+  \\
+  The second plot shows the interval estimate we get from each
+  $\phat$.  These  are stacked up to put smallest estimates on the
+  bottom, largest on top. The vertical axis has no real meaning. 
+
+  \begin{enumerate}
+    \setcounter{enumi}{13}
+  \item   Click on a point in the first plot to see its corresponding CI in
+  the second plot.  Especially try the largest and smallest points.
+  Which intervals do they create (in terms of left or right position)?
+\begin{students}
+  \vspace{1cm}
+\end{students}
+\begin{key}
+  {\it lowest and highest CI's, resp.}
+\end{key}
+\item There is a light gray vertical line in the center of the
+  plot. What is the value (on the $x$ axis) for this plot and why is
+  it marked?
+\begin{students}
+  \vspace{1cm}
+\end{students}
+\begin{key}
+  {\it It is the true parameter value: 0.75 if you followed the directions.}
+\end{key}
+\item What color are the intervals which do not cross the vertical
+  line? How many are there?
+\begin{students}
+  \vspace{1cm}
+\end{students}
+
+\begin{key}
+  {\it red, about 10}
+\end{key}
+
+\item What color are the intervals which cross over the vertical
+  line? How many are there?
+\begin{students}
+  \vspace{1cm}
+\end{students}
+
+\begin{key}
+  {\it green, about 90}
+\end{key}
+
+\item Change the confidence level to \fbox{95}\%. Does the upper plot
+  change?  Does the lower plot?  Describe any changes.
+\begin{students}
+  \vspace{1cm}
+\end{students}
+\begin{key}
+  {\it Upper plot should not change. Each interval in the lower plot
+    gets longer, so some that were red may turn green now.}
+\end{key}
+
+
+\item If you want an interval which is stronger for confidence
+  (has a higher level), what will happen to its width?
+\begin{students}
+  \vspace{.6cm}
+\end{students}
+\begin{key}
+  {\it it must be wider}
+\end{key}
+
+  \item Try each confidence level in turn and record the coverage rate
+    (under plot 2) for each.\\
+    \begin{tabular}{|r|r|r|r|} \hline
+      {\Large 80} &  {\Large 90} &  {\Large 95} &  {\Large 99}\\ \hline
+   {\Large  \phantom{90} } & {\Large \phantom{90}  } &  {\Large
+     \phantom{90} } &  {\Large  \phantom{90} } \\
+       & & & \\ \hline
+    \end{tabular}
+
+  \end{enumerate}
+
+
+\begin{center}
+  {\large \bf Take Home Message} 
+\end{center}
+
+\begin{itemize}
+\item Interval estimates are better than point estimates.
+\item Our confidence in a particular interval is actually in the
+  process used to create the interval.  We know that using this
+  process over and over again (go out and collect a new random sample
+  for each time) gives intervals which will usually
+  cover the true value.\\
+   We cannot know if a particular interval covered or not, so you have
+   to be tolerant of some uncertainty.
+ \item 
+  Use the remaining space for any questions or your own summary of the
+  lesson. 
+\end{itemize}
+
+
+
+

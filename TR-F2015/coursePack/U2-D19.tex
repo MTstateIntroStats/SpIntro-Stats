@@ -1,0 +1,378 @@
+\def\theTopic{Errors }
+\def\dayNum{19 }
+
+\begin{center}
+\vspace*{-.2in}
+{\bf {\large On Being Wrong 5\% of the Time}}\vspace{-.6cm}
+\end{center}
+
+
+Our confidence in a 95\% confidence interval comes from the fact that,
+in the long run, the technique works 95\% of the time to capture the
+unknown parameter.  This leads to an old cheap joke:
+
+{\sf Statisticians are people who require themselves to be wrong 5\%
+  of the time.}
+
+We hope that's not really true, but decision making leads to a dilemma:\\
+  If you want to never be wrong, you have to always put off decisions
+  and collect more data.
+
+Statistics allows us to make decisions based on partial data  while
+controlling our error rates.\\
+Discuss these situations and decide which error would be worse:\vspace{-.6cm}
+\begin{enumerate}
+\item A criminal jury will make an error if
+      they let a guilty defendant go free, or if
+      they convict an innocent defendant.
+     Which is worse? Why?
+\begin{students}
+  \vspace{1.5cm}
+\end{students}
+
+\item The doctor gives patients a test designed to detect pancreatic
+  cancer (which is usually quite serious).  The test is wrong if:
+  it says a healthy patient has cancer (a false positive), or if
+  it says a patient with cancer is healthy (a false negative).  Which
+  is worse?  Why? 
+\begin{students}
+  \vspace{1.5cm}
+\end{students}
+
+\item  A weather forecaster working at an airport in Indonesia on
+  December 28, 2014 had to decide if it was too dangerous
+   to allow Air Asia Flight 8501 to fly to
+  Singapore.  The flight was allowed, resulting in the deaths of all
+  162 people aboard.  Errors don't get much worse than that, but what
+  would the cost be of grounding a flight?  
+\begin{students}
+  \vspace{2.5cm}
+\end{students}
+
+
+
+\item  Large chain stores are always looking for locations into which
+  they can expand -- perhaps into Bozeman. 
+  When would a  decision to open a store in Bozeman  be wrong?\\
+  When would a decision to not open a store in Bozeman  be
+  wrong?\\
+  Which is the worse error?  
+\begin{students}
+  \vspace{3cm}
+\end{students}
+
+\end{enumerate}
+
+{\bf Two Types of Error. }
+
+Definitions:\vspace{-.6cm}
+\begin{itemize}
+  \item To reject $H_0$ when it is true is called a Type I error.
+  \item To fail to reject $H_0$ when it is false is called a Type II error.
+\vspace{-.6cm}
+\end{itemize}
+To remember which is which: we start a hypothesis test by assuming
+$H_0$ is true, so Type I goes with $H_0$ being true. 
+
+This table also helps us stay organized: \hfill
+\begin{tabular}{|l|c|c|}\hline
+   & \multicolumn{2}{|c|}{Decision:} \\
+$H_0$ is:  & Reject $H_0$ & Do not reject $H_0$\\\hline
+true & {\em Type I Error} & Correct  \\ \hline
+false& Correct & {\em Type II error}   \\ \hline\hline
+\end{tabular}
+
+
+
+{\bf Which is worse?}
+
+The setup for hypothesis testing assumes that we really need to
+control the rate of Type I error.  We can do this by setting our
+ significance level, $\alpha$.  If, for example, $\alpha = 0.01$, then
+ when we reject $H_0$ we are making an error less than 1\% of the time.
+So $\alpha$ is the probability of making an error when $H_0$ is true.
+
+There is also a symbol for the probability of a Type II error,
+$\beta$, but it changes depending on which alternative parameter
+value is correct. 
+
+
+
+\begin{center}
+  {\bf Justice System and Errors }
+\end{center}
+
+Refer to this reading about the justice system:\\
+\url{http://www.intuitor.com/statistics/T1T2Errors.html}  
+
+In both the justice system and in statistics, we can make errors. In
+statistics the only way to avoid making errors is to not state any
+conclusion without measuring or polling the entire population.  That's
+expensive and time consuming, so we instead try to control the chances
+of making an error.  
+ 
+
+For a scientist, committing a Type I error means we would report a
+big discovery when in fact, nothing is going on. (How embarrassing!)
+This is deemed more critical than a Type II error, which happens if
+the scientist does a research project and finds no ``effect'' when, in
+fact, there is one. 
+
+
+Type II error is harder to control because it depends on these things:
+\vspace{-.2cm}
+\begin{itemize}
+\item  The null hypothesis has to be wrong, but it could be wrong just
+  by a small amount or by a large amount.  For example if 
+   we did not reject the null hypothesis that treatment and
+  control  were equally effective,  we could be making a type II
+  error.  If in fact, if there was a small difference, it would be
+  hard to detect, and if the treatment was far better, it would
+  be easy to detect.  This is called the effect size, which is
+  [difference between null model mean and an alternative mean] divided
+  by standard error.
+\item  Sample size.  P--values are strongly affected by sample
+  size. With a big sample we can detect small differences.  With small
+  samples, only coarse or obvious ones.
+\item  Significance level.  The fence, usually called $\alpha$ (alpha), is
+  usually set at .10, .05 or .01 with smaller values requiring
+  stronger evidence before we reject the null hypothesis and thus
+  lower probability of error.  
+\end{itemize}
+
+
+Instead of limiting the probability of Type II error, researchers more
+often speak of keeping the power as large as possible.  Power is one
+minus the probability of Type II error.  Go to the Power Demo page:
+\url{http://shiny.math.montana.edu/jimrc/IntroStatShinyApps} and click
+``Power Demo'' under ``One Quant'' data.
+\begin{students}
+\vspace{.5cm}
+\end{students}
+
+
+\begin{enumerate}
+  \setcounter{enumi}{4}
+  \item  Set Sample size to 8, SD to 2, Alternative Mean to 2, and
+    significance level to 0.01. What is the power?
+\begin{students}
+ \vspace{1cm} %% 
+\end{students}
+
+\begin{key}
+  {\it 0.484 }
+\end{key}
+
+  
+
+    Increase sample size until you get power just bigger than 0.80.
+    How large a sample is needed?
+\begin{students}
+\vspace{1cm} %% 
+\end{students}
+
+\begin{key}
+  {\it 13 }
+\end{key}
+
+
+  \item  \label{ss8a}  Return to sample size 8. Adjust SD to get power just over
+    0.80. Do you make it larger or smaller?  What value worked? 
+\begin{students}
+ \vspace{1cm} %% 
+\end{students}
+
+\begin{key}
+  {\it 0.484  Smaller, down to 1.4}
+\end{key}
+
+
+
+    What is your effect size?
+\begin{students}
+\vspace{1cm} %% 
+\end{students}
+
+\begin{key}
+  {\it $2 - 0 = 2/1.4 = 1.429$}
+\end{key}
+
+  \item \label{ss8b}  Return to SD = 2.  Change Alternative Mean to get power just
+    over 0.80.  Did you make it larger or smaller?  What value did you
+    settle on?
+\begin{students}
+ \vspace{1cm} %% 
+\end{students}
+
+\begin{key}
+  {\it Larger, 2.9 }
+\end{key}
+
+
+    What is your effect size?
+\begin{students}
+ \vspace{1cm} %% 
+\end{students}
+
+\begin{key}
+  {\it $(2.9 - 0)/2 = 2.9/2 = 1.45$}
+\end{key}
+
+  \item   How do the effect sizes in \ref{ss8a} and \ref{ss8b} compare?  
+\begin{students}
+ \vspace{1cm} %% 
+\end{students}
+
+\begin{key}
+  {\it Larger effect  size in the latter. }
+\end{key}
+
+
+
+    How do SD and Alternative Mean work together to determine power? 
+\begin{students}
+ \vspace{2cm}
+\end{students}
+
+\begin{key}
+  {\it     Larger effect for same SD means more power, lower SD for same
+    effect means more power.  In general, larger effect and lower
+    SD means more power. }
+\end{key}
+
+
+  \item  Change significance level to 0.05.  What happens to power?
+\begin{students}
+ \vspace{1cm} 
+\end{students}
+
+\begin{key}
+  {\it  .971}
+\end{key}
+
+
+    Change it to 0.10. What is the power? 
+\begin{students}
+ \vspace{1cm}%% 
+\end{students}
+
+\begin{key}
+  {\it .992}
+\end{key}
+
+  \item    In which direction does power change when we decrease the
+    significance level?  
+\begin{students}
+ \vspace{3cm}
+\end{students}
+
+\begin{key}
+  {\it     It would decrease (power and significance level change in the
+    same direction). }
+\end{key}
+
+
+  \item   Suppose that we are planning to do a study of how energy
+    drinks effect RBAN scores similar to the study we read about on
+    Day 11.  From previous data, we have an estimate of standard
+    deviation of 3.8. We plan to use a significance level of $\alpha =
+    .05$, and want to be able to detect an increase in mean RBAN score
+    of 2 with 90\% power.   How large must our sample size be?
+\begin{students}
+ \vspace{1cm} %%
+\end{students}
+
+\begin{key}
+  {\it  33}
+\end{key}
+
+
+      If we choose $\alpha = .01$, how large a sample is needed?
+\begin{students}
+ \vspace{1cm}
+\end{students}
+\begin{key}
+\ \ \   {\it 50}
+\end{key}
+
+  \item  Now suppose that we are using the same visual discrimination
+    task used to study sleep deprivation.  Historical data
+    provides an estimate of SD = 13.  We want to use $\alpha = .05$ and
+    need to detect an increase in mean score of 6 with 80\% power. 
+    How large a sample is needed? 
+\begin{students}
+ \vspace{1cm} %%
+\end{students}
+
+\begin{key}
+  {\it  31}
+\end{key}
+
+
+
+
+    If we want to limit the chance of Type II error to 10\% or less,
+    how large a sample size is needed? 
+\begin{students}
+ \vspace{1cm}\\
+\end{students}
+
+\begin{key}
+  {\it  Type II = 1--power so we want more than 90\% power.  Need 43
+      people. }
+\end{key}
+\item Suppose we do another study on energy drinks with alcohol using
+  Control and REDA.  This type we test hand-eye coordination using
+  $H_0:\ \mu_{control} = \mu_{REDA}$ versus alternative  $H_a:\
+  \mu_{control} > \mu_{REDA}$.
+  \begin{enumerate}
+  \item What would be a Type I error in this context? 
+\begin{students}
+ \vspace{1cm}\\
+\end{students}
+
+\begin{key}
+  {\it   To conclude that there is a difference in mean coordination between the
+    two treatments when, in fact, REDA has no effect on coordination scores. }
+\end{key}
+  \item What would be a Type II error in this context? 
+\begin{students}
+ \vspace{1cm}\\
+\end{students}
+
+\begin{key}
+  {\it  To fail to find a difference in mean coordination between the
+    two treatments when, in fact, REDA lowers coordination scores. }
+\end{key}
+  \end{enumerate}
+
+
+
+
+
+
+\end{enumerate}
+
+
+\begin{center}
+  {\bf Take Home Message} \vspace{-.6cm}
+\end{center}
+\begin{itemize}
+  \item Errors happen.  Use of statistics does not prevent all errors,
+    but it does limit them to a level we can tolerate. We have labels
+    for two types of error.
+  \item The talk about probability of  error is based on the sampling
+    distribution given random assignment of treatments or random
+    sampling. It's really a ``best case'' scenario, because there
+    could be other sources of error we have not considered.  For
+    example, we could have not sampled from some part of the
+    population, or we could have errors in our measuring tools.
+  \item If you are designing a study, you might need to consult a
+    statistician to help determine how large a sample size is
+    needed. You'll need to decide what $\alpha$ to use, what the
+    underlying variation is ($\sigma$), and how large a difference you
+    need to detect with a certain level of power.
+ \item 
+  Use the remaining space for any questions or your own summary of the
+  lesson. 
+\end{itemize}
