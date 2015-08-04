@@ -3182,8 +3182,8 @@ output$c1q1_EstPrep1 <- renderPlot({
   n1 <- length(c1q1Est$ndx1)
   n2 <- length(c1q1Est$ndx2)
   resample <-  c1q1Est$shuffles <- c1q1_estimate_shuffles(1, c1q1Est$ndx1, c1q1Est$ndx2)
+  #print(c1q1Est$shuffles)
   DF2 <- c1q1$data[resample, ] 
-  #print(DF2)
   names(DF2) <- names(DF)
   DF2 <- DF2[order(DF2$y), ]
   c1q1Est$diff <- -diff(tapply(DF2$y, DF2$group, mean))
@@ -3214,14 +3214,13 @@ output$c1q1_EstPrep2 <- renderTable({
 
 output$c1q1_EstTable1 <- renderTable({
   if( is.null(c1q1$data))  return()
-  c1q1Est$ndx1 <- which(unclass(c1q1$data[,1]) == 1)
-  c1q1Est$ndx2 <- which(unclass(c1q1$data[,1]) == 2)
-  #print(c(c1q1Est$ndx1, c1q1Est$ndx2))
-  resamp1 <- c1q1$data[c1q1Est$shuffles[,1], 1]
-  #print(table(resamp1))
-  DF <- data.frame(mean = tapply(c1q1$data[, 2], resamp1, mean, na.rm = TRUE ),
-                   sd = tapply(c1q1$data[, 2], resamp1, sd, na.rm = TRUE ),
-                   n = tapply(c1q1$data[, 2],  resamp1, length))
+  c1q1Est$ndx1 <- which(unclass(c1q1$data[,1]) == 1 | c1q1$data[,1] == "A")
+  c1q1Est$ndx2 <- which(unclass(c1q1$data[,1]) == 2 | c1q1$data[,1] == "B")
+  resamp1 <- c1q1$data[c1q1Est$shuffles[,1], 2]
+  print(resamp1)
+  DF <- data.frame(mean = tapply(resamp1, c1q1$data[, 1], mean, na.rm = TRUE ),
+                   sd = tapply(resamp1, c1q1$data[, 1], sd, na.rm = TRUE ),
+                   n = tapply(resamp1, c1q1$data[, 1], length))
   rownames(DF) <- levels(c1q1$data[,1])
   #print(DF)
   DF
