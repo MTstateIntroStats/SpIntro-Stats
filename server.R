@@ -2857,21 +2857,10 @@ output$c1q1_Summary2 <- renderTable({
           h4(" You must first enter data. Choose 'Enter/Describe Data'.")
         } else{ 
           fluidPage(
-            h3("Test: 'Are two means Equal?'"),
+            h3("Test: 'Are Two Means Equal?'"),
             fluidRow(
               column(4, 
-                      plotOutput("c1q1_TestPrep1"), 
-                      br(),
-                      br(),
-                      h4("We start showing one sample from the null."),
-                      h4("How many more?"),
-                      fluidRow(
-                        column(2, actionButton("c1q1_test_shuffle_10", label = "10")),
-                        column(2, actionButton("c1q1_test_shuffle_100", label = "100")),
-                        column(2, actionButton("c1q1_test_shuffle_1000", label = "1000")),
-                        column(2, actionButton("c1q1_test_shuffle_5000", label = "5000"))
-                      )
-                      
+                      plotOutput("c1q1_TestPrep1")
                       ),
                column(3,
                       br(),
@@ -2884,23 +2873,26 @@ output$c1q1_Summary2 <- renderTable({
                       br(),
                       tableOutput("c1q1_TestTable1"),
                       h5(paste("Shuffled difference in means = ", round(as.numeric(c1q1Test$diff[1]),3)))
-               ),
+                     ),
                column(5, 
-                      fluidRow(
-                        column(8, h4(HTML("Null hypothesis: &mu;<sub>1</sub> = &mu;<sub>2</sub>"))
-                               ),
-                        
-                        # h5("Click on a point to see that shuffle"),
-                        uiOutput('c1q1_SampDistPlot'),
-                        br(),
-                        br(),
-                        
-                        uiOutput("c1q1TestXtremes"),
-                        actionButton("c1q1_countXtremes","Go", offset = 5),
-                        uiOutput("c1q1TestPvalue")
-                      )
+                      h4(HTML("Null hypothesis: &mu;<sub>1</sub> = &mu;<sub>2</sub>")),
+                      uiOutput('c1q1_SampDistPlot')
+                     )
+              ),
+            fluidRow(
+              column(6, 
+                h4("One sample from the null is shown. How many more?"),
+                fluidRow(
+                  column(2, actionButton("c1q1_test_shuffle_10", label = "10")),
+                  column(2, actionButton("c1q1_test_shuffle_100", label = "100")),
+                  column(2, actionButton("c1q1_test_shuffle_1000", label = "1000")),
+                  column(2, actionButton("c1q1_test_shuffle_5000", label = "5000"))
+                  )),
+              column(6,
+                  uiOutput("c1q1TestXtremes"),
+                  uiOutput("c1q1TestPvalue")
+                  )
                )
-             )
           )
         }
       })
@@ -2911,10 +2903,11 @@ output$c1q1_Summary2 <- renderTable({
       
       output$c1q1TestPvalue <- renderUI({
         if(!is.null(c1q1Test$moreExtremeCount)){
-          fluidRow(
-            column(9,  h4(paste(c1q1Test$moreExtremeCount, " of ", length(c1q1Test$diff), "values are ",
+          #fluidRow(
+          #  column(9,  
+          h4(paste(c1q1Test$moreExtremeCount, " of ", length(c1q1Test$diff), "values are ",
                                             c1q1Test$direction," than", c1q1Test$cutoff, ",  p-value =  ", round(c1q1Test$pvalue,5)))
-            ))
+          #  ))
         }
       })
       
@@ -2935,9 +2928,11 @@ output$c1q1_Summary2 <- renderTable({
           column(2,
                  tags$div( 
                    tags$input(id = "c1q1_test_cutoff", type = "text", class = "form-control", value = NA))
+          ),
+          column(1, 
+            actionButton("c1q1_countXtremes","Go")
           )
-          )
-          #actionButton("c1q1_countXtremes","Go")
+        )
       })
       
       
@@ -2955,15 +2950,7 @@ output$c1q1_Summary2 <- renderTable({
           theme_bw() + xlab("") +  coord_flip() + ylab(c1q1$names[2])
 
                 ## Plot One Shuffle 
-
-#         DF <- DF[order(DF$y), ]
-#         nbreaks <- min(c(length(unique(DF$y)), floor(.5*nclass.Sturges(DF$y)^2)))
-#         z <- cut(DF$y, breaks =  nbreaks )
-#         w <- unlist(tapply(DF$y, list(z, DF$group), function(x) 1:length(x)))
-#         w <- w[!is.na(w)]  
-#         plot1 <- qplot(data= DF, x=y, y=w , colour = I(blu), size = I(4), main = "Original Data")+ facet_wrap( ~group) + 
-#           theme_bw() + ylab("Count") + xlab( c1q1$names[2])
-       
+     
         shuffle <- sample(c1q1$data[,1])
         c1q1Test$shuffles <- as.matrix(shuffle, ncol = 1)
         c1q1Test$diff <- -diff(tapply(DF$y, shuffle, mean))
@@ -2980,8 +2967,8 @@ output$c1q1_Summary2 <- renderTable({
 #         tempDF <- data.frame(DF, w=w2[!is.na(w2)])
 #         plot2 <- qplot(data = tempDF, x = y, y = w, colour = I(blu), size = I(4), main = "Shuffled Data") + 
 #                     theme_bw() + xlab(c1q1$names[2]) + ylab("Count") + facet_wrap( ~ group2)
-         grid.arrange(plot1, plot2, heights = c(3, 3)/7, ncol=1)
-      }, height = 360)
+         grid.arrange(plot1, plot2, heights = c(3, 3)/6, ncol=1)
+      }, height = 360, width = 320)
       
       output$c1q1_TestPrep2 <- renderTable({
         if(is.null(c1q1$data))  return()
@@ -3073,7 +3060,7 @@ output$c1q1_Summary2 <- renderTable({
              xlab = expression(bar(x)[1] - bar(x)[2]), main = "Resampling Distribution")
         legend("topright", bty = "n", paste(length(parm), "points \n Mean = ", 
                                             round(mean(parm),3), "\n SE = ", round(sd(parm),3)))
-      }, width = 600)      
+      }, width = 400)      
 
   
   
