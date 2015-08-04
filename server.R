@@ -3117,7 +3117,7 @@ output$c1q1_Summary2 <- renderTable({
                  
         if(!is.null(c1q1Est$CI)){
              fluidRow( 
-                     column(7, offset = 5,
+                     column(7, offset = 6,
                             h4(paste(c1q1Est$confLevel*100, "% Interval Estimate: (", round(c1q1Est$CI[1],3), ",", 
                                      round(c1q1Est$CI[2], 3), ")"))
                      ))
@@ -3183,14 +3183,17 @@ output$c1q1_EstPrep1 <- renderPlot({
   n2 <- length(c1q1Est$ndx2)
   resample <-  c1q1Est$shuffles <- c1q1_estimate_shuffles(1, c1q1Est$ndx1, c1q1Est$ndx2)
   DF2 <- c1q1$data[resample, ] 
+  #print(DF2)
   names(DF2) <- names(DF)
   DF2 <- DF2[order(DF2$y), ]
   c1q1Est$diff <- -diff(tapply(DF2$y, DF2$group, mean))
+  c1q1Est$colors <- blu
   ### stores samples as columns
   #print(c1q1Est$shuffles)
   #z2 <- cut(DF2$y, breaks =  c(sapply(strsplit(substr(levels(z),2,20),","), function(str) as.numeric(str[1])), max(DF$y +1)) )
   #w2 <- unlist(tapply(DF2$y, list(z2, DF2$group), function(x) 1:length(x)))
   #tempDF2 <- data.frame(DF2, w=w2[!is.na(w2)])
+  
   c1q1_plot3 <- qplot(y=y, x=group, data = DF2, geom="boxplot", main = "Resampled Data") +
                 theme_bw() + xlab("") +  coord_flip() + ylab(c1q1$names[2])
 #c1q1_plot3 <- qplot(data = DF2, x = y, y = w2, colour = I(blu), size = I(4), main = "Resampled Data") + 
@@ -3213,12 +3216,14 @@ output$c1q1_EstTable1 <- renderTable({
   if( is.null(c1q1$data))  return()
   c1q1Est$ndx1 <- which(unclass(c1q1$data[,1]) == 1)
   c1q1Est$ndx2 <- which(unclass(c1q1$data[,1]) == 2)
+  #print(c(c1q1Est$ndx1, c1q1Est$ndx2))
   resamp1 <- c1q1$data[c1q1Est$shuffles[,1], 1]
   #print(table(resamp1))
   DF <- data.frame(mean = tapply(c1q1$data[, 2], resamp1, mean, na.rm = TRUE ),
                    sd = tapply(c1q1$data[, 2], resamp1, sd, na.rm = TRUE ),
                    n = tapply(c1q1$data[, 2],  resamp1, length))
   rownames(DF) <- levels(c1q1$data[,1])
+  #print(DF)
   DF
 })
 
