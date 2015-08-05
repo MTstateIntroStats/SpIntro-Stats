@@ -234,74 +234,55 @@ Attraction &
 % \end{key}
 %   \end{enumerate}
     
-\item Dolphin Therapy Study
+\item Peanut Allergy Study
   \begin{enumerate}
-  \item  Suppose the results of the experiment had been that 11 had
-    improved in the dolphin group (instead of 10) and only 2 had
-    improved in the control group (instead of 3).  Explain how your
+  \item  Suppose the results of the experiment had been that 4 had
+    become allergic in the peanut group (instead of 5) and only 36 had
+    become allergic in the control group (instead of 35).  Explain how your
     approximate p-value would have been different in this case.  Also
-    describe how the strength of evidence for the benefit of dolphin
-    therapy would have changed.
+    describe how the strength of evidence for the benefit of peanut protein
+    would have changed.
 \begin{students}
   \vspace{2cm}
 \end{students}  
 
 \begin{key}
-  {\it One more improved patient in the tretment group and one fewer
-    in control make this even stronger evidence against the null
-    hypothesis. The difference in proportions becomes .60, and in 5000
-    randomization trials, I never got one sample with this large a
-    difference in sample proportions, so p--value is $< 1/5000 =
-    .0002$  Our conclusion is the same.}
-
-\end{key}
-  \item  Suppose the results of the experiment had been that 8 had
-    improved in the dolphin group (instead of 10) and 5 had improved
-    in the control group (instead of 3).  Explain how your approximate
-    p-value would have been different in this case.  Also describe how
-    the strength of evidence for the benefit of dolphin therapy would
-    have changed.  
-\begin{students}
-  \vspace{2cm}
-\end{students} 
-
-\begin{key}
-   {\it With 8 improved patients in the tretment group and 5
-    in control the evidence is weak to none against the null hypothesis.
-    The difference in proportions becomes .20, and in 5000
-    randomization trials  p--value is $.22$  Our conclusion is reversed.}
+  {\it  One fewer allergic kid in the treatment group and one more
+     in control make this even stronger evidence against the null
+     hypothesis. The difference in proportions becomes -0.125, and in 5000
+     randomization trials, I never got one sample with this large a
+     difference in sample proportions, so p--value is $< 1/5000 =
+     .0002$  Our conclusion is the same.
+  }
 \end{key}
 
-  \item  Suppose the study had involved exactly twice as many
-    subjects, 60 instead of 30, and suppose that the same proportions
-    had improved in each group (dolphin, control).  Describe what
-    would have changed in how you set up the simulation analysis.
-    Then make a prediction, and explain your reasoning, for how the
-    approximate p-value, and the strength of evidence for the benefit
-    of dolphin therapy, would have changed.  Finally, conduct the
-    simulation analysis for this new situation, and comment on whether
-    your prediction was confirmed or refuted. 
+\item Suppose that all counts were divided by 5, so we had 1 allergy
+  in the treatment group and 7 in the controls (out of 49 and 51
+  kids).  Explain how your p-value would have been different in this
+  case.  Also describe how the strength of evidence for the benefit of
+  peanut protein would have changed.  
 \begin{students}
-  \vspace{2cm}
-\end{students} 
+  \vspace*{\fill}
+  \newpage
+\end{students}
 
 \begin{key}
-  {\it A good guess is that the same proportion in the larger study
-    provides stronger evidence. It does.  When I run 5000 trials with
-    60 patients, the differences in means in the plot only go up to
-    .4, never to .467, so the p--value is $< .0002$}
+   {\it A good guess is that the same proportion in the smaller study
+     provides weaker evidence. It does.  When I run 5000 trials with
+     100 kids, the differences I got 16 values $< -0.117$ for a
+     p-value of  $< .003$.}
 \end{key}
   \end{enumerate}
 
-\begin{students}
-    \newpage
-\end{students} 
 
 
 
   \begin{center}
   {\bf  More Examples}
   \end{center}
+
+The following exercises are adapted from the CATALST curriculum at
+\url{https://github.com/zief0002/Statistical-Thinking}. 
 
 
 \item Teen Hearing Study
@@ -329,7 +310,7 @@ Attraction &
     Explanatory variable: year of survey\\
     Response: Some hearing loss.}
 \end{key}
-\item  Just as with the dolphin therapy and sleep deprivation studies,
+\item  Just as with the peanut protein therapy and sleep deprivation studies,
   this study made use of randomness in collecting the data. But the
   use of randomness was quite different in this study.  Discuss what
   type of conclusions can be made from each type of study and why you
@@ -363,6 +344,7 @@ Attraction &
   
 \end{key}
 \end{enumerate}
+
 
 \begin{students}
 \newpage
@@ -503,7 +485,7 @@ group was 107.25 mm Hg and for the counting group was 104.625 mm Hg.
 \begin{key}
   {\it Mean blood pressure is the same for people talking or counting.}
 \end{key}
-     \item  Use StatKey to do the appropriate test to determine if a
+     \item  Use our web app to do the appropriate test to determine if a
        difference this large could reasonably occur just by chance.
        Comment on the strength of evidence against
        the null model.
@@ -551,18 +533,16 @@ group was 107.25 mm Hg and for the counting group was 104.625 mm Hg.
 %     hypothesis of equal means.}
 % \end{key}
 
-\item
- Investigators at the UNC Dental School
-     followed the growth of  11 girls from age
-     8 until age 14.  Every two years they measured a particular distance
-     in the mouth via xray ((in mm) .  Assume that they want to test ``Is the
-     rate of growth zero?''.  The data are on D2L.  Note: ages are
-     fixed by design, but not randomly assigned. 
+\item Investigators at the UNC Dental School followed the growth of 11
+  girls from age 8 until age 14.  Every two years they measured a
+  particular distance in the mouth via xray ((in mm) .  Assume that
+  they want to test ``Is the rate of growth zero?''.  The data are
+  called ``Dental'' under ``Two Quant''.  Note: ages are fixed by
+  design, not randomly assigned.
      \begin{enumerate}
      \item Find the estimated least squares line.  Note: be sure that
-       ``age'' is the explanatory variable in your plot. You will need
-       to click \fbox{(explanatory, response)} to change it to 
-        \fbox{(response, explanatory)}.
+       ``age'' is the explanatory variable in your plot. You may need
+       to click \fbox{Swap Variables (X goes to Y)} get that ordering.
 \begin{students}
   \vspace{1.5cm}
 \end{students} 
@@ -577,7 +557,7 @@ group was 107.25 mm Hg and for the counting group was 104.625 mm Hg.
 \end{students} 
 
 \begin{key}
-  {\it It increases by an estimated .4795 mm for each year.}
+  {\it It increases by an estimated .48 mm for each year.}
 \end{key}
 
      \item What hypotheses are we testing?

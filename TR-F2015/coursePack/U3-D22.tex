@@ -1,365 +1,570 @@
-\def\theTopic{Difference in Proportions - Z }
+\def\theTopic{Normal Proportions }
 \def\dayNum{22 }
 
 
 \begin{center}
-{\bf {\large \textbf{Normal Inference - Difference in Proportions}}}
-\end{center}
+   {\Large\bf  Proportions}
+ \end{center}
+
+If we mix 40 blue balls and 80 gold balls together in a jar and draw
+out 30 at random with replacement, the sampling distribution for the
+proportion of blue balls in a sample of size 30 looks like this:
+
+\includegraphics[width=.8\linewidth]{plots/sample1.pdf}
+
+Each of 5000 dots came from a computer simulation in which we sampled
+30 draws from the container at random with replacement, and computed
+the proportion of blue balls in the simulated sample.  The curve shown
+on top of the dots is the density of the normal distribution with the
+same center and spread as the distribution of dots.
+
+With modern computers, we can easily simulate random draws five or ten
+thousand times, and/or we can easily obtain probabilities from the
+normal distribution.  Both are valid tools, and each method can give
+us the p-values and confidence intervals that we need.  We did the
+simulation approach first because it allowed us to bypass two weeks of
+more theoretical probability and quickly get to the meat of this
+course -- statistical inference.  Now it's time to see how the other
+approach works, and we'll continue to emphasize the interpretation of
+p-values and confidence intervals.  
 
 
-When we did a hypothesis test to see if the difference in  two true
-proportions was zero,  for example when evaluating the effectiveness
-of Dolphin therapy, we shuffled cards and relabeled the two groups many
-times. Now we'll use the normal distribution instead.  
+%% <<sample1, echo=FALSE, fig.width=6,fig.height=4,out.width='.75\\linewidth'>>=
+%%   reps <- 5000
+%%   n <- 30
+%%   p <- 1/3
+%%   blueProp <- rbinom(reps,n,p) / n
+%%   x <- sort(blueProp)
+%%   y <- unlist(tapply(x, x, function(z) 1:length(z))) /reps / diff(range(x)) * (length(unique(x))-1.5)
+%% ##  rescale to meet normal density
+%%   plot(jitter(x, .1), y, main = "Distribution of Proportion Blue", xlab = "", ylab = "")
+%%   curve(dnorm(x,p,sqrt(p*(1-p)/n)),add=TRUE,col=4,lwd=2)
+ %  dev.copy2pdf(file="plots/sample1.pdf",height=4,width=8)
+
+% # summary(nlme::RatPupWeight$weight)
+% #   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+% #  3.680   5.650   6.055   6.081   6.398   8.330 
+% # sd(nlme::RatPupWeight$weight)
+% #[1] 0.6474272
+% # locator(1) #$y 0.6190716
+ 
+  %# summary(faraway::aatemp$temp)
+ %#   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ %#  43.41   46.78   47.73   47.74   48.64   51.89 
+ %# sd(faraway::aatemp$temp) ] 1.526413
+ %# locator(1)$y[1] 0.2773441
+
+%# sd(nlme::Oxboys$height)
+%#[1] 9.10321
+ % #summary(nlme::Oxboys$height)
+ % #  Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ % # 126.2   143.8   149.5   149.5   155.5   174.8 
+ % #locator(1) # 0.04889153
+ %
+ % par(mfrow=c(1,3))
+ % hist(nlme::RatPupWeight$weight,breaks=20,probability=TRUE, main=" ",
+ % xlab = "Weight")
+ % curve(dnorm((x-6)/0.647)/.3989*.63,col=4,add=TRUE)
+ % hist(faraway::aatemp$temp,breaks=18,probability=TRUE, main=" ", xlab
+ % = "Temperature")
+ % curve(dnorm((x-47.6)/1.526)/.3989*.26,col=4,add=TRUE)
+ % hist(nlme::Oxboys$height,breaks=18,probability=TRUE, main=" ", xlab =
+ % "Height (cm)")
+ % curve(dnorm((x-149.5)/9.1)/.3989*.047,col=4,add=TRUE)
+ % dev.copy(png, file="plots/normals.png",height=300,width=800);dev.off()
+%% @ 
+      
+%% 
   
-
- To make the switch from simulations to a theoretical distribution,
- we need, just as for a single proportion, a formula for the standard
- error of our statistic.  In the last activity our statistic was
- $\widehat{p}$ and our formula was $SE(\widehat{p}) =
- \sqrt{\widehat{p}(1-\widehat{p})/n}$.  To compare two groups, our 
-statistic is $\widehat{p}_1 - \widehat{p}_2$ and we need a formula for
-$SE(\widehat{p}_1 - \widehat{p}_2)$. As with a single proportion, the
-form of this standard error depends on whether we are doing a
-hypothesis test (assuming some $H_0$ is true) or building a confidence
-interval.  We'll start with the hypothesis test which is typically
-testing to see if the two groups have the same true proportion, that
-is:  $H_0:\ p_1 = p_2$.
- \begin{itemize}
- \item If $H_0$ is true, the two groups are really the same, and we
-   should combine them to get a better estimate of the overall
-   proportion of successes. We'll call estimate $\widehat{p}_m$ where
-   the ``m'' stands for ``{\bf marginal}'' because it's
-   based on totals which appear in the outer margin of a table.  We
-   find it by combining all successes from both 
-   groups, then dividing by the sum of the sample sizes. 
-  $$\widehat{p}_m = \frac{x_1 + x_2}{n_1+n_2} = \frac{n_1\widehat{p}_1
-    + n_2\widehat{p}_2}{n_1 + n_2}$$ 
-  Recall:  we used the same combined estimate when simulating draws
-  from $H_0$ back on page 54.
- \end{itemize}
-
- The {\bf hypothesis testing} formula for standard error of the difference in sample proportions is:
- $$SE(\widehat{p}_1 - \widehat{p}_2) =
- \sqrt{\frac{\widehat{p}_m(1-\widehat{p}_m)}{n_1} +
-   \frac{\widehat{p}_m(1-\widehat{p}_m)}{n_2}} =
-  \sqrt{\widehat{p}_m(1-\widehat{p}_m)\left(\frac{1}{n_1} +
-   \frac{1}{n_2}\right)}$$
+In Unit 1 we used spinners and coin flips to simulate the distribution
+of a proportion.  From that distribution we used the standard
+deviation as printed in the plot window.  We added two standard errors
+to -- and subtracted two standard errors from -- the point estimate to build our
+confidence interval.  In order to use the normal distribution instead of a
+simulation,  we need this formula for standard error of the sample
+proportion: 
+    $$ SE(\widehat{p}) = \sqrt{\widehat{p}(1-\widehat{p})/n} $$
+ We can then multiply $SE(\widehat{p})$ by the appropriate $z^*$
+ value from the normal distribution to get whatever confidence
+ level we need.  Setting margin of error to $2 SE$ was a good
+ approximation for a 95\% confidence interval, but you'll see in
+ this web app that a more precise value is 1.96 $SE$'s on each
+ side.
 
 
+{\bf Notation:} We have two ways to describe the same measure
+of spread. For any distribution, we can compute the spread, or
+standard deviation of the sampled values.  When we talk about the
+sampling distribution of a statistic, we can  refer to the
+standard deviation of the sampling distribution because it is a
+distribution, so it has some ``spread''.   However, we prefer
+to talk about the ``Standard Error'' (or SE) of the statistic.  We'll
+be able to show the difference better when we look at the mean of a
+continuous variable, so we'll come back to this.  For now, know this:
+  What we called ``std.dev.'' in web applets is actually the ``SE'' of
+  the sample proportion.
 
-\begin{center}
-\vspace*{.1in}
-{\bf {\large Are we better people in a pleasant environment?}}
-\end{center}
-\vspace{-.1in}
+When we write $SE(estimate)$ as in $SE(\phat)$ or $SE(\xb)$, we {\bf
+  do not} mean to multiply $SE$ by the estimate. This is notation to
+say SE is a function which we apply to the estimate. We read it as
+``standard error of $\ldots$'' just like when we take log of $x$ we
+write $\log(x)$.  
 
-A study from the {\it Journal of Social Psychology}\footnote{ Nicolas Gu\'eguen, 2012.  The Sweet Smell of \ldots Implicit Helping:
- Effects of Pleasant Ambient Fragrance on Spontaneous Help in Shopping
- Malls .  {\it Journal of Social Psychology} {\bf152}:4, 397-400 }
- reports on a study of
-people's behavior under two different conditions.  One ``treatment'' was
-the pleasing smell of fresh bread outside a bakery, while the other
-was the neutral smell outside a clothing store.  Researchers dropped a
-glove or a package of tissues and recorded whether or not passers by
-helped retrieve the lost article.  Outside the bakery, 154 of 200
-people  told the person they lost something, whereas outside the
-clothing store, 105 of 200 people took the time. 
+  \begin{center}
+    {\bf Confidence Intervals}
+  \end{center}
 
-We will run a test to see if the two proportions of ``helpers'' are
-the same.
+The general form is 
+$$ \mbox{estimate} \pm z^* SE(\mbox{estimate})$$
+or for proportions:
+$$ \widehat{p} \pm z^*\sqrt{\widehat{p}(1-\widehat{p})/n}$$
 
-The researchers gave this description of their methods:
-   \quotation{ \small
-``The participants were 200 men and 200 women (between the ages of
-approximately 20 and 50) chosen at random while they were walking in a
-large shopping mall. The participant was tested while walking near
-areas containing pleasant ambient odors (e.g.: bakeries, pastries) or
-not (e.g. clothing stores). Four young women (M = 20.3 years) and
-four young men (M = 21.3 years) served as confederates in this
-study. They were dressed in clothing typically worn by people of this
-age (jeans/T-shirt/boat shoes). The confederate chose a participant
-walking in his/her direction while standing in front of a store
-apparently looking for something in his/her bag. The confederate was
-carefully instructed to approach men and women walking alone,
-apparently aged from 20 to 50, and to avoid children, adolescent, and
-elderly people. The confederate was also instructed to avoid people
-who stopped near a store. Once a participant was identified, the
-confederate began walking in the same direction as the participant
-about three meters ahead. The confederate held a handbag and
-accidentally lost a glove. The confederate continued, apparently not
-aware of his/her loss. Two observers placed approximately 50 meters
-ahead noted the reaction of the passer-by, his/her gender, and
-estimated, approximately, his/her age. Responses were recorded if the
-subject warned the confederate within 10 seconds after losing the
-object. If not, the confederate acted as if he/she was searching for
-something in his/her hand-bag, looked around in surprise, and
-returned to pick up the object without looking at the
-participant.''\footnote{ibid}} 
-  
-Assume that when the confederate saw a person who fit the qualifications, a
-coin was flipped. If it came up Heads, the subject was picked to be in
-the study, if Tails, they were skipped.
+To build confidence intervals, we use the same $z^*$ values over and
+over again.  Go to the web app
+\url{http://shiny.math.montana.edu/prob} and put
+confidence levels 0.80, 0.90, $\ldots$, 0.99 into the probability box
+(one at a time).
+Leave the distribution set to \fbox{Normal} and change \fbox{Lower} to
+\fbox{Center} to get the confidence limits. Write them into this
+table.  \vspace{1cm}
+ 
+\begin{students}
+   \begin{tabular}{l|rrrrr}
+    Confidence level: &  \hspace{1cm}80\% &  \hspace{1cm}90\% &  \hspace{1cm}95\% & \hspace{1cm} 98\% & \hspace{1cm} 99\% \\ \hline
+    $z^*$ cutoff  &  &  & 1.96 &  & 
+  \end{tabular}
+\end{students}
+\begin{key}
+   \begin{tabular}{l|rrrrr}
+    Confidence level: &  \hspace{1cm}80\% &  \hspace{1cm}90\% &  \hspace{1cm}95\% & \hspace{1cm} 98\% & \hspace{1cm} 99\% \\ \hline
+    $z^*$ cutoff  &1.282  &1.645  & 1.96 &2.326& 2.575
+  \end{tabular}
+\end{key}
 
 
+Let's try it out:  
  \begin{enumerate}
-   \item  Was a random mechanism used to select the person studied?
-     Explain. 
+   \item 
+     In a survey of  2142 American adults, 1221 gave the opinion that
+     college is a ``poor to fair'' value.  We want to estimate the
+     proportion of all American adults with that opinion using a 99\%
+     confidence interval.  
+     \begin{enumerate}
+     \item Compute $\widehat{p}$ for these data. 
 \begin{students}
- \vspace{1cm}\\
-\end{students}
-\begin{key}
-\\ {\it Yes, if the coin flip was performed, it would randomly select
-  about half of the people walking by. }
-\end{key}
-   \item  What was the “treatment” and how was it applied to a
-     subject? 
-\begin{students}
- \vspace{1cm}\\
-\end{students}
-\begin{key}
- \\{\it The ``treatment'' was the location: either near a bakery or
-   near another type of store. It was ``set'', but not for each
-   subject. Choice of treatment filtered out the potential subjects.
-   It was not applied at random.}
-\end{key}
-   \item  Does this study fit the definition of an experiment, or is
-     it observational? Explain. 
-\begin{students}
- \vspace{1cm}\\
-\end{students}
-\begin{key}
- \\ {\it I'd say it's observational, since a given passerby probably
-   was a possible subject for just one of the treatments, not both.}
-\end{key}
-   \item  Name three or more possible lurking variables. 
-\begin{students}
- \vspace{1cm}\\
-\end{students}
-\begin{key}
- \\ {\it Reason for visiting the mall (need bread? or need
-   clothing?).  Gender. Socio-economic status. Tendency to lose things.}
-
-\end{key}
-   \item  What is the scope of inference for this study? 
-\begin{students}
- \vspace{1cm}\\
-\end{students}
-\begin{key}
- \\ {\it  We can only infer association within this sample because the
-   subjects where only haphazardly selected, and treatments were not
-   randomly applied.}
-\end{key}
-
-\item \label{Bake-hypotheses}What are null and alternative hypotheses
-  for this study? Assume that researchers were not willing to state
-  ahead of time whether a good smell makes people ``better'' or ``worse''. \\
-  $H_0:$\
-\begin{students}
- \vspace{1cm}\\
-\end{students}
-\begin{key}
- $p_1 = p_2$ \\
-\end{key}
-   $H_a: $
-\begin{students}
-     \vspace{1cm}\\
-\end{students}
-\begin{key}
-   $ p_1 \neq p_2$ \\
-\end{key}   
-
-     Check you  answers just above with other groups at your table.
-     Do we all agree about the direction of the alternative?  
-\item Compute the following proportions:\\
-    Bakery group:  $\widehat{p}_1 = $
-\begin{students}
- \vspace{1cm}\\
-\end{students}
-\begin{key}
-  $154/200 = 0.752$ \\
-\end{key}
-Clothing store: $\widehat{p}_2 = $
-\begin{students}
- \vspace{1cm}\\
-\end{students}
-\begin{key}
-  $105/200 = 0.525$ \\
-\end{key}
-    Overall: $\widehat{p}_m = $
-\begin{students}
- \vspace{1cm}\\
-\end{students}
-\begin{key}
-  $259/400 = 0.648$ \\
-\end{key}
-
-\item When testing one proportion, we created a $z$ statistic with
-$z = \frac{\widehat{p} - p_0}{SE(\widehat{p})}$.  In general, we use
-$$ z = \frac{\mbox{statistic - null value}}{SE(\mbox{statistic})}$$
-Now our statistic is $\widehat{p}_1 - \widehat{p}_2$.  
-\begin{itemize}
-\item What value do we expect it to have if $H_0$ is true?
-\begin{students}
- \vspace{1cm}\\
-\end{students}
-\begin{key}
-  $0$ \\
-\end{key}
-\item What is the standard error of the statistic under $H_0$?
-\begin{students}
- \vspace{1cm}\\
+        \vspace{1cm}        
 \end{students}
 
 \begin{key}
-  $SE(\widehat{p}_1 - \widehat{p}_2 ) = \sqrt{ 0.648\times 0.352
-    (\frac{1}{200} +  \frac{1}{200})} = \sqrt{.002281} = 0.04776$ 
+  {\it 0.57 }
+\end{key}
+     \item \label{propSE} Compute the standard error of the estimate.
+\begin{students}
+        \vspace{1cm}        
+\end{students}
+
+\begin{key}
+  {\it $ \sqrt{0.57\times 0.43/2142} = 0.0107$ }
 \end{key}
 
-\item Compute our $z$ statistic.
+     \item Find the margin of error and compute a 99\% CI using the
+       multiplier you found   above.
 \begin{students}
- \vspace{1cm}\\
+        \vspace{1cm}        
 \end{students}
+
 \begin{key}
- $z = \frac{ 0.648 - 0.5025}{0.04776} = \frac{0.1455}{0.04776} = 3.047$ \\
-\end{key}  
-\end{itemize}
-\item Use the web app to find the probability.  
-\url{http://shiny.math.montana.edu/prob} 
-How strong is the evidence against $H_0$?
-\begin{students}
- \vspace{1cm}\\
-\end{students}
-\begin{key}
-  \\ {\it p-value = $2 \times(0.001) = 0.002$ This is very, very
-    strong evidence refuting the null hypothesis that people act just
-    as helpful in the two situations.  In fact, the people close to
-    the bakery were much more helpful than those by the clothing
-    store.  }
+  {\it ME = $ 2.575 \times 0.0107 = 0.02755$, CI: $0.57 \pm  0.0276 = (0.542, 0.598 )$ }
 \end{key}
 
-\item Write up the results as a statistical report on your own paper.
-  (Suggestion:  finish the activity, then come back to this.) 
+     \item If we use StatKey to create a 99\% bootstrap percentile
+       confidence interval, it is $(0.542, 0.597)$ and the st.dev. in
+       the plot is 0.011.  Which interval is narrower? 
 \begin{students}
- \vspace{1cm}
+        \vspace{1cm}        
 \end{students}
 
-  \end{enumerate}
-
-{\large\bf Confidence Interval for the Difference in True Proportions}
-\\
-Next we want to get an interval estimate of the difference in true
-proportions.  We'll use the same data to ask: ``How much more helpful
-are people near a bakery than near a clothing store?''
-
-Again, looking back to a single proportion we used $\widehat{p} \pm
-z^*SE(\widehat{p})$ which is a special case of the general rule:
-$$ \mbox{estimate} \pm \mbox{multiplier} \times SE(\mbox{estimate})$$
-
-All we need to do is to find the $SE(\widehat{p}_1 - \widehat{p}_2)$.
-We {\bf do not assume the two are equal}, so no $\widehat{p}_m$ is
-needed. The formula is:
-  $$ SE(\widehat{p}_1 - \widehat{p}_2) = \sqrt{ 
-      \frac{\widehat{p}_1(1 - \widehat{p}_1)}{n_1} + 
-      \frac{\widehat{p}_2(1 - \widehat{p}_2)}{n_2}} $$
-You might ask why there is a plus sign between the two terms inside
-the square root, but a minus sign in the estimator.  It's because each
-sample  proportion has some variability, and $\widehat{p}_1 - \widehat{p}_2 $ 
-can vary due to changes in $\widehat{p}_1$ or in $\widehat{p}_2$.  Subtracting
-would imply that having a second sample  makes the difference {\bf
-  less} variable, when really it makes our statistic {\bf more}
-variable. 
-
-OK, we are now ready to build a confidence interval.
-
-\begin{enumerate}
-  \setcounter{enumi}{11}
-  \item Use $ \widehat{p}_1$ and $\widehat{p}_2$ to compute the standard
-    error of the difference in sample proportions.
-\begin{students}
-  \vspace{2cm}\\
-\end{students}
 \begin{key}
-$ SE(\widehat{p}_1 - \widehat{p}_2) = \sqrt{ 0.648\times(1- 0.648)/200
-  + 0.5025\times(1-  0.5025)/200} = \sqrt{0.0011405 + .0012500 } =
-\sqrt{0.002391 } = 0.04889 $
+  {\it Bootstrap is a hair narrower.}
 \end{key}
 
-\item In this case, a 90\% confidence interval is needed.  Refer back
-  to your table from last class, or use the web app
-  (\url{http://shiny.math.montana.edu/prob}) to find $z^*$.
-  Find the margin of error and   build the interval.
+     How similar is the standard error from \ref{propSE} to the
+     bootstrap SE?        
 \begin{students}
- \vspace{1cm}\\
+        \vspace{2cm}         
 \end{students}
+
 \begin{key}
-ME = $ 1.645 \times 0.04889 = 0.0804 $ 90\% CI =  $0.648 - 0.5025 \pm
-0.0804 = 0.1455 \pm 0.0804 = (0.065, 0.226)$
+  {\it Very close. Off just by round off error?}
 \end{key}
 
-\item Interpret the CI in the context of this research question.
+\item Interpret the interval in the context of this problem.  What do
+  we mean by the word ``confidence''?    
 \begin{students}
- \vspace{1cm}\\
-\vspace{1in}
+        \vspace{3cm}        
+\end{students}
+
+\begin{key}
+  {\it We are 99\% confident that the true proportion of US adults
+  who thought that college was a poor to fair investment is within the
+interval (0.542, 0.597). Our confidence is in the process: when we use
+this method over and over take a sample and compute a 99\% CI from it,
+in the long run, 99\% of those intervals will contain the true parameter.}
+\end{key}
+     \end{enumerate}
+   \end{enumerate}
+ 
+
+     \begin{center}
+       {\large\bf Assumptions}
+     \end{center}
+
+  To do any statistical analysis, we must make some assumptions.  We
+  should always check to see if the data indicate a violation of an
+  assumption. For the methods used before today we need:
+     \begin{itemize}
+     \item A population of size at least $10n$. 
+       (If a sample is a really large part of the population, our
+       methods over-estimate sampling variation.) 
+     \item Representative sample. 
+     \item Independent trials (one outcome has no effect on another).  
+     \end{itemize}
+   
+  Using normal distributions adds another assumption:
+   \begin{itemize}
+     \item Large enough sample size to expect at least 10
+       successes   and  at least 10  failures.  If you are building a
+       confidence interval, just make sure the counts are over 10. If
+       you are conducting a hypothesis test, we need $np_0\geq 10$ and
+       $n(1-p_0) \geq 10$. 
+
+     \end{itemize}\vspace{1cm}
+
+
+   \begin{enumerate}
+     \setcounter{enumi}{1}
+   \item In an earlier Quizork  you checked to see if a roulette wheel was
+     fair.  Were these assumptions met? The
+     observer saw 3 ``Greens'' in 30 spins, and the  chance of
+     green for a fair wheel is $2/38$. 
+     \begin{enumerate}
+        \item Is population size at least $10n$ ($n = 30$)? 
+          Hint: How many spins are possible?    
+\begin{students}
+        \vspace{.7cm}        
 \end{students}
 \begin{key}
- {\it We are 90\% confident that the true proportion of helpful people
-   near a bakery is 6.5 to 22.6\% higher than near a clothing store.}
+  {\it  An almost infinite number, so assumption is met.}
 \end{key}
+        \item Representative sample?   
+\begin{students}
+        \vspace{.7cm}        
+\end{students}
+
+\begin{key}
+  {\it  One spin should be like another, so I don't question this  assumption.}
+\end{key}
+        \item Independent trials?   
+\begin{students}
+        \vspace{.7cm}        
+\end{students}
+
+\begin{key}
+  {\it  If there is no cheating, this assumption is met.}
+\end{key}
+        \item At least 10 successes? at least 10 failures?   
+\begin{students}
+        \vspace{.7cm}        
+\end{students}
+
+\begin{key}
+  {\it  Not met. 27 ``Failures'' and only 3 ``Successes''.}
+\end{key}
+     \end{enumerate}
+
+
+    \item On pages 43-46 of these notes you estimated the probability
+      a kissing couple leans to the right from data in which 80 of 124
+      couples did lean to the right. Let's check assumptions. 
+  
+     \begin{itemize}
+        \item Is population size at least $10n$ ($n = 124$)? 
+\begin{students}
+        \vspace{.7cm}        
+\end{students}
+
+\begin{key}
+  {\it  All couples, so assumption is met.}
+\end{key}
+        \item Representative sample?   
+\begin{students}
+        \vspace{1cm}        
+\end{students}
+
+\begin{key}
+  {\it  Sort of random observations, so I hope this   assumption is met.}
+\end{key}
+        \item Independent trials?   
+\begin{students}
+        \vspace{1cm}        
+\end{students}
+
+\begin{key}
+  {\it  Couple should act independently, so this assumption is met.}
+\end{key}
+        \item At least 10 successes? at least 10 failures?   
+\begin{students}
+        \vspace{1cm}        
+\end{students}
+
+\begin{key}
+  {\it  Yes, $80>10$ and $44 > 10$}
+\end{key}
+     \end{itemize}
+     \begin{enumerate}
+     \item Now we'll build a 99\% confidence interval for the true
+       proportion of couples leaning right when kissing using normal
+       procedures. 
+       \begin{enumerate}
+       \item What is the sample statistic?  
+\begin{students}
+        \vspace{1cm}        
+\end{students}
+
+\begin{key}
+  {\it  0.645}
+\end{key}
+       \item What is the standard error of $\widehat{p}$ for these
+         data?   
+\begin{students}
+        \vspace{.7cm}        
+\end{students}
+
+\begin{key}
+  {\it  $\sqrt{0.645 * 0.355 / 124} = 0.0430 $}
+\end{key}
+       \item From the table about two pages back, what $z^*$ values
+         goes with 99\% confidence?   
+       \end{enumerate}
+\begin{students}
+        \vspace{.7cm}        
+\end{students}
+
+\begin{key}
+  {\it  2.576}
+\end{key}
+       \item Build the interval and interpret its meaning. 
+\begin{students}
+        \newpage
+\end{students}
+
+\begin{key}
+ {\it $(0.534, 0.756)$.  We are 99\% confident that the true
+    proportion of couples who lean right when kissing is between 53.4
+    and 75.6\%. }
+\end{key}
+     \end{enumerate}
+   \end{enumerate}
+
+   \begin{center}
+     {\large\bf   Hypothesis testing }
+   \end{center}
+
+ Reminder:  when we do hypothesis testing, we give the benefit
+ of the doubt to: \underline{\hspace{1in}}.
+
+ Our assumption of ``innocent until proven guilty'' changes the
+ formula for standard error.  We plug in the null hypothesis value
+ instead of the sample proportion, so when hypothesis testing: $
+ SE(\widehat{p}) = \sqrt{p_0(1-p_0)/n}$. Secondly, instead of counting
+ points as or more extreme than the observed statistic, we will use
+ the normal distribution to compute the probabilities.  To do that, we
+ need to convert the distance between $p_0$ and $\widehat{p}$ to ``standard
+ deviation'' units by dividing by $SE(\widehat{p})$.  The complete
+ formula is:
+  $$ z = \frac{\widehat{p} - p_0}{SE(\widehat{p})} = 
+         \frac{\widehat{p} - p_0}{\sqrt{p_0(1-p_0)/n}}$$
+   
+ We will illustrate with the ``Kissing on the Right'' data. As we did
+ before, we will not assume which direction the alternative will
+ take, but the null is that couples are equally likely to lean
+ left or right. 
+ 
+    \begin{enumerate}
+\setcounter{enumi}{3}
+    \item State null and alternative hypotheses in symbols and
+      words.\\
+      $H_0:$ 
+\begin{students}
+    \vspace{1.2cm}    \\
+\end{students}
+\begin{key} 
+{\it $p = .5$.  Half of all couples lean right when kissing.}
+\end{key}
+$H_a:$
+\begin{students}
+    \vspace{.7cm}    \\
+\end{students}
+
+\begin{key} 
+{\it $p \neq .5$.  The true proportion of couples leaning right when
+  kissing is not one half.}
+\end{key}
+\item Compute the $SE(\widehat{p})$ using the null hypothesis value
+  for $p$. 
+\begin{students}
+    \vspace{1cm}    \\
+\end{students}
+
+\begin{key} 
+{\it $SE(\widehat{p}) = \sqrt{.5(.5)/124} = 0.0449$}
+\end{key}
+
+  \item Build the $z$ statistic by dividing the difference between
+    $\widehat{p}$ and $p_0$ by $SE(\widehat{p})$. 
+\begin{students}
+    \vspace{1cm}    \\
+\end{students}
+
+\begin{key} 
+{\it $z = \frac{.645 - .5}{0.0499} = 3.23$}
+\end{key}
+
+  \item Put the standardized $z$ value into the web app 
+    \url{http://shiny.math.montana.edu/prob} and ask for
+    the \fbox{Extremes}.  What part of the plot is shaded?  What is
+    the (total) p-value and how strong is this evidence against $H_0$?  
+\begin{students}
+    \vspace{1cm}    \\
+\end{students}
+
+\begin{key} 
+{\it $2 \times .001 = .002$  This is  very strong evidence against the
+  null. }
+\end{key}
+
+
+\item Report the strength of evidence.  At the $\alpha = .01$ level of
+  significance, what do you decide to do with $H_0$?  What is your
+  conclusion?
+\begin{students}
+    \newpage
+\end{students}
+
+\begin{key} 
+{\it We  reject $H_0$
+  at the 1\% significance level.  We conclude that the true proportion of
+  couples who lean right when kissing is over 0.50.}
+\end{key}
+
 \end{enumerate}
 
 \begin{center}
-  {\large\bf Assumptions?}
+  {\large \bf Rock, Paper, Scissors}
 \end{center}
 
-  We need basically the same assumptions when working with two samples
-  as with one sample proportion.  The first three apply to any method
-  of doing hypothesis tests or confidence intervals.  The last is
-  particular for normal-theory based methods with proportions. 
-  \begin{itemize}
-     \item The size of each sample must be less than a tenth the size
-       of its population.
-     \item Each sample must be representative of its population. 
-     \item {\bf Independent} responses.  Definition: resposnes are
-       independent if knowing one response does not help us guess the
-       vaue of the other.  Sampling multiple people from the same
-       household gives {\bf dependent} responses.
-     \item To use normality for a confidence interval: at least 10
-       successes and 10 failures in each group.  To use normality for
-       hypothesis testing, take the smaller of $n_1$ and $n_2$ times
-       the smaller of $\widehat{p}_m$ or ($1-\widehat{p}_m$) and this
-       value should be at least 5.\vspace{1in}
-  \end{itemize}
+A student played a game of ``Rock, Paper, Scissors'' with each of 120
+inexperienced players and found that 55 of his opponents first chose
+``Rock''.  We want to test to see if the three options are equally
+likely and to build a confidence interval for the true proportion to
+pick ``Rock''.
+
+\begin{enumerate}
+ \setcounter{enumi}{8}
+ \item  Check the assumptions.
+\begin{students}
+\\   \vspace{2cm}    
+\end{students}
+
+\begin{key} 
+ {\it There is a huge population of potential first time players, so
+  we have less than 10\% of the population.  We'd like to know how the
+  opponents were selected. We can't assume they are representative,
+  and if they watched some of his earlier games, they might be
+  influenced in their 
+  choices. We cannot assume independence from the data provided. We do
+have large enough sample size to use normality because $55 > 10$ and
+$120-55 = 65>0$ (for CI) and $np_0 = 120\times 1/3 = 40>10$ (for
+hypothesis test).}
+\end{key}
+\item Although you should have identified some possible problems with
+  the assumptions, we will go ahead with the normal theory based
+  inference. Compute $\widehat{p}$ and its SE for a confidence
+  interval.
+\begin{students}
+    \vspace{1cm}    \\
+\end{students}
+
+\begin{key} 
+{\it $\widehat{p} = 55/120 = 0.458$ with SE = $\sqrt{.458(.542)/120} =
+  0.0455$}
+\end{key}
+\item Build a 90\% confidence interval for the true mean proportion of
+  first time players who pick ``Rock''.
+\begin{students}
+    \vspace{1cm}    \\
+\end{students}
+
+\begin{key} 
+{\it $0.458 \pm 1.645 \times 0.0455 = (0.383, 0.533)$}
+\end{key}
+\item Now switch to thinking of a hypothesis test using ``just
+  guessing'' as the null model.  What are the null and alternative
+  hypotheses? 
+\begin{students}
+    \vspace{2cm}    \\
+\end{students}
+
+\begin{key} 
+{\it $H_0: p = 1/3$, versus $H_a:  p \neq 1/3$}
+\end{key}
+ 
+\item Compute the SE under $H_0$ and the test statistic.
+\begin{students}
+    \vspace{1cm}    \\
+\end{students}
+
+\begin{key} 
+{\it $SE = \sqrt{1/3 \times 2/3 \times 1/120} =0.0430$, $z = \frac{0.455 - 0.333}{0.043} = 2.84$}
+\end{key}
+
+
+\item What is the strength of evidence (from the web app
+  \url{http://shiny.math.montana.edu/prob}) against   $H_0$?  
+\begin{students}
+        \newpage
+\end{students}
+
+\begin{key} 
+{\it Very strong.  The p-value is $2 \times 0.002$. }
+\end{key}
+
+\item Write a short report on the hypothesis test. Include the 5 main
+  points:\\
+  Type of test, null hypothesis, observed result, strength of
+  evidence, and scope of inference. \vfill
+
+\end{enumerate}
 
 
 
 \begin{center}
-  {\large\bf Take Home Messages}
+  {\large\bf Take Home Message}
 \end{center}
-
+ 
 \begin{itemize}
- \item  To do hypothesis testing we needed the ``overall'' estimated
-   success proportion -- forgetting about the two groups. 
- \item Our estimate of spread, the $SE$, changes depending on whether
-   we assumed $p_1=p_2$, as in hypothesis testing, or not (confidence
-   intervals). Know both versions.
- \item  The general form of a standardized statistic for hypothesis
-   testing is:
-     $$z = \frac{\mbox{statistic - null value}}{SE(\mbox{statistic})}$$
-in this case that is
-$$ z = \frac{\widehat{p}_1 - \widehat{p}_2 -0}{ SE(\widehat{p}_1 -
-  \widehat{p}_2)} = \frac{\widehat{p}_1 - \widehat{p}_2} 
-   {\sqrt{\frac{\widehat{p}_m(1-\widehat{p}_m)}{n_1} +
-    \frac{\widehat{p}_m(1-\widehat{p}_m)}{n_2}}}$$
-\item To build a confidence interval, we do not assume ${p}_1 ={p}_2$.
-\item The general form of a CI is
-$$ \mbox{estimate} \pm \mbox{multiplier} \times SE(\mbox{estimate})$$
-    which in this case is
-  $$ \widehat{p}_1 - \widehat{p}_2 \pm z^* SE(\widehat{p}_1 -
-  \widehat{p}_2) = \widehat{p}_1 - \widehat{p}_2 \pm z^* 
-\sqrt{\frac{\widehat{p}_1(1 - \widehat{p}_1)}{n_1} + 
-      \frac{\widehat{p}_2(1 - \widehat{p}_2)}{n_2}}$$
-\end{itemize}
+\item To use any statistical method, our assumptions must be met. We
+  need representative samples, independent trials, and a sample size
+  less than one tenth of the population size.  To use the normal
+  probabilities we also need at least ten successes and ten failures
+  (for a CI) or $np_0 \geq 10$ and $n(1-p_0) \geq 10$.  
+\item The only change to our writeups is that we describe the test as
+  a ``z'' test instead of a permutation test, and the confidence
+  interval is also ``z based''.
+\item Write your questions and summary here.
+
+\end{itemize}\vspace*{1in}
 
 
-%% 5 pages
+
+%% 6 pages

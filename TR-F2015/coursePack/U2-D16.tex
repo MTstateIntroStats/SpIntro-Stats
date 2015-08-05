@@ -113,7 +113,7 @@ With quantitative data, we typically report and study the average value, or the 
 \begin{key}
    $ \xb =   0.272$. 
 \end{key}
-\item  Could your answer to 6 have happened if the arsenic
+\item  Could your answer to \ref{xbar} have happened if the arsenic
   concentrations in New Hampshire residents are not hazardous? 
 \begin{students}
   \vspace{1cm}
@@ -123,7 +123,7 @@ With quantitative data, we typically report and study the average value, or the 
      have high arsenic levels.}  
 \end{key}
 \item  Do you think it is likely to have observed a mean like the one
-  you got in 6 if the arsenic concentrations in New Hampshire
+  you got in \ref{xbar} if the arsenic concentrations in New Hampshire
   residents are not hazardous?
   
 \begin{students}
@@ -138,7 +138,7 @@ With quantitative data, we typically report and study the average value, or the 
 
 {\bf Step 4. Draw inferences beyond the data. }\\
 We'll start with the first research question asked because we have
-done confidence intervals for a single mean back in Activity 14. 
+done confidence intervals for a single mean back in Activity 10. 
 
 {\bf The First Research Question}: How high is the mean arsenic level
 for New Hampshire residents with a private well? 
@@ -156,7 +156,7 @@ for New Hampshire residents with a private well?
 \end{key}
 
 \item  Explain how you can use a deck of 19 cards to create the
-  bootstrap distribution. (Go back to Activity 14 if you don't remember.)
+  bootstrap distribution. (Go back to Activity 11 if you don't remember.)
 \begin{students}
   \vspace{1cm}
 \end{students}
@@ -206,8 +206,9 @@ for New Hampshire residents with a private well?
 %   {\it  Should be centered at the sample mean, 0.272 ppm. }
 % \end{key}
 \item 
- Use the {\sf CI for a Single Mean} applet in StatKey to create a
- bootstrap distribution with 3000 or more bootstrap statistics.  Draw the plot
+ Use the \fbox{One Quant} option in the web applet to use the pre-loaded data
+ (arsenic) and then generate a
+ bootstrap distribution with 5000 or more bootstrap statistics.  Draw the plot
  below and record the summary statistics.  %  Show where your value from
  % the previous question falls on the plot. 
 \begin{students}
@@ -322,17 +323,18 @@ Is the alternative hypothesis right-tail, left-tail, or two-tail?
 We can simulate the behavior of arsenic concentrations in New
 Hampshire ground water if we assume the null hypothesis which gives a
 specific value for the mean.  The two key ideas when creating the
-randomization distribution are:
+reference distribution are:
 \begin{itemize}
 \item 
- The randomization samples must be consistent with the null hypothesis.
+ The resamples must be consistent with the null hypothesis.
 \item 
- The randomization samples must be based on the sample data.
+ The resamples must be based on the sample data.
 \end{itemize}
 
-Recall with a single categorical variable, we created a spinner with the probability of success coming from the null hypothesis (1) and spun the spinner the same number of times as our sample size (2).  We cannot use a spinner 
-in this case because there are no categories and no proportions to
-label on the spinner.  We can use cards like we did for the CI above,
+% With a single categorical variable, we could create a spinner with the probability of success coming from the null hypothesis (1) and spun the spinner the same number of times as our sample size (2).  We cannot use a spinner 
+% in this case because there are no categories and no proportions to
+% label on the spinner.
+  We can use cards like we did for the CI above,
 but we have to change the values so that they are consistent with the
 null, $\mu = 0.15$.
 
@@ -447,15 +449,9 @@ null, $\mu = 0.15$.
   \url{http://shiny.math.montana.edu/jimrc/IntroStatShinyApps/}. 
 
   \begin{itemize}
-    \item Click on \fbox{\sf Edit Data} and copy the {\bf original data}
-      from the table on page 1.  Be sure to either
-      \begin{itemize}
-      \item  use a header      (arsenic) or
-      \item   uncheck the box that says Data has a header row.
-      \end{itemize}
     \item Above the main plot, change the value for the null
       hypothesis to the one in our null.  (the just barely safe level)
-      StatKey will subtract this value from each data point.
+      The software will shift the data to hve this mean.
    \end{itemize}
 
     Look at the box on the right labeled {\sf Original Sample}.
@@ -469,9 +465,7 @@ null, $\mu = 0.15$.
   {\it Look for data entry errors. }
 \end{key}
 
-\item Click on generate 1 sample.  Note that 1 dot is added to the
-  main plot in StatKey.  What is the statistic from this 1
-  randomization sample?
+\item   What is the statistic from the first  resample?
 \begin{students}
   \vspace{1cm}
 \end{students}
@@ -480,13 +474,13 @@ null, $\mu = 0.15$.
   {\it AWV}
 \end{key}
 
-\item Where in the StatKey output did you find it?
+\item Where in the  output did you find it?
 \begin{students}
   \vspace{1cm}
 \end{students}
 
 \begin{key}
-  {\it Above the ``Randomization Sample'' box in center right.}
+  {\it Below center tables.}
 \end{key}
 
 
@@ -501,7 +495,7 @@ null, $\mu = 0.15$.
     New Hampshire residents who use a private well if the true arsenic
     concentration is 0.15 (not a hazardous level) }
 \end{key}
-\item Generate 3000 randomization samples.  Copy the summary statistics and
+\item Generate 5000 randomization samples.  Copy the summary statistics and
 the plot of the randomization distribution below
 \begin{students}
   \vspace{4cm}
@@ -539,8 +533,7 @@ alone if the ground water in New Hampshire is not hazardous.
 \end{key}
 
 \item \label{pval13}Just how unlikely is the observed result?  Calculate your
-  p-value using StatKey by clicking either left or right tail, then
-  changing the default cutoff to the observed statistic. 
+  p-value using the web app and the appropriate direction and cutoff value.
 \begin{students}
   \vspace{1cm}
 \end{students}
@@ -550,13 +543,14 @@ alone if the ground water in New Hampshire is not hazardous.
 \end{key}
 
 
- How many randomization samples had a mean at least as extreme as the observed result?  How did you find this number?
+ How many randomization samples had a mean at least as extreme as the
+ observed result?  
 \begin{students}
   \vspace{1cm}
 \end{students}
 
 \begin{key}
-  {\it Again, centered at 0.15, because this is the null value. }
+  {\it AWV}
 \end{key}
 
 \item Is the approximate p-value from your simulation analysis (your
@@ -622,7 +616,7 @@ alone if the ground water in New Hampshire is not hazardous.
   see how far out in the tails it was (the p--value).
 
  \item 
-  Use the remaining space for any questions or your own summary of the
+  Use the remaining space for any questions and your own summary of the
   lesson. 
 
 \end{itemize}
