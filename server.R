@@ -817,8 +817,8 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
                    length = length(q1$data[, 1]))
       colnames(DF) <- q1$names
       DF
-    #})
-  })
+    #}
+  }, digits = 3)
 }
 
 
