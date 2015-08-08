@@ -1,0 +1,348 @@
+\def\theTopic{Energy Drinks II}
+\def\dayNum{25 }
+
+\begin{center}
+{\bf {\large \textbf{More Energy Drinks}}}
+\end{center}
+
+Back on Day 14 we compared an energy drink with
+alcohol, REDA, to a control.  Our conclusion that ``change in RBANS''
+was lower in the REDA group did not allow us to say whether that was
+due to the alcohol 
+or the stimulant in REDA.  The two  explanatory variables were
+``confounded'' meaning that we can't separate the effects.  The
+researchers knew this would be a problem, so they included a third
+group in the study: 9 randomly selected women got RED, an energy drink
+with no alcohol.  Today we'll compare RED and control means using
+confidence intervals and hypothesis tests based on a $t$
+distribution. 
+
+  The research question is: 
+
+  {\sf
+    Does neuropsychological performance (as measured on the RBANS
+    test) change after drinking an energy drink? }
+
+   Higher RBANs scores indicate better memory skills.
+
+ Go to the usual website and use the pre-loaded {\tt REDvsControl}
+ dataset under \fbox{One of Each}.
+
+  \begin{enumerate}
+  \item  Obtain ``Actual'' Mean and Std dev for each group. 
+\begin{students}
+    \vspace{4cm}    
+\end{students}
+
+\begin{key}
+  {\it Means:  control: 1.219, RED: -2.44 \\%, REDA:  -8.39\\
+       Std.dev.: control: 3.919, RED: 6.425}%, REDA, 10.02} 
+\end{key}
+
+\item Using t-based methods requires that we either have ``near
+  normal'' data or  large sample sizes.  Do you see extreme outliers
+  in the plots?  Are the data skewed?
+
+\begin{students}
+    \vspace{2cm}    
+\end{students}
+
+\begin{key}
+  {\it  These look OK to me, though the spreads do not look equal.}
+\end{key}
+
+\end{enumerate}
+
+
+We'll start by comparing RED to Control  using a hypothesis test.
+
+%\newpage
+\begin{enumerate}
+\setcounter{enumi}{2}
+
+\item  What are the null and alternative hypotheses when comparing RED
+  to Control? Use notation, and write them out with words.
+  Do not assume they knew ahead of time which  mean would be
+  larger. \\
+\begin{students}
+ $H_0:$    \vspace{1cm}    \\ $H_a:$    \vspace{1cm}
+\end{students}
+\begin{key}
+  {\it   $H_0:\ \mu_1 = \mu_2$ The mean change in RBANS is the same
+    for treatment (RED) and Control.    \\ $H_a: \mu_1 \neq \mu_2$ The
+    mean change in RBANS is not the same for treatment (RED) and control.  }
+\end{key}
+
+   Check with another group to be sure we have the correct
+   direction for $H_a$.
+
+\item  Let group 1 be Control and group 2 be RED. Compute $SE(\xb_1 -
+  \xb_2) = \sqrt{\frac{s_1^2}{n_1} +     \frac{s_2^2}{n_2}}$. 
+\begin{students}
+    \vspace{2cm}    
+\end{students}
+
+\begin{key}
+  {\it  $ \sqrt{\frac{3.92^2}{9} +    \frac{6.43^2}{9}} = \sqrt{1.707
+    +4.594} = 2.5102$.} 
+\end{key}
+\item As with a single mean, our test statistic is called $t$ and is
+  found by dividing  the difference between sample statistic and its
+  value under $H_0$ by its $SE.$  Find t. \\
+\begin{students}
+  $ t = \frac{\xb_1 - \xb_2 - (\mu_1 - \mu_2)}{SE(\xb_1-\xb_2)} = $
+    \vspace{2cm}    
+\end{students}
+
+\begin{key}
+   $ t = \frac{\xb_1 - \xb_2 - \mu_1 - \mu_2}{SE(\xb_1-\xb_2)} = 
+          \frac{ 1.219-( -2.44)}{2.5102} = 1.458 $
+\end{key}
+
+\item We need to figure out which degrees of freedom for our t
+  test. When working with two means, we take the smaller sample size
+  and subtract one from it. What is that for the Energy Drinks study?
+\begin{students}
+    \vspace{2.6cm}    
+\end{students}
+
+\begin{key}
+  {\it  8}
+\end{key}
+
+ \item  Go to the t distribution part of the applet and put your t
+   test statistic in the top box, 
+   set its degrees of freedom, and select the right direction for the
+   alternative.  What is our p-value?  State your decision and 
+   conclusion about these two drinks. 
+\begin{students}
+    \vspace{5cm}    
+\end{students}
+
+\begin{key}
+  {\it 0.182. At any of the commonly used $\alpha$ levels, we fail to
+    reject the null hypothesis that mean change in RBANS score is the
+    same for control and RED groups.  There is not sufficient evidence
+    to say that they differ.}
+\end{key}
+
+
+ \item  Next we want to compare RED drinkers to REDA drinkers (group 2
+   to group 3). 
+
+   \begin{enumerate}
+     \item Your null and alternative hypotheses are the same, but we
+       need to use subscripts 2 and 3 instead of 1 and 2.  Copy them
+       here. 
+\begin{students}
+    \vspace{2cm}    
+\end{students}
+
+\begin{key}
+  {\it   $H_0:\ \mu_2 = \mu_3$ The mean change in RBANS is the same
+    for RED and REDA.    \\ $H_a: \mu_2 \neq \mu_3$ The
+    mean change in RBANS is not the same for RED and REDA.  }
+\end{key}
+ 
+
+      \item Compute the difference in means.
+\begin{students}
+    \vspace{1cm}    
+\end{students}
+
+\begin{key}
+  {\it  $ -2.44 -( -8.329) = 5.889$}
+\end{key}
+
+      \item Compute the $SE$ of the estimator.
+\begin{students}
+    \vspace{1cm}    
+\end{students}
+
+\begin{key}
+  {\it  $ \sqrt{ \frac{6.43^2}{9} + \frac{10.02^2}{9}} = \sqrt{
+    4.594 + 11.1566 } = 3.969$ }
+\end{key}
+
+      \item Compute the $t$ test statistic.
+\begin{students}
+    \vspace{1cm}    
+\end{students}
+
+\begin{key}
+  {\it   $ 5.889 / 3.969 = 1.484$}
+\end{key}
+
+      \item What degrees of freedom will you use?  Find the p-value.
+\begin{students}
+    \vspace{1cm}    
+\end{students}
+
+\begin{key}
+  {\it  8 df.  The p-value is $2 \times 0.088 = 0.172 $}
+\end{key}
+
+      \item What is your decision? your conclusion? 
+\begin{students}
+    \vspace{2cm}    
+\end{students}
+
+\begin{key}
+  {\it  Again, we do not have much evidence against the null
+    hypothesis that the two groups have the same mean. We fail to
+    reject $H_0$ at all commonly used $\alpha$ levels. }
+\end{key}
+
+     \end{enumerate}
+
+     \begin{center}
+       {\large\bf Confidence Interval}
+
+ Reminder. The general form of a t-based CI is:
+     \end{center}
+  $$ \mbox{estimate} \pm t^*_{df} \times SE(\mbox{estimate}) $$ 
+
+ \item Finally, we'll go back to the original comparison between REDA
+   and Control means. However, we'll set this one up as a confidence
+   interval instead of a t-test. 
+   \begin{enumerate}
+   \item Compute the difference in means between REDA and control.
+\begin{students}
+    \vspace{1cm}    
+\end{students}
+
+\begin{key}
+  {\it  $1.219-( -8.329) = 9.548 $}
+\end{key}
+
+   \item Compute  $SE(\xb_1-\xb_3)$
+\begin{students}
+    \vspace{1cm}    
+\end{students}
+
+\begin{key}
+  {\it $\sqrt{ \frac{3.919^2}{9} + \frac{10.02^2}{9}}= 3.587$}
+\end{key}
+
+   \item What degrees of freedom do we need?\\
+     Use the web app to find the $t^*$ multiplier for a 95\% 
+     confidence interval. 
+\begin{students}
+    \vspace{1cm}    
+\end{students}
+
+\begin{key}
+  {\it  8 df.   $t^* = 2.306 $}
+\end{key}
+\begin{students}
+    \vspace{1cm}    
+\end{students}
+
+\begin{key}
+  {\it  8 df.   $t^* = 2.306 $}
+\end{key}
+
+   \item Find the margin of error and construct the 95\% CI.  Does it
+     contain zero?  If testing 
+     $H_0: \mu_1 = \mu_3$ versus a two-sided alternative at the
+     $\alpha = 0.05$ level, would you reject $H_0$?  Explain.
+\begin{students}
+    \vspace{1cm}    
+\end{students}
+
+\begin{key}
+  {\it  ME $=2.306 \times 3.587 =8.272 $, 95\% CI:   $9.548 \pm  
+    8.272 = ( 1.28, 17.82)$ Zero is not in the interval, so it is not
+    a ``plausible value'' for the difference in means.  We would
+    reject the null in favor of the alternative at $\alpha = 0.05$.  }
+\end{key}
+
+   \end{enumerate}
+
+ \item   How do you explain the fact that two of the three
+   t-tests we've done gave large p-values and another gave a small p-value? Is
+   that inconsistent? 
+\begin{students}
+    \vspace{3cm}    
+\end{students}
+
+\begin{key}
+  {\it  The confidence interval shows that we have
+    fairly strong evidence that the mean for control change in RBANs is
+    larger than the mean for REDA change in RBANS. We do not have very
+    large sample sizes in this study, so it is not surprising that two
+    comparisons found that the middle mean (RED) was not very
+    different from either extreme (Control or REDA), yet the two
+    extreme values were far enough apart to detect a fairly strong
+    difference. }
+\end{key}
+
+\item Could the difference in REDA and Control means be just due to
+  random chance?  Explain.
+\begin{students}
+    \vspace{2cm}    
+\end{students}
+
+\begin{key}
+  {\it Yes.  Our conclusions do not change just because we've used a
+    different method to compute the p-value.  It's still possible that
+  one group was higher just due to random assignment of treatment.}
+\end{key}
+\begin{students}
+    \vspace{2cm}    
+\end{students}
+
+\begin{key}
+  {\it Yes.  Our conclusions do not change just because we've used a
+    different method to compute the p-value.  It's still possible that
+  one group was higher just due to random assignment of treatment.}
+\end{key}
+\item Can we make causal inference about the effects of energy drinks
+  and alcohol?
+\begin{students}
+    \vspace{2cm}    
+\end{students}
+
+\begin{key}
+  {\it  Yes.  Because treatments were randomly assigned, it is very
+    unlikely that we would see such large differences just by chance,
+    so the observed differences (or lack thereof) are attributable to
+    the treatments.  }
+\end{key}
+
+
+\item Write up the hypothesis test results as a report.  Include all
+  three comparisons we've made. \vfill
+   
+ \end{enumerate}
+ \newpage
+
+\begin{center}
+  {\large\bf Take Home Message}
+\end{center}
+
+\begin{itemize}
+  \item Interpretation of results does not change just because we
+    switched from permutation testing to t-tests.  We still ask ``Was
+    this a random sample of subjects?'' to obtain inference back to a
+    population, and we still ask ``Were treatments assigned at
+    random?'' to conclude that change in one variable caused changes
+    in the other. 
+  \item The t-test approach uses formulas for standard errors, while
+    the permutation test relies on repeated permutations or resampling
+    to get the same information about the spread of the sampling
+    distribution under $H_0$.  Both work!
+  \item We can use t-tests to compare two means, but do have to be
+    careful with small sample sizes.  We should not use t-tests with
+    sample sizes less than 15 unless the data look symmetric with no
+    outliers.
+  \item With large sample sizes, t methods are robust to outliers and
+    skewness.
+  \item When sample sizes are small, only {\em large} differences will
+    be flagged as having ``strong evidence''.  We'll look at this
+    later in more detail.
+  \item What questions do you have?  Write them here.
+\end{itemize}
+
+
+%% 4 pages

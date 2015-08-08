@@ -76,9 +76,10 @@ p-values and confidence intervals.
       
 %% 
   
-In Unit 1 we used spinners and coin flips to simulate the distribution
-of a proportion.  From that distribution we used the standard
-deviation as printed in the plot window.  We added two standard errors
+We can use spinners and coin flips to simulate the distribution
+of a proportion.  From that distribution we use the standard
+deviation of the resampled points to get the standard error of
+$\phat$.  We added two standard errors 
 to -- and subtracted two standard errors from -- the point estimate to build our
 confidence interval.  In order to use the normal distribution instead of a
 simulation,  we need this formula for standard error of the sample
@@ -100,9 +101,7 @@ standard deviation of the sampling distribution because it is a
 distribution, so it has some ``spread''.   However, we prefer
 to talk about the ``Standard Error'' (or SE) of the statistic.  We'll
 be able to show the difference better when we look at the mean of a
-continuous variable, so we'll come back to this.  For now, know this:
-  What we called ``std.dev.'' in web applets is actually the ``SE'' of
-  the sample proportion.
+continuous variable, so we'll come back to this. 
 
 When we write $SE(estimate)$ as in $SE(\phat)$ or $SE(\xb)$, we {\bf
   do not} mean to multiply $SE$ by the estimate. This is notation to
@@ -121,10 +120,10 @@ $$ \widehat{p} \pm z^*\sqrt{\widehat{p}(1-\widehat{p})/n}$$
 
 To build confidence intervals, we use the same $z^*$ values over and
 over again.  Go to the web app
-\url{http://shiny.math.montana.edu/prob} and put
+\url{http://shiny.math.montana.edu/jimrc/IntroStatShinyApps}, select
+\fbox{Normal Distribution} under {One Categ} and  put
 confidence levels 0.80, 0.90, $\ldots$, 0.99 into the probability box
-(one at a time).
-Leave the distribution set to \fbox{Normal} and change \fbox{Lower} to
+(one at a time).  Change \fbox{Lower} to
 \fbox{Center} to get the confidence limits. Write them into this
 table.  \vspace{1cm}
  
@@ -177,8 +176,8 @@ Let's try it out:
   {\it ME = $ 2.575 \times 0.0107 = 0.02755$, CI: $0.57 \pm  0.0276 = (0.542, 0.598 )$ }
 \end{key}
 
-     \item If we use StatKey to create a 99\% bootstrap percentile
-       confidence interval, it is $(0.542, 0.597)$ and the st.dev. in
+     \item If we use resampling to create a 99\% bootstrap percentile
+       confidence interval, it is $(0.542, 0.597)$ and the {\sf SE} in
        the plot is 0.011.  Which interval is narrower? 
 \begin{students}
         \vspace{1cm}        
@@ -237,13 +236,12 @@ in the long run, 99\% of those intervals will contain the true parameter.}
        confidence interval, just make sure the counts are over 10. If
        you are conducting a hypothesis test, we need $np_0\geq 10$ and
        $n(1-p_0) \geq 10$. 
-
      \end{itemize}\vspace{1cm}
 
 
    \begin{enumerate}
      \setcounter{enumi}{1}
-   \item In an earlier Quizork  you checked to see if a roulette wheel was
+   \item In an earlier assignment  you checked to see if a roulette wheel was
      fair.  Were these assumptions met? The
      observer saw 3 ``Greens'' in 30 spins, and the  chance of
      green for a fair wheel is $2/38$. 
@@ -283,7 +281,7 @@ in the long run, 99\% of those intervals will contain the true parameter.}
      \end{enumerate}
 
 
-    \item On pages 43-46 of these notes you estimated the probability
+    \item In the Unit 1 Review you estimated the probability
       a kissing couple leans to the right from data in which 80 of 124
       couples did lean to the right. Let's check assumptions. 
   
@@ -431,7 +429,8 @@ $H_a:$
 \end{key}
 
   \item Put the standardized $z$ value into the web app 
-    \url{http://shiny.math.montana.edu/prob} and ask for
+    \url{http://shiny.math.montana.edu/jimrc/IntroStatShinyApps},
+    \fbox{One Categ} \fbox{Normal Distribution} and ask for
     the \fbox{Extremes}.  What part of the plot is shaded?  What is
     the (total) p-value and how strong is this evidence against $H_0$?  
 \begin{students}
@@ -508,7 +507,7 @@ hypothesis test).}
 \begin{key} 
 {\it $0.458 \pm 1.645 \times 0.0455 = (0.383, 0.533)$}
 \end{key}
-\item Now switch to thinking of a hypothesis test using ``just
+\item Now switch to thinking of a hypothesis test using ``random
   guessing'' as the null model.  What are the null and alternative
   hypotheses? 
 \begin{students}

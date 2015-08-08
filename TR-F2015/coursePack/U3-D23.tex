@@ -28,22 +28,23 @@ is:  $H_0:\ p_1 = p_2$.
  \begin{itemize}
  \item If $H_0$ is true, the two groups are really the same, and we
    should combine them to get a better estimate of the overall
-   proportion of successes. We'll call estimate $\widehat{p}_m$ where
-   the ``m'' stands for ``{\bf marginal}'' because it's
+   proportion of successes. We'll call estimate $\widehat{p}_T$ where
+   the `T'' stands for ``{\bf marginal}'' because it's
    based on totals which appear in the outer margin of a table.  We
    find it by combining all successes from both 
    groups, then dividing by the sum of the sample sizes. 
-  $$\widehat{p}_m = \frac{x_1 + x_2}{n_1+n_2} = \frac{n_1\widehat{p}_1
+  $$\widehat{p}_T = \frac{x_1 + x_2}{n_1+n_2} = \frac{n_1\widehat{p}_1
     + n_2\widehat{p}_2}{n_1 + n_2}$$ 
   Recall:  we used the same combined estimate when simulating draws
-  from $H_0$ back on page 54.
+  from $H_0$ earlier.
  \end{itemize}
 
- The {\bf hypothesis testing} formula for standard error of the difference in sample proportions is:
+ The {\bf hypothesis testing} formula for standard error of the
+ difference in sample proportions is: 
  $$SE(\widehat{p}_1 - \widehat{p}_2) =
- \sqrt{\frac{\widehat{p}_m(1-\widehat{p}_m)}{n_1} +
-   \frac{\widehat{p}_m(1-\widehat{p}_m)}{n_2}} =
-  \sqrt{\widehat{p}_m(1-\widehat{p}_m)\left(\frac{1}{n_1} +
+ \sqrt{\frac{\widehat{p}_T(1-\widehat{p}_T)}{n_1} +
+   \frac{\widehat{p}_T(1-\widehat{p}_T)}{n_2}} =
+  \sqrt{\widehat{p}_T(1-\widehat{p}_T)\left(\frac{1}{n_1} +
    \frac{1}{n_2}\right)}$$
 
 
@@ -186,7 +187,7 @@ Clothing store: $\widehat{p}_2 = $
 \begin{key}
   $105/200 = 0.525$ \\
 \end{key}
-    Overall: $\widehat{p}_m = $
+    Overall: $\widehat{p}_T = $
 \begin{students}
  \vspace{1cm}\\
 \end{students}
@@ -225,7 +226,6 @@ Now our statistic is $\widehat{p}_1 - \widehat{p}_2$.
 \end{key}  
 \end{itemize}
 \item Use the web app to find the probability.  
-\url{http://shiny.math.montana.edu/prob} 
 How strong is the evidence against $H_0$?
 \begin{students}
  \vspace{1cm}\\
@@ -257,7 +257,7 @@ z^*SE(\widehat{p})$ which is a special case of the general rule:
 $$ \mbox{estimate} \pm \mbox{multiplier} \times SE(\mbox{estimate})$$
 
 All we need to do is to find the $SE(\widehat{p}_1 - \widehat{p}_2)$.
-We {\bf do not assume the two are equal}, so no $\widehat{p}_m$ is
+We {\bf do not assume the two are equal}, so no $\widehat{p}_T$ is
 needed. The formula is:
   $$ SE(\widehat{p}_1 - \widehat{p}_2) = \sqrt{ 
       \frac{\widehat{p}_1(1 - \widehat{p}_1)}{n_1} + 
@@ -287,8 +287,8 @@ $ SE(\widehat{p}_1 - \widehat{p}_2) = \sqrt{ 0.648\times(1- 0.648)/200
 
 \item In this case, a 90\% confidence interval is needed.  Refer back
   to your table from last class, or use the web app
-  (\url{http://shiny.math.montana.edu/prob}) to find $z^*$.
-  Find the margin of error and   build the interval.
+ % (\url{http://shiny.math.montana.edu/prob}) 
+  to find $z^*$.  Find the margin of error and   build the interval.
 \begin{students}
  \vspace{1cm}\\
 \end{students}
@@ -327,7 +327,7 @@ ME = $ 1.645 \times 0.04889 = 0.0804 $ 90\% CI =  $0.648 - 0.5025 \pm
      \item To use normality for a confidence interval: at least 10
        successes and 10 failures in each group.  To use normality for
        hypothesis testing, take the smaller of $n_1$ and $n_2$ times
-       the smaller of $\widehat{p}_m$ or ($1-\widehat{p}_m$) and this
+       the smaller of $\widehat{p}_T$ or ($1-\widehat{p}_T$) and this
        value should be at least 5.\vspace{1in}
   \end{itemize}
 
@@ -349,8 +349,8 @@ ME = $ 1.645 \times 0.04889 = 0.0804 $ 90\% CI =  $0.648 - 0.5025 \pm
 in this case that is
 $$ z = \frac{\widehat{p}_1 - \widehat{p}_2 -0}{ SE(\widehat{p}_1 -
   \widehat{p}_2)} = \frac{\widehat{p}_1 - \widehat{p}_2} 
-   {\sqrt{\frac{\widehat{p}_m(1-\widehat{p}_m)}{n_1} +
-    \frac{\widehat{p}_m(1-\widehat{p}_m)}{n_2}}}$$
+   {\sqrt{\frac{\widehat{p}_T(1-\widehat{p}_T)}{n_1} +
+    \frac{\widehat{p}_T(1-\widehat{p}_T)}{n_2}}}$$
 \item To build a confidence interval, we do not assume ${p}_1 ={p}_2$.
 \item The general form of a CI is
 $$ \mbox{estimate} \pm \mbox{multiplier} \times SE(\mbox{estimate})$$
