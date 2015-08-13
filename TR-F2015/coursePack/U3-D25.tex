@@ -1,391 +1,350 @@
-\def\theTopic{Pairing }
+\def\theTopic{Energy Drinks II}
 \def\dayNum{25 }
 
-
-
 \begin{center}
-{\bf {\large Are You Two Together? }}\\
+{\bf {\large \textbf{More Energy Drinks}}}
 \end{center}
 
+Back on Activity 14 we compared an energy drink with
+alcohol, REDA, to a control.  Our conclusion that ``change in RBANS''
+was lower in the REDA group did not allow us to say whether that was
+due to the alcohol 
+or the stimulant in REDA.  The two  explanatory variables were
+``confounded'' meaning that we can't separate the effects.  The
+researchers knew this would be a problem, so they included a third
+group in the study: 9 randomly selected women got RED, an energy drink
+with no alcohol.  Today we'll compare RED and control means using
+confidence intervals and hypothesis tests based on a $t$
+distribution. 
 
-  % When we want to make comparisons, and the data include lots of
-  % excess noise, {\bf pairing} is a way to get ``cleaner'' or more
-  % precise comparisons.
+  The research question is: 
 
-   In the ``Energy Drinks'' study we've looked at
-  several times, each participant took a test  before the
-  experiment really began. She  returned about 10 days later, and was
-  randomly assigned a treatment (RED, REDA or Control) and was again
-  given a very similar test.  The response variable we looked at
-  was her ``change in RBANS'', meaning we subtracted the first test
-  score from the second.   
+  {\sf
+    Does neuropsychological performance (as measured on the RBANS
+    test) change after drinking an energy drink? }
+
+   Higher RBANs scores indicate better memory skills.
+
+ Go to the usual website and use the pre-loaded {\tt REDvsControl}
+ dataset under \fbox{One of Each}.
+
   \begin{enumerate}
-  \item The ``Repeatable Battery for the Assessment of
-    Neuropsychological Status'' outputs scores for immediate memory,
-    visuospatial/construction, language, attention, and delayed
-    memory.  Discuss: What attributes of a person would make her score
-    higher or lower?  Write down two or three of your best guesses.
+  \item  Obtain ``Actual'' Mean and Std dev for each group. 
+\begin{students}
+    \vspace{4cm}    
+\end{students}
+
+\begin{key}
+  {\it Means:  control: 1.219, RED: -2.44 \\%, REDA:  -8.39\\
+       Std.dev.: control: 3.919, RED: 6.425}%, REDA, 10.02} 
+\end{key}
+
+\item Using t-based methods requires that we either have ``near
+  normal'' data or  large sample sizes.  Do you see extreme outliers
+  in the plots?  Are the data skewed?
+
 \begin{students}
     \vspace{2cm}    
 \end{students}
 
 \begin{key}
-  {\it Intellect, sleepiness, memory, motivation.}
+  {\it  These look OK to me, though the spreads do not look equal.}
 \end{key}
 
+\end{enumerate}
 
-  \item Write down an estimate of how much a person's attribute will
-    change in 10 days for each of the attributes above.  Think of how
-    much one person changes relative to differences between different
-    people (take $\sigma = 4$ to be the spread from person to person). \begin{students}
-    \vspace{2cm}    
+
+We'll start by comparing RED to Control  using a hypothesis test.
+
+%\newpage
+\begin{enumerate}
+\setcounter{enumi}{2}
+
+\item  What are the null and alternative hypotheses when comparing RED
+  to Control? Use notation, and write them out with words.
+  Do not assume they knew ahead of time which  mean would be
+  larger. \\
+\begin{students}
+ $H_0:$    \vspace{1cm}    \\ $H_a:$    \vspace{1cm}
 \end{students}
-
 \begin{key}
-  {\it Intellect and memory do not change much from day to day
-    motivation could change a fair amount, and  sleepiness could
-    change a lot.}
+  {\it   $H_0:\ \mu_1 = \mu_2$ The mean change in RBANS is the same
+    for treatment (RED) and Control.    \\ $H_a: \mu_1 \neq \mu_2$ The
+    mean change in RBANS is not the same for treatment (RED) and control.  }
 \end{key}
 
+   Check with another group to be sure we have the correct
+   direction for $H_a$.
 
-The ``Repeatable'' part of RBANS means that it comes in several
-different versions which are all supposed to give the same scores to
-the same people.  If the researchers had used exactly the same
-questions, subjects might have learned from the first attempt and done
-better the second time.
-
-
-  \item  For each of the following situations, write ``paired'' if
-    there is one sample measured twice or ``two samples'' otherwise.
-    Ask your self: ``Does it make sense to take differences and
-    analyze those? (paired) Or do we compute means from each of two groups?''
-     Another clue: If sample sizes might be different, it's not
-     paired. 
- 
-    \begin{enumerate}
-    \item To study the effect of exercise on brain activity
-      researchers recruited sets of identical twins in middle age.
-      One twin was randomly assigned to engage in regular
-      exercise and the other didn't exercise. 
-\begin{students}
- \vspace{1cm}
-\end{students}
-
-\begin{key} Paired -- a pair of twins is the ``unit''
-\end{key}
-
-
-    \item To see if curriculum changes are effective, researchers took
-      a sample of 100 eighth graders' standardized test scores from
-      this year and compared them to a sample of 100 scores of last
-      year's eighth graders (on the same exam).
-\begin{students}
- \vspace{1cm}
-\end{students}
-
-\begin{key} Not paired -- 2 samples.
-\end{key}
-
-
-    \item In a study to determine whether the color red increases how
-      attractive men find women, one group of men rated the
-      attractiveness of a woman after seeing her picture on a red
-      background and another group of men rated the same woman after
-      seeing her picture on a white background.  
-\begin{students}
- \vspace{1cm}
-\end{students}
-
-\begin{key} Not paired. The men form two samples - or treatment groups.
-\end{key}
-
-
-    \item To measure the effectiveness of a new teaching method for
-      math in elementary school, each student in a class getting the
-      new instructional method is matched with a student in a separate
-      class on IQ, family income, math ability level the previous
-      year, reading level, and all demographic characteristics.  At
-      the end of the year, math ability levels are measured.
-\begin{students}
- \vspace{1cm}
-\end{students}
-
-\begin{key} Paired -- artificially by matching case to control.
-\end{key}
-  
-
-\item Each student in an intro stat class walked 100 yards twice. Once
-  with arms down at his/her sides, another time while ``pumping'' arms
-  up and down with each stride. The order of ``pumping'' or ``not''
-  was randomized for each student.  Pulse (beats per second) was
-  measured after each walk.
-\begin{students}
- \vspace{1cm}
-\end{students}
-
-\begin{key} Paired. Two measurements on each student.
-\end{key}
-
-
-    \end{enumerate}
-  \end{enumerate}
-  {\bf Being Careful With Wording}:\\
-  With paired data, we are making inference about the ``true mean of
-  the differences.''  This is different from the wording we used with
-  two independent samples. There we looked at the ``difference in true
-  means'' -- which makes sense because we had two populations to
-  compare. With paired data, we have a single sample of
-  differences. The observations subtracted to get the differences were
-  not independent because they came from the same subject, but the
-  sample of all differences can be independent as long as one subject
-  (or unit) did not influence another. 
-
-
-
-   Now we'll analyze some paired data.
-
-   \begin{center}
-     {\large\bf Tears and Testosterone}
-   \end{center}
-    Do pheromones (subconscious chemical signals) in female
-      tears {\bf change}  testosterone levels in men?\\
-    Cotton pads had either real female tears or a salt solution
-      that had been dripped down the same woman's face.
-    Fifty men (a convenience sample) had a pad attached to their upper
-    lip twice, once 
-      with tears and once without, in random order.
-    Response variable: testosterone level measured in
-      picograms/milliliter, pg/ml.
-
-    Take differences: Saline T--level minus Tears T--level.\\
-    The mean of the differences is  $\overline{x}_D = -21.7$, and
-    the spread of the differences is  $s_D = 46.5$ pg/ml.
-    \begin{enumerate}
-  \setcounter{enumi}{3}
-        \item Test: ``Is the mean difference 0?''
-          \begin{enumerate}
-            \item Check the assumptions. If the differences are
-              fairly symmetrically distributed, can we use t-procedures?
-              Explain. 
-\begin{students}
-    \vspace{2.8cm}    
-\end{students}
-
-\begin{key}
-  {\it  Yes. $n=50 > 30$ so we're OK. We have random ordering, and 
-     subjects' responses should be independent.} 
-\end{key}
-
-        \item State hypotheses in terms of parameter $\mu_D$, the
-              true mean of differences.
+\item  Let group 1 be Control and group 2 be RED. Compute $SE(\xb_1 -
+  \xb_2) = \sqrt{\frac{s_1^2}{n_1} +     \frac{s_2^2}{n_2}}$. 
 \begin{students}
     \vspace{2cm}    
 \end{students}
 
 \begin{key}
-  {\it  $H_0: \mu_D = 0$ versus $H_a: \mu_D \neq 0$}
+  {\it  $ \sqrt{\frac{3.92^2}{9} +    \frac{6.43^2}{9}} = \sqrt{1.707
+    +4.594} = 2.5102$.} 
 \end{key}
-
-    {\bf STOP.  Check} the direction of the alternative with another group.
-    \item Compute t statistic as for  testing $H_0:\  mu_D=0$.
+\item As with a single mean, our test statistic is called $t$ and is
+  found by dividing  the difference between sample statistic and its
+  value under $H_0$ by its $SE.$  Find t. \\
 \begin{students}
-    \vspace{1.5cm}    
-\end{students}
-
-\begin{key}
-  {\it  $t^* = \frac{ -21.7}{46.5/\sqrt{50}} = -3.30 $}
-\end{key}
-
-            \item Do we use Normal  or t distribution? 
-              If t how many df?
-\begin{students}
-    \vspace{1cm}    
-\end{students}
-
-\begin{key}
-  {\it     $t$ with 49 df}
-\end{key}
-
-            \item Look up the p-value in a web app and give the
-              strength of evidence.
-\begin{students}
-    \vspace{1.7cm}    
-\end{students}
-
-\begin{key}
-  {\it  $2 \times .0009 = 0.0018$ This is very strong evidence against
-  the null hypothesis.}
-\end{key}
-
-   \item At the $\alpha = .02$ level, what is your decision?
-\begin{students}
-    \vspace{1cm}    
-\end{students}
-
-\begin{key}
-  {\it  Reject $H_0$.}
-\end{key}
-
-
-            \item Explain what we've learned in context. (Give scope
-              of inference.  If outside observers would say the men
-              studied were representative of all US men, how could the
-              scope be extended?)
-\begin{students}
-    \vspace{1cm}    
-\end{students}
-
-\begin{key}
-  {\it  We've found causal evidence that exposure to womens' tears
-    does reduce testosterone levels in men. (p-value = 0.002). If this
-  is a representative sample, then we can extend the inference back to
-the population of US adult males.}
-\end{key}
-
-          \end{enumerate}
-        \item Build a 90\% CI for the true mean difference, $\mu_D$.
-          \begin{enumerate}
-          \item Find the correct multiplier.
-\begin{students}
-    \vspace{1cm}    
-\end{students}
-
-\begin{key}
-  {\it     $t^*_{49}  = 1.677 $ }
-\end{key}
-   \item  Compute the margin of error and build the interval.
-\begin{students}
+  $ t = \frac{\xb_1 - \xb_2 - (\mu_1 - \mu_2)}{SE(\xb_1-\xb_2)} = $
     \vspace{2cm}    
 \end{students}
 
 \begin{key}
-$$ME = 1.677\times 46.5/\sqrt{50} = 1.677\times 6.58 = 11.03;
-    \mbox{\hspace{.4in} CI: } -21.7 \pm 11.03 = (-32.7, -10.7) pg/ml$$
+   $ t = \frac{\xb_1 - \xb_2 - \mu_1 - \mu_2}{SE(\xb_1-\xb_2)} = 
+          \frac{ 1.219-( -2.44)}{2.5102} = 1.458 $
 \end{key}
 
- \item Interpret the interval in context. What do you mean by ``confidence''?
+\item We need to figure out which degrees of freedom for our t
+  test. When working with two means, we take the smaller sample size
+  and subtract one from it. What is that for the Energy Drinks study?
+  ({\small This is a conservative approach. Other books or software
+    programs might use a different number.})
+\begin{students}
+    \vspace{2.6cm}    
+\end{students}
+
+\begin{key}
+  {\it  8}
+\end{key}
+
+ \item  Go to the t distribution part of the applet and put your t
+   test statistic in the top box, 
+   set its degrees of freedom, and select the right direction for the
+   alternative.  What is our p-value?  State your decision and 
+   conclusion about these two drinks. 
 \begin{students}
     \vspace{5cm}    
 \end{students}
 
 \begin{key}
-  {\it  We are 90\% confident that the true mean difference in
-    testosterone levels for men without and with exposure to womens'
-    tears is in the interval (-32.7, -10.7) pg/ml. This says that the
-    tears really did cause a decrease in T--levels in this group of
-    men. Our confidence is in the process by which we built the
-    interval.  When the procedure is used over and over, 90\% of
-    intervals built this way (in the long run) will include their true
-    mean.  }
+  {\it 0.182. At any of the commonly used $\alpha$ levels, we fail to
+    reject the null hypothesis that mean change in RBANS score is the
+    same for control and RED groups.  There is not sufficient evidence
+    to say that they differ.}
 \end{key}
-          \end{enumerate}
 
-   \item Designing a study: Researchers at the Western Transportation
-     Institute (just south of the football stadium) use a driving
-     simulator to test driver distractions (among other things). It is
-     the front end of a car with large projection screens.  Suppose 
-     they want to assess how distracting it is to read text messages
-     on a phone while driving. The response they measure will be
-     response time when a child suddenly runs out onto the road in
-     front of the car.
-     \begin{enumerate}
-      \item How would they set this up to use  paired measurements?
+
+ \item  Next we want to compare RED drinkers to REDA drinkers (group 2
+   to group 3). 
+
+   \begin{enumerate}
+     \item Your null and alternative hypotheses are the same, but we
+       need to use subscripts 2 and 3 instead of 1 and 2.  Copy them
+       here. 
+\begin{students}
+    \vspace{2cm}    
+\end{students}
+
+\begin{key}
+  {\it   $H_0:\ \mu_2 = \mu_3$ The mean change in RBANS is the same
+    for RED and REDA.    \\ $H_a: \mu_2 \neq \mu_3$ The
+    mean change in RBANS is not the same for RED and REDA.  }
+\end{key}
+ 
+
+      \item Compute the difference in means.
 \begin{students}
     \vspace{1cm}    
 \end{students}
 
 \begin{key}
-  {\it Each driver does the same course twice -- once while reading a
-    text and again without the phone.}
+  {\it  $ -2.44 -( -8.329) = 5.889$}
 \end{key}
-\item How could randomization be used?
+
+      \item Compute the $SE$ of the estimator.
 \begin{students}
     \vspace{1cm}    
 \end{students}
 
 \begin{key}
-  {\it Randomly (flip a coin?) select whether each driver gets the
-    text reading first or second.}
+  {\it  $ \sqrt{ \frac{6.43^2}{9} + \frac{10.02^2}{9}} = \sqrt{
+    4.594 + 11.1566 } = 3.969$ }
 \end{key}
-\item Alternately, they could just test half their subjects
-        while reading a text and half without the texting.  Which
-        study design do you recommend?  Explain why.
+
+      \item Compute the $t$ test statistic.
 \begin{students}
-\vspace{4cm}
+    \vspace{1cm}    
 \end{students}
 
 \begin{key}
-  {\it Pairing seems like a good idea because some people have faster
-    reaction times than others. By subtracting two reaction times you
-    get rid of other effects such as age or sleepiness. }
+  {\it   $ 5.889 / 3.969 = 1.484$}
 \end{key}
-\end{enumerate}
 
-\item A study of the effects of drinking diet soda versus
-  sugar--sweetened soda on weights of 32 adults used a ``cross--over''
-  design in which each adult was given diet soda to drink for one six
-  week period, and given sugar--sweetened soda to drink in another six
-  week period.  The order of assignment was randomized for each
-  participant.  The response measurement was ``weight gain'' over the
-  six weeks.
-  \begin{enumerate}
-  \item It the parameter of interest the difference in true means or
-    the true mean difference?  Explain.
+      \item What degrees of freedom will you use?  Find the p-value.
 \begin{students}
-\vspace{3cm}
+    \vspace{1cm}    
 \end{students}
 
 \begin{key}
-  {\it True mean difference. This is a case of one sample measured
-    twice.  We subtract weight gains (say sugar minus diet) so that
-    our observations are independent of each other.}
+  {\it  8 df.  The p-value is $2 \times 0.088 = 0.172 $}
 \end{key}
-\item How would you process the data in order to analyze it? 
+
+      \item What is your decision? your conclusion? 
 \begin{students}
-\vspace{2cm}
+    \vspace{2cm}    
 \end{students}
 
 \begin{key}
-  {\it Take difference in weight gain (diet minus sugar) for each person.}
+  {\it  Again, we do not have much evidence against the null
+    hypothesis that the two groups have the same mean. We fail to
+    reject $H_0$ at all commonly used $\alpha$ levels. }
 \end{key}
-\item What distribution would you use to find p-values or
-    a confidence interval multiplier?
+
+     \end{enumerate}
+
+     \begin{center}
+       {\large\bf Confidence Interval}
+
+ Reminder. The general form of a t-based CI is:
+     \end{center}
+  $$ \mbox{estimate} \pm t^*_{df} \times SE(\mbox{estimate}) $$ 
+
+ \item Finally, we'll go back to the original comparison between REDA
+   and Control means. However, we'll set this one up as a confidence
+   interval instead of a t-test. 
+   \begin{enumerate}
+   \item Compute the difference in means between REDA and control.
 \begin{students}
-\vspace{2cm}
+    \vspace{1cm}    
 \end{students}
 
 \begin{key}
-  {\it $t_{31}$}
+  {\it  $1.219-( -8.329) = 9.548 $}
 \end{key}
-\end{enumerate}
 
-\end{enumerate}
+   \item Compute  $SE(\xb_1-\xb_3)$
+\begin{students}
+    \vspace{1cm}    
+\end{students}
 
+\begin{key}
+  {\it $\sqrt{ \frac{3.919^2}{9} + \frac{10.02^2}{9}}= 3.587$}
+\end{key}
+
+   \item What degrees of freedom do we need?\\
+     Use the web app to find the $t^*$ multiplier for a 95\% 
+     confidence interval. 
+\begin{students}
+    \vspace{1cm}    
+\end{students}
+
+\begin{key}
+  {\it  8 df.   $t^* = 2.306 $}
+\end{key}
+\begin{students}
+    \vspace{1cm}    
+\end{students}
+
+\begin{key}
+  {\it  8 df.   $t^* = 2.306 $}
+\end{key}
+
+   \item Find the margin of error and construct the 95\% CI.  Does it
+     contain zero?  If testing 
+     $H_0: \mu_1 = \mu_3$ versus a two-sided alternative at the
+     $\alpha = 0.05$ level, would you reject $H_0$?  Explain.
+\begin{students}
+    \vspace{1cm}    
+\end{students}
+
+\begin{key}
+  {\it  ME $=2.306 \times 3.587 =8.272 $, 95\% CI:   $9.548 \pm  
+    8.272 = ( 1.28, 17.82)$ Zero is not in the interval, so it is not
+    a ``plausible value'' for the difference in means.  We would
+    reject the null in favor of the alternative at $\alpha = 0.05$.  }
+\end{key}
+
+   \end{enumerate}
+
+ \item   How do you explain the fact that two of the three
+   t-tests we've done gave large p-values and another gave a small p-value? Is
+   that inconsistent? 
+\begin{students}
+    \vspace{3cm}    
+\end{students}
+
+\begin{key}
+  {\it  The confidence interval shows that we have
+    fairly strong evidence that the mean for control change in RBANs is
+    larger than the mean for REDA change in RBANS. We do not have very
+    large sample sizes in this study, so it is not surprising that two
+    comparisons found that the middle mean (RED) was not very
+    different from either extreme (Control or REDA), yet the two
+    extreme values were far enough apart to detect a fairly strong
+    difference. }
+\end{key}
+
+\item Could the difference in REDA and Control means be just due to
+  random chance?  Explain.
+\begin{students}
+    \vspace{2cm}    
+\end{students}
+
+\begin{key}
+  {\it Yes.  Our conclusions do not change just because we've used a
+    different method to compute the p-value.  It's still possible that
+  one group was higher just due to random assignment of treatment.}
+\end{key}
+\begin{students}
+    \vspace{2cm}    
+\end{students}
+
+\begin{key}
+  {\it Yes.  Our conclusions do not change just because we've used a
+    different method to compute the p-value.  It's still possible that
+  one group was higher just due to random assignment of treatment.}
+\end{key}
+\item Can we make causal inference about the effects of energy drinks
+  and alcohol?
+\begin{students}
+    \vspace{2cm}    
+\end{students}
+
+\begin{key}
+  {\it  Yes.  Because treatments were randomly assigned, it is very
+    unlikely that we would see such large differences just by chance,
+    so the observed differences (or lack thereof) are attributable to
+    the treatments.  }
+\end{key}
+
+
+\item Write up the hypothesis test results as a report.  Include all
+  three comparisons we've made. \vfill
+   
+ \end{enumerate}
+ \newpage
 
 \begin{center}
   {\large\bf Take Home Message}
 \end{center}
+
 \begin{itemize}
-\item Taking two measurements on the same subjects is quite different
-  from taking two samples or assigning two treatments. You need to
-  read carefully to see how data were collected.  We do not have
-  independent measures if they are on the same units.
-
-  \item With two independent samples the parameter of interest was
-    ``difference in true means.''  With a single sample measured
-    twice, the parameter is ``true mean difference''.
-
-  \item To analyze paired measures, take differences first (before
-    averaging) and use the one-sample t procedures.
-
-  \item Pairing is a good strategy for reducing variability.
-
-  \item The Energy Drinks study has a lot going on.  They took
-    differences first, to get ``change in RBANS'', but they also had
-    three independent groups to compare: Control, RED, and REDA.
-
-  \item What  questions do you have?  Write them here.\vspace{2cm}
+  \item Interpretation of results does not change just because we
+    switched from permutation testing to t-tests.  We still ask ``Was
+    this a random sample of subjects?'' to obtain inference back to a
+    population, and we still ask ``Were treatments assigned at
+    random?'' to conclude that change in one variable caused changes
+    in the other. 
+  \item The t-test approach uses formulas for standard errors, while
+    the permutation test relies on repeated permutations or resampling
+    to get the same information about the spread of the sampling
+    distribution under $H_0$.  Both work!
+  \item We can use t-tests to compare two means, but do have to be
+    careful with small sample sizes.  We should not use t-tests with
+    sample sizes less than 15 unless the data look symmetric with no
+    outliers.
+  \item With large sample sizes, t methods are robust to outliers and
+    skewness.
+  \item When sample sizes are small, only {\em large} differences will
+    be flagged as having ``strong evidence''.  We'll look at this
+    later in more detail.
+  \item What questions do you have?  Write them here.
 \end{itemize}
 
 
-%% need more -- only 2 pages.
+%% 4 pages

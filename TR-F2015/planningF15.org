@@ -6,7 +6,7 @@ Set one Quizork per week, one online graded HW as well.
 
 Tu-thuRs sections
 
-Checked calendar ans syllabus.
+Checked calendar and syllabus.
 Need to add some extras to TR, as well as splits in MWF's
 
 * Unit 1 -- inference for 1 proportion  
@@ -57,6 +57,7 @@ Need to add some extras to TR, as well as splits in MWF's
    bootstrap   intervals
    plots/trappedRat.png  
   Split off:  
+
 ** Day 7-  meaning of confidence
   TODO: need more work and perhaps a "story"
    Q3 - Gallop Poll Margin of Error. Meaning of "confidence"
@@ -70,6 +71,7 @@ Need to add some extras to TR, as well as splits in MWF's
 ** Day 9 -- Review  Kissing on rightside
      plots/kissing-null.png  
     D2L??
+
 ** Day 10 -- Exam Review followed by the exam:
   How do we handle those whose class is at 6:10 in giving the common
   hour?  Extend class with exam right afterwards?
@@ -86,7 +88,7 @@ Sept 22
 ** Day 11 -- Bootstrap CI to estimate single mean   
    Q9 - Why bootstrap?  Body Temp CI 
   TODO:  redo motivation and intro
-  TODO: redo demo directions
+  TODone: redo demo directions
 
 ** Day 12 -- Inference for Two proportions - Peanut Allergies 
    First use of "Report" of results.
@@ -110,7 +112,6 @@ Sept 22
     arsenic in toenails.
    ADD a bit about plausible values?
 
-
 ** Day 17 -- correlation / slope  
    a good reading on correlation & least squares?
 
@@ -120,32 +121,31 @@ Sept 22
    redo power -- what is the focus?
 
 ** Day 20 -- review  
-   cutback
-   add regression example
-
-** Day 21 -- Exam  
-           Nov 3
+   cutback - OK
+   add regression example - Done
+  and  Exam  Nov 3
 * Unit 3 -- shortcut theoretical methods  
 
-** Day 22 -- Normal and t Distributions  
-   Uses new shiny.io web app
+** Day 21 -- Normal and t Distributions  
+   Uses new shiny web app
 
-** Day 23 -- one proportion    - Z
+** Day 22 -- one proportion    - Z
    poor-2-fair college opinion, roulette,  kissing on right side, roshambo
 
-** Day 24 -- two proportions    - Z
+** Day 23 -- two proportions    - Z
 
-** Day 25 --  one mean  - t
+** Day 24 --  one mean  - t
 
-** Day 26 --  two means - t
+** Day 25 --  two means - t + paired w/ energy drinks
 
-** Day 27 -- Paired means -- and slope?  
+**  --out -- Day 26 -- practice t based inference  Paired?
 
-** Day 27 -- sample size effects  
 
-** Day 28 -- practice t based inference  Paired?
+** -- out -- Day A1 -- Paired means 
 
-** Day 29 -- Review  
+** -- out -- Day A2 -- sample size effects  
+
+** Day 27 -- Review  
   
 ---------------------------------------
 

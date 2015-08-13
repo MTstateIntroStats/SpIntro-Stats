@@ -60,22 +60,16 @@ $$ \mbox{Women: } \hat{y} = 9.02 + 0.70x \mbox{ \hspace{2in}}
 
 
 \item Go to the website
-  \url{http://shiny.math.montana.edu/jimrc/IntroStatShinyApps/}
-%  \url{http://www.rossmanchance.com/applets/RegShuffle.htm}.  
-Clear
-  the data and paste in the men's data from D2L (include the column
-  labels at the top of the file). Click {\sf Show Moveable Line} and
-  write the equation it starts with (no need to actually move the
-  line).  
-\begin{students}
- \vspace{1.5cm}      
-\end{students}
+  \url{http://shiny.math.montana.edu/jimrc/IntroStatShinyApps/},
+  select \fbox{Two Quant.} and ``Enter Data''. The OKcupid data is
+  preloaded as either {\tt WomenRateMen} or {\tt MenRateWomen}. Use
+  the men's rating of women for now.
 
-\begin{key}
-  {\it  $\widehat{mostAttrWomen}$ = 20.77 + 0 x mansAge   }
-\end{key}
+Consider this line:
+  {\it  $\widehat{mostAttrWomen} = 20.77 + 0 \times $ mansAge   }
 
-    \begin{enumerate}
+
+    \begin{enumerate} 
     \item Where have you seen the intercept estimate before?
 
       \item If you plug in any age for men, say 18 or 54, what result
@@ -96,9 +90,9 @@ Clear
 \begin{key}
   {\it  $y$ does not depend on $x$  }
 \end{key}
-      \item What would be the true slope for $y$ based on $x$ if there
-        is no relationship?  Use
-        correct notation.
+
+      \item What will be the true slope for $y$ based on $x$ if there
+        is no relationship?  Use    correct notation.
 \begin{students}
  \vspace{1cm}      
 \end{students}
@@ -129,39 +123,39 @@ Clear
   {\it  $\beta_1 > 0$   }
 \end{key}
 
-\item Click {\sf Show Shuffle Options} and choose $\circ$ {\sf Data}
-  (so that we can see how the values are shuffled)
-  then click \fbox{\sf Shuffle Y values}. Check {\sf Regression Line}.
-  Examine the first column in
-  the data box.  Is it the same ages in order?  How about the 2nd
-  column?  Does this shuffle follow $H_0$ or $H_a$?  Explain.
+\item When you select ``Test'' for these data, a ``Shuffled Data''
+  plot appears in the middle of the page. For each $x$ value, there is
+  a line from the original (blue) y value to the new shuffled $y$
+  value (green).   Does this shuffle follow $H_0$ or $H_a$?  Explain.
 \begin{students}
  \vspace{1cm}      
 \end{students}
 
 \begin{key}
-  {\it  The first column stays the same, the 2nd is shuffled. If $H_0$
+  {\it  Y's are shuffled. If $H_0$
   is true, then there is no linear association between $x$ and $y$, so
 the shuffled data could have occurred just by chance.}
 \end{key}
 
-\item Change Data to Plot. The red line comes from where? 
+% \item Change Data to Plot. The red line comes from where? 
+% \begin{students}
+%  \vspace{1cm}      
+% \end{students}
+
+% \begin{key}
+%   {\it  It's the least squares line from the left-hand plot of the
+%     original data.   }
+% \end{key}
+\item %Run several  shuffles, then several 1000.  
+Is the least squares line in the lower plot  flatter or steeper than
+the one one in the upper plot?  Is $\hat{\beta}_1$ closer or further
+from zero? 
 \begin{students}
  \vspace{1cm}      
 \end{students}
 
 \begin{key}
-  {\it  It's the least squares line from the left-hand plot of the
-    original data.   }
-\end{key}
-\item Run several  shuffles, then several 1000.  Are most of the
-  lines flatter or steeper than the red one?
-\begin{students}
- \vspace{1cm}      
-\end{students}
-
-\begin{key}
-  {\it flatter}
+  {\it AWV.  generally flatter}
 \end{key}
 
 \item  Compute the p-value.  Explain which shuffles it counts.
@@ -220,7 +214,7 @@ the shuffled data could have occurred just by chance.}
   {\it  $\beta_1 > 0$   We don't expect a negative relationship.}
 \end{key}
 
-  \item Clear the data window and paste in the women's data.  What is
+  \item Go back to ``Enter Data'' and load the women's data.  What is
     the equation of the least squares line?
 \begin{students}
  \vspace{1cm}      
