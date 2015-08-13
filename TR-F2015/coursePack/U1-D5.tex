@@ -201,8 +201,11 @@ $(0.20, 1.00)$
 
        \includegraphics[width=.3\linewidth]{plots/spinnerCircle.png}
  % png("plots/spinnerCircle.png",height=400,width=400)
+ % myValues <- seq(0, 2.01*pi, length = 100)
  % plot(cos(myValues),sin(myValues), type = "l", xlab = "", ylab = "", axes=FALSE, bty="n")
- % abline(h=0); abline(v=0)
+ % ticks <- 0:10 * pi/5
+ % segments(.95*cos(ticks), .95*sin(ticks), 1.05*cos(ticks),  1.05*sin(ticks))
+ % points(0,0)       ## abline(h=0); abline(v=0)
  % dev.off()
 \vspace{-1cm}
 
