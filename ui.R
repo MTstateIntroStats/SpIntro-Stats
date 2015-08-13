@@ -135,6 +135,9 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
       tabPanel("Bootstrap Demo", value="1quantBoot",
         a(href="BootDemo.html","Click to see Bootstrap Demo") 
       ),
+      tabPanel("Lurking Demo", value="1quantLurk",
+               uiOutput('q1_lurkingUI')        
+      ),
       tabPanel("t Distribution",  value="1quantT",
                titlePanel("t Probabilities"),
                column(4, inputPanel(
