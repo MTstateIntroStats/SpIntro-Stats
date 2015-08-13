@@ -6,7 +6,7 @@ Set one Quizork per week, one online graded HW as well.
 
 Tu-thuRs sections
 
-Checked calendar ans syllabus.
+Checked calendar and syllabus.
 Need to add some extras to TR, as well as splits in MWF's
 
 * Unit 1 -- inference for 1 proportion  
@@ -57,6 +57,7 @@ Need to add some extras to TR, as well as splits in MWF's
    bootstrap   intervals
    plots/trappedRat.png  
   Split off:  
+
 ** Day 7-  meaning of confidence
   TODO: need more work and perhaps a "story"
    Q3 - Gallop Poll Margin of Error. Meaning of "confidence"
@@ -70,6 +71,7 @@ Need to add some extras to TR, as well as splits in MWF's
 ** Day 9 -- Review  Kissing on rightside
      plots/kissing-null.png  
     D2L??
+
 ** Day 10 -- Exam Review followed by the exam:
   How do we handle those whose class is at 6:10 in giving the common
   hour?  Extend class with exam right afterwards?
@@ -134,13 +136,14 @@ Sept 22
 
 ** Day 24 --  one mean  - t
 
-** Day 25 --  two means - t + paired
+** Day 25 --  two means - t + paired w/ energy drinks
 
-** -- out -- Day 27 -- Paired means -- and slope?  
+**  --out -- Day 26 -- practice t based inference  Paired?
 
-** Day 26 -- sample size effects  
 
-**  --out -- Day 28 -- practice t based inference  Paired?
+** -- out -- Day A1 -- Paired means 
+
+** -- out -- Day A2 -- sample size effects  
 
 ** Day 27 -- Review  
   
