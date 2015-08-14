@@ -12,8 +12,8 @@ load("data/cat1quant1.RData")
 
  ##  These were created to hold sample data with:
  ##  save(birthWeights, REDvsCntrl, REDvsREDA, REDAvsCntrl, file = "data/cat1quant1.RData")
- ##  save(birthweights, geyser2011, file="data/quant1.RData")
- ##  save(shuttle, womenRateMen, menRateWomen, file = "data/quant2.RData")
+ ##  save(bodytemp, birthweights, arsenic, geyser2011, file="data/quant1.RData")
+ ##  save(shuttle, womenRateMen, menRateWomen, Dental, file = "data/quant2.RData")
 
 ## setup transparent colors
 grn <- rgb(0, 1, 0, alpha=.4)
@@ -21,19 +21,6 @@ rd  <- rgb(1, 0, 0, alpha=.5)
 blu <- rgb(0, 0, 1, alpha=.4)
 
 shinyServer(function(input, output, session) {
-
-##  code from https://github.com/jrowen/rhandsontable/blob/master/inst/examples/shiny.R
-#   output$dataTable <- renderRHandsontable({
-#     if (is.null(input$dataTable)) {
-#       DF = data.frame(val = 1:10, bool = TRUE, nm = LETTERS[1:10],
-#                       dt = seq(from = Sys.Date(), by = "days", length.out = 10),
-#                       stringsAsFactors = F)
-#     } else {
-#       DF = hot_to_r(input$dataTable)
-#     }
-#     rhandsontable(DF, useTypes = as.logical(input$useType))
-#   })
-#   
 
   ## 1 Categorical  -----------------------------------------------------------
  
@@ -819,8 +806,8 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
                    length = length(q1$data[, 1]))
       colnames(DF) <- q1$names
       DF
-    #})
-  })
+    #}
+  }, digits = 3)
 }
 
 
@@ -943,6 +930,7 @@ output$q1_TestPlot1 <- renderPlot({
   shuffle <- sample(x = q1$data[,1] - q1Test$mu_diff, length(q1$data[,1]), replace = TRUE)
   q1Test$shuffles <- as.matrix(shuffle)
   q1Test$mu <- mean(shuffle)
+  q1Test$colors <- blu
   ### stores samples as columns
   #print(q1Test$shuffles)
   DF0 <- sort(shuffle)
@@ -1021,7 +1009,7 @@ observeEvent(input$q1_countXtremes, {
                           "greater" = which(parm >= threshold - 1.0e-10),
                           "more extreme" = which(abs(parm - mu0) > abs(threshold - mu0) - 1.0e-10 ))
     q1Test$colors[redValues] <- rd
-    print(q1Test$mu[redValues])
+    #print(q1Test$mu[redValues])
     q1Test$moreExtremeCount  <- length(redValues)
     q1Test$pvalue <- q1Test$moreExtremeCount/nsims
   }
@@ -1053,9 +1041,9 @@ output$q1_TestPlot2 <- renderPlot({
 
 
 
-
+}
   ###   estimate mean value  ------------------------------- quant 1
-
+{
  ## --------- 1 quant estimate UI ---------------------------
 
 q1Estimate <- reactiveValues(shuffles = NULL, mu = NULL, observed = NULL, 
@@ -1133,6 +1121,7 @@ output$q1_EstPlot1 <- renderPlot({
   shuffle <- sample(x = q1$data[,1], length(q1$data[,1]), replace = TRUE)
   q1Estimate$shuffles <- as.matrix(shuffle, ncol = 1)
   q1Estimate$mu <- mean(shuffle)
+  q1Estimate$colors <- blu
   ### stores samples as columns
   #print(q1Estimate$shuffles)
   
@@ -1149,7 +1138,7 @@ observeEvent(input$q1_resample_10, {
   newShuffles <- sapply(1:10, function(x) sample(q1$data[,1], length(q1$data[,1]), replace = TRUE))
   q1Estimate$shuffles <- cbind(q1Estimate$shuffles, newShuffles)
   q1Estimate$mu <- c(q1Estimate$mu, apply(newShuffles, 2, function(x) mean(x)))
-  print(q1Estimate$mu)
+  #print(q1Estimate$mu)
   q1Estimate$colors <- rep(blu, length(q1Estimate$mu))
 })
 
@@ -1251,6 +1240,188 @@ output$q1_EstimatePlot2 <- renderPlot({
 
 }
 
+  ## Lurking Demo  --------------------------------------    quant 1
+  {
+  
+  q1Lurk <- reactiveValues(data = NULL, shuffles = NULL, diff = NULL, 
+                           colors = NULL,  name = NULL)
+  
+  output$q1_LurkDataUI <- renderUI({
+    ## choice of normal or skewed data
+    fluidRow(
+      column(2, actionButton("q1Lurk_IQ", label = "IQ (normal)")),
+      column(2, actionButton("q1Lurk_Salary", label = "Salary (skewed)"))
+    )
+  })
+  
+  observeEvent(input$q1Lurk_IQ, {
+    q1Lurk$data <- rnorm(50, 100, 15)
+    temp <- gl(2, length(q1Lurk$data)/2)
+    q1Lurk$shuffles <- data.frame(s1=sample(temp), s2 = sample(temp))
+    q1Lurk$diff <- sapply(q1Lurk$shuffles[,1:2], function(x) -diff(tapply(q1Lurk$data,x,mean)))
+    q1Lurk$name <- "IQ"
+    q1Lurk$colors <- blu
+  })
+  
+  observeEvent(input$q1Lurk_Salary,{
+    q1Lurk$data <- 10^rnorm(50, 4.5, .8)
+    temp <- gl(2, length(q1Lurk$data)/2)
+    q1Lurk$shuffles <- data.frame(s1=sample(temp), s2 = sample(temp))
+    q1Lurk$diff <- sapply(q1Lurk$shuffles[,1:2], function(x) -diff(tapply(q1Lurk$data,x,mean)))
+    q1Lurk$name <- "Salary"
+    q1Lurk$colors <- blu
+  })
+  
+  output$q1_LurkingUI <- renderUI({
+    if (is.null(q1Lurk$data) | is.null(q1Lurk$shuffles))
+      return()
+     fluidRow(
+          column(4, 
+                 plotOutput("q1_LurkPlot1")
+          ),
+          column(3,
+                 br(),
+                 br(),
+                 tableOutput("q1_LurkTable1"),
+                 h5(paste("Difference in means for 1st randomization = ", 
+                          round(-diff(tapply(q1Lurk$data, q1Lurk$shuffles[, 1], mean, na.rm=TRUE)), 3))),
+                 br(),
+                 br(),
+                tableOutput("q1_LurkTable2"),
+                 h5(paste("Difference in means for 2nd randomization = ", 
+                          round(-diff(tapply(q1Lurk$data, q1Lurk$shuffles[, 2], mean, na.rm=TRUE)), 3)))    
+          ),
+          column(5, 
+                uiOutput('q1_LurkSampDistPlot')
+        ),
+        fluidRow(
+          column(6, 
+                 h4("Two randomizations are shown. How many more?"),
+                 fluidRow(
+                   column(2, actionButton("q1_Lurk_shuffle_10", label = "10")),
+                   column(2, actionButton("q1_Lurk_shuffle_100", label = "100")),
+                   column(2, actionButton("q1_Lurk_shuffle_1000", label = "1000")),
+                   column(2, actionButton("q1_Lurk_shuffle_5000", label = "5000"))
+                 )
+            )
+        )
+     )
+  })
+  
+  output$q1_LurkSampDistPlot <- renderUI({ 
+    plotOutput('q1_LurkPlot2') #, click = 'q1_Lurk_click')
+  })
+  
+
+  # -------- 1 quant Lurking plots ------------------
+  
+  output$q1_LurkPlot1 <- renderPlot({
+    if(is.null(q1Lurk$shuffles)) 
+      return()
+    nLurk <- length(q1Lurk$data)
+    ## Original Data
+    DF <- cbind( q1Lurk$shuffles[,1:2], q1Lurk$data) 
+    names(DF) <- c("group", "group2", "y")
+    DF$group <- factor(DF$group)
+    #print(summary(DF))
+    
+    plot1 <- qplot(y=y, x=group, data = DF, geom="boxplot", main = "Randomization 1") +
+      theme_bw() + xlab("") +  coord_flip() + ylab(q1Lurk$name)
+    
+    ## Plot One Shuffle 
+    #q1Lurk$diff <- -diff(tapply(DF$y, DF$group, mean))
+    #
+    ### stores samples as columns
+    plot2 <- qplot(y=y, x=group2, data = DF, geom="boxplot", main = "Randomization 2") +
+      theme_bw() + xlab("") +  coord_flip() + ylab(q1Lurk$name)
+    
+    
+    grid.arrange(plot1, plot2, heights = c(3, 3)/6, ncol=1)
+  }, height = 360, width = 320)
+  
+  
+  output$q1_LurkTable1 <- renderTable({
+    if(is.null(q1Lurk$data))  
+      return()
+    #print(q1Lurk$data)
+    DF <- data.frame(mean = tapply(q1Lurk$data, q1Lurk$shuffles[,1], mean, na.rm = TRUE ),
+                     sd = tapply(q1Lurk$data, q1Lurk$shuffles[,1], sd, na.rm = TRUE ),
+                     n = as.integer(tapply(q1Lurk$data, q1Lurk$shuffles[,1], length)))
+    rownames(DF) <- levels(q1Lurk$shuffles[,1])
+    DF
+  })
+  
+  
+  output$q1_LurkTable2 <- renderTable({
+    if( is.null(q1Lurk$data))  
+      return()
+    DF <- data.frame(mean = tapply(q1Lurk$data, q1Lurk$shuffles[, 2], mean, na.rm = TRUE ),
+                     sd = tapply(q1Lurk$data, q1Lurk$shuffles[, 2], sd, na.rm = TRUE ),
+                     n = as.integer(tapply(q1Lurk$data, q1Lurk$shuffles[, 2], length)))
+    rownames(DF) <- levels(q1Lurk$shuffles[,1])
+    DF
+  })
+  
+  observeEvent(input$q1_Lurk_shuffle_10, {
+    newShuffles <- sapply(1:10, function(x) sample(q1Lurk$shuffles[,1]) )
+    q1Lurk$shuffles <- cbind(q1Lurk$shuffles, newShuffles)
+    q1Lurk$diff <- c(q1Lurk$diff, apply(newShuffles, 2, 
+                                        function(x) -diff(tapply(q1Lurk$data, x, mean, na.rm=TRUE))))
+    #print(q1Lurk$diff)
+    q1Lurk$colors <- rep(blu, length(q1Lurk$diff))
+  })
+  
+  observeEvent(input$q1_Lurk_shuffle_100, {
+    newShuffles <- sapply(1:100, function(x) sample(q1Lurk$shuffles[,1]) )
+    q1Lurk$shuffles <- cbind(q1Lurk$shuffles, newShuffles)
+    q1Lurk$diff <- c(q1Lurk$diff, apply(newShuffles, 2, function(x) -diff(tapply(q1Lurk$data, x, mean, na.rm=TRUE))))
+    #print(q1Lurk$diff)
+    q1Lurk$colors <- rep(blu, length(q1Lurk$diff))
+  })
+  observeEvent(input$q1_Lurk_shuffle_1000, {        
+    newShuffles <- sapply(1:1000, function(x) sample(q1Lurk$shuffles[,1]) )
+    q1Lurk$shuffles <- cbind(q1Lurk$shuffles, newShuffles)
+    q1Lurk$diff <- c(q1Lurk$diff, apply(newShuffles, 2, function(x) -diff(tapply(q1Lurk$data, x, mean, na.rm=TRUE))))
+    #print(q1Lurk$diff)
+    q1Lurk$colors <- rep(blu, length(q1Lurk$diff))
+  })
+  observeEvent(input$q1_Lurk_shuffle_5000, {
+    newShuffles <- sapply(1:5000, function(x) sample(q1Lurk$shuffles[,1]) )
+    q1Lurk$shuffles <- cbind(q1Lurk$shuffles, newShuffles)
+    q1Lurk$diff <- c(q1Lurk$diff, apply(newShuffles, 2, function(x) -diff(tapply(q1Lurk$data, x, mean, na.rm=TRUE))))
+    #print(q1Lurk$diff)
+    q1Lurk$colors <- rep(blu, length(q1Lurk$diff))
+  })
+  
+  
+  output$q1_LurkPlot2 <- renderPlot({
+    if(is.null(q1Lurk$diff)) 
+      return() 
+    
+    parm <- sort(q1Lurk$diff)
+    # print(parm)
+    if(length(parm) < 3){
+      y <- rep(0.5,length(parm))
+      radius <- 4
+    } else {
+      nbreaks <- nclass.Sturges(parm)^2
+      z <- cut(parm, breaks = nbreaks)
+      y <- unlist(tapply(z, z, function(V) 1:length(V)))
+      y <- y[!is.na(y)]
+      #print(y)
+      #print(max(w))
+      nsims <- length(parm)
+      radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
+    }
+    plot(parm, y, ylim = c(0.5, max(y)), ylab = "", cex = radius/2, pch = 16, col = q1Lurk$colors,  
+         xlab = expression(bar(x)[1] - bar(x)[2]), main = "Sampling Distribution")
+    legend("topright", bty = "n", paste(length(parm), "points \n Mean = ", 
+                                        round(mean(parm),3), "\n SE = ", round(sd(parm),3)))
+  }, width = 400)      
+  
+  
+  }
+  
   ###  t dist'n option ------------------------------------- quant 1
 
 {
@@ -1400,7 +1571,7 @@ observeEvent(input$cat2_submitButton, {
   if(input$cat2_submitButton == 0) return()
   #isolate({
     #cat2_dataDF <- cat2_data()
-    print(cat2_data$counts)
+    #print(cat2_data$counts)
     counts <- as.table( matrix(cat2_data$counts, 2, 2))
     #print(counts)
     colnames(counts) <- cat2_data$names[1:2]
@@ -2012,7 +2183,7 @@ output$normalProbPlot2 <- renderPlot({
  ## 2 Quantitative -----------------------------------------------------------  2 quant
 
   ###  Data Entry ------------------------------------------------------------  q2
-   ## need to remove old data if user comes back to data entry 
+{
    q2Test <- reactiveValues( shuffles = NULL, slopes = NULL, corr = NULL, observed = NULL,
                           colors = NULL, moreExtremeCount = NULL, direction = NULL, cutoff = NULL, pvalue = NULL)
 
@@ -2021,7 +2192,6 @@ output$normalProbPlot2 <- renderPlot({
                               observed = NULL,    confLevel = NULL, colors = blu,
                               CI = NULL)
 
-{
   ##  grab data according to input method
   q2 <- reactiveValues(data = NULL, names = NULL, intercept = NULL, slope = NULL, 
                        corr = NULL, qr = NULL)
@@ -2428,7 +2598,7 @@ fluidRow(
 }) 
 }
   ###  Estimate slope / correlation with CI ----------------------------------- q2 
-  ##  Need to include more info in interval printout - percent coverage, cor or slope
+  ##  
 {
   output$q2_CIPrep <- renderTable({
   ##  print("in q2_CIPrep")
@@ -2817,7 +2987,7 @@ output$c1q1_Summary1 <- renderTable({
   tempDF <- c1q1$data
   names(tempDF) <- c("group","y")
   tempDF$group <- factor(tempDF$group)
-  # print(summary(tempDF))
+  #print(tempDF)
   DF <- with(tempDF,
         rbind(mean   = tapply(y, group, mean, na.rm = TRUE ),
               sd     = tapply(y, group, sd, na.rm = TRUE),
@@ -2837,7 +3007,7 @@ output$c1q1_Summary2 <- renderTable({
   if( is.null(c1q1$data))  
     #if(input$c1q1_useHotBtn == 0 && input$c1q1_useExistingBtn == 0 && input$c1q1_useFileBtn == 0) 
     return()
-    val <- round( diff(tapply(c1q1$data[, 2], c1q1$data[, 1], mean, na.rm=TRUE)), 3)
+    val <- round( -diff(tapply(c1q1$data[, 2], c1q1$data[, 1], mean, na.rm=TRUE)), 3)
     names(val) <- NULL
     c1q1$diff <- -val
   matrix( -val, ncol= 1, dimnames = list("Difference in Means", c1q1$names[2]))
@@ -2857,51 +3027,42 @@ output$c1q1_Summary2 <- renderTable({
           h4(" You must first enter data. Choose 'Enter/Describe Data'.")
         } else{ 
           fluidPage(
-            h3("Test: 'Are two means Equal?'"),
+            h3("Test: 'Are Two Means Equal?'"),
             fluidRow(
               column(4, 
-                     plotOutput("c1q1_TestPrep1"),
-                     
-                     br()
-                     
-                     
-              ),
+                      plotOutput("c1q1_TestPrep1")
+                      ),
                column(3,
                       br(),
-                      
+                      br(),
                       tableOutput("c1q1_TestPrep2"),
+                      h5(paste("Original Difference in means = ", 
+                               round(-diff(tapply(c1q1$data[, 2], c1q1$data[, 1], mean, na.rm=TRUE)), 3))),
                       
                       br(),
                       br(),
-                      
-                      tableOutput("c1q1_TestTable1")
-               ),
+                      tableOutput("c1q1_TestTable1"),
+                      h5(paste("Shuffled difference in means = ", round(as.numeric(c1q1Test$diff[1]),3)))
+                     ),
                column(5, 
-                      fluidRow(
-                        column(8, h4(HTML("Null hypothesis: &mu;<sub>1</sub> = &mu;<sub>2</sub>"))
-                               ),
-                        
-                        # h5("Click on a point to see that shuffle"),
-                        uiOutput('c1q1_SampDistPlot'),
-                        br(),
-                        br(),
-                        
-                        h4("We start showing one sample from the null. How many more?"),
-                        fluidRow(
-                          column(2, actionButton("c1q1_test_shuffle_10", label = "10")),
-                          column(2, actionButton("c1q1_test_shuffle_100", label = "100")),
-                          column(2, actionButton("c1q1_test_shuffle_1000", label = "1000")),
-                          column(2, actionButton("c1q1_test_shuffle_5000", label = "5000"))
-                        ), 
-                        
-                        br(),
-                        br(),
-                        
-                        uiOutput("c1q1TestXtremes"),
-                        uiOutput("c1q1TestPvalue")
-                      )
+                      h4(HTML("Null hypothesis: &mu;<sub>1</sub> = &mu;<sub>2</sub>")),
+                      uiOutput('c1q1_SampDistPlot')
+                     )
+              ),
+            fluidRow(
+              column(6, 
+                h4("One sample from the null is shown. How many more?"),
+                fluidRow(
+                  column(2, actionButton("c1q1_test_shuffle_10", label = "10")),
+                  column(2, actionButton("c1q1_test_shuffle_100", label = "100")),
+                  column(2, actionButton("c1q1_test_shuffle_1000", label = "1000")),
+                  column(2, actionButton("c1q1_test_shuffle_5000", label = "5000"))
+                  )),
+              column(6,
+                  uiOutput("c1q1TestXtremes"),
+                  uiOutput("c1q1TestPvalue")
+                  )
                )
-             )
           )
         }
       })
@@ -2912,19 +3073,20 @@ output$c1q1_Summary2 <- renderTable({
       
       output$c1q1TestPvalue <- renderUI({
         if(!is.null(c1q1Test$moreExtremeCount)){
-          fluidRow(
-            column(9, offset = 3,  h4(paste(c1q1Test$moreExtremeCount, " of ", length(c1q1Test$diff), "values are ",
+          #fluidRow(
+          #  column(9,  
+          h4(paste(c1q1Test$moreExtremeCount, " of ", length(c1q1Test$diff), "values are ",
                                             c1q1Test$direction," than", c1q1Test$cutoff, ",  p-value =  ", round(c1q1Test$pvalue,5)))
-            ))
+          #  ))
         }
       })
       
       output$c1q1TestXtremes <- renderUI({
         fluidRow(
-          column(2, offset = 2,
+          column(2,
                  h4("Count values")
           ),
-          column(4,
+          column(5,
                  tags$div(style="width: 200px",
                           tags$select(id='c1q1_testDirection', class="form-control",
                                       tags$option( value = "less", "less"),
@@ -2932,60 +3094,58 @@ output$c1q1_Summary2 <- renderTable({
                                       tags$option( value = "greater", "greater"))
                  )
           ),
-          column(1, h4("than ")),
+          column(2, h4("than ")),
           column(2,
                  tags$div( 
                    tags$input(id = "c1q1_test_cutoff", type = "text", class = "form-control", value = NA))
           ),
-          column(1,
-                 actionButton("c1q1_countXtremes","Go")
+          column(1, 
+            actionButton("c1q1_countXtremes","Go")
           )
         )
       })
       
       
-      # -------- 1 quant test plots ------------------
+      # -------- 1 cat  1 quant test plots ------------------
       
       output$c1q1_TestPrep1 <- renderPlot({
         if(is.null(c1q1$data)) return()
+        ## Original Data
         DF <- c1q1$data
         names(DF) <- c("group","y")
-        DF[, 1] <- factor(DF[,1])
-        #print(summary(DF))
-        #c1q1_plot1 <- qplot(y=y, x=group, data = DF, geom="boxplot", main = "Original Data") +
-        #  theme_bw() + xlab("") +  coord_flip() + ylab(c1q1$names[2]) 
-        DF <- DF[order(DF$y), ]
-        nbreaks <- min(c(length(unique(DF$y)), floor(.5*nclass.Sturges(DF$y)^2)))
-        z <- cut(DF$y, breaks =  nbreaks )
-        w <- unlist(tapply(DF$y, list(z, DF$group), function(x) 1:length(x)))
-        w <- w[!is.na(w)]  
-        c1q1_plot2 <- qplot(data= DF, x=y, y=w , colour = I(blu), size = I(4), main = "Original Data")+ facet_wrap( ~group) + 
-          theme_bw() + ylab("Count") + xlab( c1q1$names[2])
-                
-        #mtext(side = 3, at = min(x)*2/3 + max(x)/3, bquote(diff == c1q1Test$observed))
+        DF$group <- factor(DF$group)
+        #print(DF)
         
-        ## Plot One Shuffle 
+        plot1 <- qplot(y=y, x=group, data = DF, geom="boxplot", main = "Original Data") +
+          theme_bw() + xlab("") +  coord_flip() + ylab(c1q1$names[2])
+
+                ## Plot One Shuffle 
+     
         shuffle <- sample(c1q1$data[,1])
         c1q1Test$shuffles <- as.matrix(shuffle, ncol = 1)
-        c1q1Test$diff <- diff(tapply(DF$y, shuffle, mean))
+        c1q1Test$diff <- -diff(tapply(DF$y, shuffle, mean))
+        c1q1Test$colors <- blu
         ### stores samples as columns
-        #print(c1q1Test$shuffles)
-        DF$group2 <- shuffle
-        w2 <- unlist(tapply(DF$y, list(z, DF$group2), function(x) 1:length(x)))
-        tempDF <- data.frame(DF, w=w2[!is.na(w2)])
-        c1q1_plot3 <- qplot(data = tempDF, x = y, y = w, colour = I(blu), size = I(4), main = "Shuffled Data") + 
-          theme_bw() + xlab(c1q1$names[2]) + ylab("Count") + facet_wrap( ~ group2)
         
-        grid.arrange(#c1q1_plot1, 
-                     c1q1_plot2, c1q1_plot3, heights = c(#1,
-                       3,3)/6, ncol=1)
-      }, height = 360)
+        DF$group2 <- shuffle
+        #print(DF)
+        plot2 <- qplot(y=y, x=group2, data = DF, geom="boxplot", main = "Shuffled Sample") +
+          theme_bw() + xlab("") +  coord_flip() + ylab(c1q1$names[2])
+        
+        
+#         w2 <- unlist(tapply(DF$y, list(z, DF$group2), function(x) 1:length(x)))
+#         tempDF <- data.frame(DF, w=w2[!is.na(w2)])
+#         plot2 <- qplot(data = tempDF, x = y, y = w, colour = I(blu), size = I(4), main = "Shuffled Data") + 
+#                     theme_bw() + xlab(c1q1$names[2]) + ylab("Count") + facet_wrap( ~ group2)
+         grid.arrange(plot1, plot2, heights = c(3, 3)/6, ncol=1)
+      }, height = 360, width = 320)
       
       output$c1q1_TestPrep2 <- renderTable({
-        if( is.null(c1q1$data))  return()
-        DF <- data.frame(mean = tapply(c1q1$data[,2], c1q1$data[, 1], mean, na.rm = TRUE ),
-                    sd = tapply(c1q1$data[,2], c1q1$data[, 1], sd, na.rm = TRUE ),
-                    n = as.integer(tapply(c1q1$data[,2], c1q1$data[, 1], length)))
+        if(is.null(c1q1$data))  return()
+        #print(c1q1$data)
+        DF <- data.frame(mean = tapply(c1q1$data[,2], c1q1$data[,1], mean, na.rm = TRUE ),
+                    sd = tapply(c1q1$data[,2], c1q1$data[,1], sd, na.rm = TRUE ),
+                    n = as.integer(tapply(c1q1$data[,2], c1q1$data[,1], length)))
         rownames(DF) <- levels(c1q1$data[,1])
         DF
       })
@@ -3003,7 +3163,7 @@ output$c1q1_Summary2 <- renderTable({
       observeEvent(input$c1q1_test_shuffle_10, {
         newShuffles <- sapply(1:10, function(x) sample(c1q1$data[,1]) )
         c1q1Test$shuffles <- cbind(c1q1Test$shuffles, newShuffles)
-        c1q1Test$diff <- c(c1q1Test$diff, apply(newShuffles, 2, function(x) diff(tapply(c1q1$data[,2], x, mean, na.rm=TRUE))))
+        c1q1Test$diff <- c(c1q1Test$diff, apply(newShuffles, 2, function(x) -diff(tapply(c1q1$data[,2], x, mean, na.rm=TRUE))))
         #print(c1q1Test$diff)
         c1q1Test$colors <- rep(blu, length(c1q1Test$diff))
       })
@@ -3011,21 +3171,21 @@ output$c1q1_Summary2 <- renderTable({
       observeEvent(input$c1q1_test_shuffle_100, {
         newShuffles <- sapply(1:100, function(x) sample(c1q1$data[,1]) )
         c1q1Test$shuffles <- cbind(c1q1Test$shuffles, newShuffles)
-        c1q1Test$diff <- c(c1q1Test$diff, apply(newShuffles, 2, function(x) diff(tapply(c1q1$data[, 2], x, mean, na.rm=TRUE))))
+        c1q1Test$diff <- c(c1q1Test$diff, apply(newShuffles, 2, function(x) -diff(tapply(c1q1$data[, 2], x, mean, na.rm=TRUE))))
         #print(c1q1Test$diff)
         c1q1Test$colors <- rep(blu, length(c1q1Test$diff))
       })
       observeEvent(input$c1q1_test_shuffle_1000, {        
         newShuffles <- sapply(1:1000, function(x) sample(c1q1$data[,1]) )
         c1q1Test$shuffles <- cbind(c1q1Test$shuffles, newShuffles)
-        c1q1Test$diff <- c(c1q1Test$diff, apply(newShuffles, 2, function(x) diff(tapply(c1q1$data[, 2], x, mean, na.rm=TRUE))))
+        c1q1Test$diff <- c(c1q1Test$diff, apply(newShuffles, 2, function(x) -diff(tapply(c1q1$data[, 2], x, mean, na.rm=TRUE))))
         #print(c1q1Test$diff)
         c1q1Test$colors <- rep(blu, length(c1q1Test$diff))
       })
       observeEvent(input$c1q1_test_shuffle_5000, {
         newShuffles <- sapply(1:5000, function(x) sample(c1q1$data[,1]) )
         c1q1Test$shuffles <- cbind(c1q1Test$shuffles, newShuffles)
-        c1q1Test$diff <- c(c1q1Test$diff, apply(newShuffles, 2, function(x) diff(tapply(c1q1$data[, 2], x, mean, na.rm=TRUE))))
+        c1q1Test$diff <- c(c1q1Test$diff, apply(newShuffles, 2, function(x) -diff(tapply(c1q1$data[, 2], x, mean, na.rm=TRUE))))
         #print(c1q1Test$diff)
         c1q1Test$colors <- rep(blu, length(c1q1Test$diff))
       })
@@ -3042,7 +3202,7 @@ output$c1q1_Summary2 <- renderTable({
                                 "greater" = which(parm >= threshold - 1.0e-10),
                                 "more extreme" = which(abs(parm) > abs(threshold) - 1.0e-10 ))
           c1q1Test$colors[redValues] <- rd
-          print(c1q1Test$diff[redValues])
+          #print(c1q1Test$diff[redValues])
           c1q1Test$moreExtremeCount  <- length(redValues)
           c1q1Test$pvalue <- c1q1Test$moreExtremeCount/nsims
         }
@@ -3050,11 +3210,11 @@ output$c1q1_Summary2 <- renderTable({
       
       output$c1q1_TestPlot2 <- renderPlot({
         if(is.null(c1q1Test$diff)) return() 
-        parm <- as.matrix(c1q1Test$diff)
-        #print(parm)
-        parm <- sort(parm)
+        
+        parm <- sort(as.matrix(c1q1Test$diff))
+        # print(parm)
         if(length(parm) == 1){
-          y <- .5
+          y <- 0.5
           radius <- 4
         } else {
           nbreaks <- nclass.Sturges(parm)^2
@@ -3066,15 +3226,14 @@ output$c1q1_Summary2 <- renderTable({
           nsims <- length(parm)
           radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
         }
-        plot(x = parm, y = y, ylim = c(0.5, max(y)), ylab = "", cex = radius/2, pch = 16, col = c1q1Test$colors,  
-             xlab = expression(bar(x)[1] - bar(x)[2]), main = "Resampling Distribution")
+        plot(parm, y, ylim = c(0.5, max(y)), ylab = "", cex = radius/2, pch = 16, col = c1q1Test$colors,  
+             xlab = expression(bar(x)[1] - bar(x)[2]), main = "Sampling Distribution")
         legend("topright", bty = "n", paste(length(parm), "points \n Mean = ", 
                                             round(mean(parm),3), "\n SE = ", round(sd(parm),3)))
-      }, width = 600)      
+      }, width = 400)      
 
+}  
   
-  
-
 
 ##  estimate difference between two means  ----------------------------------- 1c1q
 {
@@ -3086,56 +3245,55 @@ output$c1q1_Summary2 <- renderTable({
         h3("Estimate the difference between two means."),
         fluidRow(
           column(4, 
-                 plotOutput("c1q1_EstPrep1"),
-                 
-                 br()
-                 
+                 plotOutput("c1q1_EstPrep1")
           ),
           column(3,
                  br(),
-                 
+                 br(),
                  tableOutput("c1q1_EstPrep2"),
+                 h5(paste("Original Difference in means = ", 
+                          round(-diff(tapply(c1q1$data[, 2], c1q1$data[, 1], mean, na.rm=TRUE)), 3))),
                  
                  br(),
                  br(),
-                 
-                 tableOutput("c1q1_EstTable1")
+                 tableOutput("c1q1_EstTable1"),
+                 h5(paste("Resampled difference in means = ", round(as.numeric(c1q1Est$diff[1]),3)))
           ),
-          column(5, 
-                   # h5("Click on a point to see that shuffle"),
-                   uiOutput('c1q1_ReSampDistPlot'),
-                   br(),
-                   br(),
-                   
-                   h4("One resampled mean difference is shown. How many more?"),
+          column(5,
+                uiOutput('c1q1_ReSampDistPlot')
+          )
+          ),
+          fluidRow(
+            column(6, 
+                   h4("One resample is shown. How many more?"),
                    fluidRow(
                      column(2, actionButton("c1q1_Est_shuffle_10", label = "10")),
                      column(2, actionButton("c1q1_Est_shuffle_100", label = "100")),
                      column(2, actionButton("c1q1_Est_shuffle_1000", label = "1000")),
                      column(2, actionButton("c1q1_Est_shuffle_5000", label = "5000"))
-                   ), 
-                   
-                   br(),
-                   br(),
-                 
-                 fluidRow( offset = 1,
-                           column(5, h4("Select Confidence Level(%)")),  
-                           column(1, actionButton('c1q1_conf80', label = "80")),
-                           column(1, actionButton('c1q1_conf90', label = "90")),
-                           column(1, actionButton('c1q1_conf95', label = "95")),
-                           column(1, actionButton('c1q1_conf99', label = "99"))
-                 ),
-                 
-                 if(!is.null(c1q1Est$CI)){
+                     )),
+            column(6, 
                    fluidRow( 
-                     column(7, offset = 2,
+                     column(7, h4("Select Confidence Level(%)")),  
+                     column(1, actionButton('c1q1_conf80', label = "80")),
+                     column(1, actionButton('c1q1_conf90', label = "90")),
+                     column(1, actionButton('c1q1_conf95', label = "95")),
+                     column(1, actionButton('c1q1_conf99', label = "99"))
+              
+            )
+          )
+       ),
+                 
+        if(!is.null(c1q1Est$CI)){
+             fluidRow( 
+                     column(7, offset = 6,
                             h4(paste(c1q1Est$confLevel*100, "% Interval Estimate: (", round(c1q1Est$CI[1],3), ",", 
                                      round(c1q1Est$CI[2], 3), ")"))
                      ))
                  }
-          )
-          )
+          
         )
+      
   }
   })
   
@@ -3167,7 +3325,7 @@ output$c1q1_EstPlot2 <- renderPlot({
        xlab = expression(bar(x)[1] - bar(x)[2]), main = "Resampling Distribution")
   legend("topright", bty = "n", paste(length(parm), "points \n Mean = ", 
                                       round(mean(parm),3), "\n SE = ", round(sd(parm),3)))
-}, width = 600)      
+}, width = 400)      
 
 output$c1q1_EstPrep1 <- renderPlot({
   if(is.null(c1q1$data)) return()
@@ -3175,15 +3333,17 @@ output$c1q1_EstPrep1 <- renderPlot({
   names(DF) <- c("group","y")
   DF[, 1] <- factor(DF[,1])
   #print(summary(DF))
-  #c1q1_plot1 <- qplot(y=y, x=group, data = DF, geom="boxplot", main = "Original Data") +
-  #  theme_bw() + xlab("") +  coord_flip() + ylab(c1q1$names[2]) 
-  DF <- DF[order(DF$y), ]
-  nbreaks <- min(c(length(unique(DF$y)), floor(.5*nclass.Sturges(DF$y)^2)))
-  z <- cut(DF$y, breaks =  nbreaks )
-  w <- unlist(tapply(DF$y, list(z, DF$group), function(x) 1:length(x)))
-  w <- w[!is.na(w)]  
-  c1q1_plot2 <- qplot(data= DF, x=y, y=w , colour = I(blu), size = I(4), main = "Original Data")+ facet_wrap( ~group) + 
-    theme_bw() + ylab("Count") + xlab( c1q1$names[2])
+  
+  c1q1_plot1 <- qplot(y=y, x=group, data = DF, geom="boxplot", main = "Original Data") +
+    theme_bw() + xlab("") +  coord_flip() + ylab(c1q1$names[2])
+  
+#   DF <- DF[order(DF$y), ]
+#   nbreaks <- min(c(length(unique(DF$y)), floor(.5*nclass.Sturges(DF$y)^2)))
+#   z <- cut(DF$y, breaks =  nbreaks )
+#   w <- unlist(tapply(DF$y, list(z, DF$group), function(x) 1:length(x)))
+#   w <- w[!is.na(w)]  
+#   c1q1_plot2 <- qplot(data= DF, x=y, y=w , colour = I(blu), size = I(4), main = "Original Data")+ facet_wrap( ~group) + 
+#     theme_bw() + ylab("Count") + xlab( c1q1$names[2])
   
   #mtext(side = 3, at = min(x)*2/3 + max(x)/3, bquote(diff == c1q1Test$observed))
   
@@ -3191,21 +3351,24 @@ output$c1q1_EstPrep1 <- renderPlot({
   n1 <- length(c1q1Est$ndx1)
   n2 <- length(c1q1Est$ndx2)
   resample <-  c1q1Est$shuffles <- c1q1_estimate_shuffles(1, c1q1Est$ndx1, c1q1Est$ndx2)
+  #print(c1q1Est$shuffles)
   DF2 <- c1q1$data[resample, ] 
   names(DF2) <- names(DF)
   DF2 <- DF2[order(DF2$y), ]
-  c1q1Est$diff <- diff(tapply(DF2$y, DF2$group, mean))
+  c1q1Est$diff <- -diff(tapply(DF2$y, DF2$group, mean))
+  c1q1Est$colors <- blu
   ### stores samples as columns
   #print(c1q1Est$shuffles)
-  z2 <- cut(DF2$y, breaks =  c(sapply(strsplit(substr(levels(z),2,20),","), function(str) as.numeric(str[1])), max(DF$y +1)) )
-  w2 <- unlist(tapply(DF2$y, list(z2, DF2$group), function(x) 1:length(x)))
+  #z2 <- cut(DF2$y, breaks =  c(sapply(strsplit(substr(levels(z),2,20),","), function(str) as.numeric(str[1])), max(DF$y +1)) )
+  #w2 <- unlist(tapply(DF2$y, list(z2, DF2$group), function(x) 1:length(x)))
   #tempDF2 <- data.frame(DF2, w=w2[!is.na(w2)])
-  c1q1_plot3 <- qplot(data = DF2, x = y, y = w2, colour = I(blu), size = I(4), main = "Resampled Data") + 
-    theme_bw() + xlab(c1q1$names[2]) + ylab("Count") + facet_wrap( ~ group)
   
-  grid.arrange(#c1q1_plot1, 
-    c1q1_plot2, c1q1_plot3, heights = c(#1,
-      3,3)/6, ncol=1)
+  c1q1_plot3 <- qplot(y=y, x=group, data = DF2, geom="boxplot", main = "Resampled Data") +
+                theme_bw() + xlab("") +  coord_flip() + ylab(c1q1$names[2])
+#c1q1_plot3 <- qplot(data = DF2, x = y, y = w2, colour = I(blu), size = I(4), main = "Resampled Data") + 
+  #  theme_bw() + xlab(c1q1$names[2]) + ylab("Count") + facet_wrap( ~ group)
+  
+  grid.arrange(c1q1_plot1, c1q1_plot3, heights = c( 3,3)/6, ncol=1)
 }, height = 360)
 
 output$c1q1_EstPrep2 <- renderTable({
@@ -3220,43 +3383,44 @@ output$c1q1_EstPrep2 <- renderTable({
 
 output$c1q1_EstTable1 <- renderTable({
   if( is.null(c1q1$data))  return()
-  c1q1Est$ndx1 <- which(unclass(c1q1$data[,1]) == 1)
-  c1q1Est$ndx2 <- which(unclass(c1q1$data[,1]) == 2)
-  resamp1 <- c1q1$data[c1q1Est$shuffles[,1], 1]
-  print(table(resamp1))
-  DF <- data.frame(mean = tapply(c1q1$data[, 2], resamp1, mean, na.rm = TRUE ),
-                   sd = tapply(c1q1$data[, 2], resamp1, sd, na.rm = TRUE ),
-                   n = tapply(c1q1$data[, 2],  resamp1, length))
+  c1q1Est$ndx1 <- which(unclass(c1q1$data[,1]) == 1 | c1q1$data[,1] == "A")
+  c1q1Est$ndx2 <- which(unclass(c1q1$data[,1]) == 2 | c1q1$data[,1] == "B")
+  resamp1 <- c1q1$data[c1q1Est$shuffles[,1], 2]
+  print(resamp1)
+  DF <- data.frame(mean = tapply(resamp1, c1q1$data[, 1], mean, na.rm = TRUE ),
+                   sd = tapply(resamp1, c1q1$data[, 1], sd, na.rm = TRUE ),
+                   n = tapply(resamp1, c1q1$data[, 1], length))
   rownames(DF) <- levels(c1q1$data[,1])
+  #print(DF)
   DF
 })
 
 observeEvent(input$c1q1_Est_shuffle_10, {
   newShuffles <- c1q1_estimate_shuffles(10, c1q1Est$ndx1, c1q1Est$ndx2)
   c1q1Est$shuffles <- cbind(c1q1Est$shuffles, newShuffles)
-  c1q1Est$diff <- c(c1q1Est$diff, apply(newShuffles, 2, function(x) diff(tapply(c1q1$data[x,2], c1q1$data[x,1], mean, na.rm=TRUE))))
+  c1q1Est$diff <- c(c1q1Est$diff, apply(newShuffles, 2, function(x) -diff(tapply(c1q1$data[x,2], c1q1$data[x,1], mean, na.rm=TRUE))))
   #print(c1q1Est$diff)
   c1q1Est$colors <- rep(blu, length(c1q1Est$diff))
 })
 
 observeEvent(input$c1q1_Est_shuffle_100, {
-  newShuffles <- c1q1_estimate_shuffles(10, c1q1Est$ndx1, c1q1Est$ndx2)
+  newShuffles <- c1q1_estimate_shuffles(100, c1q1Est$ndx1, c1q1Est$ndx2)
   c1q1Est$shuffles <- cbind(c1q1Est$shuffles, newShuffles)
-  c1q1Est$diff <- c(c1q1Est$diff, apply(newShuffles, 2, function(x) diff(tapply(c1q1$data[x, 2],  c1q1$data[x,1], mean, na.rm=TRUE))))
+  c1q1Est$diff <- c(c1q1Est$diff, apply(newShuffles, 2, function(x) -diff(tapply(c1q1$data[x, 2],  c1q1$data[x,1], mean, na.rm=TRUE))))
   #print(c1q1Est$diff)
   c1q1Est$colors <- rep(blu, length(c1q1Est$diff))
 })
 observeEvent(input$c1q1_Est_shuffle_1000, {        
-  newShuffles <- c1q1_estimate_shuffles(10, c1q1Est$ndx1, c1q1Est$ndx2)
+  newShuffles <- c1q1_estimate_shuffles(1000, c1q1Est$ndx1, c1q1Est$ndx2)
   c1q1Est$shuffles <- cbind(c1q1Est$shuffles, newShuffles)
-  c1q1Est$diff <- c(c1q1Est$diff, apply(newShuffles, 2, function(x) diff(tapply(c1q1$data[x, 2],  c1q1$data[x,1], mean, na.rm=TRUE))))
+  c1q1Est$diff <- c(c1q1Est$diff, apply(newShuffles, 2, function(x) -diff(tapply(c1q1$data[x, 2],  c1q1$data[x,1], mean, na.rm=TRUE))))
   #print(c1q1Est$diff)
   c1q1Est$colors <- rep(blu, length(c1q1Est$diff))
 })
 observeEvent(input$c1q1_Est_shuffle_5000, {
-  newShuffles <- c1q1_estimate_shuffles(10, c1q1Est$ndx1, c1q1Est$ndx2)
+  newShuffles <- c1q1_estimate_shuffles(5000, c1q1Est$ndx1, c1q1Est$ndx2)
   c1q1Est$shuffles <- cbind(c1q1Est$shuffles, newShuffles)
-  c1q1Est$diff <- c(c1q1Est$diff, apply(newShuffles, 2, function(x) diff(tapply(c1q1$data[x, 2],  c1q1$data[x,1], mean, na.rm=TRUE))))
+  c1q1Est$diff <- c(c1q1Est$diff, apply(newShuffles, 2, function(x) -diff(tapply(c1q1$data[x, 2],  c1q1$data[x,1], mean, na.rm=TRUE))))
   #print(c1q1Est$diff)
   c1q1Est$colors <- rep(blu, length(c1q1Est$diff))
 })
@@ -3282,7 +3446,7 @@ observeEvent(input$c1q1_conf90,{
   nsims <- length(c1q1Est$diff)
   c1q1Est$confLevel <- .90
   c1q1Est$colors <- rep(blu, nsims)
-  tailCount <- floor(nsims * .1)
+  tailCount <- floor(nsims * .05)
   c1q1Est$colors[1:tailCount] <- rd
   c1q1Est$colors[nsims +1 -(1:tailCount)] <- rd
   c1q1Est$CI <- sort(c1q1Est$diff)[c(tailCount, nsims + 1 - tailCount)]
@@ -3295,7 +3459,7 @@ observeEvent(input$c1q1_conf95,{
   nsims <- length(c1q1Est$diff)
   c1q1Est$confLevel <- .95
   c1q1Est$colors <- rep(blu, nsims)
-  tailCount <- floor(nsims * .1)
+  tailCount <- floor(nsims * .025)
   c1q1Est$colors[1:tailCount] <- rd
   c1q1Est$colors[nsims +1 -(1:tailCount)] <- rd
   c1q1Est$CI <- sort(c1q1Est$diff)[c(tailCount, nsims + 1 - tailCount)]
@@ -3308,7 +3472,7 @@ observeEvent(input$c1q1_conf99,{
   nsims <- length(c1q1Est$diff)
   c1q1Est$confLevel <- .99
   c1q1Est$colors <- rep(blu, nsims)
-  tailCount <- floor(nsims * .1)
+  tailCount <- floor(nsims * .005)
   c1q1Est$colors[1:tailCount] <- rd
   c1q1Est$colors[nsims +1 -(1:tailCount)] <- rd
   c1q1Est$CI <- sort(c1q1Est$diff)[c(tailCount, nsims + 1 - tailCount)]
@@ -3441,192 +3605,5 @@ output$tProbPlot2 <-    renderPlot({
 
 }
 
-  ##  Other Tools ----------------------------------------------------------- Other
-  ## Probability plot for t & normal distributions  -------------------------  Probs
-{
 
-prb_tProb <- reactiveValues(prob = NULL, z = NULL, findP = NULL)
-
-observeEvent( input$prb_z_txt, {
-  prb_tProb$z <- as.numeric(input$prb_z_txt) 
-  prb_tProb$findP <- TRUE
-})
-
-observeEvent( input$prb_prob_txt,{
-  prb_tProb$prob <- as.numeric(input$prb_prob_txt) 
-  prb_tProb$findP  <- FALSE
-})
-
-
-
-  output$probPlot <-    renderPlot({ 
-    par(mar=c(24,1,1,1)/10)
-    z <- absz <- prob <- yrr <- xrr <- NA
-    x <- -300:300 / 50
-    df <- input$prb_df
-   
-    ##  this loop should run when user changes prob
-    if(!prb_tProb$findP & !is.na(prb_tProb$prob)){
-      prob <- prb_tProb$prob
-      ## given prob, find z
-      if(input$prb_area == "Lower"){ ##  left tail
-        z <- if(input$prb_dist=='Normal') qnorm(prob)else qt(prob, df)
-        if(z < min(x))  x <- c(1.01 * z, x)
-        ## rejection region in x dimension
-        xrr <- c(x[x < z], z, z)
-        ## density curve over xrr:
-        yrr <- c( if(input$prb_dist=='Normal') dnorm(xrr[-length(xrr)]) else 
-          dt(xrr[-length(xrr)], df = df), 0)
-      } else if(input$prb_area == "Upper"){   ## right tail        
-        z <- if(input$prb_dist=='Normal') qnorm(1 - prob) else qt(1-prob, df)
-        if(z > max(x))  x <- c(x, 1.01 * z)
-        xrr <- c(z, z, x[x > z])
-        yrr <- c(0, if(input$prb_dist=='Normal') dnorm(xrr[-1]) else dt(xrr[-1],df))
-      } else if(input$prb_area == "Center"){
-        z <- abs(if(input$prb_dist=='Normal') qnorm( (1 - prob)/2) else qt((1-prob)/2,df))
-        if(z < min(x))  x <- c(1.01 * z, x)       
-        if(z > max(x))  x <- c(x, 1.01 * z)
-        xrr <- seq(-z, z, length=100)
-        yrr <- c(0, if(input$prb_dist=='Normal') dnorm(xrr[2:99]) else dt(xrr[2:99],df), 0)
-      } else if(input$prb_area == "Extremes"){
-        z <- abs(if(input$prb_dist=='Normal') qnorm(1-prob/2) else qt(1-prob/2,df))
-        if(z < min(x))  x <- c(1.01 * z, x)       
-        if(z > max(x))  x <- c(x, 1.01 * z)
-        xrr <- c(-z, x[x < -z], -z)
-        yrr <- c(0, if(input$prb_dist=='Normal') dnorm(xrr[-1]) else dt(xrr[-1],df))
-      }
-      absz <- abs(z)
-      
-    } 
-    if(prb_tProb$findP & !is.na(prb_tProb$z)){
-      z <- prb_tProb$z
-      ##  find probability
-      absz <- abs(z)
-      maxX <- pmax(z, 6)
-      minX <- pmin(z, -6)
-      x <- seq(minX, maxX, length=200)
-      prob <-  1 - if(input$prb_dist=='Normal') pnorm(z) else pt(z, df)
-      xrr <- c(z, z, x[x > z])  ## right tail
-      yrr <- c(0, if(input$prb_dist=='Normal') dnorm(xrr[-1]) else dt(xrr[-1], df))
-      if(input$prb_area == "Lower"){         ##  left tail
-        prob =  if(input$prb_dist=='Normal') pnorm(z) else pt(z, df)
-        xrr <- c(z, x[x < z], z)
-        yrr <- c(0, if(input$prb_dist=='Normal') dnorm(xrr[-1]) else dt(xrr[-1],df))
-      } else if (input$prb_area == "Extremes"){ ##  extremes
-        xrr <- c( -absz, x[x < -absz], -absz)
-        yrr <- c(0, if(input$prb_dist=='Normal') dnorm(xrr[-1]) else dt(xrr[-1], df))
-        prob = if(input$prb_dist=='Normal') pnorm(-absz) else pt(-absz, df)
-        #yrr <- c(yrr, NA,NA, rev(yrr))
-        #xrr <- c(xrr, NA,NA, rev(-xrr))
-      } else if (input$prb_area == "Center"){   ##  center
-        xrr <- seq(-absz, absz, length=100)
-        yrr <- c(0, if(input$prb_dist=='Normal') dnorm(xrr) else dt(xrr, df), 0)
-        xrr <- c(-absz, xrr, absz)
-        prob <- diff(if(input$prb_dist=='Normal') pnorm(c(-absz,absz)) else pt(c(-absz,absz), df))
-      }
-    } 
-    plot(x, if(input$prb_dist=='Normal') dnorm(x) else dt(x, df), type = "l", bty='n', xlab="Z Score",
-         ylab="", yaxt="n")
-    abline(h=0)
-    max.height <- ( if(input$prb_dist=='Normal') dnorm(0) else dt(0, df) ) *.9
-    text.height <- pmin(max.height, (max(yrr) +  max.height)/2)
-    segments(x0= z, y0 = 0, x1= z, y1= text.height*.95)
-    
-    if(input$prb_area == "Extremes") {  ## extremes
-      polygon(xrr, yrr, col = rd)
-      polygon(-xrr, yrr, col = rd)
-      segments(x0= -z, y0 = 0, x1 = -z, y1 = text.height*.9)
-      text(x= c(-absz - 4, absz + 4)/2 , y= max(yrr)/2 + .02, 
-           round(prob * ifelse(prb_tProb$findP,1,.5), 3), col = "darkblue")
-      place.x <- c(-absz, absz)
-      if(absz < 1) place.x <- place.x/absz * .8
-      text(place.x, y = text.height, round(c(-absz,absz),3))
-    } else if (input$prb_area == "Center") {   ## fill & label center
-      polygon(xrr, yrr, col = grn)
-      text(x=0, y= text.height, round(prob,3))
-      segments(x0= -z, y0 = 0, x1 = -z, y1 = text.height*.9)
-      place.x <- c(-absz, absz)
-      if(absz < 1) place.x <- place.x/absz * .8
-      text(place.x, y=text.height, round(c(-absz,absz),3))
-    } else {          ## show tails
-      polygon(xrr, yrr, col = rd)
-      text( z, y = text.height, round(z, 3))
-      text(x= sign(z) * (absz+4) / 2 , y= max(yrr) / 2 + 0.02, 
-           round(prob,3), col = "darkblue")
-    }
-    
-  }, height=300)
-} 
-
-  ## End of code for z-t probabilities and quantiles. ------------------------
-
-  ##  Start of code for Power web app  --------------------------------------- Power app
-{
-## Reactive expression to create a data frame containing all of the values for POWER
- sliderValues <- reactive({
-  # Create output
-   data.frame(
-     Setting = c("Sample Size", 
-                "Standard Deviation",
-                "Shift in Mean"),
-     Value = as.character(c(input$pwr_n, 
-                           input$pwr_sd,
-                           input$pwr_altMean)),
-     Name = c( "Significance Level (alpha)",
-              "Effect Size",  "Power"
-     ),
-     Output =as.character(c(input$pwr_alpha, 
-                           round(input$pwr_altMean/input$pwr_sd, 3),
-                           round(power.t.test(n=input$pwr_n, 
-                                              delta=input$pwr_altMean,
-                                              sd=input$pwr_sd, 
-                                              sig.level=input$pwr_alpha,
-                                              type="one.sample",
-                                              alternative="one")$power,
-                             3))), 
-     stringsAsFactors=FALSE)
-  })
-
-  ## set colors with transparency
- grn <- rgb(0, 1, 0, alpha=.4)
- rd <- rgb(1, 0, 0, alpha=.5)
-
-## Plot of power to send to window
-output$powerPlot <- renderPlot({
-  x <- seq(-4, 10, length=200)
-  plot(x, dt(x, input$pwr_n-1),bty='l', type="l", xlab="", ylab="")
-  lines(x,dt(x, input$pwr_n-1, ncp=input$pwr_altMean/input$pwr_sd *sqrt(input$pwr_n)))
-  abline(h=0)
-  qt1 <- qt(1-input$pwr_alpha, input$pwr_n-1)
-  ## rejection region in x and y (density)
-  xrr <- c(qt1, qt1, x[x>=qt1], max(x))
-  yrr <- c(0, dt(c(qt1,  x[x>=qt1]), input$pwr_n -1), 0)
-  
-  polygon(xrr, yrr, col = rd)
-  abline(v = c(0, qt1))
-  
-  xpwr <- c(qt1, x[x>=qt1])
-  ypwr <- c(0, dt(xpwr, df=input$pwr_n-1, ncp=input$pwr_altMean/input$pwr_sd *
-                    sqrt(input$pwr_n) ), 0)
-  xpwr <- c(qt1, xpwr, max(x))
-  ## add alternative density
-  polygon(xpwr, ypwr, col=grn)
-  ## add alpha in center of rejection region
-  text(weighted.mean(xrr, w=yrr^2), weighted.mean(yrr,w=yrr^.5), cex=1.5, 
-       expression(alpha))
-  ## add 'Power' in center of its region
-  text(weighted.mean(xpwr, w=ypwr^4), weighted.mean(ypwr, w=ypwr^.5), cex=1.5, "Power")
-  mtext(side=1, at=0, line=2, expression(H[0]: mu == 0))
-  mtext(side=1, at= xpwr[which.max(ypwr)], line=2, expression(H[a]: mu > 0))
-})
-
-# Show the power values using an HTML table
-output$values <- renderTable({
-  sliderValues()
-})    
-
- ## End of power code ---------------------------------------------------------
-}
-
- }
 })
