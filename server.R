@@ -523,6 +523,204 @@ output$cat1Estimate_Plot2 <- renderPlot({
   }, height = 275)
 }
   
+  ##  Lurking Demo -----------------------------------------  cat 1
+  {
+  
+  c1Lurk <- reactiveValues(data = NULL, shuffles = NULL, difprop = NULL, 
+                           colors = NULL,  names = NULL, p1hat = NULL, p2hat = NULL)
+  
+  output$c1_LurkDataUI <- renderUI({
+    ## choice of normal or skewed data
+    div(
+    fluidRow(
+      column(1, h4("Label 1:")),
+      column(1, textInput("c1Lurk_group1", "Success")),
+      column(2, h4(" count in group 1: ")),
+      column(1, textInput("c1Lurk_m1",  "10")),
+      column(1, h4("Label 2:")),
+      column(1, textInput("c1Lurk_group2", "Failure")),
+      column(2, h4(" count in group 2: ")),
+      column(1, textInput("c1Lurk_m2",  "10"))
+    ),
+    fluidRow(
+      column(2, h4("Number in Treatment Group")),
+      column(1, textInput("c1Lurk_n1",  "10")),
+      column(2, h4("Number in Control Group")),
+      column(1, textInput("c1Lurk_n2",  "10")),
+      column(1, actionButton("c1Lurk_Go", "Go"))
+    )
+    )
+  })
+  
+  observeEvent(input$c1Lurk_Go, {
+    c1Lurk$data <- list(m1 = as.numeric(input$c1Lurk_m1) , m2 =as.numeric(input$c1Lurk_m2) , 
+                        n1 = as.numeric(input$c1Lurk_n2), n2 = as.numeric(input$c1Lurk_n2))
+    c1Lurk$names <- c(input$c1Lurk_group1, input$c1Lurk_group2)
+    
+    DF <- cat2_test_shuffles(shuffles = 2, y1 = 0, y2 = c1Lurk$data$m1 + c1Lurk$data$m2, 
+                             n1= c1Lurk$data$n1, n2= c1Lurk$data$n2)
+    c1Lurk$difprop <- as.matrix(DF[,3])
+    c1Lurk$phat1 <-  as.matrix(DF[,1])
+    c1Lurk$phat2 <-  as.matrix(DF[,2])
+    c1Lurk$colors <- blu
+  })
+  
+
+  output$c1_LurkingUI <- renderUI({
+    if (is.null(c1Lurk$data) | is.null(c1Lurk$names))
+      return()
+    fluidRow(
+      column(4, 
+             plotOutput("c1_LurkPlot1")
+      ),
+      column(3,
+             br(),
+             br()#,
+     #        tableOutput("c1_LurkTable1"),
+    #         h5(paste("Difference in proportions for 1st randomization = ", 
+     #                 round(-diff(tapply(c1Lurk$data, c1Lurk$shuffles[, 1], mean, na.rm=TRUE)), 3))),
+    #         br(),
+     #        br()#,
+    #         tableOutput("c1_LurkTable2"),
+     #        h5(paste("Difference in proportions for 2nd randomization = ", 
+    #                  round(-diff(tapply(c1Lurk$data, c1Lurk$shuffles[, 2], mean, na.rm=TRUE)), 3)))    
+      ),
+      column(5, 
+             uiOutput('c1_LurkSampDistPlot')
+      ),
+      fluidRow(
+        column(6, offset = 5,
+               h4("Two randomizations are shown. How many more?"),
+               fluidRow(
+                 column(2, actionButton("c1_Lurk_shuffle_10", label = "10")),
+                 column(2, actionButton("c1_Lurk_shuffle_100", label = "100")),
+                 column(2, actionButton("c1_Lurk_shuffle_1000", label = "1000")),
+                 column(2, actionButton("c1_Lurk_shuffle_5000", label = "5000"))
+               )
+        )
+      )
+    )
+  })
+  
+  output$c1_LurkSampDistPlot <- renderUI({ 
+    plotOutput('c1_LurkPlot2') #, click = 'c1_Lurk_click')
+  })
+  
+  
+  # -------- 1 quant Lurking plots ------------------
+  
+  output$c1_LurkPlot1 <- renderPlot({
+    if(is.null(c1Lurk$data)) 
+      return()
+    nLurk <- length(c1Lurk$data)
+    ## Original Data
+    DF <- cbind( c1Lurk$shuffles[,1:2], c1Lurk$data) 
+    names(DF) <- c("group", "group2", "y")
+    DF$group <- factor(DF$group)
+    #print(summary(DF))
+    
+    plot1 <- qplot(y=y, x=group, data = DF, geom="boxplot", main = "Randomization 1") +
+      theme_bw() + xlab("") +  coord_flip() + ylab(c1Lurk$name)
+    
+    ## Plot One Shuffle 
+    #c1Lurk$diff <- -diff(tapply(DF$y, DF$group, mean))
+    #
+    ### stores samples as columns
+    plot2 <- qplot(y=y, x=group2, data = DF, geom="boxplot", main = "Randomization 2") +
+      theme_bw() + xlab("") +  coord_flip() + ylab(c1Lurk$name)
+    
+    
+    grid.arrange(plot1, plot2, heights = c(3, 3)/6, ncol=1)
+  }, height = 360, width = 320)
+  
+  
+  output$c1_LurkTable1 <- renderTable({
+    if(is.null(c1Lurk$data))  
+      return()
+    #print(c1Lurk$data)
+    DF <- data.frame(mean = tapply(c1Lurk$data, c1Lurk$shuffles[,1], mean, na.rm = TRUE ),
+                     sd = tapply(c1Lurk$data, c1Lurk$shuffles[,1], sd, na.rm = TRUE ),
+                     n = as.integer(tapply(c1Lurk$data, c1Lurk$shuffles[,1], length)))
+    rownames(DF) <- levels(c1Lurk$shuffles[,1])
+    DF
+  })
+  
+  
+  output$c1_LurkTable2 <- renderTable({
+    if( is.null(c1Lurk$data))  
+      return()
+    DF <- data.frame(mean = tapply(c1Lurk$data, c1Lurk$shuffles[, 2], mean, na.rm = TRUE ),
+                     sd = tapply(c1Lurk$data, c1Lurk$shuffles[, 2], sd, na.rm = TRUE ),
+                     n = as.integer(tapply(c1Lurk$data, c1Lurk$shuffles[, 2], length)))
+    rownames(DF) <- levels(c1Lurk$shuffles[,1])
+    DF
+  })
+  
+  observeEvent(input$c1_Lurk_shuffle_10, {
+    DF <- cat2_test_shuffles(shuffles = 10, y1 = 0, y2 = c1Lurk$data$m1 + c1Lurk$data$m2, 
+                             n1= c1Lurk$data$n1, n2= c1Lurk$data$n2)
+    c1Lurk$difprop <- rbind(c1Lurk$difprop, as.matrix(DF[,3]))
+    c1Lurk$phat1 <- rbind(c1Lurk$phat1, as.matrix(DF[,1]))
+    c1Lurk$phat2 <- rbind(c1Lurk$phat2, as.matrix(DF[,2]))
+    c1Lurk$colors <- rep(blu, length(c1Lurk$difprop))
+  })
+  
+  observeEvent(input$c1_Lurk_shuffle_100, {
+    DF <- cat2_test_shuffles(shuffles = 100, y1 = 0, y2 = c1Lurk$data$m1 + c1Lurk$data$m2, 
+                             n1= c1Lurk$data$n1, n2= c1Lurk$data$n2)
+    c1Lurk$difprop <- rbind(c1Lurk$difprop, as.matrix(DF[,3]))
+    c1Lurk$phat1 <- rbind(c1Lurk$phat1, as.matrix(DF[,1]))
+    c1Lurk$phat2 <- rbind(c1Lurk$phat2, as.matrix(DF[,2]))
+    c1Lurk$colors <- rep(blu, length(c1Lurk$difprop))
+  })
+  observeEvent(input$c1_Lurk_shuffle_1000, {        
+    DF <- cat2_test_shuffles(shuffles = 1000, y1 = 0, y2 = c1Lurk$data$m1 + c1Lurk$data$m2, 
+                             n1= c1Lurk$data$n1, n2= c1Lurk$data$n2)
+    c1Lurk$difprop <- rbind(c1Lurk$difprop, as.matrix(DF[,3]))
+    c1Lurk$phat1 <- rbind(c1Lurk$phat1, as.matrix(DF[,1]))
+    c1Lurk$phat2 <- rbind(c1Lurk$phat2, as.matrix(DF[,2]))
+    c1Lurk$colors <- rep(blu, length(c1Lurk$difprop))
+  })
+  observeEvent(input$c1_Lurk_shuffle_5000, {
+    DF <- cat2_test_shuffles(shuffles = 5000, y1 = 0, y2 = c1Lurk$data$m1 + c1Lurk$data$m2, 
+                             n1= c1Lurk$data$n1, n2= c1Lurk$data$n2)
+    c1Lurk$difprop <- rbind(c1Lurk$difprop, as.matrix(DF[,3]))
+    c1Lurk$phat1 <- rbind(c1Lurk$phat1, as.matrix(DF[,1]))
+    c1Lurk$phat2 <- rbind(c1Lurk$phat2, as.matrix(DF[,2]))
+    c1Lurk$colors <- rep(blu, length(c1Lurk$difprop))
+  })
+  
+  
+  output$c1_LurkPlot2 <- renderPlot({
+    if(is.null(c1Lurk$difprop)) return()
+    
+    DF <- sort(c1Lurk$difprop)
+    
+    if(length(DF) < 4){
+      w <- 1
+      radius = 4
+    } 
+    else {
+      nbreaks <- 0.5*nclass.Sturges(DF)^2
+      z <- cut(DF, breaks = nbreaks)
+      w <- unlist(tapply(z, z, function(V) 1:length(V)))
+      w <- w[!is.na(w)]
+      #print(w)
+      #print(max(w))
+      nsims <- length(DF)
+      radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
+    }
+    plot(DF, w, ylab = "", ylim = c(0.5, max(w)), cex = radius/2, pch = 16, col = c1Lurk$colors,  
+         xlab = expression(hat(p)[1] - hat(p)[2]), main = "Sampling Distribution")
+    legend("topright", bty = "n", paste(length(DF), "points \n Mean = ", 
+                                        round(mean(DF),3), "\n SE = ", round(sd(DF),3)))
+    #mtext(side = 1, at = 0, adj = 0, line = 0, bquote(p[1] == p[2]))
+  }, width = 500)
+  
+
+  
+  }
+  
 
   ## Normal probability computations  ----------------------- cat 1
 {
@@ -1293,7 +1491,7 @@ output$q1_EstimatePlot2 <- renderPlot({
                 uiOutput('q1_LurkSampDistPlot')
         ),
         fluidRow(
-          column(6, 
+          column(6, offset = 5,
                  h4("Two randomizations are shown. How many more?"),
                  fluidRow(
                    column(2, actionButton("q1_Lurk_shuffle_10", label = "10")),
