@@ -10,8 +10,8 @@ load("data/cat1quant1.RData")
 
  ##  These were created to hold sample data with:
  ##  save(birthWeights, REDvsCntrl, REDvsREDA, REDAvsCntrl, file = "data/cat1quant1.RData")
- ##  save(birthweights, geyser2011, file="data/quant1.RData")
- ##  save(shuttle, womenRateMen, menRateWomen, file = "data/quant2.RData")
+ ##  save(bodytemp, birthweights, arsenic, geyser2011, file="data/quant1.RData")
+ ##  save(shuttle, womenRateMen, menRateWomen, Dental, file = "data/quant2.RData")
 
 ## setup transparent colors
 grn <- rgb(0, 1, 0, alpha=.4)
@@ -19,19 +19,6 @@ rd  <- rgb(1, 0, 0, alpha=.5)
 blu <- rgb(0, 0, 1, alpha=.4)
 
 shinyServer(function(input, output, session) {
-
-##  code from https://github.com/jrowen/rhandsontable/blob/master/inst/examples/shiny.R
-#   output$dataTable <- renderRHandsontable({
-#     if (is.null(input$dataTable)) {
-#       DF = data.frame(val = 1:10, bool = TRUE, nm = LETTERS[1:10],
-#                       dt = seq(from = Sys.Date(), by = "days", length.out = 10),
-#                       stringsAsFactors = F)
-#     } else {
-#       DF = hot_to_r(input$dataTable)
-#     }
-#     rhandsontable(DF, useTypes = as.logical(input$useType))
-#   })
-#   
 
   ## 1 Categorical  -----------------------------------------------------------
  
@@ -1278,23 +1265,23 @@ output$q1_EstimatePlot2 <- renderPlot({
       fluidPage(
         fluidRow(
           column(4, 
-                 plotOutput("q1_LurkPlot1")
+ #                plotOutput("q1_LurkPlot1")
           ),
           column(3,
                  br(),
                  br(),
-                 tableOutput("q1_LurkTable1"),
+#                 tableOutput("q1_LurkTable1"),
                  h5(paste("Difference in means for 1st randomization = ", 
                           round(-diff(tapply(q1Lurk$data, q1Lurk$shuffles[, 1], mean, na.rm=TRUE)), 3))),
                  
                  br(),
                  br(),
-                 tableOutput("q1_LurkTable2")#,
+ #                tableOutput("q1_LurkTable2")#,
               #   h5(paste("Difference in means for 2nd randomization = ", 
               #            round(-diff(tapply(q1Lurk$data, q1Lurk$shuffles[, 2], mean, na.rm=TRUE)), 3))),                          
           ),
           column(5, 
-                uiOutput('q1_LurkSampDistPlot')
+#                uiOutput('q1_LurkSampDistPlot')
           )
         ),
         fluidRow(
@@ -1326,7 +1313,7 @@ output$q1_EstimatePlot2 <- renderPlot({
     if(is.null(q1Lurk$data)) 
       return()
     nLurk <- length(q1Lurk$data)
-    q1Lurk$shuffles$s2 = q1Lurk$shuffles$s1[sample(rep(1:2,each = nLurk/2))]
+    q1Lurk$shuffles$s2 = sample(q1Lurk$shuffles$s1)
     ## Original Data
     DF <- cbind( q1Lurk$shuffles[,1:2], q1Lurk$data) 
     names(DF) <- c("group", "group2", "x")
@@ -1349,7 +1336,8 @@ output$q1_EstimatePlot2 <- renderPlot({
   
   
   output$q1_LurkTable1 <- renderTable({
-    if(is.null(q1Lurk$data))  return()
+    if(is.null(q1Lurk$data))  
+      return()
     #print(q1Lurk$data)
     DF <- data.frame(mean = tapply(q1Lurk$data, q1Lurk$shuffles[,1], mean, na.rm = TRUE ),
                      sd = tapply(q1Lurk$data, q1Lurk$shuffles[,1], sd, na.rm = TRUE ),
