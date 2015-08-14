@@ -65,17 +65,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                     ## h5("Choose a confidence level"),
                      radioButtons("CIdemo_conf", label="Choose a Confidence Level", choices = list('80%', '90%', '95%', '99%'), 
                                   selected = '90%', inline = TRUE) 
-<<<<<<< HEAD
-                    )#,  
-=======
                     ),  
-<<<<<<< HEAD
->>>>>>> 0f8f5336e2352cdd08323ad3c337cf7530b96a73
-#                    column(7, #div( ## style="height: 300px",
-#                      h4("Sampling Distribution.  Hover mouse over a point to see CI.", center = TRUE),
-#                      plotOutput("CIdemo_Plot1",  hover = "CIplot1_hover")
-#                      )
-<<<<<<< HEAD
                 ),
                 fluidRow(
                   column(7, offset=4,
@@ -84,21 +74,6 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                      radioButtons("CIdemo_conf", label="Confidence Level", choices = list('80%', '90%', '95%', '99%'), 
                                   selected = '90%', inline = TRUE) 
                     ),  
-                   column(7, div( 
-=======
-                #),
-                #fluidRow(
-                  column(7, 
-#                     h5("Choose a confidence level"),
-#                      radioButtons("CIdemo_conf", label="Confidence Level", choices = list('80%', '90%', '95%', '99%'), 
-#                                   selected = '90%', inline = TRUE) 
-#                     ),  
-#                    column(7, div( 
->>>>>>> 0f8f5336e2352cdd08323ad3c337cf7530b96a73
-                     h4("Sampling Distribution.  Hover mouse over a point to see CI.", center = TRUE),
-                     plotOutput("CIdemo_Plot1",  hover = "CIplot1_hover"),
-=======
-                      
                     column(7, #div( ## style="height: 300px",
                       h4("Sampling Distribution.  Click a point to see CI.", center = TRUE),
                       plotOutput("CIdemo_Plot1",  click = "CIplot1_click")
@@ -106,7 +81,6 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                 
                 fluidRow(
                   column(7, offset=4,
->>>>>>> 2c630ce3e0b5891e88fd86dec17d84d7a1daaf66
                      h4("Confidence Intervals  (green ones cover true p)", center =TRUE),
                      plotOutput("CIdemo_Plot2")
                    )
