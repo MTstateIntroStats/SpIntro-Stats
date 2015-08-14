@@ -136,7 +136,16 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
         a(href="BootDemo.html","Click to see Bootstrap Demo") 
       ),
       tabPanel("Lurking Demo", value="1quantLurk",
-               uiOutput('q1_lurkingUI')        
+               h3("What does Randomization do to a LURKing Variable?"),
+               h4("Choose data for this demo, to be chosen at random from a distribution"),
+               fluidRow(  
+                 column(6, selectInput('q1_LurkEntry', ' ', 
+                                       list(" ", "IQ Data (normal)","Salary Data (skewed)"), 
+                                       selected = " ",
+                                       selectize = FALSE))
+               ),
+               # uiOutput('q1_LurkDataUI'),
+               uiOutput('q1_LurkingUI')        
       ),
       tabPanel("t Distribution",  value="1quantT",
                titlePanel("t Probabilities"),

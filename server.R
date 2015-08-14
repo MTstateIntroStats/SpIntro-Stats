@@ -1254,37 +1254,52 @@ output$q1_EstimatePlot2 <- renderPlot({
   ## Lurking Demo  --------------------------------------    quant 1
   {
   
-  q1Lurk <- reactiveValues(data = NULL, shuffles = NULL,  observed = NULL, diff = NULL, confLevel = NULL, colors = NULL, 
-                             moreExtremeCount = NULL, pvalue = NULL, direction = NULL, cutoff = NULL)
- 
-  output$q1_lurkingUI <- renderUI({
-    ## obtain data - choose from a distribution?
-    
+  q1Lurk <- reactiveValues(data = rnorm(100, 100, 15), shuffles = data.frame(s1 = sample(gl(2,50,labels=c("treatment","Control")))), diff = NULL, 
+                           colors = NULL,  name = "IQ")
+                             
+    output$q1_LurkingUI <- renderUI({
+    #if (is.null(input$q1_LurkEntry))
+    #  return()
+    switch( input$q1_LurkEntry,
+            "IQ Data (normal)" ={ 
+              q1Lurk$data <- rnorm(100, 100, 15)
+              q1Lurk$shuffles <- data.frame(s1 = sample(gl(2,50,labels=c("Treatment","Control"))))
+              q1Lurk$shuffles$s2 <- sample(q1Lurk$shuffles$s1)
+              q1Lurk$name <- "IQ"
+            },
+            "Salary Data (skewed)" ={
+              q1Lurk$data <- 10^rnorm(100, 5.2, 2)
+              q1Lurk$shuffles <- data.frame(s1 = sample(gl(2,50,labels=c("Treatment","Control"))))
+              q1Lurk$shuffles$s2 <- sample(q1Lurk$shuffles$s1)
+              q1Lurk$name <- "Salary"
+            }, 
+            NULL
+    )
       fluidPage(
-        h3("What does Randomization do to a LURKing Variable?"),
         fluidRow(
           column(4, 
-                 plotOutput("q1_LurkPrep1")
+                 plotOutput("q1_LurkPlot1")
           ),
           column(3,
                  br(),
                  br(),
-                 tableOutput("q1_LurkPrep2"),
-                 h5(paste("One Difference in means = ", 
-                          round(-diff(tapply(c1q1$data[, 2], c1q1$data[, 1], mean, na.rm=TRUE)), 3))),
+                 tableOutput("q1_LurkTable1"),
+                 h5(paste("Difference in means for 1st randomization = ", 
+                          round(-diff(tapply(q1Lurk$data, q1Lurk$shuffles[, 1], mean, na.rm=TRUE)), 3))),
                  
                  br(),
                  br(),
-                 tableOutput("q1_LurkTable1"),
-                 h5(paste("One difference in means = ", round(as.numeric(c1q1Test$diff[1]),3)))
+                 tableOutput("q1_LurkTable2")#,
+              #   h5(paste("Difference in means for 2nd randomization = ", 
+              #            round(-diff(tapply(q1Lurk$data, q1Lurk$shuffles[, 2], mean, na.rm=TRUE)), 3))),                          
           ),
           column(5, 
-                uiOutput('q1_LurkPlot')
+                uiOutput('q1_LurkSampDistPlot')
           )
         ),
         fluidRow(
           column(6, 
-                 h4("One randomization is shown. How many more?"),
+                 h4("Two randomizations are shown. How many more?"),
                  fluidRow(
                    column(2, actionButton("q1_lurk_shuffle_10", label = "10")),
                    column(2, actionButton("q1_lurk_shuffle_100", label = "100")),
@@ -1307,91 +1322,86 @@ output$q1_EstimatePlot2 <- renderPlot({
 
   # -------- 1 quant Lurking plots ------------------
   
-  output$q1_LurkPrep1 <- renderPlot({
-    if(is.null(c1q1$data)) return()
+  output$q1_LurkPlot1 <- renderPlot({
+    if(is.null(q1Lurk$data)) 
+      return()
+    nLurk <- length(q1Lurk$data)
+    q1Lurk$shuffles$s2 = q1Lurk$shuffles$s1[sample(rep(1:2,each = nLurk/2))]
     ## Original Data
-    DF <- c1q1$data
-    names(DF) <- c("group","y")
+    DF <- cbind( q1Lurk$shuffles[,1:2], q1Lurk$data) 
+    names(DF) <- c("group", "group2", "x")
     DF$group <- factor(DF$group)
-    #print(DF)
+    print(summary(DF))
     
-    plot1 <- qplot(y=y, x=group, data = DF, geom="boxplot", main = "Original Data") +
-      theme_bw() + xlab("") +  coord_flip() + ylab(c1q1$names[2])
+    plot1 <- qplot(y=y, x=group, data = DF, geom="boxplot", main = "Randomization 1") +
+      theme_bw() + xlab("") +  coord_flip() + ylab(q1Lurk$name)
     
     ## Plot One Shuffle 
-    
-    shuffle <- sample(c1q1$data[,1])
-    c1q1Test$shuffles <- as.matrix(shuffle, ncol = 1)
-    c1q1Test$diff <- -diff(tapply(DF$y, shuffle, mean))
-    c1q1Test$colors <- blu
+    q1Lurk$diff <- -diff(tapply(DF$y, DF$group, mean))
+    q1Lurk$colors <- blu
     ### stores samples as columns
-    
-    DF$group2 <- shuffle
-    #print(DF)
-    plot2 <- qplot(y=y, x=group2, data = DF, geom="boxplot", main = "Shuffled Sample") +
-      theme_bw() + xlab("") +  coord_flip() + ylab(c1q1$names[2])
+    plot2 <- qplot(y=y, x=group2, data = DF, geom="boxplot", main = "Randomization 2") +
+      theme_bw() + xlab("") +  coord_flip() + ylab(q1Lurk$name)
     
     
-    #         w2 <- unlist(tapply(DF$y, list(z, DF$group2), function(x) 1:length(x)))
-    #         tempDF <- data.frame(DF, w=w2[!is.na(w2)])
-    #         plot2 <- qplot(data = tempDF, x = y, y = w, colour = I(blu), size = I(4), main = "Shuffled Data") + 
-    #                     theme_bw() + xlab(c1q1$names[2]) + ylab("Count") + facet_wrap( ~ group2)
     grid.arrange(plot1, plot2, heights = c(3, 3)/6, ncol=1)
   }, height = 360, width = 320)
   
-  output$q1_LurkPrep2 <- renderTable({
-    if(is.null(c1q1$data))  return()
-    #print(c1q1$data)
-    DF <- data.frame(mean = tapply(c1q1$data[,2], c1q1$data[,1], mean, na.rm = TRUE ),
-                     sd = tapply(c1q1$data[,2], c1q1$data[,1], sd, na.rm = TRUE ),
-                     n = as.integer(tapply(c1q1$data[,2], c1q1$data[,1], length)))
-    rownames(DF) <- levels(c1q1$data[,1])
+  
+  output$q1_LurkTable1 <- renderTable({
+    if(is.null(q1Lurk$data))  return()
+    #print(q1Lurk$data)
+    DF <- data.frame(mean = tapply(q1Lurk$data, q1Lurk$shuffles[,1], mean, na.rm = TRUE ),
+                     sd = tapply(q1Lurk$data, q1Lurk$shuffles[,1], sd, na.rm = TRUE ),
+                     n = as.integer(tapply(q1Lurk$data, q1Lurk$shuffles[,1], length)))
+    rownames(DF) <- levels(q1Lurk$shuffles[,1])
     DF
   })
   
   
-  output$q1_LurkTable1 <- renderTable({
-    if( is.null(c1q1$data))  return()
-    DF <- data.frame(mean = tapply(c1q1$data[, 2], c1q1Test$shuffles[, 1], mean, na.rm = TRUE ),
-                     sd = tapply(c1q1$data[, 2], c1q1Test$shuffles[, 1], sd, na.rm = TRUE ),
-                     n = tapply(c1q1$data[, 2], c1q1Test$shuffles[, 1], length))
-    rownames(DF) <- levels(c1q1$data[,1])
+  output$q1_LurkTable2 <- renderTable({
+    if( is.null(q1Lurk$data))  return()
+    DF <- data.frame(mean = tapply(q1Lurk$data, q1Lurk$shuffles[, 2], mean, na.rm = TRUE ),
+                     sd = tapply(q1Lurk$data, q1Lurk$shuffles[, 2], sd, na.rm = TRUE ),
+                     n = as.integer(tapply(q1Lurk$data, q1Lurk$shuffles[, 2], length)))
+    rownames(DF) <- levels(q1Lurk$shuffles[,1])
     DF
   })
   
   observeEvent(input$q1_Lurk_shuffle_10, {
-    newShuffles <- sapply(1:10, function(x) sample(c1q1$data[,1]) )
-    c1q1Test$shuffles <- cbind(c1q1Test$shuffles, newShuffles)
-    c1q1Test$diff <- c(c1q1Test$diff, apply(newShuffles, 2, function(x) -diff(tapply(c1q1$data[,2], x, mean, na.rm=TRUE))))
-    #print(c1q1Test$diff)
-    c1q1Test$colors <- rep(blu, length(c1q1Test$diff))
+    newShuffles <- sapply(1:10, function(x) sample(q1Lurk$shuffles[,1]) )
+    q1Lurk$shuffles <- cbind(q1Lurk$shuffles, newShuffles)
+    q1Lurk$diff <- c(q1Lurk$diff, apply(newShuffles, 2, 
+                                        function(x) -diff(tapply(q1Lurk$data, x, mean, na.rm=TRUE))))
+    #print(q1Lurk$diff)
+    q1Lurk$colors <- rep(blu, length(q1Lurk$diff))
   })
   
   observeEvent(input$q1_Lurk_shuffle_100, {
-    newShuffles <- sapply(1:100, function(x) sample(c1q1$data[,1]) )
-    c1q1Test$shuffles <- cbind(c1q1Test$shuffles, newShuffles)
-    c1q1Test$diff <- c(c1q1Test$diff, apply(newShuffles, 2, function(x) -diff(tapply(c1q1$data[, 2], x, mean, na.rm=TRUE))))
-    #print(c1q1Test$diff)
-    c1q1Test$colors <- rep(blu, length(c1q1Test$diff))
+    newShuffles <- sapply(1:100, function(x) sample(q1Lurk$shuffles[,1]) )
+    q1Lurk$shuffles <- cbind(q1Lurk$shuffles, newShuffles)
+    q1Lurk$diff <- c(q1Lurk$diff, apply(newShuffles, 2, function(x) -diff(tapply(q1Lurk$data, x, mean, na.rm=TRUE))))
+    #print(q1Lurk$diff)
+    q1Lurk$colors <- rep(blu, length(q1Lurk$diff))
   })
   observeEvent(input$q1_Lurk_shuffle_1000, {        
-    newShuffles <- sapply(1:1000, function(x) sample(c1q1$data[,1]) )
-    c1q1Test$shuffles <- cbind(c1q1Test$shuffles, newShuffles)
-    c1q1Test$diff <- c(c1q1Test$diff, apply(newShuffles, 2, function(x) -diff(tapply(c1q1$data[, 2], x, mean, na.rm=TRUE))))
-    #print(c1q1Test$diff)
-    c1q1Test$colors <- rep(blu, length(c1q1Test$diff))
+    newShuffles <- sapply(1:1000, function(x) sample(q1Lurk$shuffles[,1]) )
+    q1Lurk$shuffles <- cbind(q1Lurk$shuffles, newShuffles)
+    q1Lurk$diff <- c(q1Lurk$diff, apply(newShuffles, 2, function(x) -diff(tapply(q1Lurk$data, x, mean, na.rm=TRUE))))
+    #print(q1Lurk$diff)
+    q1Lurk$colors <- rep(blu, length(q1Lurk$diff))
   })
   observeEvent(input$q1_Lurk_shuffle_5000, {
-    newShuffles <- sapply(1:5000, function(x) sample(c1q1$data[,1]) )
-    c1q1Test$shuffles <- cbind(c1q1Test$shuffles, newShuffles)
-    c1q1Test$diff <- c(c1q1Test$diff, apply(newShuffles, 2, function(x) -diff(tapply(c1q1$data[, 2], x, mean, na.rm=TRUE))))
-    #print(c1q1Test$diff)
-    c1q1Test$colors <- rep(blu, length(c1q1Test$diff))
+    newShuffles <- sapply(1:5000, function(x) sample(q1Lurk$shuffles[,1]) )
+    q1Lurk$shuffles <- cbind(q1Lurk$shuffles, newShuffles)
+    q1Lurk$diff <- c(q1Lurk$diff, apply(newShuffles, 2, function(x) -diff(tapply(q1Lurk$data, x, mean, na.rm=TRUE))))
+    #print(q1Lurk$diff)
+    q1Lurk$colors <- rep(blu, length(q1Lurk$diff))
   })
   
   
   output$q1_LurkPlot2 <- renderPlot({
-    if(is.null(c1q1Test$diff)) return() 
+    if(is.null(q1Lurk$diff)) return() 
     
     parm <- sort(as.matrix(q1Lurk$diff))
     # print(parm)
@@ -1408,7 +1418,7 @@ output$q1_EstimatePlot2 <- renderPlot({
       nsims <- length(parm)
       radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
     }
-    plot(parm, y, ylim = c(0.5, max(y)), ylab = "", cex = radius/2, pch = 16, col = c1q1Test$colors,  
+    plot(parm, y, ylim = c(0.5, max(y)), ylab = "", cex = radius/2, pch = 16, col = q1Lurk$colors,  
          xlab = expression(bar(x)[1] - bar(x)[2]), main = "Sampling Distribution")
     legend("topright", bty = "n", paste(length(parm), "points \n Mean = ", 
                                         round(mean(parm),3), "\n SE = ", round(sd(parm),3)))
