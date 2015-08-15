@@ -12,7 +12,6 @@ cat1_estimate_shuffles <- function(shuffles, y1, n1){
 }
 
 cat2_test_shuffles <- function(shuffles, y1, y2, n1, n2){
-  
   shuffles <- as.numeric(shuffles)
   y1_new <- rhyper(shuffles, y1+y2,(n1 + n2) - (y1 + y2), n1)
   y2_new <- (y1 + y2) - y1_new
@@ -23,6 +22,15 @@ cat2_test_shuffles <- function(shuffles, y1, y2, n1, n2){
   data <- as.matrix(cbind(phat.1, phat.2, diff.p), ncol = 3, nrow = shuffles)
   
   return(data)
+}
+
+c1Lurk_shuffles <- function(shuffles, m, n, k){
+  y1_new <- rhyper(as.numeric(shuffles), m, n, k)
+  y2_new <- m  - y1_new
+  phat.1 <- y1_new/k
+  phat.2 <- y2_new/(m + n - k)
+  diff.p <- phat.1 - phat.2
+  cbind( phat.1, phat.2, diff.p, y1_new, y2_new)
 }
 
 ## Function to draw and store difference in proportions for bootstrap
