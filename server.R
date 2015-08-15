@@ -3630,9 +3630,9 @@ output$c1q1_EstPlot2 <- renderPlot({
 output$c1q1_EstPlot1 <- renderPlot({
   if(is.null(c1q1$diff))
      return()
-  diffs <- c1q1$data
-  names(diffs) <- c("group","y")
-  diffs[, 1] <- factor(diffs[,1])
+  DF <- c1q1$data
+  names(DF) <- c("group","y")
+  DF[, 1] <- factor(DF[,1])
   #print(summary(DF))
   
   c1q1_plot1 <- qplot(y=y, x=group, data = DF, geom="boxplot", main = "Original Data") +

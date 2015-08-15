@@ -65,7 +65,7 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                     ## h5("Choose a confidence level"),
                      radioButtons("CIdemo_conf", label="Choose a Confidence Level", choices = list('80%', '90%', '95%', '99%'), 
                                   selected = '90%', inline = TRUE) 
-                    ),  
+                    ) 
                 ),
                 fluidRow(
                   column(7, offset=4,
