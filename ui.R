@@ -79,13 +79,13 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                    )
                 )
          ),
-#          tabPanel("Lurking Demo", value="1catLurk",
-#             h3("What does Randomization do to a LURKing Variable?"),
-#             h4("Choose Sample sizes"),
-#             uiOutput('c1_LurkDataUI'),
-#             uiOutput('c1_LurkingUI')        
-#           ),
-#    
+         tabPanel("Lurking Demo", value="1catLurk",
+            h3("What does Randomization do to a LURKing Variable?"),
+            h4("Choose Sample sizes"),
+            uiOutput('c1_LurkDataUI'),
+            uiOutput('c1_LurkingUI')        
+          ),
+   
         tabPanel("Normal Distribution" , value="cat1_Normal",
                  titlePanel("Normal Probabilities"),
                  column(3, inputPanel(
