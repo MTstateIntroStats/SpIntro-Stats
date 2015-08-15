@@ -73,40 +73,51 @@ shinyServer(function(input, output, session) {
    } else {
        fluidPage(
           h3("Test a single proportion."),       
-            fluidRow(
-              column(4, 
-                  h4("Original Data"),
-                  tableOutput("cat1OriginalData"),
+            div(
+              fluidRow(
+                column(4, 
+                   h4("Original Data"),
+                   tableOutput("cat1OriginalData"),
                       
-                  h4("Sample from Null Hypothesis"),
-                  tableOutput('cat1Test_Table'),
+                   h4("Sample from Null Hypothesis"),
+                   tableOutput('cat1Test_Table')
                       
-                  br(),
+                ),
                       
-                  h5("We start showing one sample from the null."),
-                  h5("How many more?"),
-                      
-                  actionButton("cat1_test_shuffle_10", label = "10"),
-                  actionButton("cat1_test_shuffle_100", label = "100"),
-                  actionButton("cat1_test_shuffle_1000", label = "1000"),
-                  actionButton("cat1_test_shuffle_5000", label = "5000")
-             ),
-                      
-              column(8, 
+                column(8, 
+                    div(
                       fluidRow(
                         column(7, offset =1, h4("True Proportion (Null hypothesis for p):")),
                         column(2, tags$div( 
                                  tags$input(id = "null_p", type = "text", class = "form-control", value = "0.5"))
                                )
                         ),
-                     plotOutput('cat1Test_Plot2'), #click = 'cat1_Test_click'),
-                     br(),
-                     br(),
-                     uiOutput("Cat1TestXtremes"),
-                     uiOutput("Cat1TestPvalue")
-              )
-            )
+                       plotOutput('cat1Test_Plot2')  #click = 'cat1_Test_click')
+                    )
+                )
+              ), 
+              #br(),
+              fluidRow(
+                column(4, offset = 1, h5("How many more samples from the null?")),
+                column(1,
+                   actionButton("cat1_test_shuffle_10", label = "10")),
+                column(1,
+                   actionButton("cat1_test_shuffle_100", label = "100")),
+                column(1,
+                   actionButton("cat1_test_shuffle_1000", label = "1000")),
+                column(1,
+                   actionButton("cat1_test_shuffle_5000", label = "5000"))
+               ),
+               br(),
+               br(),
+               fluidRow(
+                 column(8, offset = 4, 
+                        uiOutput("Cat1TestXtremes"),
+                        uiOutput("Cat1TestPvalue")
+                 )
+               )
         )
+       )
     }
  })
 
@@ -153,7 +164,7 @@ output$Cat1TestXtremes <- renderUI({
       #print(cat1_data$names)
       counts <- data.frame( matrix(as.numeric(c(cat1_data$counts, 0, 0)), 2, 2, 
                                    dimnames = list(cat1_data$names, c("Counts","Proportions"))))
-      counts[,2] <- prop.table(as.table(counts[,1]))
+      counts[,2] <- as.numeric(prop.table(as.table(counts[,1])))
       counts[,1] <- as.integer(counts[,1])
       counts
     })
@@ -202,7 +213,7 @@ output$Cat1TestXtremes <- renderUI({
       #print(c(y1_new, n1))
       counts <- data.frame( matrix(as.numeric(c(y1_new, n1-y1_new, 0, 0)), 2, 2, 
                                dimnames = list(cat1_data$names, c("Counts","Proportions"))))
-      counts[,2] <- prop.table(as.table(counts[,1]))
+      counts[,2] <- as.numeric(prop.table(as.table(counts[,1])))
       counts[,1] <- as.integer(counts[,1])
       counts
     })
@@ -246,10 +257,10 @@ output$Cat1TestXtremes <- renderUI({
         radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
       }
       plot(DF, w, ylab = "", ylim = c(0.5, max(w)), cex = radius/2, pch = 16, col = cat1Test$colors,  
-           xlab = expression(hat(p)), main = "Resampling Distribution")
+           xlab = expression(hat(p)), main = "Sampling Distribution")
       legend("topright", bty = "n", paste(length(DF), "points \n Mean = ", 
                                          round(mean(DF),3), "\n SE = ", round(sd(DF),3)))
-  }, height = 450, width = 600)
+  }, height = 360, width = 480)
 
 }
 
@@ -261,50 +272,60 @@ output$cat1_estimateUI <- renderUI({
   } else {
     tabPanel("Estimate", value="1catEstimate",
              titlePanel("Estimate a Single Proportion"),       
-             fluidRow(
-               column(4, 
+             div(
+               fluidRow(
+                 column(4, 
                       h3("Original Data"),
                       tableOutput("cat1_CIPrep"),
                       
                       h3("One Resampled Dataset"),
-                      tableOutput('cat1Estimate_Table'),
+                      tableOutput('cat1Estimate_Table')
                       
-                      br(),
-                      
-                      h5("We start showing one re-sample."),
-                      h5("How many more?"),
-                      
-                      actionButton("cat1_estimate_shuffle_10", label = "10"),
-                      actionButton("cat1_estimate_shuffle_100", label = "100"),
-                      actionButton("cat1_estimate_shuffle_1000", label = "1000"),
-                      actionButton("cat1_estimate_shuffle_5000", label = "5000")
-               ),
+                 ),
     
-                   column(8, 
-                      plotOutput('cat1Estimate_Plot2', click = 'cat1_Estimate_click'),
-                      
-                      br(),
-                      br(),
-                      br(),
-                      
-                      #h5("Click on a point to see that resample."),
-                      h5("Select Confidence Level (%)", offset = 2),
-                      fluidRow( 
-                        column(4,  
-                               actionButton('cat1_conf80', label = "80"),
-                               actionButton('cat1_conf90', label = "90"),
-                               actionButton('cat1_conf95', label = "95"),
-                               actionButton('cat1_conf99', label = "99")
-                        ),
+                 column(8, 
+                      plotOutput('cat1Estimate_Plot2', click = 'cat1_Estimate_click')
+                 )
+             ),
+             fluidRow(
+               column(4, offset = 1, h5("How many more resamples?")),
+               column(1,
+                      actionButton("cat1_estimate_shuffle_10", label = "10")),
+               column(1,
+                      actionButton("cat1_estimate_shuffle_100", label = "100")),
+               column(1,
+                      actionButton("cat1_estimate_shuffle_1000", label = "1000")),
+               column(1,
+                      actionButton("cat1_estimate_shuffle_5000", label = "5000"))
+             ),
+             br(),
+             br(),
+             fluidRow(
+               column(3, offset = 2, 
+                      h5("Select Confidence Level (%)")
+                      ),
+               column(6,
+                 fluidRow(
+                    column(2,  
+                      actionButton('cat1_conf80', label = "80")),
+                    column(2,
+                      actionButton('cat1_conf90', label = "90")),
+                    column(2,
+                      actionButton('cat1_conf95', label = "95")),
+                    column(2,
+                      actionButton('cat1_conf99', label = "99"))
+                ))),
                         
-                        if(!is.null(cat1Estimate$CI)){
+              if(!is.null(cat1Estimate$CI)){
+                fluidRow(
+                  column(8, offset = 4,
                           h5(paste(round(100 * cat1Estimate$confLevel), "% Confidence Interval Estimate: (", round(cat1Estimate$CI[1],3), ",", 
                                    round(cat1Estimate$CI[2], 3), ")"))
-                        }
-                      )
-               )
-             )
-    )
+                  )
+                )
+                } else {br()}
+            )
+         )
   }
 })
 
@@ -314,9 +335,15 @@ output$cat1_CIPrep <- renderTable({
   if(input$cat1_submitButton ==0) return()
   #print(cat1_data$counts)
   #print(cat1_data$names)
-  counts <- as.table( matrix(cat1_data$counts), 1, 2)
-  dimnames(counts) = list(cat1_data$names,"Proportions")
-  prop.table(counts) 
+#   counts <- as.table( matrix(cat1_data$counts), 1, 2)
+#   dimnames(counts) = list(cat1_data$names,"Proportions")
+#   prop.table(counts) 
+  counts <- data.frame( matrix(as.numeric(c(cat1_data$counts, 0, 0)), 2, 2, 
+                               dimnames = list(cat1_data$names, c("Counts","Proportions"))))
+  counts[,2] <- as.numeric(prop.table(as.table(counts[,1])))
+  counts[,1] <- as.integer(counts[,1])
+  counts
+  
 })
 
 observeEvent(input$cat1_estimate_shuffle_10, {
@@ -357,10 +384,12 @@ output$cat1Estimate_Table <- renderTable({
   cat1Estimate$colors <- blu
   
   #print(c(y1_new, n1))
-  counts <- as.table(matrix(as.numeric(c(y1_new, n1-y1_new)), 2, 1))
-  dimnames(counts) <- list(cat1_data$names,"Proportions")
-  prop.table(counts)
-  
+  #counts <- as.table(matrix(as.numeric(c(y1_new, n1-y1_new)), 2, 1))
+  counts <- data.frame( matrix(as.numeric(c(y1_new, n1 - y1_new, 0, 0)), 2, 2, 
+                               dimnames = list(cat1_data$names, c("Counts","Proportions"))))
+  counts[,2] <- as.numeric(prop.table(as.table(counts[,1])))
+  counts[,1] <- as.integer(counts[,1])
+  counts
 })
 
 observeEvent(input$cat1_conf80,{
@@ -439,7 +468,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
        xlab = expression(hat(p)), main = "Re-Sampling Distribution")
   legend("topright", bty = "n", paste(length(DF), "points \n Mean = ", 
                                      round(mean(DF),3), "\n SE = ", round(sd(DF),3)))
-}, height = 450, width = 600)
+}, height = 360, width = 480)
 
 }
   
@@ -549,10 +578,9 @@ output$cat1Estimate_Plot2 <- renderPlot({
       )
     ),
     br(),
-    br(),
     fluidRow(
-       column(4,
-              h5("Number in Treament group: (the rest are controls)")
+       column(5,
+              h5("Size of Treament group: (the rest are controls)")
               ),
       column(3,
              tags$input(name='c1Lurk_m1', type='text', value='0', size='10')
@@ -581,9 +609,10 @@ output$cat1Estimate_Plot2 <- renderPlot({
   output$c1_LurkingUI <- renderUI({
     if (is.null(c1Lurk$data) | is.null(c1Lurk$names))
       return()
+    div(
       fluidRow(
         column(4, 
-               h5("Shuffle 1"),
+               h5("Randomization 1"),
                tableOutput("c1Lurk_Table1"),
                h5(paste("Difference in proportions: ", 
                         round( as.numeric(c1Lurk$difprop[1]), 3)
@@ -591,25 +620,27 @@ output$cat1Estimate_Plot2 <- renderPlot({
                
                br(),
                
-               h5("Shuffle 2"),
+               h5("Randomization 2"),
                tableOutput('c1Lurk_Table2'),
                h5(paste("Difference in proportions: " , 
-                        round( as.numeric(c1Lurk$difprop[2]), 3))),
-               br(),
-               
-               h5("We start showing two shuffles."),
-               h5("How many more?"),
-               
-               actionButton("c1_Lurk_shuffle_10", label = "10"),
-               actionButton("c1_Lurk_shuffle_100", label = "100"),
-               actionButton("c1_Lurk_shuffle_1000", label = "1000"),
-               actionButton("c1_Lurk_shuffle_5000", label = "5000")
-        ),
+                        round( as.numeric(c1Lurk$difprop[2]), 3)))
+              ),
         column(8, 
                plotOutput('c1_LurkPlot2')#, click = 'c1_Lurk_click')
       )
-    )
-  })
+    ),
+    fluidRow(
+      column(4, offset = 1,
+             h5("How many more randomizations?")
+             ),
+      column(1, actionButton("c1_Lurk_shuffle_10", label = "10")),
+      column(1, actionButton("c1_Lurk_shuffle_100", label = "100")),
+      column(1, actionButton("c1_Lurk_shuffle_1000", label = "1000")),
+      column(1, actionButton("c1_Lurk_shuffle_5000", label = "5000"))
+      
+    )  
+  )
+})
   
 #   output$c1_LurkSampDistPlot <- renderUI({ 
 #     plotOutput('c1_LurkPlot2') #, click = 'c1_Lurk_click')
@@ -686,16 +717,16 @@ output$cat1Estimate_Plot2 <- renderPlot({
       return()
     diffs <- sort(c1Lurk$difprop)
     if(length(diffs) < 4){
-      w <- 1
-      radius <- 4
+      w <- 1 + diffs*0
+      radius <- 4 + diffs*0
     } 
     else {
       nbreaks <- 0.5*nclass.Sturges(diffs)^2
       z <- cut(diffs, breaks = nbreaks)
       w <- unlist(tapply(z, z, function(V) 1:length(V)))
       w <- w[!is.na(w)]
-      print(summary(w))
-      #print(max(w))
+      # print(summary(w))
+      # print(max(w))
       nsims <- length(diffs)
       radius <- 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
     }
@@ -704,7 +735,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
     legend("topright", bty = "n", paste(length(diffs), "points \n Mean = ", 
                                         round(mean(diffs),3), "\n SE = ", round(sd(diffs),3)))
     #mtext(side = 1, at = 0, adj = 0, line = 0, bquote(p[1] == p[2]))
-  }, width = 400)
+  }, width = 480)
   
 
   
@@ -1460,7 +1491,8 @@ output$q1_EstimatePlot2 <- renderPlot({
   output$q1_LurkingUI <- renderUI({
     if (is.null(q1Lurk$data) | is.null(q1Lurk$shuffles))
       return()
-     fluidRow(
+     div(
+       fluidRow(
           column(4, 
                  plotOutput("q1_LurkPlot1")
           ),
@@ -1477,18 +1509,14 @@ output$q1_EstimatePlot2 <- renderPlot({
                           round(-diff(tapply(q1Lurk$data, q1Lurk$shuffles[, 2], mean, na.rm=TRUE)), 3)))    
           ),
           column(5, 
-                uiOutput('q1_LurkSampDistPlot')
+                uiOutput('q1_LurkSampDistPlot'))
         ),
         fluidRow(
-          column(6, offset = 5,
-                 h4("Two randomizations are shown. How many more?"),
-                 fluidRow(
-                   column(2, actionButton("q1_Lurk_shuffle_10", label = "10")),
-                   column(2, actionButton("q1_Lurk_shuffle_100", label = "100")),
-                   column(2, actionButton("q1_Lurk_shuffle_1000", label = "1000")),
-                   column(2, actionButton("q1_Lurk_shuffle_5000", label = "5000"))
-                 )
-            )
+          column(4, offset = 1, h4("How many more randomizations?")),
+          column(1, actionButton("q1_Lurk_shuffle_10", label = "10")),
+          column(1, actionButton("q1_Lurk_shuffle_100", label = "100")),
+          column(1, actionButton("q1_Lurk_shuffle_1000", label = "1000")),
+          column(1, actionButton("q1_Lurk_shuffle_5000", label = "5000"))
         )
      )
   })
@@ -1599,11 +1627,10 @@ output$q1_EstimatePlot2 <- renderPlot({
       radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
     }
     plot(parm, y, ylim = c(0.5, max(y)), ylab = "", cex = radius/2, pch = 16, col = q1Lurk$colors,  
-         xlab = expression(bar(x)[1] - bar(x)[2]), main = "Sampling Distribution")
+         xlab = expression(bar(x)[1] - bar(x)[2]), main = "Randomization Distribution")
     legend("topright", bty = "n", paste(length(parm), "points \n Mean = ", 
                                         round(mean(parm),3), "\n SE = ", round(sd(parm),3)))
   }, width = 400)      
-  
   
   }
   
