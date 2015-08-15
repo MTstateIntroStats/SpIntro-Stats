@@ -65,8 +65,15 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                     ## h5("Choose a confidence level"),
                      radioButtons("CIdemo_conf", label="Choose a Confidence Level", choices = list('80%', '90%', '95%', '99%'), 
                                   selected = '90%', inline = TRUE) 
+                    ) 
+                ),
+                fluidRow(
+                  column(7, offset=4,
+                    ##  next two need to be action buttons so we can keep using the same sample.
+                    h5("Choose a confidence level"),
+                     radioButtons("CIdemo_conf", label="Confidence Level", choices = list('80%', '90%', '95%', '99%'), 
+                                  selected = '90%', inline = TRUE) 
                     ),  
-                      
                     column(7, #div( ## style="height: 300px",
                       h4("Sampling Distribution.  Click a point to see CI.", center = TRUE),
                       plotOutput("CIdemo_Plot1",  click = "CIplot1_click")

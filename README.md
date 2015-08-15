@@ -22,23 +22,29 @@ inference, so the lookup tables are part of this suite.
      Upload a local csv file,  
      type or copy into a table using rhandsontable  
 
-  Progress:  This is working for all types of variables, but we need to allow switching predictor and response for the 2 quantitative variable case.  
+  Progress:  This is working for all types of variables, 
  
  * Descriptive stats and plots
      OK for all data types.
   
  * Bootstrap Demo is ready under 1-quantitative variable.  
    It uses only a single dataset, not user-setable data.  
-  
- * TODO: Permutation Tests:  
+
+ 
+ * Demo to show coverage of CI's for the artificial case of a known proportion or mean.  
+
+ * Permutation Tests:  
    one proportion  
    equality of two proportions  
    one mean  
-   equality of two means  
+   equality of two means  -- still in progress
    correlation and slope  
    
- * Bootstrap CI's for the same settings.
- 
- * Need a demo to show coverage of CI's for the artificial case of a known proportion or mean.  
+ * Bootstrap CI's for:  
+   one proportion  
+   difference in two proportions  
+   one mean  
+   difference in two means  -- still in progress
+   correlation and slope  
 
  
