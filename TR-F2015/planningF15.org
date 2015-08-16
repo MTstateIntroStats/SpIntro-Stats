@@ -7,7 +7,7 @@ Set one Quizork per week, one online graded HW as well.
 Tu-thuRs sections
 
 Checked calendar and syllabus.
-Need to add some extras to TR, as well as splits in MWF's
+
 
 * Unit 1 -- inference for 1 proportion  
 ** Day 1 activity -- Basic evaluation of a claim.  
@@ -212,3 +212,27 @@ September 1, 2013 57: 1874-1878
   year={2015},
   publisher={Mass Medical Soc}
 }
+
+Pagination:
+
+cover page
+  BLANK back
+calendar
+Unit 1 page numbers 1-53                page numbered 32 gets color.
+  starts on a back, ends on a front.
+Unit 2 Divider - blue paper
+  BLANK (in document)
+  ADD 6 pages from "Open Intro"
+Unit 2 page numbers 56 to  118
+    starts on a back, ends on a front.
+Unit 3 Divider - blue paper
+  BLANK (in document)
+Unit 3 page numbers 121 to 170
+
+
+  pdfjam TR-raw.pdf '1-57' ../../isrs1-Experiments-2.pdf '1-'
+  ../../isrs1-Experiment3.pdf '1-' TR-raw.pdf '58-' --outfile
+  ../TR-completeCP
+
+(then rename to give pdf suffix)
+
