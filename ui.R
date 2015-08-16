@@ -193,11 +193,10 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                  )),
                  column(8, plotOutput("powerPlot"))),
                # Show a table summarizing the values entered
-               fluidRow(column(8, offset = 4, tableOutput("values")))
+               fluidRow(column(8, offset = 4, tableOutput("powerValues")))
       )
     )
 }    ,
-    ##  br(),  didn't work inside the navBar
 
     ####   Two Categorical  -------------------------------------------------  --  2 cat
 {

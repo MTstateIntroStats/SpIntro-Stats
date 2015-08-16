@@ -1766,6 +1766,58 @@ observeEvent( input$q1_prob_txt,{
 }, height=300)
 }
 
+    ###  Power Demo ---------------------------------------  quant 1
+  {
+    sliderValues <- reactive({
+      ## Compose data frame
+      data.frame(
+        Inputs = c("Sample Size", 
+                    "Standard Deviation",
+                    "Shift in Mean",
+                    "Significance Level (alpha)"),
+        InValue = as.character(c(input$pwr_n, 
+                               input$pwr_sd,
+                               input$pwr_altMean, 
+                               input$pwr_alpha )),
+        Outputs = c( "Effect Size",  "Power", NA, NA   ),
+        OutValue = as.character(c(round(input$pwr_altMean/input$pwr_sd, 3),
+                               round(
+                                 power.t.test(n=input$pwr_n, delta=input$pwr_altMean,
+                                              sd=input$pwr_sd, sig.level=input$pwr_alpha,
+                                              type="one.sample",
+                                              alternative="one")$power,3),NA,NA)), 
+        stringsAsFactors=FALSE)
+    }) 
+
+      output$powerPlot <- renderPlot({
+      x <- seq(-4,10,length=200)
+      plot(x, dt(x, input$pwr_n-1),bty='l', type="l", xlab="",ylab="")
+      lines(x,dt(x,input$pwr_n-1,ncp=input$pwr_altMean/input$pwr_sd *sqrt(input$pwr_n)))
+      abline(h=0)
+      qt1 <- qt(1-input$pwr_alpha, input$pwr_n-1)
+      xrr <- c(qt1, qt1, x[x>=qt1],max(x))
+      yrr <- c(0, dt(c(qt1,  x[x>=qt1]), input$pwr_n -1),0)
+      polygon(xrr,yrr, col = rd)
+      abline(v = c(0, qt1))
+      xpwr <- c(qt1,x[x>=qt1])
+      ypwr <- c(0, dt(xpwr,df=input$pwr_n-1, ncp=input$pwr_altMean/input$pwr_sd *sqrt(input$pwr_n) ),0)
+      xpwr <- c(qt1, xpwr, max(x))
+      ##cat(length(xpwr), length(ypwr))
+      polygon(xpwr,ypwr, col = grn)
+      text(weighted.mean(xrr,w=yrr^2),weighted.mean(yrr,w=yrr^.5),cex=1.5, expression(alpha))
+      text(weighted.mean(xpwr,w=ypwr^4),weighted.mean(ypwr,w=ypwr^.5),cex=1.5,"Power")
+      mtext(side=1,at=0,line=2, expression(H[0]: mu == 0))
+      mtext(side=1,at= xpwr[which.max(ypwr)], line=2, expression(H[a]: mu > 0))
+    })
+    
+    # Show the values using an HTML table
+    output$powerValues <- renderTable({
+      sliderValues()
+    }, include.rownames = FALSE)
+  
+  
+  }  
+  
   ## 2 Categorical ------------------------------------------------------------- 2 cat
 
   ## Data Entry --------------------------------------------------------  cat 2
