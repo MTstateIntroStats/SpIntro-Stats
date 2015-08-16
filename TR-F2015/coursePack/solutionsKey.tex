@@ -1,16 +1,15 @@
 \documentclass[12pt]{article}
-
 % Include packages
 %%\usepackage[letterpaper]{geometry} 
 \usepackage{amsmath,amssymb}
  \usepackage{graphicx}
  \usepackage{ifthen, comment}
- \usepackage{soul}
+% \usepackage{soul}
 \usepackage{natbib} 
 \usepackage{color}
 \usepackage{fancyhdr}
 \usepackage{hyperref}
-\hypersetup{pdftex, colorlinks=true, linkcolor=blue, citecolor=blue, filecolor=blue, urlcolor=blue, pdftitle=Stat216CoursePack, pdfauthor=Jim R-C, pdfsubject=, pdfkeywords=}
+%\hypersetup{pdftex, colorlinks=true, linkcolor=blue, citecolor=blue, filecolor=blue, urlcolor=blue, pdftitle=Stat216CoursePack, pdfauthor=Jim R-C, pdfsubject=, pdfkeywords=}
 
  \textwidth = 6.75 in
  \textheight = 9.25 in
@@ -24,12 +23,9 @@
 \addtolength{\oddsidemargin}{-.2in}
 \addtolength{\evensidemargin}{-.275in}
 
-
 \newcounter{alistctr}
 \newenvironment{alist}{\begin{list}{\Alph{alistctr}.\ }
-      {\usecounter{alistctr}}} {\end{list}}
-
-
+           {\usecounter{alistctr}}} {\end{list}}
 
 \newsavebox{\fmbox}
 \newenvironment{fmpage}[1]
@@ -43,7 +39,54 @@
 \newcommand{\vs}[1]{\vspace{#1in}}
 \newcommand{\hs}[1]{\hspace{#1in}}
 \newcommand\textstyleInternetlink[1]{\textcolor{blue}{#1}}
-\newcommand{\xb}{\overline{x} }
+\newcommand{\xb}{\overline{x}}
+\newcommand{\phat}{\widehat{p}}
+
+%\fancyhead[RE]{\textit{ \nouppercase{\leftmark}} }
+%\fancyhead[LO]{\textit{ \nouppercase{\rightmark}} }
+
+\fancypagestyle{plain}{ %
+  \fancyhf{} % remove everything
+  \renewcommand{\headrulewidth}{0pt} % remove lines as well
+  \renewcommand{\footrulewidth}{0pt}
+}
+\includecomment{key}  
+\includecomment{students} 
+%% To make student version, uncomment this line:
+%% \excludecomment{key}  
+%% To run key, comment out this line instead:
+
+\excludecomment{students} 
+\begin{document}
+ \begin{titlepage}
+ \vspace*{1in}
+ \begin{center}
+ {\huge \sf   Stat 216 Course Pack Fall 2015}\\
+\ \\
+{ \LARGE \sf Activities and Notes }\\
+  \ \\
+  {\large\bf\  } \vspace{.2in}\\
+  {\Large \sf Sections: 2, 3, 6,  11, 14, 18, 20, and 21  meeting }\\
+\ \\
+   {\LARGE \sf Tuesday and Thursday} \\
+  \ \\
+  {\large \sf with two Common Hour Exams, and Common Final}
+\ \\
+
+\includegraphics[width=.9\linewidth]{../stateofmind2.jpg}
+\vspace{1in}
+
+{\Large \sf
+  Department of Mathematical Sciences\\
+  Montana State University} \vspace{1in}\\
+ \end{center}
+ \vspace*{\fill}
+ \end{titlepage}
+
+%\newpage
+\thispagestyle{empty}
+\include{TR-calendar}
+
 
 \def\theTopic{Intro \& Syllabus }
 \def\dayNum{1}
@@ -55,126 +98,135 @@
 \fancyhf{}
 \fancyhead[LE,RO]{
    {\it \theTopic }\\
-   {\it Unit \unitNum\  Day \dayNum \ Page \thepage }
+   {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
 }
-%\fancyhead[RE]{\textit{ \nouppercase{\leftmark}} }
-%\fancyhead[LO]{\textit{ \nouppercase{\rightmark}} }
-
-\fancypagestyle{plain}{ %
-  \fancyhf{} % remove everything
-  \renewcommand{\headrulewidth}{0pt} % remove lines as well
-  \renewcommand{\footrulewidth}{0pt}
-}
-\includecomment{key}  
-\includecomment{students} 
-%% To make student version, uncomment this line:  
-%%\excludecomment{key}  
-%% To run key, comment out this line instead:
-\excludecomment{students} 
-
-\begin{document}
-
- \begin{titlepage}
-  \vspace*{2in}
- \begin{center}
- {\Large \bf  Course Pack of Activities and Notes for Stat 216}\\
-  \ \\
-  {\large\bf Spring 2015} \vspace{.2in}\\
-  Sections: 3, 6, 9, 11, 13, 15, 17, and 18  meeting Tuesday and Thursday
-  in\\
-  \ \\
-  {\Large \bf TEAL} (Technology Enhanced, Active Learning) {\Large
-      \bf Classrooms}\vspace{.4in}\\
-
-  Department of Mathematical Sciences\\
-  Montana State University
-  \end{center}
- \vspace*{\fill}
- \end{titlepage}
-
-\newpage
-
-\include{TR-ALT-calendar-S15}
-
 \setcounter{page}{1}
-\newpage
-\include{U1-D1}
-\newpage
-\include{U1-D2}
-\newpage
-\include{U1-D3}
-\newpage
-\include{U1-D4}
-\newpage
-\include{U1-D5}
-\newpage
-\include{U1-D6}
-\newpage
-\include{U1-D7}
-\newpage
-\include{U1-D8}
+ \newpage
+ \include{U1-D1}  % fraud: 3 pgs
  \newpage
 
-  \def\unitNum{2}
-\thispagestyle{empty}
-\vspace*{\fill}
-\begin{center}
-  {\huge Unit 2}   %% p 45
-\end{center}
-\vspace*{\fill}
-\newpage
-\ \ \ \thispagestyle{empty}
-
- \newpage
-  \setcounter{page}{42}
-  \include{U2-D10}
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\   \ Page \thepage }
+}
+  \include{OI-1}
   \newpage
- \include{U2-D11}
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
+}
+ \include{U1-D2} %% Descriptives - 7 pgs
  \newpage
- \include{U2-D12}
+
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\   \ Page \thepage }
+}
+  \include{OI-2}
+  \newpage
+
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
+}
+ \include{U1-D3}  %% sampling exercise 7 pgs
  \newpage
-% \include{U2-D13}
-% \newpage
- \include{U2-D14}
+ \include{U1-D4}  %% helper-hinderer 5 pgs
  \newpage
- \include{U2-D15}
+ \include{U1-D5}  %% ESP  5 pgs
  \newpage
- \include{U2-D16}
+ \include{U1-D6}  %% Rats - CI  5 pgs
+
  \newpage
- \include{U2-D17}
+ \include{U1-D7}  %%  CI - meaning  2 pgs
  \newpage
- \include{U2-D18}
+ \include{U1-D8}  %% Male idiot 4 pgs 
+  \newpage
+ \include{U1-D9}  %% Review 4 pgs
+  \newpage
+\def\unitNum{2}
+ \thispagestyle{empty}
+ \vspace*{\fill}
+ \begin{center}
+   {\huge Unit 2}   %% p 51
+ \end{center}
+ \vspace*{\fill}
  \newpage
- \include{U2-D19}
+ \ \ \ \thispagestyle{empty}
  \newpage
- \include{U2-D20}
-%\ \ \ \thispagestyle{empty}
-%  \def\unitNum{3}
-%  \thispagestyle{empty}  %% p 109
-% \vspace*{\fill}
-% \begin{center}
-%   {\huge Unit 3}
-% \end{center}
-% \vspace*{\fill}
-% \newpage
+
+  \include{U2-D10} %% Music to study by? Experiments 7 pgs
+  \newpage
+ \include{U2-D11} %% bootstrap mean CI    5 pgs
+ \newpage
+ \include{U2-D12}%% Peanut Experiment 6 pgs
+ \newpage
+ \include{U2-D13} %% Wrong weight 5 pgs 
+
+ \newpage
+ \include{U2-D14}  %% Energy Drinks 6 pgs
+ \newpage
+ \include{U2-D15}  %% birth weights 6 pgs
+ \newpage
+ \include{U2-D16}  %% arsenic 7 pgs
+ \newpage
+ \include{U2-D17}  %% slope corr 5 pgs
+ \newpage
+ \include{U2-D18}  %% test slope:  4 pgs
+ \newpage
+ \include{U2-D19}  %% Errors & Power 5 pgs
+ \newpage
+ \include{U2-D20}  %% review  6 pgs
+ \newpage
 % \ \ \ \thispagestyle{empty}
 % \newpage
-
-%  \setcounter{page}{104}
-% \include{U3-D22}
+\def\unitNum{3}
+ \thispagestyle{empty} 
+ \vspace*{\fill}
+ \begin{center}
+   {\huge Unit 3}
+ \end{center}
+ \vspace*{\fill}
+ \newpage
+ \ \ \ \thispagestyle{empty}
+ \newpage
+ \include{U3-D21}  %% 5 pgs
+ \newpage
+ \include{U3-D22}  %% 6.5 pgs
+ \newpage
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\   \ Page \thepage }
+}
+ \include{U3-Reading1}  %% 3 pages
+  \newpage
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
+}
+ \newpage
+ \include{U3-D23} %%  5 pgs
+ \newpage
+ \include{U3-D24}  %%  5 pgs 
+ \newpage
+ \include{U3-D25}   %% 5  pgs
+  \newpage
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\   \ Page \thepage }
+}
+ \include{U3-Reading2}  %% 3 pages
+  \newpage
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
+}
+ \newpage
+ \include{U3-D26} %%  4 pgs Concussions 
+ \newpage
+ \include{U3-D27}  %% 5  pgs wrapup
+ \newpage
+ \include{U3-A1} %% Paired  %% 7  pgs
 % \newpage
-% \include{U3-D23}
-% \newpage
-% \include{U3-D24}
-% \newpage
-% \include{U3-D25}
-% \newpage
-% \include{U3-D26}
-% \newpage
-% \include{U3-D27}
-% \newpage
-% \include{U3-D28}
-% \newpage
-% \include{U3-D29}
+% \include{U3-DA2} %% Sample size effects
  \end{document}
-
