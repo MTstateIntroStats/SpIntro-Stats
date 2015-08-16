@@ -230,9 +230,9 @@ Unit 3 Divider - blue paper
 Unit 3 page numbers 121 to 170
 
 
-  pdfjam TR-raw.pdf '1-57' ../../isrs1-Experiments-2.pdf '1-' \
-  ../../isrs1-Experiment3.pdf '1-' TR-raw.pdf '58-' --outfile \
-  ../TR-completeCP
+  pdfjam MWF-raw.pdf '1-57' ../../isrs1-Experiments-2.pdf '1-' \
+  ../../isrs1-Experiment3.pdf '1-' MWF-raw.pdf '58-' --outfile \
+  MWF-completeCP
 
 (then rename to give pdf suffix)
 

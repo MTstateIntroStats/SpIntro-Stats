@@ -1,0 +1,450 @@
+\def\theTopic{Birth Weights }
+\def\dayNum{15 }
+
+\begin{center}
+\vspace*{.1in}
+{\bf {\large Birth Weights}}
+\end{center}
+\vspace{-.1in}
+
+Lab tests with animals have shown that exposure to tobacco smoke is
+harmful in many ways.  To make connections to humans has been more of
+a challenge.  One dataset which might help us connect tobacco use of
+pregnant women to birth weights of their babies comes from a large set
+of data on {\bf all} births in North Carolina.  We will examine a random sample
+of size 200 from the much larger dataset. The two variables provided
+are {\tt habit} (either smoker or nonsmoker) and {\tt weight} (baby's weight at
+birth measured in pounds). 
+
+
+
+{\bf Discuss}
+\begin{enumerate}
+\item   Could there be some physiological reason why birthweights for
+  the children of the 28 smokers might differ from the birth weights
+  of the babies born to nonsmokers?  Write down what you and your
+  group know about smoke and nicotine to hypothesize a connection to
+  birthweight. 
+\begin{students}
+  \vspace{2cm}
+\end{students}
+
+
+\item   If the connection you are thinking about is real, would it
+  tend to increase or decrease birth weights of babies born to
+  smokers?  Or could the effect go either way?
+\begin{students}
+  \vspace{1cm}
+\end{students}
+
+\begin{enumerate}
+\item   What is the response variable in this study?  Is it
+  quantitative or categorical?
+\begin{students}
+  \vspace{1cm}
+\end{students}
+
+\begin{key}
+  {\it birth weight, quantitative}
+\end{key}
+  
+\item  Is there an explanatory variable in this study?  If so, name it
+  and tell which type of variable it is.
+\begin{students}
+\vspace{1.5cm}
+\end{students}
+
+\begin{key}
+  {\it Yes, habit, and it  is categorical}
+\end{key}
+
+  
+\item Select the ``Pre-loaded'' data (birthweights)  from the
+  \fbox{One of Each} menu at 
+  \url{http://shiny.math.montana.edu/jimrc/IntroStatShinyApps}
+   Compute means for weight by habit and compute the difference in means.
+\begin{students}
+\vspace{2cm}
+\end{students}
+
+\begin{key}
+  {\it Smoker: 6.306, nonsmoker: 7.084, difference: -.778 }
+\end{key}
+
+   
+\item  Is the difference between the means large enough to convince
+  you that babies born to smoking mothers are lighter than those born
+  to nonsmokers?
+  Why or why not?
+\begin{students}
+ \vspace{3cm}
+\end{students}
+
+\begin{key}
+  {\it It does not seem like a difference of .78 is that large because of
+the spread of the plots (range from 1.7 to 8 for for smokers, 1.4 to
+10 for nonsmokers). }
+\end{key}
+
+\end{enumerate}
+\end{enumerate}
+
+{\bf Studies that Use Random Sampling}
+
+ The big differences between this study and the previous studies where
+ you compared two conditions is the subjects in this study were a
+ {\bf random sample} from a larger population. The use of random sampling
+ versus the use of random assignment  changes the type of
+ inferences that can be made. 
+
+A random sample is one in which the method used to choose the sample
+from the population of interest is based on chance.
+
+Reminder: When studies employ random {\bf assignment}, we are able to draw
+cause--and--effect conclusions about the {\bf treatment effects}. 
+Randomization evens out the influences of all possible lurking
+variables, and allows us to conclude that treatments really made a difference.  
+
+
+With data on birth weights, can we assign a baby to have  a smoking
+versus nonsmoking mother?  \vspace{1cm}
+
+
+The habit variable 
+splits these subjects into two populations, and we have a sample
+from each.  In studies with random {\bf sampling}, the goal is to
+describe the sample data, to compare groups, and infer any differences
+back to the broader population(s) from which the sample(s) was/were
+drawn.  Even though we might have reasons from animal studies to think
+smoking causes certain changes, we do not expect these data to provide
+{\bf causal} evidence of such a connection.  We might want to know how large the
+difference in means (the true population means) is between two groups.
+That's really an estimation question. 
+
+In the  peanut allergy study we found strong evidence of a
+difference due to the therapy, but the inference only applied to the
+kids in the study because we could not say that the sample of
+subjects was representative of a larger population, like all infants.
+
+An ideal study would start with a random sample from the population of
+interest so that we can make inference back to the population, and it
+would use random treatment allocation to allow causal inference. In
+practice, we must often settle for a convenience sample, so our
+inference only extends back to a subset of the population.   
+
+
+{\bf MODELING THE BIRTH WEIGHTS}
+
+You will conduct a {\bf permutation} test to find out how likely it would
+be to see this large a difference in sample means if the two
+populations really have the same overall mean birth weight. The word
+``permutation''  emphasizes that we could be assigning treatments, or just
+shuffling labels we observed from different groups.  By doing the
+relabeling many times, we can see what results are expected when the
+populations really have the same distribution of responses. 
+
+\begin{enumerate}
+  \setcounter{enumi}{5}
+  \item  Describe the null model to be used to simulate data in this
+    investigation. 
+\begin{students}
+\vspace{2cm}
+\end{students}
+
+\begin{key}
+  {\it  The mother's habit of smoking or not is not
+    associated with weight of baby. Or baby's weights are the same, on
+    average, for smoking and nonsmoking mothers. }
+\end{key}
+
+
+    Copy the means of each group and the difference in means from \# 2
+    here.
+   
+\begin{students}
+\vspace{1cm}  
+\end{students}
+
+\begin{key}
+  {\it  smoking: 6.31, nonsmoking: 7.08, difference: 0.778 }
+\end{key}
+
+
+\item  Check results for the first resample. What is the mean birth weight to
+    smokers from this     simulated trial?  
+\begin{students}
+ \vspace{1cm}
+\end{students}
+
+\begin{key}
+  {\it Answers will vary,  I got 6.5}
+\end{key}
+
+    
+    What is the mean  birth weight to
+    nonsmokers  for this single simulated trial?
+\begin{students}
+ \vspace{1cm}  
+\end{students}
+
+\begin{key}
+  {\it 7.05}
+\end{key}
+            
+
+    What is the difference in means between these two groups?
+\begin{students}
+ \vspace{1cm}
+\end{students}
+
+\begin{key}
+  {\it 0.53}
+\end{key}
+
+           
+
+{\bf Evaluate the Results }
+
+\item  Plot the differences in means from  1000 or more simulated
+  trials. Sketch the plot below.
+\begin{students}
+ \vspace{4cm}
+\end{students}
+
+\begin{key}
+  {\it }
+\end{key}
+
+
+
+\item  What does each dot in the plot represent? % What changes when you
+%  click on a bar? 
+\begin{students}
+ \vspace{1cm}
+\end{students}
+
+\begin{key}
+  {\it Each dot represents 1 re--randomized trial where the responses
+   were kept the same but the habit for the responses
+   was randomized (this represents what could happen under the null
+   hypothesis that habit is not associated with
+   birth weight).  Clicking on a bar changes the
+   plot of the “Most Recent Shuffle” showing you which
+   re--randomized trial that bar represents.  The placement
+   of the point gives the difference in the mean birth
+   weight between the two habits. }
+\end{key}
+
+   
+\item  Where is the plot of the results centered (at which value)?
+  Explain why this makes sense.
+\begin{students}
+ \vspace{3cm}
+\end{students}
+
+\begin{key}
+  {\it  Centered at 0 because this is showing us what could happen if the
+  null model were true and the null hypothesis says there should be
+  no difference in mean birth weight for smokers and nonsmokers. }
+\end{key}
+
+
+\item  We're not told exactly what the researchers were thinking ahead
+  of time, but let's assume that the alternative hypothesis is that
+  smoking moms tend to have lighter babies.   What is the alternative
+  hypothesis of interest? Do you need to count \fbox{Greater} than or
+  \fbox{Less}  than or \fbox{more extreme} results to find the p-value? 
+ 
+\begin{students}
+ \vspace{1cm}  
+\end{students}
+
+\begin{key}
+  {\it  The mean birth weight for babies whose mother smoked is lower
+  than the mean birth weight for babies whose mothers did not
+  smoke. Use less than -0.778}
+\end{key}
+
+ 
+\item   Put the observed difference in the little box under the plot,
+  chose the proper direction for comparison, and report the
+  approximate p--value (i.e., strength of evidence) 
+  based on the observed result. 
+\begin{students}
+ \vspace{1cm}
+\end{students}
+
+\begin{key}
+  {\it  0.013}
+\end{key}
+
+  %% 
+\item  Based on the p--value, how strong would you consider the
+  evidence against the null model?  
+\begin{students}
+ \vspace{1cm}
+\end{students}
+
+\begin{key}
+  {\it  Strong  to very strong evidence against the null model.}
+\end{key}
+
+   
+\item  Based on the p--value, provide an answer to the research
+  question.  
+\begin{students}
+ \vspace{1cm}
+\end{students}
+
+\begin{key}
+  {\it There is strong evidence against the null hypothesis
+  that smoking habit is not associated with mean birth weight.  We can
+  conclude there is an association 
+  between these variables and that the mean birth weight
+   is higher for babies with nonsmoking moms than for babies with
+   smoking moms.}
+\end{key}
+
+  
+
+\item  Can the researchers generalize the results to the population of
+  all births in North Carolina?  to all births in the US? Why or why not?
+\begin{students}
+ \vspace{1cm} 
+\end{students}
+
+\begin{key}
+  {\it  Yes because this is a random sample of all NC births, no
+    because we didn't look at other states.}
+\end{key}
+
+
+\item Can the researchers say that the difference in the average
+  birth weight is caused by the mother's smoking habit?  Explain. If
+  not, provide an alternative   explanation for the differences. 
+\begin{students}
+ \vspace{2cm}
+\end{students}
+
+\begin{key}
+  {\it   No because there was no random assignment of participants to
+    a habit.  (The researchers did not randomly assign smoking to some
+    moms and nonsmoking to others. Possible alternative explanations
+    are listed in \#5.} 
+\end{key}
+
+
+\item  Write--up the results of the simulation study. When reporting
+  the results of a simulation study, pertinent details from the
+  analysis that need to be included are: (as in Activity 12)
+  \begin{itemize}
+  \item The {\it type of test} used in the analysis (including the number of trials);
+  \item The {\it null model} assumed in the test;
+  \item The {\it observed result} based on the data;
+  \item The {\it p--value} for the test, whether it is one or two sided; and
+  \item The {\it scope of inference} based on the p--value and study design.
+  \end{itemize}
+\begin{students}
+\newpage
+\end{students}
+\begin{key}
+  {\it A permutation (or randomization) test for a difference in
+    proportions with 1000 shuffles was used to test the null
+    hypothesis that birth weight is not associated with mothers
+    smoking (or not).  In a random sample of 200 births, the mean
+    birth weight was 6.31 lbs for babies whose mother smoked and 7.08
+    lbs for babies whose mothers did not smoke. This gave an observed
+    difference in means of $0.778$ (nonsmoking -- smoking).  This
+    resulted in a p--value of 0.013, which constitutes moderate to
+    strong evidence against the null hypothesis.  Since births were
+    randomly sampled from all North Carolina but were not randomly
+    assigned to a habit, we can conclude there is an association
+    between these variables and that the mean birth weight really is
+    lower for all births to smoking mothers than to nonsmoking
+    mothers. }
+\end{key}
+\ 
+\vspace*{\fill}
+
+\item Finally, use the web app to create a 99\% bootstrap percentile
+  interval estimate of the  difference in true mean babies weights
+  from non-smoking to smoking mothers.  
+  \begin{enumerate}
+
+\item Obtain a 99\% bootstrap percentile interval by generating 5000
+  samples and write it here.
+\begin{students}
+    \vspace{2cm}    
+\end{students}
+
+\begin{key}
+  {\it (0.063, 1.59) lbs  }
+\end{key}
+    \item Write your interpretation of this interval.
+\begin{students}
+    \vfill
+\end{students}
+
+\begin{key}
+  {\it  We are 99\% confident that the true mean birth weight for
+    babies born to nonsmoking Moms is   .06 to 1.59 lbs greater than 
+   the true mean birth weight of babies born to smoking mothers. Be
+   sure to indicate which one is higher  (or lower). } 
+\end{key}
+
+
+\item To write up a report on a confidence interval, we must include:
+  \begin{itemize}
+  \item The observed result based on the data;
+  \item The confidence level and the interval;
+  \item The method used to create the interval estimate (for
+        bootstrap include the number of resamples);
+  \item The interpretation in the context of the data collected.
+\end{itemize}
+\end{enumerate}
+\end{enumerate}
+
+\begin{students}
+  \newpage
+\end{students}
+
+\begin{center}
+  {\bf Take Home Messages:}
+    \vspace{-.4cm}   
+\end{center}
+\begin{itemize}
+  \item In an {\bf observational study}, no treatment is applied,
+    different groups are just observed.
+  \item If we have a random sample from a population, we can infer
+    results back to the population from which the subjects were drawn.
+  \item When we do not randomly  assign treatments, we cannot be sure
+    that there are no lurking variables. Therefore, other explanations
+    for the observed results are possible, and we cannot infer a {\bf
+      causal} relationship between our explanatory and response
+    variables. It is just an association. \\
+    You may have heard the term ``correlation does not imply
+    causation'' used in cases like this. It's not quite accurate
+    because (wait for Unit 3) correlation is a term for linear
+    association between two quantitative variables.  Here we have a
+    categorical explanatory variable and quantitative response.
+  \item 
+    It is possible that a causal effect exists, for example, we know
+    that nicotine is a vaso-constrictor and poorer blood flow could
+    reduce babies weights.  This is a stats class, so you are learning
+    how far statistics can go with inference.  It is always possible
+    to go further based on other natural laws or explanations, or
+    laboratory results on simpler systems.  It is important to use
+    other information, and we want you to distinguish stat inference
+    from other ways of learning about the world.
+ % \item We used StatKey to create a Bootstrap interval without
+ %   explaining just how it does that.  The next activity explains the
+ %   bootstrap in more detail.
+ \item 
+  Use the remaining space for any questions or your own summary of the
+  lesson. 
+
+\end{itemize}
+
+
+
+
