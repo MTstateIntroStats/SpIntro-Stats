@@ -81,8 +81,7 @@ Sept 22
 * Unit 2 -- other situations  
 ** Day 10 -- Experiment vs Obs study  
    Some of Old Day 12 
-   TODO: need to relabel the c1q1 test page to handle rerandomization
-   of a lurking variable. (also 2-cat?)
+   TODone: rebuild a lurking demo under 1 cat and 1 quant
    OpenIntro p 13-14 (sampling) 17-19 (Exp)
    Q8 - Exp vs Obs Study - OpenIntro S1.5 
 ** Day 11 -- Bootstrap CI to estimate single mean   
