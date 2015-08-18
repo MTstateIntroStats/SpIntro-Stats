@@ -100,7 +100,7 @@ shinyServer(function(input, output, session) {
               ), 
               #br(),
               fluidRow(
-                column(4, offset = 1, h5("How many more samples from the null?")),
+                column(4, offset = 1, h4("How many more samples from the null?")),
                 column(1,
                    actionButton("cat1_test_shuffle_10", label = "10")),
                 column(1,
@@ -290,7 +290,7 @@ output$cat1_estimateUI <- renderUI({
                  )
              ),
              fluidRow(
-               column(4, offset = 1, h5("How many more resamples?")),
+               column(4, offset = 1, h4("How many more resamples?")),
                column(1,
                       actionButton("cat1_estimate_shuffle_10", label = "10")),
                column(1,
@@ -633,7 +633,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
     ),
     fluidRow(
       column(4, offset = 1,
-             h5("How many more randomizations?")
+             h4("How many more randomizations?")
              ),
       column(1, actionButton("c1_Lurk_shuffle_10", label = "10")),
       column(1, actionButton("c1_Lurk_shuffle_100", label = "100")),
@@ -1067,7 +1067,7 @@ output$q1_testUI <- renderUI({
        br(), 
        br(),
        fluidRow(
-           column(4, offset = 1, h5("How many more (shifted) resamples?")),
+           column(4, offset = 1, h4("How many more (shifted) resamples?")),
            column(1,
                       actionButton("q1_test_shuffle_10", label = "10")),
            column(1, actionButton("q1_test_shuffle_100", label = "100")),
@@ -1284,7 +1284,7 @@ output$q1_estimateUI <- renderUI({
             )
        ),             
       fluidRow(
-         column(3, offset = 2, h5("How many more resamples?")),
+         column(3, offset = 2, h4("How many more resamples?")),
          column(1,
                 actionButton("q1_resample_10", label = "10")),
          column(1,
@@ -1901,7 +1901,9 @@ observeEvent(input$cat2_submitButton, {
                   br(),
                         
                   h4("Shuffled Sample"),
-                  tableOutput('cat2Test_Table') #,
+                  tableOutput('cat2Test_Table') , 
+                  h5(paste("Difference in proportions: ", round(tail(as.numeric(cat2Test$difprop), 1), 3)
+                   ))
                   ),
                  column(8, 
                         h4(HTML("&nbsp;&nbsp;&nbsp;&nbsp; Null hypothesis: p<sub>1</sub> = p<sub>2</sub>")),                     
@@ -2045,7 +2047,6 @@ output$Cat2TestPvalue <- renderUI({
     cat2Test$colors <- blu
     y1_new <- as.integer(n1 * DF[1,1])
     y2_new <- as.integer(n2 * DF[1,2])
-    diff.p <- DF[1,1] - DF[1,3]
     # print(c(y1_new, n1, DF[1,1], y2_new, n2, DF[1,2], diff.p))
     count2 <- data.frame(count = as.integer(c(y1_new, y2_new)), 
                      "Sample Size" = as.integer(c(n1, n2)),
@@ -2134,7 +2135,7 @@ output$Cat2TestPvalue <- renderUI({
                 br(),
                 br(),
                 fluidRow(
-                   column(4, offset = 1, h5("How many more resamples?")),
+                   column(4, offset = 1, h4("How many more resamples?")),
                    column(1,
                             actionButton("cat2_estimate_shuffle_10", label = "10")),
                    column(1, 
@@ -2826,8 +2827,8 @@ output$q2_testUI <- renderUI({
      fluidRow(
        column(3, 
               tableOutput('q2_TestPrep'),
-#               h5("We start showing one shuffle."),
-#               h5("How many more?"),
+#               h4("We start showing one shuffle."),
+#               h4("How many more?"),
 #               actionButton("q2_shuffle_10", label = "10"),
 #               actionButton("q2_shuffle_100", label = "100"),
 #               actionButton("q2_shuffle_1000", label = "1000"),
@@ -3385,7 +3386,7 @@ output$c1q1_Summary2 <- renderTable({
                      )
               ),
             fluidRow(
-              column(4, offset = 1, h5("How many more shuffles?")),
+              column(4, offset = 1, h4("How many more shuffles?")),
               column(1, actionButton("c1q1_test_shuffle_10", label = "10")),
               column(1, actionButton("c1q1_test_shuffle_100", label = "100")),
               column(1, actionButton("c1q1_test_shuffle_1000", label = "1000")),
