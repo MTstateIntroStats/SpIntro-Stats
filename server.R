@@ -127,7 +127,7 @@ output$Cat1TestPvalue <- renderUI({
   if(!is.null(cat1Test$moreExtremeCount)){
 #     fluidRow(
 #       column(8, offset = 3, 
-             h4(paste(cat1Test$moreExtremeCount, " of ", length(cat1Test$phat), "values are ",
+             h4(paste(cat1Test$moreExtremeCount, " of ", cat1Test$sampleCount, "values are ",
                         cat1Test$direction," than", as.numeric(cat1Test$cutoff),",  p-value =  ", round(cat1Test$pvalue,5))
                 )
 #      ))
@@ -158,7 +158,8 @@ output$Cat1TestXtremes <- renderUI({
   )
 })
 
-    cat1Test <- reactiveValues(phat = NULL, colors = NULL, cutoff = NULL, moreExtremeCount = NULL, pvalue = NULL)
+    cat1Test <- reactiveValues(phat = NULL, colors = NULL, cutoff = NULL, moreExtremeCount = NULL, 
+                               sampleCount = NULL, pvalue = NULL)
 
     output$cat1OriginalData <- renderTable({ 
       if(input$cat1_submitButton ==0) return()
@@ -235,6 +236,7 @@ output$Cat1TestXtremes <- renderUI({
         cat1Test$colors[redValues] <- rd       
         cat1Test$moreExtremeCount  <- length(redValues)
         cat1Test$pvalue <- cat1Test$moreExtremeCount/nsims
+        cat1Test$sampleCount <- length(cat1Test$phat)
       }
     })
     
@@ -1035,7 +1037,7 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
 ## --------- 1 quant UI ---------------------------
 
 q1Test <- reactiveValues(shuffles = NULL, mu = NULL, observed = NULL, mu_diff = NULL, confLevel = NULL, colors = NULL, 
-                         moreExtremeCount = NULL, pvalue = NULL, direction = NULL, cutoff = NULL)
+                         moreExtremeCount = NULL, pvalue = NULL, direction = NULL, cutoff = NULL, sampleCount = NULL)
 
 output$q1_testUI <- renderUI({
   if(is.null(q1$data)){
@@ -1094,7 +1096,7 @@ output$q1_SampDistPlot <- renderUI({
 
 output$q1TestPvalue <- renderUI({
   if(!is.null(q1Test$moreExtremeCount)){
-      h4(paste(q1Test$moreExtremeCount, " of ", length(q1Test$mu), "values are ",
+      h4(paste(q1Test$moreExtremeCount, " of ", q1Test$sampleCount, "values are ",
                                       q1Test$direction," than", q1Test$cutoff, ",  p-value =  ", round(q1Test$pvalue,5)))
   }
 })
@@ -1231,6 +1233,7 @@ observeEvent(input$q1_countXtremes, {
     #print(q1Test$mu[redValues])
     q1Test$moreExtremeCount  <- length(redValues)
     q1Test$pvalue <- q1Test$moreExtremeCount/nsims
+    q1Test$sampleCount <- length(q1Test$mu)
   }
 })
 
@@ -1894,7 +1897,7 @@ observeEvent(input$cat2_submitButton, {
              column(4, 
                   h4("Original Data"),
                   tableOutput("cat2OriginalData"),
-                  h5(paste("Original Difference in proportions: ", 
+                  h5(paste("Original difference in proportions: ", 
                             round(- diff(prop.table(as.table(matrix(cat2_data$counts, 2, 2)), 1))[1], 3)
                    )),
                         
@@ -1902,7 +1905,7 @@ observeEvent(input$cat2_submitButton, {
                         
                   h4("Shuffled Sample"),
                   tableOutput('cat2Test_Table') , 
-                  h5(paste("Difference in proportions: ", round(tail(as.numeric(cat2Test$difprop), 1), 3)
+                  h5(paste("Shuffled difference in proportions: ", round(tail(as.numeric(cat2Test$difprop), 1), 3)
                    ))
                   ),
                  column(8, 
@@ -1964,7 +1967,7 @@ output$Cat2TestXtremes <- renderUI({
   
 output$Cat2TestPvalue <- renderUI({
   if(!is.null(cat2Test$moreExtremeCount)){
-    h4(paste(cat2Test$moreExtremeCount, " of ", length(cat2Test$difprop), "values are ",
+    h4(paste(cat2Test$moreExtremeCount, " of ", cat2Test$sampleCount, "values are ",
                       cat2Test$direction," than", as.numeric(cat2Test$cutoff),",  p-value =  ", round(cat2Test$pvalue,5))
     )
   }
@@ -1973,7 +1976,8 @@ output$Cat2TestPvalue <- renderUI({
 ## cat2 test plots --------------------------------------------------
 
   cat2Test <- reactiveValues(difprop = NULL, phat1 = NULL, phat2 = NULL, observed = NULL, colors = NULL,
-                             cutoff = NULL, direction = NULL, moreExtremeCount = NULL, pvalue = NULL)
+                             cutoff = NULL, direction = NULL, moreExtremeCount = NULL, pvalue = NULL, 
+                             sampleCount = NULL)
   
   output$cat2OriginalData <- renderTable({ 
     if(input$cat2_submitButton ==0) return()
@@ -2072,6 +2076,7 @@ output$Cat2TestPvalue <- renderUI({
       cat2Test$colors[redValues] <- rd       
       cat2Test$moreExtremeCount  <- length(redValues)
       cat2Test$pvalue <- cat2Test$moreExtremeCount/nsims
+      cat2Test$sampleCount <- length(cat2Test$difprop)
     }
   })
   
@@ -2479,7 +2484,8 @@ output$normalProbPlot2 <- renderPlot({
   ###  Data Entry ------------------------------------------------------------  q2
 {
    q2Test <- reactiveValues( shuffles = NULL, slopes = NULL, corr = NULL, observed = NULL,
-                          colors = NULL, moreExtremeCount = NULL, direction = NULL, cutoff = NULL, pvalue = NULL)
+                          colors = blu, moreExtremeCount = NULL, direction = NULL, cutoff = NULL, 
+                          sampleCount = NULL, pvalue = NULL)
 
 
   q2Estimate <- reactiveValues( resamples = NULL,   slopes = NULL,  corr =  NULL,
@@ -2651,7 +2657,7 @@ output$q2_Summary <- renderTable({
                 median = apply(q2$data, 2, median),
                 Q3     = apply(q2$data, 2, quantile, .75),
                 max    = apply(q2$data, 2, max),
-                length = apply(q2$data, 2, length),
+                n = apply(q2$data, 2, length),
                 correlation = c(q2$corr, NA),
                 beta.hat = round(coef(fit0),3),
                 "resid SD" = c(summary(fit0)$sigma, NA) )
@@ -2703,7 +2709,7 @@ output$q2_TestPlot1 <- renderPlot({
   #lmfit0 <- lm(y ~ x, DF0)
   abline(q2$intercept, q2$slope)
   mtext(side = 3, line=.4, at = min(DF0$x)/3 + max(DF0$x)*2/3, bquote(r == .(round(q2$corr,3))))
- mtext(side = 3,   at = min(DF0$x)*2/3 + max(DF0$x)/3, bquote(hat(beta)[1] == .(round(q2$slope,3))))
+  mtext(side = 3,   at = min(DF0$x)*2/3 + max(DF0$x)/3, bquote(hat(beta)[1] == .(round(q2$slope,3))))
   q2Test$shuffles <- shuffle <- sample(1:nrow(q2$data))
   if(!is.null(input$q2_Test_click) & FALSE ){
     ## grab clicked sample
@@ -2725,6 +2731,7 @@ output$q2_TestPlot1 <- renderPlot({
   abline(lmfit1)
   q2Test$slopes <- beta <- round(coef(lmfit1)[2], 3)
   q2Test$corr <- rhat1 <- round(cor(DF0$x, DF0$newy), 3)
+  q2Test$colors <- blu
   mtext(side = 3, at = min(DF0$x)*2/3 + max(DF0$x)/3, bquote(hat(beta)[1] == .(beta) ) )
   mtext(side = 3, line=.4, at = min(DF0$x)/3 + max(DF0$x)*2/3, bquote(r == .(rhat1)))
 }, height = 400, width = 300)
@@ -2784,6 +2791,7 @@ observeEvent(input$q2_countXtremes, {
     q2Test$colors[redValues] <- rd       
     q2Test$moreExtremeCount  <- length(redValues)
     q2Test$pvalue <- q2Test$moreExtremeCount/nsims
+    q2Test$sampleCount <- length(q2Test$slopes)
   }
 })
 
@@ -2883,7 +2891,7 @@ output$q2_SampDistPlot <- renderUI({
 
 output$slopeTestPvalue <- renderUI({
   if(!is.null(q2Test$moreExtremeCount)){
-     h4(paste(q2Test$moreExtremeCount, " of ", length(q2Test$slopes), "values are ",
+     h4(paste(q2Test$moreExtremeCount, " of ", q2Test$sampleCount, "values are ",
         q2Test$direction," than", q2Test$cutoff, ",  p-value =  ", round(q2Test$pvalue,5)))
   }
 })
@@ -2944,6 +2952,7 @@ fluidRow(
        lmfit1 <- lm(y ~ x, DF1)    
        q2Estimate$slopes <- beta <- round(coef(lmfit1)[2], 3)
        q2Estimate$corr <- rhat1 <- round(cor(DF1$x, DF1$y), 3)
+       q2Estimate$colors <- blu
 #      }
     DF1$sizes <- rep(table(resample), table(resample))
     plotNew <- qplot(x=x, y=y, data = DF1,  colour = I(grn), size = factor(DF1$sizes)) + 
@@ -3289,7 +3298,9 @@ output$c1q1_hot = renderRHandsontable({
 {
 
 c1q1Test <- reactiveValues(shuffles = NULL,  observed = NULL, diff = NULL, confLevel = NULL, colors = NULL, 
-                           moreExtremeCount = NULL, pvalue = NULL, direction = NULL, cutoff = NULL)
+                           moreExtremeCount = NULL, pvalue = NULL, direction = NULL, cutoff = NULL,
+                           sampleCount = NULL)
+
 c1q1Est <- reactiveValues(shuffles = NULL,  observed = NULL, diff = NULL, confLevel = NULL, colors = NULL, 
                           ndx1 = NULL, ndx2 = NULL, CI = NULL )
 
@@ -3412,7 +3423,7 @@ output$c1q1_Summary2 <- renderTable({
         if(!is.null(c1q1Test$moreExtremeCount)){
           #fluidRow(
           #  column(9,  
-          h4(paste(c1q1Test$moreExtremeCount, " of ", length(c1q1Test$diff), "values are ",
+          h4(paste(c1q1Test$moreExtremeCount, " of ", c1q1Test$sampleCount, "values are ",
                                             c1q1Test$direction," than", c1q1Test$cutoff, ",  p-value =  ", round(c1q1Test$pvalue,5)))
           #  ))
         }
@@ -3542,6 +3553,7 @@ output$c1q1_Summary2 <- renderTable({
           #print(c1q1Test$diff[redValues])
           c1q1Test$moreExtremeCount  <- length(redValues)
           c1q1Test$pvalue <- c1q1Test$moreExtremeCount/nsims
+          c1q1Test$sampleCount <- length(c1q1Test$diff)
         }
       })
       
