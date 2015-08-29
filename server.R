@@ -869,10 +869,16 @@ output$normalProbPlot1 <- renderPlot({
 }
   
   ## 1 Quantitative -----------------------------------------------------------  -- 1 Quant 
+  
+  q1Test <- reactiveValues(shuffles = NULL, new.xbars = NULL, xbar = NULL, nsims = 0,
+                           colors = NULL, moreExtremeCount = NULL, pvalue = NULL, direction = NULL, 
+                           cutoff = NULL, sampleCount = NULL)
+  
  
 ##  Enter data    ----------------------------------------- quant 1
 
 {
+
 output$quant1DataIn <- renderText({ "How would you like to input the data? " 
   })
 
@@ -936,8 +942,9 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
    q1$data <- DF
    #print(q1$data)
    q1$names <- names(DF)
-   flush_q1Test()
-   flush_q1Est()
+   q1Test$nsims <- 0
+   q1Test$shuffles <-  q1Test$new.xbars <-  q1Test$xbar <- q1Test$colors <- NULL
+   q1Estimate$shuffles <- q1Estimate$xbar <- q1Estimate$observed <- q1Estimate$confLevel <- q1Estimate$colors <- NULL
    output$quant1DataIn <- renderText({
           "Data are entered, you may now choose to estimate or test one mean"
    })
@@ -948,8 +955,9 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
    q1$names <- if(is.null(names(DF)) | "V1" %in% names(DF)){ "x"} else {names(DF)[1]}
    q1$data <- data.frame(DF[, 1])
    #print(q1$data)
-   flush_q1Test()
-   flush_q1Est()
+   q1Test$nsims <- 0
+   q1Test$shuffles <-  q1Test$new.xbars <-  q1Test$xbar <-  q1Test$colors <- NULL
+   q1Estimate$shuffles <- q1Estimate$xbar <- q1Estimate$observed <- q1Estimate$confLevel <- q1Estimate$colors <- NULL
    output$quant1DataIn <- renderText({
      "Data are entered, you may now choose to estimate or test one mean"
    })
@@ -959,9 +967,10 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
    DF = data.frame(x=as.numeric(q1_values[["hot"]][,2]))
    # print(DF)
    q1$names <- names(DF)
+   q1Test$nsims <- 0
    q1$data <- data.frame( x = as.numeric(unlist(DF)))
-   flush_q1Test()
-   flush_q1Est()
+   q1Test$shuffles <-  q1Test$new.xbars <-  q1Test$xbar <-   q1Test$colors <- NULL
+   q1Estimate$shuffles <- q1Estimate$xbar <- q1Estimate$observed <- q1Estimate$colors <- NULL
    #print(q1$data)
    output$quant1DataIn <- renderText({
      "Data are entered, you may now choose to estimate or test one mean"
@@ -989,23 +998,9 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
     }
   })
 
-  flush_q1Test <- function(){
-    q1Test$shuffles <- NULL
-    q1Test$mu <- NULL 
-    q1Test$observed <- NULL 
-    q1Test$mu_diff <- NULL
-    q1Test$confLevel <- NULL 
-    q1Test$colors <- NULL
-  }
-  flush_q1Est <- function(){
-    q1Estimate$shuffles <- NULL
-    q1Estimate$xbar <- NULL 
-    q1Estimate$observed <- NULL 
-    q1Estimate$confLevel <- NULL 
-    q1Estimate$colors <- NULL
-  }
 
-  }
+
+}
 
   ##  Describe and plot data -------------------------------  quant 1
 {
@@ -1060,9 +1055,6 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
 
 ## --------- 1 quant UI ---------------------------
 
-q1Test <- reactiveValues(shuffles = NULL, mu = NULL, observed = NULL, mu_diff = NULL, 
-                         colors = NULL, moreExtremeCount = NULL, pvalue = NULL, direction = NULL, 
-                         cutoff = NULL, sampleCount = NULL)
 
 output$q1_testUI <- renderUI({
   if(is.null(q1$data)){
@@ -1081,11 +1073,11 @@ output$q1_testUI <- renderUI({
                  column(2, tags$div( 
                    tags$input(id = "null_mu", type = "text", class = "form-control", value = "0"))
                  ),
+               ##uiOutput('q1_SampDistPlot')),
+               plotOutput('q1_TestPlot2', click = 'q1_Test_click')),
                fluidRow(
-                 column(7, offset =1, h5("Click on a point to see that shuffle"))
-                 ),
-               uiOutput('q1_SampDistPlot'))
-               ##plotOutput('q1_TestPlot2', click = 'q1_Test_click'))
+                 column(7, offset =1, h4("Click on a point to see that resample."))
+               )
              )
         ),
        br(), 
@@ -1153,8 +1145,9 @@ output$q1TestXtremes <- renderUI({
 output$q1_TestPlot1 <- renderPlot({
   ## first plot observed data:
   
-  q1Test$observed <- mean(q1$data[,1])
-  q1Test$mu_diff <- q1Test$observed ##- as.numeric(input$null_mu)
+  q1Test$xbar <- mean(q1$data[,1])
+  nullMean <- as.numeric(input$null_mu)
+  ## q1Test$mu_diff <- q1Test$xbar  
   nn <- nrow(q1$data)
   par(mfrow = c(2,1), mar = c(4,3.5,3,1))
   ## Plot Original Data
@@ -1169,11 +1162,11 @@ output$q1_TestPlot1 <- renderPlot({
   legend("topleft", bty = "n", paste(" n = ",nn,"\n Mean = ", round(mean(x),3), "\n SD = ", round(sd(x),3)))
   
   ## 2nd plot:  One Shuffle of Shifted Data
-   if(is.null(q1Test$mu) | length(q1Test$mu) < 1){
+   if(is.null(q1Test$new.xbars) | length(q1Test$new.xbars) < 1){
     ## 1st time round shuffle is done here
-    shuffle <- sample(x = q1$data[,1] - q1Test$mu_diff, length(q1$data[,1]), replace = TRUE)
+    shuffle <- sample(x = q1$data[,1] - q1Test$xbar, length(q1$data[,1]), replace = TRUE)
     q1Test$shuffles <- as.matrix(shuffle)
-    q1Test$mu <- mean(shuffle)
+    q1Test$new.xbars <- mean(shuffle)
     q1Test$colors <- blu
     ### stores samples as columns
     #print(q1Test$shuffles)
@@ -1181,18 +1174,20 @@ output$q1_TestPlot1 <- renderPlot({
   }  else   if(!is.null(input$q1_Test_click)){
      ##  We already have shuffled data and want to pick the clicked point
      ##  Change to data related to a clicked point.
-     closestPoint <- which.min(abs( q1Test$mu - input$q1_Test_click$x))
-     DF0 <- sort(q1Test$shuffles[,closestPoint] )
+     closestPoint <- which.min(abs( nullMean +  q1Test$new.xbars - input$q1_Test_click$x))
+     DF0 <- sort(q1Test$shuffles[,closestPoint] ) 
   }  else { 
     return()
     }
 
-  ##
+  if(is.null(DF0)){
+    return()
+  }
   z0 <- cut(DF0, breaks = nclass.Sturges(DF0) ^2 )
   w0 <- unlist(tapply(DF0, z0, function(DF0) 1:length(DF0)))
-  tempDF0 <- data.frame(DF0, w0=w0[!is.na(w0)])
+  tempDF0 <- data.frame(DF0 = DF0 + nullMean, w0=w0[!is.na(w0)])
   plot(w0 ~ DF0, data = tempDF0, col = blu, pch = 16, main = "One Shifted Resample", xlab = q1$names, ylab = "Count")
-  legend("topleft", bty = "n", paste(" n = ",nn,"\n Mean = ", round(mean(DF0),3), "\n SD = ", round(sd(DF0),3)))
+  legend("topleft", bty = "n", paste(" n = ",nn,"\n Mean = ", round(mean(DF0)+ nullMean,3), "\n SD = ", round(sd(DF0),3)))
 
 },  height = 360, width = 300)
 
@@ -1216,42 +1211,42 @@ output$q1_TestTable1 <- renderTable({
 })
 
 observeEvent(input$q1_test_shuffle_10, {
-  newShuffles <- sapply(1:10, function(x) sample(q1$data[,1] - q1Test$mu_diff, length(q1$data[,1]), replace = TRUE))
+  newShuffles <- sapply(1:10, function(x) sample(q1$data[,1] - q1Test$xbar, length(q1$data[,1]), replace = TRUE))
   q1Test$shuffles <- cbind(q1Test$shuffles, newShuffles)
-  q1Test$mu <- c(q1Test$mu, apply(newShuffles, 2, function(x) mean(x)))
-  #print(q1Test$mu)
-  q1Test$colors <- rep(blu, length(q1Test$mu))
+  q1Test$new.xbars <- c(q1Test$new.xbars, apply(newShuffles, 2, function(x) mean(x)))
+  #print(q1Test$new.xbars)
+  q1Test$colors <- rep(blu, length(q1Test$new.xbars))
 })
 
 observeEvent(input$q1_test_shuffle_100, {
-  newShuffles <- sapply(1:100, function(x) sample(x = q1$data[,1] - q1Test$mu_diff, 
+  newShuffles <- sapply(1:100, function(x) sample(x = q1$data[,1] - q1Test$xbar, 
                                                    length(q1$data[,1]), replace = TRUE))
   #  print(dim(newShuffles))
   q1Test$shuffles <- cbind(q1Test$shuffles, newShuffles)
-  q1Test$mu <- c(q1Test$mu, apply(newShuffles, 2, function(x) mean(x)))
-  q1Test$colors <- rep(blu, length(q1Test$mu))
+  q1Test$new.xbars <- c(q1Test$new.xbars, apply(newShuffles, 2, function(x) mean(x)))
+  q1Test$colors <- rep(blu, length(q1Test$new.xbars))
   
 })
 observeEvent(input$q1_test_shuffle_1000, {
-  newShuffles <- sapply(1:1000, function(x) sample(x = q1$data[,1] - q1Test$mu_diff, 
+  newShuffles <- sapply(1:1000, function(x) sample(x = q1$data[,1] - q1Test$xbar, 
                                                    length(q1$data[,1]), replace = TRUE))
   # print(dim(newShuffles))
   q1Test$shuffles <- cbind(q1Test$shuffles, newShuffles)
-  q1Test$mu <- c(q1Test$mu, apply(newShuffles, 2, function(x) mean(x)))
-  q1Test$colors <- rep(blu, length(q1Test$mu))
+  q1Test$new.xbars <- c(q1Test$new.xbars, apply(newShuffles, 2, function(x) mean(x)))
+  q1Test$colors <- rep(blu, length(q1Test$new.xbars))
   
 })
 observeEvent(input$q1_test_shuffle_5000, {
-  newShuffles <- sapply(1:5000, function(x) sample(x = q1$data[,1] - q1Test$mu_diff, 
+  newShuffles <- sapply(1:5000, function(x) sample(x = q1$data[,1] - q1Test$xbar, 
                                                    length(q1$data[,1]), replace = TRUE))
   #print(dim(newShuffles))
   q1Test$shuffles <- cbind(q1Test$shuffles, newShuffles)
-  q1Test$mu <- c(q1Test$mu, apply(newShuffles, 2, function(x) mean(x)))
-  q1Test$colors <- rep(blu, length(q1Test$mu))
+  q1Test$new.xbars <- c(q1Test$new.xbars, apply(newShuffles, 2, function(x) mean(x)))
+  q1Test$colors <- rep(blu, length(q1Test$new.xbars))
 })
 
 observeEvent(input$q1_countXtremes, {
-  parm <- sort(as.numeric(q1Test$mu)) + as.numeric(input$null_mu)
+  parm <- sort(as.numeric(q1Test$new.xbars)) + as.numeric(input$null_mu)
   nsims <- length(parm)
   mu0 <- as.numeric(input$null_mu)
   q1Test$colors <- rep(blu, nsims)
@@ -1263,17 +1258,17 @@ observeEvent(input$q1_countXtremes, {
                           "greater" = which(parm >= threshold - 1.0e-10),
                           "more extreme" = which(abs(parm - mu0) > abs(threshold - mu0) - 1.0e-10 ))
     q1Test$colors[redValues] <- rd
-    #print(q1Test$mu[redValues])
+    #print(q1Test$new.xbars[redValues])
     q1Test$moreExtremeCount  <- length(redValues)
     q1Test$pvalue <- q1Test$moreExtremeCount/nsims
-    q1Test$sampleCount <- length(q1Test$mu)
+    q1Test$sampleCount <- length(q1Test$new.xbars)
   }
 })
 
 output$q1_TestPlot2 <- renderPlot({
-  if(is.null(q1Test$mu)) return() 
-  isolate({ 
-    parm <- as.matrix(q1Test$mu)
+  if(is.null(q1Test$new.xbars)) return() 
+  
+    parm <- as.matrix(q1Test$new.xbars)
     #print(parm)
     parm <- sort(parm)
     if(length(parm) == 1){
@@ -1292,8 +1287,8 @@ output$q1_TestPlot2 <- renderPlot({
   plot(x = parm + as.numeric(input$null_mu), y = y, ylim = c(0.5, max(y)), ylab = "", cex = radius/2, pch = 16, col = q1Test$colors,  
        xlab = expression(bar(x)), main = "Shifted Resampling Distribution")
   legend("topright", bty = "n", paste(length(parm), "points \n Mean = ", 
-                                     round(mean(parm),3), "\n SE = ", round(sd(parm),3)))
-  })
+                                     round(mean(parm) + as.numeric(input$null_mu),3), "\n SE = ", round(sd(parm),3)))
+  
 }, width = 500)
 
 
