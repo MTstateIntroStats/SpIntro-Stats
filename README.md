@@ -40,6 +40,8 @@ To use the app choose the type of data and enter or import it.
   -- Test  or  
   -- Estimate  
  
+ * Demo to show coverage of CI's for the artificial case of a known proportion or mean.  
+
  * Permutation Tests:  
    one proportion  
    equality of two proportions  
@@ -57,30 +59,3 @@ To use the app choose the type of data and enter or import it.
  *  Demos:  
   -- What does 'confidence' mean under 1 Categorical allows user to generate many CI's under the artifical assumption of known "p", and check the coverage rate.  
   -- Lurking Demos under '1 Categ' and '1 Quant' show how randomly assigning treatments evens out the effects of lurking variables (in the long run).  
-
-  -- Bootstrap Demo under '1 Quant'  takes a known population, shows an animation of the sampling process, then an animation of resampling from the sample to get a bootstrap distribution.  Builds CI using percentile method and reposrts bootstrap SD.  
-
-### How to run these apps:
-
-1)  Use a recent version of R (3.1 or better) and install packages:  
-    shiny,shinythemes, rhandsontable (from github), gridExtra, ggplot2, and their dependencies.  Then in R type:
-
-    shiny::runGitHub("MTstateIntroStats/IntroStatApps")  
-
-and wait a bit for it to unpack the functions. To close, use cntrl-C.
-
-2)  You may test our installation at [shiny.math.montana.edu/jimrc/IntroStatShinyApps'](our server), but if you are going to use them regularly, please:
-
-3) Set up your own shiny server, clone the repository to it, and run it there.
-
-
-### Known Issues  
-
-Currently you can click on a resampled mean in the CI Demo plot and the interval associated with that point will show in the CI plot below. 
-We plan to implement similar "on click" interaction in the other plots, for example, when testing &mu;<sub>1</sub> = &mu;<sub>2</sub>, user should be able to click on a difference in sample means and see what shuffled dataset produced the statistic the point represents.  
-
-"One of Each" allows you to get descriptive plots for each level of a multi-level categorical predictor, but testing and estimation assume one is using only  2-levels.    
-
-
-
-    
