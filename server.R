@@ -102,7 +102,7 @@ shinyServer(function(input, output, session) {
                                )
                         ),
                       h4(" Click on a point to see its count."),
-                       plotOutput('cat1Test_Plot2', click = 'cat1_Test_click')  
+                       plotOutput('cat1Test_Plot2', click = 'cat1_Test_click', height = "300px")  
                     )
                 )
               ), 
@@ -283,7 +283,7 @@ output$Cat1TestXtremes <- renderUI({
            xlab = expression(hat(p)), main = "Sampling Distribution")
       legend("topright", bty = "n", paste(length(DF), "points \n Mean = ", 
                                          round(mean(DF),3), "\n SE = ", round(sd(DF),3)))
-  }, height = 360, width = 480)
+  }, height = 300, width = 500)
 
 }
 
@@ -1097,23 +1097,16 @@ output$q1_testUI <- renderUI({
   } else{ 
   fluidPage(
     h3("Test for a single mean."),
-    div(
       fluidRow(
         column(4, 
                plotOutput("q1_TestPlot1")
               ),
         column(8, 
-               fluidRow(
-                 column(7, offset =1, h4(HTML("True Mean (Null hypothesis for &mu;):"))),
-                 column(2, tags$div( 
-                   tags$input(id = "null_mu", type = "text", class = "form-control", value = "0"))
-                 ),
-               ##uiOutput('q1_SampDistPlot')),
-               plotOutput('q1_TestPlot2', click = 'q1_Test_click')),
-               fluidRow(
-                 column(7, offset =1, h4("Click on a point to see that resample."))
-               )
-             )
+               tags$label(HTML("True Mean (Null hypothesis for &mu;):"), 
+                          tags$input(name='null_mu', type='text', value='0', size='10')),
+              ##uiOutput('q1_SampDistPlot')),
+               plotOutput('q1_TestPlot2', click = 'q1_Test_click', height = '360px')
+              )
         ),
        br(), 
        br(),
@@ -1126,27 +1119,33 @@ output$q1_testUI <- renderUI({
            column(1, actionButton("q1_test_shuffle_5000", label = "5000"))
          ),
              
-             br(),
-       fluidRow(
-         column(8, offset = 4,
+        br(),
+        fluidRow(
+           column(5, offset =6, h4("Click on a point to see that resample."))
+         ),
+        fluidRow(
+           column(8, offset = 4,
              uiOutput("q1TestXtremes"),
              uiOutput("q1TestPvalue")
+             #  need some kind of reactive connection to data and the form inputs just above
          )
        )
-    )     
   )
 
   }
 })
   
-output$q1_SampDistPlot <- renderUI({ 
-  plotOutput('q1_TestPlot2', click = 'q1_Test_click')
-})
+# output$q1_SampDistPlot <- renderUI({ 
+#   plotOutput('q1_TestPlot2', click = 'q1_Test_click')
+# })
+
+ q1Test_pReport <- reactiveValues(printMe = NULL)
 
 output$q1TestPvalue <- renderUI({
   if(!is.null(q1Test$moreExtremeCount)){
-      h4(paste(q1Test$moreExtremeCount, " of ", q1Test$sampleCount, "values are ",
-                                      q1Test$direction," than", q1Test$cutoff, ",  p-value =  ", round(q1Test$pvalue,5)))
+    q1Test_pReport$printMe <- paste(q1Test$moreExtremeCount, " of ", q1Test$sampleCount, "values are ",
+                                    q1Test$direction," than", q1Test$cutoff, ",  p-value =  ", round(q1Test$pvalue,5))
+    h4(q1Test_pReport$printMe)
   }
 })
 
@@ -1173,10 +1172,7 @@ output$q1TestXtremes <- renderUI({
     )
   )
 })
-  
-## that's odd: to click on this plot, you have to be above the first tick mark, 
-##  even though we don't use the y value
-
+ 
 
 # ----------------------1 quant test plots ------------------------------------------------------------
 
@@ -1337,7 +1333,7 @@ output$q1_TestPlot2 <- renderPlot({
   legend("topright", bty = "n", paste(length(parm), "points \n Mean = ", 
                                      round(mean(parm) + as.numeric(input$null_mu),3), "\n SE = ", round(sd(parm),3)))
   
-}, width = 500)
+}, height = 360, width = 480)
 
 
 
