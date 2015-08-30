@@ -30,7 +30,14 @@ shinyServer(function(input, output, session) {
     ##  Using Submit Button to keep plots from changing too soon
   cat1_data <- reactiveValues(counts = NULL, names = NULL)
   
+  cat1Test <- reactiveValues(phat = NULL, colors = NULL, cutoff = NULL, moreExtremeCount = NULL, 
+                             sampleCount = NULL, pvalue = NULL)
+  
+  cat1Estimate <- reactiveValues(phat = NULL, observed = NULL, colors = blu, confLevel = NULL, CI = NULL)
+  
   observeEvent(input$cat1_submitButton, {
+      cat1Test$phat <- cat1Test$colors <-   cat1Test$sampleCount <- NULL
+      cat1Estimate$phat <- cat1Estimate$observed <- cat1Estimate$colors <- NULL
       cat1_data$counts <- as.numeric(c(input$cat1_n1, input$cat1_n2))
       cat1_data$names <- c(input$cat1_name1, input$cat1_name2)
   }
@@ -94,7 +101,8 @@ shinyServer(function(input, output, session) {
                                  tags$input(id = "null_p", type = "text", class = "form-control", value = "0.5"))
                                )
                         ),
-                       plotOutput('cat1Test_Plot2')  #click = 'cat1_Test_click')
+                      h4(" Click on a point to see its count."),
+                       plotOutput('cat1Test_Plot2', click = 'cat1_Test_click')  
                     )
                 )
               ), 
@@ -158,8 +166,6 @@ output$Cat1TestXtremes <- renderUI({
   )
 })
 
-    cat1Test <- reactiveValues(phat = NULL, colors = NULL, cutoff = NULL, moreExtremeCount = NULL, 
-                               sampleCount = NULL, pvalue = NULL)
 
     output$cat1OriginalData <- renderTable({ 
       if(input$cat1_submitButton ==0) return()
@@ -172,55 +178,68 @@ output$Cat1TestXtremes <- renderUI({
       counts
     })
     
-    observeEvent(input$cat1_test_shuffle_10, {
-      n1 <- sum(cat1_data$counts[1:2])
-      y1_new <- as.matrix(rbinom(10, sum(cat1_data$counts[1:2]), as.numeric(input$null_p)))
-      phat <- round(y1_new/n1, 3)
-      cat1Test$phat <- rbind(cat1Test$phat, phat)
-      cat1Test$colors <- rep(blu, length(cat1Test$phat))
-    })
-    
-    observeEvent(input$cat1_test_shuffle_100, {
-      n1 <- sum(cat1_data$counts[1:2])
-      y1_new <- as.matrix(rbinom(100, sum(cat1_data$counts[1:2]), as.numeric(input$null_p)))
-      phat <- round(y1_new/n1, 3)
-      cat1Test$phat <- rbind(cat1Test$phat, phat)
-      cat1Test$colors <- rep(blu, length(cat1Test$phat))
-    })
-    
-    observeEvent(input$cat1_test_shuffle_1000, {
-      n1 <- sum(cat1_data$counts[1:2])
-      y1_new <- as.matrix(rbinom(1000, sum(cat1_data$counts[1:2]), as.numeric(input$null_p)))
-      phat <- round(y1_new/n1, 3)
-      cat1Test$phat <- rbind(cat1Test$phat, phat)
-      cat1Test$colors <- rep(blu, length(cat1Test$phat))
-    })
-    
-    observeEvent(input$cat1_test_shuffle_5000, {
-      n1 <- sum(cat1_data$counts[1:2])
-      y1_new <- as.matrix(rbinom(5000, sum(cat1_data$counts[1:2]), as.numeric(input$null_p)))
-      phat <- round(y1_new/n1, 3)
-      cat1Test$phat <- rbind(cat1Test$phat, phat)
-      cat1Test$colors <- rep(blu, length(cat1Test$phat))
-    })
-    
     output$cat1Test_Table <- renderTable({
       #if(input$cat2_submitButton == 0) return()
       if(is.null(cat1_data$counts)) return()
       
       n1 <- sum(cat1_data$counts[1:2])
-      y1_new <- as.matrix(rbinom(1, n1, as.numeric(input$null_p)))
-      cat1Test$phat <- round(y1_new/n1, 3)
-      cat1Test$colors <- blu
-    
-      #print(c(y1_new, n1))
-      counts <- data.frame( matrix(as.numeric(c(y1_new, n1-y1_new, 0, 0)), 2, 2, 
-                               dimnames = list(cat1_data$names, c("Counts","Proportions"))))
+      if(is.null(cat1Test$phat)){
+        y1_new <- as.matrix(rbinom(1, n1, as.numeric(input$null_p)))
+        phat_new <- round(y1_new/n1, 3)
+        cat1Test$phat <- phat_new
+        cat1Test$colors <- blu
+      } else  if(!is.null(input$cat1_Test_click)){
+        ##  We already have shuffled data and want to pick the clicked point
+        ##  Change to data related to a clicked point.
+        closestPoint <- which.min(abs( cat1Test$phat - input$cat1_Test_click$x))
+        #cat("Close to number: ", closestPoint, "\n")
+        phat_new <- cat1Test$phat[closestPoint] 
+        y1_new <- phat_new * n1
+      } else{
+        return()
+      }
+      #print(phat_new)
+      counts <- data.frame( matrix(as.numeric(as.numeric(c(y1_new, n1 - y1_new, 0, 0))), 2, 2, 
+                                   dimnames = list(cat1_data$names, c("Counts","Proportions"))))
       counts[,2] <- as.numeric(prop.table(as.table(counts[,1])))
       counts[,1] <- as.integer(counts[,1])
+      #print(counts)
       counts
     })
     
+    
+    observeEvent(input$cat1_test_shuffle_10, {
+      n1 <- sum(cat1_data$counts[1:2])
+      y1_new <- rbinom(10, sum(cat1_data$counts[1:2]), as.numeric(input$null_p))
+      phat <- round(y1_new/n1, 3)
+      cat1Test$phat <- c(cat1Test$phat, phat)
+      cat1Test$colors <- rep(blu, length(cat1Test$phat))
+    })
+    
+    observeEvent(input$cat1_test_shuffle_100, {
+      n1 <- sum(cat1_data$counts[1:2])
+      y1_new <- rbinom(100, sum(cat1_data$counts[1:2]), as.numeric(input$null_p))
+      phat <- round(y1_new/n1, 3)
+      cat1Test$phat <- c(cat1Test$phat, phat)
+      cat1Test$colors <- rep(blu, length(cat1Test$phat))
+    })
+    
+    observeEvent(input$cat1_test_shuffle_1000, {
+      n1 <- sum(cat1_data$counts[1:2])
+      y1_new <- rbinom(1000, sum(cat1_data$counts[1:2]), as.numeric(input$null_p))
+      phat <- round(y1_new/n1, 3)
+      cat1Test$phat <- c(cat1Test$phat, phat)
+      cat1Test$colors <- rep(blu, length(cat1Test$phat))
+    })
+    
+    observeEvent(input$cat1_test_shuffle_5000, {
+      n1 <- sum(cat1_data$counts[1:2])
+      y1_new <- rbinom(5000, sum(cat1_data$counts[1:2]), as.numeric(input$null_p))
+      phat <- round(y1_new/n1, 3)
+      cat1Test$phat <- c(cat1Test$phat, phat)
+      cat1Test$colors <- rep(blu, length(cat1Test$phat))
+    })
+ 
     observeEvent(input$cat1_test_countXtremes, {
       x <- sort(as.numeric(cat1Test$phat))
       nsims <- length(x)
@@ -288,7 +307,8 @@ output$cat1_estimateUI <- renderUI({
                  ),
     
                  column(8, 
-                      plotOutput('cat1Estimate_Plot2', click = 'cat1_Estimate_click')
+                      plotOutput('cat1Estimate_Plot2', click = 'cat1_Estimate_click'),
+                      h4("                Click on a point to see its count.")
                  )
              ),
              fluidRow(
@@ -333,7 +353,6 @@ output$cat1_estimateUI <- renderUI({
   }
 })
 
-cat1Estimate <- reactiveValues(phat = NULL, observed = NULL, colors = blu, confLevel = NULL, CI = NULL)
 
 output$cat1_CIPrep <- renderTable({ 
   if(input$cat1_submitButton ==0) return()
@@ -349,6 +368,36 @@ output$cat1_CIPrep <- renderTable({
   counts
   
 })
+
+
+output$cat1Estimate_Table <- renderTable({
+  #if(input$cat1_submitButton == 0) return()
+  if(is.null(cat1_data$counts)) return()
+  
+  n1 <- sum(cat1_data$counts[1:2])
+  ##
+  if(is.null(cat1Estimate$phat)){
+    y1_new <- as.matrix(rbinom(1, sum(cat1_data$counts[1:2]), cat1_data$counts[1]/sum(cat1_data$counts[1:2])))
+    cat1Estimate$phat <-  phat_new <- round(y1_new/n1, 3)
+    cat1Estimate$colors <- blu
+   } else  if(!is.null(input$cat1_Estimate_click)){
+    ##  We already have shuffled data and want to pick the clicked point
+    ##  Change to data related to a clicked point.
+    closestPoint <- which.min(abs( cat1Estimate$phat - input$cat1_Estimate_click$x))
+    #cat("Close to number: ", closestPoint, "\n")
+    phat_new <- cat1Estimate$phat[closestPoint] 
+    y1_new <- phat_new * n1
+  } else{
+    return()
+  }
+  
+  counts <- data.frame( matrix(as.numeric(c(y1_new, n1 - y1_new, 0, 0)), 2, 2, 
+                               dimnames = list(cat1_data$names, c("Counts","Proportions"))))
+  counts[,2] <- as.numeric(prop.table(as.table(counts[,1])))
+  counts[,1] <- as.integer(counts[,1])
+  counts
+})
+
 
 observeEvent(input$cat1_estimate_shuffle_10, {
   y1_new <- as.matrix(rbinom(10, sum(cat1_data$counts[1:2]), cat1_data$counts[1]/sum(cat1_data$counts[1:2])))
@@ -376,24 +425,6 @@ observeEvent(input$cat1_estimate_shuffle_5000, {
   phat <- round(y1_new/sum(cat1_data$counts[1:2]), 3)
   cat1Estimate$phat <- rbind(cat1Estimate$phat, phat)
   cat1Estimate$colors <- rep(blu, length(cat1Estimate$phat))
-})
-
-output$cat1Estimate_Table <- renderTable({
-  #if(input$cat1_submitButton == 0) return()
-  if(is.null(cat1_data$counts)) return()
-  
-  n1 <- sum(cat1_data$counts[1:2])
-  y1_new <- as.matrix(rbinom(1, sum(cat1_data$counts[1:2]), cat1_data$counts[1]/sum(cat1_data$counts[1:2])))
-  cat1Estimate$phat <- round(y1_new/n1, 3)
-  cat1Estimate$colors <- blu
-  
-  #print(c(y1_new, n1))
-  #counts <- as.table(matrix(as.numeric(c(y1_new, n1-y1_new)), 2, 1))
-  counts <- data.frame( matrix(as.numeric(c(y1_new, n1 - y1_new, 0, 0)), 2, 2, 
-                               dimnames = list(cat1_data$names, c("Counts","Proportions"))))
-  counts[,2] <- as.numeric(prop.table(as.table(counts[,1])))
-  counts[,1] <- as.integer(counts[,1])
-  counts
 })
 
 observeEvent(input$cat1_conf80,{
@@ -874,6 +905,10 @@ output$normalProbPlot1 <- renderPlot({
                            colors = NULL, moreExtremeCount = NULL, pvalue = NULL, direction = NULL, 
                            cutoff = NULL, sampleCount = NULL)
   
+  q1Estimate <- reactiveValues(shuffles = NULL, xbars = NULL, observed = NULL, 
+                               confLevel = NULL, colors = NULL, colors = NULL, CI = NULL)
+  
+  
  
 ##  Enter data    ----------------------------------------- quant 1
 
@@ -944,7 +979,7 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
    q1$names <- names(DF)
    q1Test$nsims <- 0
    q1Test$shuffles <-  q1Test$new.xbars <-  q1Test$xbar <- q1Test$colors <- NULL
-   q1Estimate$shuffles <- q1Estimate$xbar <- q1Estimate$observed <- q1Estimate$confLevel <- q1Estimate$colors <- NULL
+   q1Estimate$shuffles <- q1Estimate$xbars <- q1Estimate$observed <- q1Estimate$confLevel <- q1Estimate$colors <- NULL
    output$quant1DataIn <- renderText({
           "Data are entered, you may now choose to estimate or test one mean"
    })
@@ -957,7 +992,7 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
    #print(q1$data)
    q1Test$nsims <- 0
    q1Test$shuffles <-  q1Test$new.xbars <-  q1Test$xbar <-  q1Test$colors <- NULL
-   q1Estimate$shuffles <- q1Estimate$xbar <- q1Estimate$observed <- q1Estimate$confLevel <- q1Estimate$colors <- NULL
+   q1Estimate$shuffles <- q1Estimate$xbars <- q1Estimate$observed <- q1Estimate$confLevel <- q1Estimate$colors <- NULL
    output$quant1DataIn <- renderText({
      "Data are entered, you may now choose to estimate or test one mean"
    })
@@ -970,7 +1005,7 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
    q1Test$nsims <- 0
    q1$data <- data.frame( x = as.numeric(unlist(DF)))
    q1Test$shuffles <-  q1Test$new.xbars <-  q1Test$xbar <-   q1Test$colors <- NULL
-   q1Estimate$shuffles <- q1Estimate$xbar <- q1Estimate$observed <- q1Estimate$colors <- NULL
+   q1Estimate$shuffles <- q1Estimate$xbars <- q1Estimate$observed <- q1Estimate$colors <- NULL
    #print(q1$data)
    output$quant1DataIn <- renderText({
      "Data are entered, you may now choose to estimate or test one mean"
@@ -1083,7 +1118,8 @@ output$q1_testUI <- renderUI({
        br(), 
        br(),
        fluidRow(
-           column(4, offset = 1, h4("How many more (shifted) resamples?")),
+           column(5, offset = 1, h4("How many more (shifted) resamples?")),
+           column(1, actionButton("q1_test_shuffle_1", label = "1")),
            column(1, actionButton("q1_test_shuffle_10", label = "10")),
            column(1, actionButton("q1_test_shuffle_100", label = "100")),
            column(1, actionButton("q1_test_shuffle_1000", label = "1000")),
@@ -1138,6 +1174,9 @@ output$q1TestXtremes <- renderUI({
   )
 })
   
+## that's odd: to click on this plot, you have to be above the first tick mark, 
+##  even though we don't use the y value
+
 
 # ----------------------1 quant test plots ------------------------------------------------------------
 
@@ -1214,6 +1253,15 @@ observeEvent(input$q1_test_shuffle_10, {
   newShuffles <- sapply(1:10, function(x) sample(q1$data[,1] - q1Test$xbar, length(q1$data[,1]), replace = TRUE))
   q1Test$shuffles <- cbind(q1Test$shuffles, newShuffles)
   q1Test$new.xbars <- c(q1Test$new.xbars, apply(newShuffles, 2, function(x) mean(x)))
+  #print(q1Test$new.xbars)
+  q1Test$colors <- rep(blu, length(q1Test$new.xbars))
+})
+
+
+observeEvent(input$q1_test_shuffle_1, {
+  newShuffles <- sample(q1$data[,1] - q1Test$xbar, length(q1$data[,1]), replace = TRUE)
+  q1Test$shuffles <- cbind(q1Test$shuffles, newShuffles)
+  q1Test$new.xbars <- c(q1Test$new.xbars, mean(newShuffles))
   #print(q1Test$new.xbars)
   q1Test$colors <- rep(blu, length(q1Test$new.xbars))
 })
@@ -1298,10 +1346,6 @@ output$q1_TestPlot2 <- renderPlot({
 {
  ## --------- 1 quant estimate UI ---------------------------
 
-q1Estimate <- reactiveValues(shuffles = NULL, xbar = NULL, observed = NULL, 
-                             confLevel = NULL, colors = NULL, colors = NULL, CI = NULL)
-
-
 output$q1_estimateUI <- renderUI({
   if(is.null(q1$data)){
     h4(" You must first enter data. Choose 'Enter/Describe Data'.")
@@ -1317,7 +1361,7 @@ output$q1_estimateUI <- renderUI({
             )
        ),             
       fluidRow(
-         column(3, offset = 2, h4("How many more resamples?")),
+         column(4, offset = 2, h4("How many more resamples?")),
          column(1,
                 actionButton("q1_resample_10", label = "10")),
          column(1,
@@ -1330,8 +1374,8 @@ output$q1_estimateUI <- renderUI({
       br(),
       br(),
       fluidRow(
-        column(3, offset = 4, 
-               h5("Select Confidence Level (%)")
+        column(4, offset = 3, 
+               h4("Select Confidence Level (%)")
         ),
         column(5,
                fluidRow(
@@ -1375,15 +1419,22 @@ output$q1_EstPlot1 <- renderPlot({
   legend("topleft", bty = "n", paste(" n = ", nn, "\n Mean = ", round(mean(x),3), "\n SD = ", round(sd(x),3)))
   
   ## Plot One Resample of Data
-  
-  shuffle <- sample(x = q1$data[,1], length(q1$data[,1]), replace = TRUE)
-  q1Estimate$shuffles <- as.matrix(shuffle, ncol = 1)
-  q1Estimate$xbar <- mean(shuffle)
-  q1Estimate$colors <- blu
-  ### stores samples as columns
-  #print(q1Estimate$shuffles)
-  
-  DF0 <- sort(shuffle)
+  if(is.null(q1Estimate$shuffles)){
+    shuffle <- sample(x = q1$data[,1], length(q1$data[,1]), replace = TRUE)
+    q1Estimate$shuffles <- as.matrix(shuffle, ncol = 1)
+    ### stores samples as columns
+    q1Estimate$xbars <- mean(shuffle)
+    q1Estimate$colors <- blu
+    DF0 <- sort(shuffle)
+    #print(q1Estimate$shuffles)
+  } else if(!is.null(input$q1_Estimate_click)){
+    ##  We already have shuffled data and want to pick the clicked point
+    ##  Change to data related to a clicked point.
+    closestPoint <- which.min(abs(q1Estimate$xbars - input$q1_Estimate_click$x))
+    DF0 <- sort(q1Estimate$shuffles[,closestPoint] ) 
+  } else  {
+    return()
+  }
   z <- cut(DF0, breaks = nclass.Sturges(DF0) ^2 )
   w <- unlist(tapply(DF0, z, function(DF0) 1:length(DF0)))
   w <- w[!is.na(w)]
@@ -1395,37 +1446,37 @@ output$q1_EstPlot1 <- renderPlot({
 observeEvent(input$q1_resample_10, {
   newShuffles <- sapply(1:10, function(x) sample(q1$data[,1], length(q1$data[,1]), replace = TRUE))
   q1Estimate$shuffles <- cbind(q1Estimate$shuffles, newShuffles)
-  q1Estimate$xbar <- c(q1Estimate$xbar, apply(newShuffles, 2, function(x) mean(x)))
-  #print(q1Estimate$xbar)
-  q1Estimate$colors <- rep(blu, length(q1Estimate$xbar))
+  q1Estimate$xbars <- c(q1Estimate$xbars, apply(newShuffles, 2, function(x) mean(x)))
+  #print(q1Estimate$xbars) 
+  q1Estimate$colors <- rep(blu, length(q1Estimate$xbars))
 })
 
 observeEvent(input$q1_resample_100, {
   newShuffles <- sapply(1:100, function(x) sample(x = q1$data[,1], length(q1$data[,1]), replace = TRUE))
   #print(dim(newShuffles))
   q1Estimate$shuffles <- cbind(q1Estimate$shuffles, newShuffles)
-  q1Estimate$xbar <- c(q1Estimate$xbar, apply(newShuffles, 2, function(x) mean(x)))
-  q1Estimate$colors <- rep(blu, length(q1Estimate$xbar))
+  q1Estimate$xbars <- c(q1Estimate$xbars, apply(newShuffles, 2, function(x) mean(x)))
+  q1Estimate$colors <- rep(blu, length(q1Estimate$xbars))
   
 })
 observeEvent(input$q1_resample_1000, {
   newShuffles <- sapply(1:1000, function(x) sample(x = q1$data[,1], length(q1$data[,1]), replace = TRUE))
   #print(dim(newShuffles))
   q1Estimate$shuffles <- cbind(q1Estimate$shuffles, newShuffles)
-  q1Estimate$xbar <- c(q1Estimate$xbar, apply(newShuffles, 2, function(x) mean(x)))
-  q1Estimate$colors <- rep(blu, length(q1Estimate$xbar))
+  q1Estimate$xbars <- c(q1Estimate$xbars, apply(newShuffles, 2, function(x) mean(x)))
+  q1Estimate$colors <- rep(blu, length(q1Estimate$xbars))
   
 })
 observeEvent(input$q1_resample_5000, {
   newShuffles <- sapply(1:5000, function(x) sample(x = q1$data[,1], length(q1$data[,1]), replace = TRUE))
   #print(dim(newShuffles))
   q1Estimate$shuffles <- cbind(q1Estimate$shuffles, newShuffles)
-  q1Estimate$xbar <- c(q1Estimate$xbar, apply(newShuffles, 2, function(x) mean(x)))
-  q1Estimate$colors <- rep(blu, length(q1Estimate$xbar))
+  q1Estimate$xbars <- c(q1Estimate$xbars, apply(newShuffles, 2, function(x) mean(x)))
+  q1Estimate$colors <- rep(blu, length(q1Estimate$xbars))
 })
 
 observeEvent(input$q1_conf80,{
-  if(is.null(q1Estimate$xbar) | (nsims <- length(q1Estimate$xbar)) < 10){
+  if(is.null(q1Estimate$xbars) | (nsims <- length(q1Estimate$xbars)) < 10){
     return()
   }
   q1Estimate$confLevel <- .80
@@ -1433,11 +1484,11 @@ observeEvent(input$q1_conf80,{
   tailCount <- floor(nsims * .1)
   q1Estimate$colors[1:tailCount] <- rd
   q1Estimate$colors[nsims +1 -(1:tailCount)] <- rd
-  q1Estimate$CI <- sort(q1Estimate$xbar)[c(tailCount, nsims + 1 - tailCount)]
+  q1Estimate$CI <- sort(q1Estimate$xbars) [c(tailCount, nsims + 1 - tailCount)]
 })
 
 observeEvent(input$q1_conf90,{
-  if(is.null(q1Estimate$xbar) | (nsims <- length(q1Estimate$xbar)) < 10){
+  if(is.null(q1Estimate$xbars)  | (nsims <- length(q1Estimate$xbars) ) < 10){
     return()
   }
   q1Estimate$confLevel <- .90
@@ -1445,11 +1496,11 @@ observeEvent(input$q1_conf90,{
   tailCount <- floor(nsims * .05)
   q1Estimate$colors[1:tailCount] <- rd
   q1Estimate$colors[nsims +1 -(1:tailCount)] <- rd
-  q1Estimate$CI <- sort(q1Estimate$xbar)[c(tailCount, nsims + 1 - tailCount)]
+  q1Estimate$CI <- sort(q1Estimate$xbars) [c(tailCount, nsims + 1 - tailCount)]
 })
 
 observeEvent(input$q1_conf95,{
-  if(is.null(q1Estimate$xbar) | (nsims <- length(q1Estimate$xbar)) < 10){
+  if(is.null(q1Estimate$xbars)  | (nsims <- length(q1Estimate$xbars) ) < 10){
     return()
   }
   q1Estimate$confLevel <- .95
@@ -1457,11 +1508,11 @@ observeEvent(input$q1_conf95,{
   tailCount <- floor(nsims * .025)
   q1Estimate$colors[1:tailCount] <- rd
   q1Estimate$colors[nsims +1 -(1:tailCount)] <- rd
-  q1Estimate$CI <- sort(q1Estimate$xbar)[c(tailCount, nsims + 1 - tailCount)]
+  q1Estimate$CI <- sort(q1Estimate$xbars) [c(tailCount, nsims + 1 - tailCount)]
 })
 
 observeEvent(input$q1_conf99,{
-  if(is.null(q1Estimate$xbar) | (nsims <- length(q1Estimate$xbar)) < 10){
+  if(is.null(q1Estimate$xbars)  | (nsims <- length(q1Estimate$xbars) ) < 10){
     return()
   }
   q1Estimate$confLevel <- .99
@@ -1469,12 +1520,12 @@ observeEvent(input$q1_conf99,{
   tailCount <- floor(nsims * .005)
   q1Estimate$colors[1:tailCount] <- rd
   q1Estimate$colors[nsims +1 -(1:tailCount)] <- rd
-  q1Estimate$CI <- sort(q1Estimate$xbar)[c(tailCount, nsims + 1 - tailCount)]
+  q1Estimate$CI <- sort(q1Estimate$xbars) [c(tailCount, nsims + 1 - tailCount)]
 })
 
 output$q1_EstimatePlot2 <- renderPlot({
-  if(is.null(q1Estimate$xbar)) return() 
-  parm <- as.matrix(q1Estimate$xbar)
+  if(is.null(q1Estimate$xbars) ) return() 
+  parm <- as.matrix(q1Estimate$xbars) 
   #print(parm)
   parm <- sort(parm)
   if(length(parm) == 1){
@@ -1940,7 +1991,8 @@ observeEvent(input$cat2_submitButton, {
                   ),
                  column(8, 
                         h4(HTML("&nbsp;&nbsp;&nbsp;&nbsp; Null hypothesis: p<sub>1</sub> = p<sub>2</sub>")),                     
-                        plotOutput('cat2Test_Plot2', click = 'cat2_Test_click')
+                        plotOutput('cat2Test_Plot2', click = 'cat2_Test_click'),
+                        
                         ###
                  )
           ),
