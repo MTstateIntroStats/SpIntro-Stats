@@ -101,14 +101,13 @@ shinyServer(function(input, output, session) {
                                  tags$input(id = "null_p", type = "text", class = "form-control", value = "0.5"))
                                )
                         ),
-                      h4(" Click on a point to see its count."),
                        plotOutput('cat1Test_Plot2', click = 'cat1_Test_click', height = "300px")  
                     )
                 )
               ), 
               #br(),
               fluidRow(
-                column(4, offset = 1, h4("How many more samples from the null?")),
+                column(5, offset = 1, h4("How many more samples from the null?")),
                 column(1,
                    actionButton("cat1_test_shuffle_10", label = "10")),
                 column(1,
@@ -121,7 +120,8 @@ shinyServer(function(input, output, session) {
                br(),
                br(),
                fluidRow(
-                 column(8, offset = 4, 
+                 column(8, offset = 4,
+                        h4(" Click on a point to see its counts and proportions."), br(), 
                         uiOutput("Cat1TestXtremes"),
                         uiOutput("Cat1TestPvalue")
                  )
@@ -131,16 +131,10 @@ shinyServer(function(input, output, session) {
     }
  })
 
-output$Cat1TestPvalue <- renderUI({
-  if(!is.null(cat1Test$moreExtremeCount)){
-#     fluidRow(
-#       column(8, offset = 3, 
-             h4(paste(cat1Test$moreExtremeCount, " of ", cat1Test$sampleCount, "values are ",
-                        cat1Test$direction," than", as.numeric(cat1Test$cutoff),",  p-value =  ", round(cat1Test$pvalue,5))
-                )
-#      ))
-  }
+observeEvent( input$null_p, {
+  cat1Test$phat <- NULL  
 })
+
 
 output$Cat1TestXtremes <- renderUI({
   fluidRow(
@@ -166,6 +160,25 @@ output$Cat1TestXtremes <- renderUI({
   )
 })
 
+observeEvent( input$cat1_testDirection, {
+  cat1Test$pvalue <- cat1Test$moreExtremeCount <- NULL  
+})
+
+observeEvent( input$cat1_test_cutoff, {
+  cat1Test$pvalue <- cat1Test$moreExtremeCount <- NULL  
+})
+
+
+output$Cat1TestPvalue <- renderUI({
+  if(!is.null(cat1Test$moreExtremeCount)){
+    #     fluidRow(
+    #       column(8, offset = 3, 
+    h4(paste(cat1Test$moreExtremeCount, " of ", cat1Test$sampleCount, "values are ",
+             cat1Test$direction," than", as.numeric(cat1Test$cutoff),",  p-value =  ", round(cat1Test$pvalue,5))
+    )
+    #      ))
+  }
+})
 
     output$cat1OriginalData <- renderTable({ 
       if(input$cat1_submitButton ==0) return()
