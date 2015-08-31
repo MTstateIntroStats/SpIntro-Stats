@@ -28,7 +28,7 @@ shinyServer(function(input, output, session) {
 
 {
     ##  Using Submit Button to keep plots from changing too soon
-  cat1_data <- reactiveValues(counts = NULL, names = NULL)
+  cat1_data <- reactiveValues(counts = NULL, names = NULL, total = NULL)
   
   cat1Test <- reactiveValues(phat = NULL, colors = NULL, cutoff = NULL, moreExtremeCount = NULL, 
                              sampleCount = NULL, pvalue = NULL)
@@ -40,6 +40,7 @@ shinyServer(function(input, output, session) {
       cat1Estimate$phat <- cat1Estimate$observed <- cat1Estimate$colors <- NULL
       cat1_data$counts <- as.numeric(c(input$cat1_n1, input$cat1_n2))
       cat1_data$names <- c(input$cat1_name1, input$cat1_name2)
+      cat1_data$total <- sum(as.numeric(c(input$cat1_n1, input$cat1_n2)))
   }
  )
   
@@ -133,6 +134,7 @@ shinyServer(function(input, output, session) {
 
 observeEvent( input$null_p, {
   cat1Test$phat <- NULL  
+  cat1Test$pvalue <- cat1Test$moreExtremeCount <- NULL
 })
 
 
@@ -161,11 +163,13 @@ output$Cat1TestXtremes <- renderUI({
 })
 
 observeEvent( input$cat1_testDirection, {
-  cat1Test$pvalue <- cat1Test$moreExtremeCount <- NULL  
+  cat1Test$pvalue <- cat1Test$moreExtremeCount <- NULL    
+  cat1Test$colors <- rep(blu, length(cat1Test$colors))
 })
 
 observeEvent( input$cat1_test_cutoff, {
-  cat1Test$pvalue <- cat1Test$moreExtremeCount <- NULL  
+  cat1Test$pvalue <- cat1Test$moreExtremeCount <- NULL    
+  cat1Test$colors <- rep(blu, length(cat1Test$colors))
 })
 
 
@@ -195,7 +199,7 @@ output$Cat1TestPvalue <- renderUI({
       #if(input$cat2_submitButton == 0) return()
       if(is.null(cat1_data$counts)) return()
       
-      n1 <- sum(cat1_data$counts[1:2])
+      n1 <- cat1_data$total
       if(is.null(cat1Test$phat)){
         y1_new <- as.matrix(rbinom(1, n1, as.numeric(input$null_p)))
         phat_new <- round(y1_new/n1, 3)
@@ -207,8 +211,8 @@ output$Cat1TestPvalue <- renderUI({
         closestPoint <- which.min(abs( cat1Test$phat - input$cat1_Test_click$x))
         #cat("Close to number: ", closestPoint, "\n")
         phat_new <- cat1Test$phat[closestPoint] 
-        y1_new <- phat_new * n1
-      } else{
+        y1_new <- round(phat_new * n1)
+      } else {
         return()
       }
       #print(phat_new)
@@ -222,32 +226,36 @@ output$Cat1TestPvalue <- renderUI({
     
     
     observeEvent(input$cat1_test_shuffle_10, {
-      n1 <- sum(cat1_data$counts[1:2])
-      y1_new <- rbinom(10, sum(cat1_data$counts[1:2]), as.numeric(input$null_p))
+      n1 <- cat1_data$total
+      cat1Test$pvalue <- cat1Test$moreExtremeCount <- NULL
+      y1_new <- rbinom(10, cat1_data$total, as.numeric(input$null_p))
       phat <- round(y1_new/n1, 3)
       cat1Test$phat <- c(cat1Test$phat, phat)
       cat1Test$colors <- rep(blu, length(cat1Test$phat))
     })
     
     observeEvent(input$cat1_test_shuffle_100, {
-      n1 <- sum(cat1_data$counts[1:2])
-      y1_new <- rbinom(100, sum(cat1_data$counts[1:2]), as.numeric(input$null_p))
+      n1 <- cat1_data$total
+      cat1Test$pvalue <- cat1Test$moreExtremeCount <- NULL
+      y1_new <- rbinom(100, cat1_data$total, as.numeric(input$null_p))
       phat <- round(y1_new/n1, 3)
       cat1Test$phat <- c(cat1Test$phat, phat)
       cat1Test$colors <- rep(blu, length(cat1Test$phat))
     })
     
     observeEvent(input$cat1_test_shuffle_1000, {
-      n1 <- sum(cat1_data$counts[1:2])
-      y1_new <- rbinom(1000, sum(cat1_data$counts[1:2]), as.numeric(input$null_p))
+      n1 <- cat1_data$total
+      cat1Test$pvalue <- cat1Test$moreExtremeCount <- NULL
+      y1_new <- rbinom(1000, cat1_data$total, as.numeric(input$null_p))
       phat <- round(y1_new/n1, 3)
       cat1Test$phat <- c(cat1Test$phat, phat)
       cat1Test$colors <- rep(blu, length(cat1Test$phat))
     })
     
     observeEvent(input$cat1_test_shuffle_5000, {
-      n1 <- sum(cat1_data$counts[1:2])
-      y1_new <- rbinom(5000, sum(cat1_data$counts[1:2]), as.numeric(input$null_p))
+      n1 <- cat1_data$total
+      cat1Test$pvalue <- cat1Test$moreExtremeCount <- NULL
+      y1_new <- rbinom(5000, cat1_data$total, as.numeric(input$null_p))
       phat <- round(y1_new/n1, 3)
       cat1Test$phat <- c(cat1Test$phat, phat)
       cat1Test$colors <- rep(blu, length(cat1Test$phat))
@@ -318,10 +326,8 @@ output$cat1_estimateUI <- renderUI({
                       tableOutput('cat1Estimate_Table')
                       
                  ),
-    
                  column(8, 
-                      plotOutput('cat1Estimate_Plot2', click = 'cat1_Estimate_click'),
-                      h4("                Click on a point to see its count.")
+                      plotOutput('cat1Estimate_Plot2', click = 'cat1_Estimate_click')
                  )
              ),
              fluidRow(
@@ -336,10 +342,14 @@ output$cat1_estimateUI <- renderUI({
                       actionButton("cat1_estimate_shuffle_5000", label = "5000"))
              ),
              br(),
+             fluidRow(
+               column(5, offset = 3, 
+                     h4("Click on a point to see its count."))
+               ),
              br(),
              fluidRow(
-               column(3, offset = 2, 
-                      h5("Select Confidence Level (%)")
+               column(4, offset = 2, 
+                      h4("Select Confidence Level (%)")
                       ),
                column(6,
                  fluidRow(
@@ -356,7 +366,7 @@ output$cat1_estimateUI <- renderUI({
               if(!is.null(cat1Estimate$CI)){
                 fluidRow(
                   column(8, offset = 4,
-                          h5(paste(round(100 * cat1Estimate$confLevel), "% Confidence Interval Estimate: (", round(cat1Estimate$CI[1],3), ",", 
+                          h4(paste(round(100 * cat1Estimate$confLevel), "% Confidence Interval Estimate: (", round(cat1Estimate$CI[1],3), ",", 
                                    round(cat1Estimate$CI[2], 3), ")"))
                   )
                 )
@@ -387,10 +397,10 @@ output$cat1Estimate_Table <- renderTable({
   #if(input$cat1_submitButton == 0) return()
   if(is.null(cat1_data$counts)) return()
   
-  n1 <- sum(cat1_data$counts[1:2])
+  n1 <- cat1_data$total
   ##
   if(is.null(cat1Estimate$phat)){
-    y1_new <- as.matrix(rbinom(1, sum(cat1_data$counts[1:2]), cat1_data$counts[1]/sum(cat1_data$counts[1:2])))
+    y1_new <- as.matrix(rbinom(1, cat1_data$total, cat1_data$counts[1]/cat1_data$total))
     cat1Estimate$phat <-  phat_new <- round(y1_new/n1, 3)
     cat1Estimate$colors <- blu
    } else  if(!is.null(input$cat1_Estimate_click)){
@@ -399,7 +409,7 @@ output$cat1Estimate_Table <- renderTable({
     closestPoint <- which.min(abs( cat1Estimate$phat - input$cat1_Estimate_click$x))
     #cat("Close to number: ", closestPoint, "\n")
     phat_new <- cat1Estimate$phat[closestPoint] 
-    y1_new <- phat_new * n1
+    y1_new <- round(phat_new * n1)
   } else{
     return()
   }
@@ -413,29 +423,33 @@ output$cat1Estimate_Table <- renderTable({
 
 
 observeEvent(input$cat1_estimate_shuffle_10, {
-  y1_new <- as.matrix(rbinom(10, sum(cat1_data$counts[1:2]), cat1_data$counts[1]/sum(cat1_data$counts[1:2])))
-  phat <- round(y1_new/sum(cat1_data$counts[1:2]), 3)
+  cat1Estimate$CI <- NULL
+  y1_new <- as.matrix(rbinom(10, cat1_data$total, cat1_data$counts[1]/cat1_data$total))
+  phat <- round(y1_new/cat1_data$total, 3)
   cat1Estimate$phat <- rbind(cat1Estimate$phat, phat)
   cat1Estimate$colors <- rep(blu, length(cat1Estimate$phat))
 })
 
 observeEvent(input$cat1_estimate_shuffle_100, {
-  y1_new <- as.matrix(rbinom(100, sum(cat1_data$counts[1:2]), cat1_data$counts[1]/sum(cat1_data$counts[1:2])))
-  phat <- round(y1_new/sum(cat1_data$counts[1:2]), 3)
+  cat1Estimate$CI <- NULL
+  y1_new <- as.matrix(rbinom(100, cat1_data$total, cat1_data$counts[1]/cat1_data$total))
+  phat <- round(y1_new/cat1_data$total, 3)
   cat1Estimate$phat <- rbind(cat1Estimate$phat, phat)
   cat1Estimate$colors <- rep(blu, length(cat1Estimate$phat))
 })
 
 observeEvent(input$cat1_estimate_shuffle_1000, {
-  y1_new <- as.matrix(rbinom(1000, sum(cat1_data$counts[1:2]), cat1_data$counts[1]/sum(cat1_data$counts[1:2])))
-  phat <- round(y1_new/sum(cat1_data$counts[1:2]), 3)
+  cat1Estimate$CI <- NULL
+  y1_new <- as.matrix(rbinom(1000, cat1_data$total, cat1_data$counts[1]/cat1_data$total))
+  phat <- round(y1_new/cat1_data$total, 3)
   cat1Estimate$phat <- rbind(cat1Estimate$phat, phat)
   cat1Estimate$colors <- rep(blu, length(cat1Estimate$phat))
 })
 
 observeEvent(input$cat1_estimate_shuffle_5000, {
-  y1_new <- as.matrix(rbinom(5000, sum(cat1_data$counts[1:2]), cat1_data$counts[1]/sum(cat1_data$counts[1:2])))
-  phat <- round(y1_new/sum(cat1_data$counts[1:2]), 3)
+  cat1Estimate$CI <- NULL
+  y1_new <- as.matrix(rbinom(5000, cat1_data$total, cat1_data$counts[1]/cat1_data$total))
+  phat <- round(y1_new/cat1_data$total, 3)
   cat1Estimate$phat <- rbind(cat1Estimate$phat, phat)
   cat1Estimate$colors <- rep(blu, length(cat1Estimate$phat))
 })
@@ -1152,13 +1166,18 @@ output$q1_testUI <- renderUI({
 #   plotOutput('q1_TestPlot2', click = 'q1_Test_click')
 # })
 
- q1Test_pReport <- reactiveValues(printMe = NULL)
+
+observeEvent( input$null_mu, {
+  q1Test$pvalue <- q1Test$moreExtremeCount <- NULL
+  q1Test$colors <- rep(blu, length(q1Test$colors))
+})
+
 
 output$q1TestPvalue <- renderUI({
   if(!is.null(q1Test$moreExtremeCount)){
-    q1Test_pReport$printMe <- paste(q1Test$moreExtremeCount, " of ", q1Test$sampleCount, "values are ",
+    h4(paste(q1Test$moreExtremeCount, " of ", q1Test$sampleCount, "values are ",
                                     q1Test$direction," than", q1Test$cutoff, ",  p-value =  ", round(q1Test$pvalue,5))
-    h4(q1Test_pReport$printMe)
+    )
   }
 })
 
@@ -1248,7 +1267,6 @@ output$q1_TestPrep2 <- renderTable({
   DF
 })
 
-
 output$q1_TestTable1 <- renderTable({
   if( is.null(q1$data))  return()
   DF <- rbind(mean = mean(q1Test$shuffles[,1], na.rm = TRUE ),
@@ -1259,6 +1277,7 @@ output$q1_TestTable1 <- renderTable({
 })
 
 observeEvent(input$q1_test_shuffle_10, {
+  q1Test$moreExtremeCount <- NULL
   newShuffles <- sapply(1:10, function(x) sample(q1$data[,1] - q1Test$xbar, length(q1$data[,1]), replace = TRUE))
   q1Test$shuffles <- cbind(q1Test$shuffles, newShuffles)
   q1Test$new.xbars <- c(q1Test$new.xbars, apply(newShuffles, 2, function(x) mean(x)))
@@ -1266,8 +1285,8 @@ observeEvent(input$q1_test_shuffle_10, {
   q1Test$colors <- rep(blu, length(q1Test$new.xbars))
 })
 
-
 observeEvent(input$q1_test_shuffle_1, {
+  q1Test$moreExtremeCount <- NULL
   newShuffles <- sample(q1$data[,1] - q1Test$xbar, length(q1$data[,1]), replace = TRUE)
   q1Test$shuffles <- cbind(q1Test$shuffles, newShuffles)
   q1Test$new.xbars <- c(q1Test$new.xbars, mean(newShuffles))
@@ -1276,6 +1295,7 @@ observeEvent(input$q1_test_shuffle_1, {
 })
 
 observeEvent(input$q1_test_shuffle_100, {
+  q1Test$moreExtremeCount <- NULL
   newShuffles <- sapply(1:100, function(x) sample(x = q1$data[,1] - q1Test$xbar, 
                                                    length(q1$data[,1]), replace = TRUE))
   #  print(dim(newShuffles))
@@ -1285,6 +1305,7 @@ observeEvent(input$q1_test_shuffle_100, {
   
 })
 observeEvent(input$q1_test_shuffle_1000, {
+  q1Test$moreExtremeCount <- NULL
   newShuffles <- sapply(1:1000, function(x) sample(x = q1$data[,1] - q1Test$xbar, 
                                                    length(q1$data[,1]), replace = TRUE))
   # print(dim(newShuffles))
@@ -1294,6 +1315,7 @@ observeEvent(input$q1_test_shuffle_1000, {
   
 })
 observeEvent(input$q1_test_shuffle_5000, {
+  q1Test$moreExtremeCount <- NULL
   newShuffles <- sapply(1:5000, function(x) sample(x = q1$data[,1] - q1Test$xbar, 
                                                    length(q1$data[,1]), replace = TRUE))
   #print(dim(newShuffles))
@@ -1321,6 +1343,17 @@ observeEvent(input$q1_countXtremes, {
     q1Test$sampleCount <- length(q1Test$new.xbars)
   }
 })
+
+observeEvent( input$q1_testDirection, {
+  q1Test$pvalue <- q1Test$moreExtremeCount <- NULL  
+  q1Test$colors <- rep(blu, length(q1Test$colors))
+})
+
+observeEvent( input$q1_test_cutoff, {
+  q1Test$pvalue <- q1Test$moreExtremeCount <- NULL  
+  q1Test$colors <- rep(blu, length(q1Test$colors))  
+})
+
 
 output$q1_TestPlot2 <- renderPlot({
   if(is.null(q1Test$new.xbars)) return() 
@@ -2000,9 +2033,8 @@ observeEvent(input$cat2_submitButton, {
                   ),
                  column(8, 
                         h4(HTML("&nbsp;&nbsp;&nbsp;&nbsp; Null hypothesis: p<sub>1</sub> = p<sub>2</sub>")),                     
-                        plotOutput('cat2Test_Plot2', click = 'cat2_Test_click'),
+                        plotOutput('cat2Test_Plot2', click = 'cat2_Test_click')
                         
-                        ###
                  )
           ),
       #br(),
@@ -2056,6 +2088,18 @@ output$Cat2TestXtremes <- renderUI({
     )
 })
   
+
+observeEvent( input$cat2_testDirection, {
+  cat2Test$pvalue <- cat2Test$moreExtremeCount <- NULL  
+  cat2Test$colors <- rep(blu, length(cat2Test$colors))
+})
+
+observeEvent( input$cat2_test_cutoff, {
+  cat2Test$pvalue <- cat2Test$moreExtremeCount <- NULL  
+  cat2Test$colors <- rep(blu, length(cat2Test$colors))
+})
+
+
 output$Cat2TestPvalue <- renderUI({
   if(!is.null(cat2Test$moreExtremeCount)){
     h4(paste(cat2Test$moreExtremeCount, " of ", cat2Test$sampleCount, "values are ",
@@ -2088,6 +2132,7 @@ output$Cat2TestPvalue <- renderUI({
   })
   
   observeEvent(input$cat2_test_shuffle_10, {
+    cat2Test$moreExtremeCount <- NULL
     DF <- cat2_test_shuffles(shuffles = 10, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                             n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                             n2= sum(cat2_data$counts[2], cat2_data$counts[4]))
@@ -2098,6 +2143,7 @@ output$Cat2TestPvalue <- renderUI({
   })
   
   observeEvent(input$cat2_test_shuffle_100, {
+    cat2Test$moreExtremeCount <- NULL
     DF <- cat2_test_shuffles(shuffles = 100, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                             n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                             n2= sum(cat2_data$counts[2], cat2_data$counts[4]))
@@ -2109,6 +2155,7 @@ output$Cat2TestPvalue <- renderUI({
   })
   
   observeEvent(input$cat2_test_shuffle_1000, {
+    cat2Test$moreExtremeCount <- NULL
     DF <- cat2_test_shuffles(shuffles = 1000, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                             n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                             n2= sum(cat2_data$counts[2], cat2_data$counts[4]))
@@ -2120,6 +2167,7 @@ output$Cat2TestPvalue <- renderUI({
   })
   
   observeEvent(input$cat2_test_shuffle_5000, {
+    cat2Test$moreExtremeCount <- NULL
     DF <- cat2_test_shuffles(shuffles = 5000, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                             n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                             n2= sum(cat2_data$counts[2], cat2_data$counts[4]))
@@ -2245,7 +2293,7 @@ output$Cat2TestPvalue <- renderUI({
                 br(),
                 fluidRow(
                   column(3, offset = 2, 
-                         h5("Select Confidence Level (%)")
+                         h4("Select Confidence Level (%)")
                          ),
                   column(6,
                          fluidRow(
@@ -2263,7 +2311,7 @@ output$Cat2TestPvalue <- renderUI({
                 if(!is.null(cat2Estimate$CI)){
                   fluidRow(
                     column(8, offset = 4,
-                           h5(paste(round(100 * cat2Estimate$confLevel), "% Confidence Interval Estimate: (", 
+                           h4(paste(round(100 * cat2Estimate$confLevel), "% Confidence Interval Estimate: (", 
                                     round(cat2Estimate$CI[1],3), ",", 
                                      round(cat2Estimate$CI[2], 3), ")"))
                            )
@@ -2295,6 +2343,7 @@ output$Cat2TestPvalue <- renderUI({
   
 
   observeEvent(input$cat2_estimate_shuffle_10, {
+    cat2Estimate$CI <- NULL
     DF <- cat2_estimate_shuffles(shuffles = 10, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                                  n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                                  n2= sum(cat2_data$counts[2], cat2_data$counts[4]))
@@ -2308,6 +2357,7 @@ output$Cat2TestPvalue <- renderUI({
   })
   
   observeEvent(input$cat2_estimate_shuffle_100, {
+    cat2Estimate$CI <- NULL
     DF <- cat2_estimate_shuffles(shuffles = 100, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                                  n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                                  n2= sum(cat2_data$counts[2], cat2_data$counts[4]))
@@ -2321,6 +2371,7 @@ output$Cat2TestPvalue <- renderUI({
   })
   
   observeEvent(input$cat2_estimate_shuffle_1000, {
+    cat2Estimate$CI <- NULL
     DF <- cat2_estimate_shuffles(shuffles = 1000, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                                  n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                                  n2= sum(cat2_data$counts[2], cat2_data$counts[4]))
@@ -2334,6 +2385,7 @@ output$Cat2TestPvalue <- renderUI({
   })
   
   observeEvent(input$cat2_estimate_shuffle_5000, {
+    cat2Estimate$CI <- NULL
     DF <- cat2_estimate_shuffles(shuffles = 5000, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                                  n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                                  n2= sum(cat2_data$counts[2], cat2_data$counts[4]))
@@ -2828,6 +2880,7 @@ output$q2_TestPlot1 <- renderPlot({
 }, height = 400, width = 300)
 
 observeEvent(input$q2_shuffle_10, {
+  q2Test$moreExtremeCount <- NULL
   newShuffles <- t( sapply(1:10, function(x) sample(1:nrow(q2$data))))
   q2Test$shuffles <- rbind(q2Test$shuffles, newShuffles)
  q2Test$slopes <- c(q2Test$slopes, apply(newShuffles, 1, function(x) qr.coef(q2$qr, q2$data[x, 2])[2]))
@@ -2836,6 +2889,7 @@ observeEvent(input$q2_shuffle_10, {
 })
 
 observeEvent(input$q2_shuffle_100, {
+  q2Test$moreExtremeCount <- NULL
   newShuffles <- t( sapply(1:100, function(x) sample(1:nrow(q2$data))))
 #  print(dim(newShuffles))
   q2Test$shuffles <- rbind(q2Test$shuffles, newShuffles)
@@ -2845,6 +2899,7 @@ observeEvent(input$q2_shuffle_100, {
 
 })
 observeEvent(input$q2_shuffle_1000, {
+  q2Test$moreExtremeCount <- NULL
   newShuffles <- t( sapply(1:1000, function(x) sample(1:nrow(q2$data))))
  # print(dim(newShuffles))
   q2Test$shuffles <- rbind(q2Test$shuffles, newShuffles)
@@ -2854,6 +2909,7 @@ observeEvent(input$q2_shuffle_1000, {
 
 })
 observeEvent(input$q2_shuffle_5000, {
+  q2Test$moreExtremeCount <- NULL
   newShuffles <- t( sapply(1:5000, function(x) sample(1:nrow(q2$data))))
 #  print(dim(newShuffles))
   q2Test$shuffles <- rbind(q2Test$shuffles, newShuffles)
@@ -2885,6 +2941,17 @@ observeEvent(input$q2_countXtremes, {
     q2Test$sampleCount <- length(q2Test$slopes)
   }
 })
+
+observeEvent( input$q2_testDirection, {
+  q2Test$pvalue <- q2Test$moreExtremeCount <- NULL  
+  q2Test$colors <- rep(blu, length(q2Test$colors))
+})
+
+observeEvent( input$q2_test_cutoff, {
+  q2Test$pvalue <- q2Test$moreExtremeCount <- NULL  
+  q2Test$colors <- rep(blu, length(q2Test$colors))  
+})
+
 
 output$q2_TestPlot2 <- renderPlot({
   if(is.null( q2Test$shuffles) )
@@ -3057,6 +3124,7 @@ fluidRow(
   }, height = 400, width = 300)
   
   observeEvent(input$q2_resample_10, {
+    q2Estimate$CI <- NULL
     resamples <- t( sapply(1:10, function(x) sample(1:nrow(q2$data), replace = TRUE)))
     resamples <- resamples[apply(resamples,1, function(ndx) var(q2$data[ndx, 2])) > 1.e-15, ]
     q2Estimate$resamples <- rbind(q2Estimate$resamples, resamples)
@@ -3066,6 +3134,7 @@ fluidRow(
   })
   
 observeEvent(input$q2_resample_100, {
+  q2Estimate$CI <- NULL
   resamples <- t( sapply(1:100, function(x) sample(1:nrow(q2$data), replace = TRUE)))
   resamples <- resamples[apply(resamples,1, function(ndx) var(q2$data[ndx,2])) > 1.e-15, ]
   q2Estimate$resamples <- rbind(q2Estimate$resamples, resamples)
@@ -3075,6 +3144,7 @@ observeEvent(input$q2_resample_100, {
 })
 
 observeEvent(input$q2_resample_1000, {
+  q2Estimate$CI <- NULL
   resamples <- t( sapply(1:1000, function(x) sample(1:nrow(q2$data), replace = TRUE)))
   resamples <- resamples[apply(resamples,1, function(ndx) var(q2$data[ndx,2])) > 1.e-15, ]
   q2Estimate$resamples <- rbind(q2Estimate$resamples, resamples)
@@ -3084,6 +3154,7 @@ observeEvent(input$q2_resample_1000, {
 })
 
 observeEvent(input$q2_resample_5000, {
+  q2Estimate$CI <- NULL
   resamples <- t( sapply(1:5000, function(x) sample(1:nrow(q2$data), replace = TRUE)))
   resamples <- resamples[apply(resamples,1, function(ndx) var(q2$data[ndx,2])) > 1.e-15, ]
   q2Estimate$resamples <- rbind(q2Estimate$resamples, resamples)
@@ -3228,7 +3299,7 @@ output$q2_estimateUI <- renderUI({
          br(),
          fluidRow(
            column(3, offset = 2, 
-                  h5("Select Confidence Level (%)")
+                  h4("Select Confidence Level (%)")
            ),
            column(6,
                   fluidRow(
@@ -3246,7 +3317,7 @@ output$q2_estimateUI <- renderUI({
          if(!is.null(q2Estimate$CI)){
            fluidRow(
              column(8, offset = 4,
-                    h5(paste(round(100 * q2Estimate$confLevel), "% Confidence Interval Estimate: (", 
+                    h4(paste(round(100 * q2Estimate$confLevel), "% Confidence Interval Estimate: (", 
                              round(q2Estimate$CI[1],3), ",", 
                              round(q2Estimate$CI[2], 3), ")"))
              )
@@ -3600,6 +3671,7 @@ output$c1q1_Summary2 <- renderTable({
       })
       
       observeEvent(input$c1q1_test_shuffle_10, {
+        c1q1Test$moreExtremeCount <- NULL
         newShuffles <- sapply(1:10, function(x) sample(c1q1$data[,1]) )
         c1q1Test$shuffles <- cbind(c1q1Test$shuffles, newShuffles)
         c1q1Test$diff <- c(c1q1Test$diff, apply(newShuffles, 2, function(x) -diff(tapply(c1q1$data[,2], x, mean, na.rm=TRUE))))
@@ -3608,6 +3680,7 @@ output$c1q1_Summary2 <- renderTable({
       })
       
       observeEvent(input$c1q1_test_shuffle_100, {
+        c1q1Test$moreExtremeCount <- NULL
         newShuffles <- sapply(1:100, function(x) sample(c1q1$data[,1]) )
         c1q1Test$shuffles <- cbind(c1q1Test$shuffles, newShuffles)
         c1q1Test$diff <- c(c1q1Test$diff, apply(newShuffles, 2, function(x) -diff(tapply(c1q1$data[, 2], x, mean, na.rm=TRUE))))
@@ -3615,6 +3688,7 @@ output$c1q1_Summary2 <- renderTable({
         c1q1Test$colors <- rep(blu, length(c1q1Test$diff))
       })
       observeEvent(input$c1q1_test_shuffle_1000, {        
+        c1q1Test$moreExtremeCount <- NULL
         newShuffles <- sapply(1:1000, function(x) sample(c1q1$data[,1]) )
         c1q1Test$shuffles <- cbind(c1q1Test$shuffles, newShuffles)
         c1q1Test$diff <- c(c1q1Test$diff, apply(newShuffles, 2, function(x) -diff(tapply(c1q1$data[, 2], x, mean, na.rm=TRUE))))
@@ -3622,6 +3696,7 @@ output$c1q1_Summary2 <- renderTable({
         c1q1Test$colors <- rep(blu, length(c1q1Test$diff))
       })
       observeEvent(input$c1q1_test_shuffle_5000, {
+        c1q1Test$moreExtremeCount <- NULL
         newShuffles <- sapply(1:5000, function(x) sample(c1q1$data[,1]) )
         c1q1Test$shuffles <- cbind(c1q1Test$shuffles, newShuffles)
         c1q1Test$diff <- c(c1q1Test$diff, apply(newShuffles, 2, function(x) -diff(tapply(c1q1$data[, 2], x, mean, na.rm=TRUE))))
@@ -3646,6 +3721,15 @@ output$c1q1_Summary2 <- renderTable({
           c1q1Test$pvalue <- c1q1Test$moreExtremeCount/nsims
           c1q1Test$sampleCount <- length(c1q1Test$diff)
         }
+      })
+      observeEvent( input$c1q1_testDirection, {
+        c1q1Test$pvalue <- c1q1Test$moreExtremeCount <- NULL  
+        c1q1Test$colors <- rep(blu, length(c1q1Test$colors))
+      })
+      
+      observeEvent( input$c1q1_test_cutoff, {
+        c1q1Test$pvalue <- c1q1Test$moreExtremeCount <- NULL  
+        c1q1Test$colors <- rep(blu, length(c1q1Test$colors))  
       })
       
       output$c1q1_TestPlot2 <- renderPlot({
@@ -3851,6 +3935,7 @@ output$c1q1_EstTable1 <- renderTable({
 })
 
 observeEvent(input$c1q1_Est_shuffle_10, {
+  c1q1Est$CI <- NULL
   newShuffles <- c1q1_estimate_shuffles(10, c1q1Est$ndx1, c1q1Est$ndx2)
   c1q1Est$shuffles <- cbind(c1q1Est$shuffles, newShuffles)
   c1q1Est$diff <- c(c1q1Est$diff, apply(newShuffles, 2, function(x) -diff(tapply(c1q1$data[x,2], c1q1$data[x,1], mean, na.rm=TRUE))))
@@ -3859,6 +3944,7 @@ observeEvent(input$c1q1_Est_shuffle_10, {
 })
 
 observeEvent(input$c1q1_Est_shuffle_100, {
+  c1q1Est$CI <- NULL
   newShuffles <- c1q1_estimate_shuffles(100, c1q1Est$ndx1, c1q1Est$ndx2)
   c1q1Est$shuffles <- cbind(c1q1Est$shuffles, newShuffles)
   c1q1Est$diff <- c(c1q1Est$diff, apply(newShuffles, 2, function(x) -diff(tapply(c1q1$data[x, 2],  c1q1$data[x,1], mean, na.rm=TRUE))))
@@ -3866,6 +3952,7 @@ observeEvent(input$c1q1_Est_shuffle_100, {
   c1q1Est$colors <- rep(blu, length(c1q1Est$diff))
 })
 observeEvent(input$c1q1_Est_shuffle_1000, {        
+  c1q1Est$CI <- NULL
   newShuffles <- c1q1_estimate_shuffles(1000, c1q1Est$ndx1, c1q1Est$ndx2)
   c1q1Est$shuffles <- cbind(c1q1Est$shuffles, newShuffles)
   c1q1Est$diff <- c(c1q1Est$diff, apply(newShuffles, 2, function(x) -diff(tapply(c1q1$data[x, 2],  c1q1$data[x,1], mean, na.rm=TRUE))))
@@ -3873,6 +3960,7 @@ observeEvent(input$c1q1_Est_shuffle_1000, {
   c1q1Est$colors <- rep(blu, length(c1q1Est$diff))
 })
 observeEvent(input$c1q1_Est_shuffle_5000, {
+  c1q1Est$CI <- NULL
   newShuffles <- c1q1_estimate_shuffles(5000, c1q1Est$ndx1, c1q1Est$ndx2)
   c1q1Est$shuffles <- cbind(c1q1Est$shuffles, newShuffles)
   c1q1Est$diff <- c(c1q1Est$diff, apply(newShuffles, 2, function(x) -diff(tapply(c1q1$data[x, 2],  c1q1$data[x,1], mean, na.rm=TRUE))))
