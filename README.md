@@ -59,3 +59,14 @@ To use the app choose the type of data and enter or import it.
  *  Demos:  
   -- What does 'confidence' mean under 1 Categorical allows user to generate many CI's under the artifical assumption of known "p", and check the coverage rate.  
   -- Lurking Demos under '1 Categ' and '1 Quant' show how randomly assigning treatments evens out the effects of lurking variables (in the long run).  
+
+### Known issues:  
+  Under 1 Categ and 1 Quant, user can click on one of the points in the samplin/resampling distribution and see the data that generated that statistic.  Need to make that work for 2 Categ, 2 Quant, and one-of-each.  
+
+  Need to figure out how packrat works with github.  
+
+  Need to reduce margins around some of the plots.  
+
+  Need to improve the use of rhandsontable for data entry.  Currently the number of rows is locked. Could just ask user how many rows they need.
+
+
