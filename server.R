@@ -2023,13 +2023,9 @@ observeEvent(input$cat2_submitButton, {
                   h5(paste("Original difference in proportions: ", 
                             round(- diff(prop.table(as.table(matrix(cat2_data$counts, 2, 2)), 1))[1], 3)
                    )),
-                        
                   br(),
-                        
                   h4("Shuffled Sample"),
-                  tableOutput('cat2Test_Table') , 
-                  h5(paste("Shuffled difference in proportions: ", round(tail(as.numeric(cat2Test$difprop), 1), 3)
-                   ))
+                  uiOutput("Cat2TestShuffle")      
                   ),
                  column(8, 
                         h4(HTML("&nbsp;&nbsp;&nbsp;&nbsp; Null hypothesis: p<sub>1</sub> = p<sub>2</sub>")),                     
@@ -2040,31 +2036,34 @@ observeEvent(input$cat2_submitButton, {
       #br(),
       fluidRow(
         column(4, offset = 1, h4("How many more shuffles?")),
-        column(1,
-               actionButton("cat2_test_shuffle_10", label = "10")),
-        column(1,
-               actionButton("cat2_test_shuffle_100", label = "100")),
-        column(1,
-               actionButton("cat2_test_shuffle_1000", label = "1000")),
-        column(1,
-               actionButton("cat2_test_shuffle_5000", label = "5000"))
+        column(1,  actionButton("cat2_test_shuffle_10", label = "10")),
+        column(1,  actionButton("cat2_test_shuffle_100", label = "100")),
+        column(1,  actionButton("cat2_test_shuffle_1000", label = "1000")),
+        column(1,  actionButton("cat2_test_shuffle_5000", label = "5000"))
       ),
-      br(),
-      br(),
+      br(),      br(),
       fluidRow(
-        column(8, offset = 4, 
-               uiOutput("Cat2TestXtremes")
-        )
+        column(8, offset = 4,
+               h4("Click on a point to see its data table."),
+               uiOutput("Cat2TestXtremes")    )
       ),
      fluidRow(
         column(8, offset = 4, 
-          uiOutput("Cat2TestPvalue")
-       )
-    )
-   )          
+          uiOutput("Cat2TestPvalue")    )
+      )
+    )          
   }
 })
 
+output$Cat2TestShuffle <- renderUI({
+  if(!is.null(cat2Test$selected)) {
+    div(
+      tableOutput('cat2Test_Table') , 
+      h5(paste("Shuffled difference in proportions: ", round(cat2Test$selected, 3) ))
+    )
+ }
+}) 
+  
 output$Cat2TestXtremes <- renderUI({
   fluidRow(
     column(3, 
@@ -2112,7 +2111,7 @@ output$Cat2TestPvalue <- renderUI({
 
   cat2Test <- reactiveValues(difprop = NULL, phat1 = NULL, phat2 = NULL, observed = NULL, colors = NULL,
                              cutoff = NULL, direction = NULL, moreExtremeCount = NULL, pvalue = NULL, 
-                             sampleCount = NULL)
+                             sampleCount = NULL, selected = NULL)
   
   output$cat2OriginalData <- renderTable({ 
     if(input$cat2_submitButton ==0) return()
@@ -2132,7 +2131,8 @@ output$Cat2TestPvalue <- renderUI({
   })
   
   observeEvent(input$cat2_test_shuffle_10, {
-    cat2Test$moreExtremeCount <- NULL
+    cat2Test$moreExtremeCount <-  NULL
+    cat2Test$selected <-  NA
     DF <- cat2_test_shuffles(shuffles = 10, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                             n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                             n2= sum(cat2_data$counts[2], cat2_data$counts[4]))
@@ -2143,7 +2143,8 @@ output$Cat2TestPvalue <- renderUI({
   })
   
   observeEvent(input$cat2_test_shuffle_100, {
-    cat2Test$moreExtremeCount <- NULL
+    cat2Test$moreExtremeCount <-  NULL
+    cat2Test$selected <- NA
     DF <- cat2_test_shuffles(shuffles = 100, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                             n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                             n2= sum(cat2_data$counts[2], cat2_data$counts[4]))
@@ -2155,7 +2156,8 @@ output$Cat2TestPvalue <- renderUI({
   })
   
   observeEvent(input$cat2_test_shuffle_1000, {
-    cat2Test$moreExtremeCount <- NULL
+    cat2Test$moreExtremeCount <-  NULL
+    cat2Test$selected <- NA
     DF <- cat2_test_shuffles(shuffles = 1000, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                             n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                             n2= sum(cat2_data$counts[2], cat2_data$counts[4]))
@@ -2167,7 +2169,8 @@ output$Cat2TestPvalue <- renderUI({
   })
   
   observeEvent(input$cat2_test_shuffle_5000, {
-    cat2Test$moreExtremeCount <- NULL
+    cat2Test$moreExtremeCount <-   NULL
+    cat2Test$selected <-  NA
     DF <- cat2_test_shuffles(shuffles = 5000, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                             n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                             n2= sum(cat2_data$counts[2], cat2_data$counts[4]))
@@ -2183,17 +2186,32 @@ output$Cat2TestPvalue <- renderUI({
     if(is.null(cat2_data$counts)) return()
     n1 <- sum(cat2_data$counts[1], cat2_data$counts[3])
     n2 <- sum(cat2_data$counts[2], cat2_data$counts[4])
-    DF <- cat2_test_shuffles(1, cat2_data$counts[1], cat2_data$counts[2], n1, n2)
-    cat2Test$difprop <- DF[1,3]
-    cat2Test$phat1 <- DF[1,1]
-    cat2Test$phat2 <- DF[1,2]
-    cat2Test$colors <- blu
-    y1_new <- as.integer(n1 * DF[1,1])
-    y2_new <- as.integer(n2 * DF[1,2])
+    
+    if(is.null(cat2Test$difprop)){
+      DF <- cat2_test_shuffles(1, cat2_data$counts[1], cat2_data$counts[2], n1, n2)
+      cat2Test$difprop <- cat2Test$selected <- DF[1,3]
+      cat2Test$phat1 <- DF[1,1]
+      cat2Test$phat2 <- DF[1,2]
+      cat2Test$colors <- blu
+      props <- DF[1, 1:2]
+      y1_new <- as.integer(n1 * DF[1,1])
+      y2_new <- as.integer(n2 * DF[1,2])
+    } else  if(!is.null(input$cat2_Test_click)){
+      ##  We already have shuffled data and want to pick the clicked point
+      closestPoint <- which.min(abs( cat2Test$difprop - input$cat2_Test_click$x))
+      #cat("Close to number: ", closestPoint, "\n")
+      y1_new <- as.integer(n1 * cat2Test$phat1[closestPoint])
+      y2_new <- as.integer(n2 * cat2Test$phat2[closestPoint])
+      props <- c(cat2Test$phat1[closestPoint], cat2Test$phat2[closestPoint] )
+      cat2Test$selected <-  -diff(props)
+      ## cat(c(n1, n2, props, y1_new, y2_new), "\n")
+    } else {
+      return()
+    }
     # print(c(y1_new, n1, DF[1,1], y2_new, n2, DF[1,2], diff.p))
     count2 <- data.frame(count = as.integer(c(y1_new, y2_new)), 
                      "Sample Size" = as.integer(c(n1, n2)),
-                     Proportion = DF[1, 1:2])
+                     Proportion = props)
     colnames(count2)[1] <- cat2_data$names[1]
     rownames(count2) <- cat2_data$groups[c(1,3)]
     count2
