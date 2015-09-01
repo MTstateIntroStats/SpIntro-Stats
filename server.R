@@ -2285,16 +2285,17 @@ output$Cat2TestPvalue <- renderUI({
                div(
                  fluidRow(
                     column(4, 
-                        h3("Original Data"),
+                        h4("Original Data"),
                         tableOutput("cat2_CIPrep"),
                         h5(paste("Original Difference in proportions: ", 
                                  round(-diff(prop.table(as.table(matrix(cat2_data$counts, 2, 2)), 1))[1],3))), 
-                        br(),
+                        hr(),
                         
-                        h3("One Resampled Dataset"),
-                        tableOutput('cat2Estimate_Table'),
-                        h5(paste("Difference in proportions for resampled data: " , 
-                                 round(as.numeric(cat2Estimate$difprop[1]), 3)))
+                        h4("One Resampled Dataset"),
+                        uiOutput("Cat2EstimateShuffle")   
+                        #tableOutput('cat2Estimate_Table'),
+                        #h5(paste("Difference in proportions for resampled data: " , 
+                        #         round(as.numeric(cat2Estimate$difprop[1]), 3)))
                     ),
                  
                    column(8, 
@@ -2348,16 +2349,39 @@ output$Cat2TestPvalue <- renderUI({
   })
   
   cat2Estimate <- reactiveValues(difprop = NULL, phat1 = NULL, phat2 = NULL, observed = NULL, colors = blu,
-                             confLevel = NULL, CI = NULL)
+                             confLevel = NULL, CI = NULL, selected = NULL)
+  
+  
+  output$Cat2EstimateShuffle <- renderUI({
+    if(!is.null(cat2Estimate$selected)) {
+      div(
+        tableOutput('cat2Estimate_Table') , 
+        h5(paste("Shuffled difference in proportions: ", round(cat2Estimate$selected, 3) ))
+      )
+    }
+  }) 
+  
   
   output$cat2_CIPrep <- renderTable({ 
     if(input$cat2_submitButton ==0) return()
+    if(is.null(cat2_data$counts)) return()
+    
     y1 = cat2_data$counts[1]
     y2 = cat2_data$counts[2]
     n1 <- sum(cat2_data$counts[1], cat2_data$counts[3])
     n2 <- sum(cat2_data$counts[2], cat2_data$counts[4])
     p1 <- round(y1/n1,3)
     p2 = round(y2/n2,3)
+    
+    if(is.null(cat2Estimate$difprop)  ){
+      DF <- cat2_test_shuffles(1, y1, y2, n1, n2)
+      cat2Estimate$selected <- as.numeric(DF[1,3])
+      cat2Estimate$difprop <- DF[1,3]
+      cat2Estimate$phat1 <- DF[1,1]
+      cat2Estimate$phat2 <- DF[1,2]
+      cat2Estimate$colors <- blu
+    }
+    
     #print(c(y1, n1, y2, n2, p1, p2))
     counts <- as.table(matrix(as.numeric(c(y1, y2, n1, n2, p1, p2)), 2, 3))
     colnames(counts) <- c("Success", "Sample Size", "Proportion")
@@ -2369,6 +2393,7 @@ output$Cat2TestPvalue <- renderUI({
 
   observeEvent(input$cat2_estimate_shuffle_10, {
     cat2Estimate$CI <- NULL
+    cat2Estimate$selected <- NA
     DF <- cat2_estimate_shuffles(shuffles = 10, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                                  n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                                  n2= sum(cat2_data$counts[2], cat2_data$counts[4]))
@@ -2376,13 +2401,12 @@ output$Cat2TestPvalue <- renderUI({
     cat2Estimate$phat1 <- rbind(cat2Estimate$phat1, as.matrix(DF[,1]))
     cat2Estimate$phat2 <- rbind(cat2Estimate$phat2, as.matrix(DF[,2]))
     cat2Estimate$colors <- rep(blu, length(cat2Estimate$difprop))
-    cat2Estimate$observed <- (cat2_data$counts[1]/sum(cat2_data$counts[1], cat2_data$counts[3])) - 
-      (cat2_data$counts[2]/sum(cat2_data$counts[2], cat2_data$counts[4]))
-    
+
   })
   
   observeEvent(input$cat2_estimate_shuffle_100, {
     cat2Estimate$CI <- NULL
+    cat2Estimate$selected <- NA
     DF <- cat2_estimate_shuffles(shuffles = 100, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                                  n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                                  n2= sum(cat2_data$counts[2], cat2_data$counts[4]))
@@ -2390,13 +2414,12 @@ output$Cat2TestPvalue <- renderUI({
     cat2Estimate$phat1 <- rbind(cat2Estimate$phat1, as.matrix(DF[,1]))
     cat2Estimate$phat2 <- rbind(cat2Estimate$phat2, as.matrix(DF[,2]))
     cat2Estimate$colors <- rep(blu, length(cat2Estimate$difprop))
-    cat2Estimate$observed <- (cat2_data$counts[1]/sum(cat2_data$counts[1], cat2_data$counts[3])) - 
-      (cat2_data$counts[2]/sum(cat2_data$counts[2], cat2_data$counts[4]))
-    
+
   })
   
   observeEvent(input$cat2_estimate_shuffle_1000, {
     cat2Estimate$CI <- NULL
+    cat2Estimate$selected <- NA
     DF <- cat2_estimate_shuffles(shuffles = 1000, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                                  n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                                  n2= sum(cat2_data$counts[2], cat2_data$counts[4]))
@@ -2404,13 +2427,12 @@ output$Cat2TestPvalue <- renderUI({
     cat2Estimate$phat1 <- rbind(cat2Estimate$phat1, as.matrix(DF[,1]))
     cat2Estimate$phat2 <- rbind(cat2Estimate$phat2, as.matrix(DF[,2]))
     cat2Estimate$colors <- rep(blu, length(cat2Estimate$difprop))
-    cat2Estimate$observed <- (cat2_data$counts[1]/sum(cat2_data$counts[1], cat2_data$counts[3])) - 
-      (cat2_data$counts[2]/sum(cat2_data$counts[2], cat2_data$counts[4]))
-    
+
   })
   
   observeEvent(input$cat2_estimate_shuffle_5000, {
     cat2Estimate$CI <- NULL
+    cat2Estimate$selected <- NA
     DF <- cat2_estimate_shuffles(shuffles = 5000, y1 = cat2_data$counts[1], y2 = cat2_data$counts[2], 
                                  n1= sum(cat2_data$counts[1], cat2_data$counts[3]), 
                                  n2= sum(cat2_data$counts[2], cat2_data$counts[4]))
@@ -2418,9 +2440,7 @@ output$Cat2TestPvalue <- renderUI({
     cat2Estimate$phat1 <- rbind(cat2Estimate$phat1, as.matrix(DF[,1]))
     cat2Estimate$phat2 <- rbind(cat2Estimate$phat2, as.matrix(DF[,2]))
     cat2Estimate$colors <- rep(blu, length(cat2Estimate$difprop))
-    cat2Estimate$observed <- (cat2_data$counts[1]/sum(cat2_data$counts[1], cat2_data$counts[3])) - 
-      (cat2_data$counts[2]/sum(cat2_data$counts[2], cat2_data$counts[4]))
-    
+
    })
   
   observeEvent(input$cat2_conf80,{
@@ -2481,16 +2501,36 @@ output$Cat2TestPvalue <- renderUI({
     
     n1 <- sum(cat2_data$counts[1], cat2_data$counts[3])
     n2 <- sum(cat2_data$counts[2], cat2_data$counts[4])
-    DF <- cat2_estimate_shuffles(1, cat2_data$counts[1], cat2_data$counts[2], n1, n2)
-    cat2Estimate$difprop <- DF[1,3]
-    cat2Estimate$phat1 <- DF[1,1]
-    cat2Estimate$phat2 <- DF[1,2]
-    cat2Estimate$colors <- blu
-    y1_new <- as.integer(n1 * DF[1,1])
-    y2_new <- as.integer(n2 * DF[1,2])
-    diff.p <- DF[1,1] - DF[1,3]
+    
+    if(length(cat2Estimate$difprop) < 2 ){
+      DF <- cat2_test_shuffles(1, cat2_data$counts[1], cat2_data$counts[2], n1, n2)
+      cat2Estimate$selected <- as.numeric(DF[1,3])
+      cat2Estimate$difprop <- DF[1,3]
+      cat2Estimate$phat1 <- DF[1,1]
+      cat2Estimate$phat2 <- DF[1,2]
+      cat2Estimate$colors <- blu
+      props <- DF[1, 1:2]
+      y1_new <- as.integer(n1 * DF[1,1])
+      y2_new <- as.integer(n2 * DF[1,2])
+    } else  if(!is.null(input$cat2_Estimate_click)){
+      ##  We already have shuffled data and want to pick the clicked point
+      closestPoint <- which.min(abs( cat2Estimate$difprop - input$cat2_Estimate_click$x))
+      #cat("Close to number: ", closestPoint, "\n")
+      y1_new <- as.integer(n1 * cat2Estimate$phat1[closestPoint])
+      y2_new <- as.integer(n2 * cat2Estimate$phat2[closestPoint])
+      props <- c(cat2Estimate$phat1[closestPoint], cat2Estimate$phat2[closestPoint] )
+      cat2Estimate$selected <-  -diff(props)
+      cat2Estimate$colors <- rep( blu, length(cat2Estimate$difprop))
+      #cat2Estimate$colors[closestPoint] <- grn
+      
+      ## cat(c(n1, n2, props, y1_new, y2_new), "\n")
+    } else {
+      return()
+    }
+    
+    #diff.p <- DF[1,1] - DF[1,3]
     #print(c(y1_new, n1, DF[1,1], y2_new, n2, DF[1,2], diff.p))
-    count2 <- as.table(matrix(as.numeric(c(y1_new, y2_new, n1, n2, DF[1:2])), 2, 3))
+    count2 <- as.table(matrix(as.numeric(c(y1_new, y2_new, n1, n2, props)), 2, 3))
     colnames(count2) <- c("Success", "Sample Size", "Proportion")
     rownames(count2) <- cat2_data$groups[c(1,3)]
     count2
