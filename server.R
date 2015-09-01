@@ -2115,10 +2115,13 @@ output$Cat2TestPvalue <- renderUI({
   
   output$cat2OriginalData <- renderTable({ 
     if(input$cat2_submitButton ==0) return()
+    
     y1 = cat2_data$counts[1]
     y2 = cat2_data$counts[2]
     n1 <- sum(cat2_data$counts[1], cat2_data$counts[3])
     n2 <- sum(cat2_data$counts[2], cat2_data$counts[4])
+    
+
     p1 <- round(y1/n1,3)
     p2 = round(y2/n2,3)
     # print(c(y1, n1, y2, n2, p1, p2))
@@ -2187,9 +2190,10 @@ output$Cat2TestPvalue <- renderUI({
     n1 <- sum(cat2_data$counts[1], cat2_data$counts[3])
     n2 <- sum(cat2_data$counts[2], cat2_data$counts[4])
     
-    if(is.null(cat2Test$difprop)){
+    if(length(cat2Test$difprop) < 2 ){
       DF <- cat2_test_shuffles(1, cat2_data$counts[1], cat2_data$counts[2], n1, n2)
-      cat2Test$difprop <- cat2Test$selected <- DF[1,3]
+      cat2Test$selected <- as.numeric(DF[1,3])
+      cat2Test$difprop <- DF[1,3]
       cat2Test$phat1 <- DF[1,1]
       cat2Test$phat2 <- DF[1,2]
       cat2Test$colors <- blu
@@ -2204,6 +2208,9 @@ output$Cat2TestPvalue <- renderUI({
       y2_new <- as.integer(n2 * cat2Test$phat2[closestPoint])
       props <- c(cat2Test$phat1[closestPoint], cat2Test$phat2[closestPoint] )
       cat2Test$selected <-  -diff(props)
+      cat2Test$colors <- rep( blu, length(cat2Test$difprop))
+      #cat2Test$colors[closestPoint] <- grn
+      
       ## cat(c(n1, n2, props, y1_new, y2_new), "\n")
     } else {
       return()
