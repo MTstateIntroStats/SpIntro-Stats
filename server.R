@@ -1951,6 +1951,14 @@ observeEvent( input$q1_prob_txt,{
 {
 cat2_data <- reactiveValues(counts = NULL, names = NULL, groups = NULL)
 
+cat2Test <- reactiveValues(difprop = NULL, phat1 = NULL, phat2 = NULL, observed = NULL, colors = NULL,
+                           cutoff = NULL, direction = NULL, moreExtremeCount = NULL, pvalue = NULL, 
+                           sampleCount = NULL, selected = NULL)
+
+cat2Estimate <- reactiveValues(difprop = NULL, phat1 = NULL, phat2 = NULL, observed = NULL, colors = blu,
+                               confLevel = NULL, CI = NULL, selected = NULL)
+
+
 observeEvent(input$cat2_submitButton, {
   cat2Test$difprop <- cat2Test$phat1 <- cat2Test$phat2 <- cat2Test$observed <- cat2Test$colors <- cat2Test$moreExtremeCount  <- cat2Test$pvalue <- NULL
   cat2Estimate$difprop  <- cat2Estimate$phat1  <- cat2Estimate$phat2  <- cat2Estimate$observed  <- cat2Estimate$colors  <- cat2Estimate$confLevel  <- cat2Estimate$CI <- NULL
@@ -2109,9 +2117,6 @@ output$Cat2TestPvalue <- renderUI({
 
 ## cat2 test plots --------------------------------------------------
 
-  cat2Test <- reactiveValues(difprop = NULL, phat1 = NULL, phat2 = NULL, observed = NULL, colors = NULL,
-                             cutoff = NULL, direction = NULL, moreExtremeCount = NULL, pvalue = NULL, 
-                             sampleCount = NULL, selected = NULL)
   
   output$cat2OriginalData <- renderTable({ 
     if(input$cat2_submitButton ==0) return()
@@ -2120,7 +2125,15 @@ output$Cat2TestPvalue <- renderUI({
     y2 = cat2_data$counts[2]
     n1 <- sum(cat2_data$counts[1], cat2_data$counts[3])
     n2 <- sum(cat2_data$counts[2], cat2_data$counts[4])
-    
+
+   if(is.null(cat2Test$difprop) ){
+       DF <- cat2_test_shuffles(1, cat2_data$counts[1], cat2_data$counts[2], n1, n2)
+       cat2Test$selected <- as.numeric(DF[1,3])
+       cat2Test$difprop <- DF[1,3]
+       cat2Test$phat1 <- DF[1,1]
+       cat2Test$phat2 <- DF[1,2]
+       cat2Test$colors <- blu
+    }    
 
     p1 <- round(y1/n1,3)
     p2 = round(y2/n2,3)
@@ -2189,8 +2202,7 @@ output$Cat2TestPvalue <- renderUI({
     if(is.null(cat2_data$counts)) return()
     n1 <- sum(cat2_data$counts[1], cat2_data$counts[3])
     n2 <- sum(cat2_data$counts[2], cat2_data$counts[4])
-    
-    if(length(cat2Test$difprop) < 2 ){
+    if(is.null(cat2Test$difprop) ){
       DF <- cat2_test_shuffles(1, cat2_data$counts[1], cat2_data$counts[2], n1, n2)
       cat2Test$selected <- as.numeric(DF[1,3])
       cat2Test$difprop <- DF[1,3]
@@ -2217,7 +2229,7 @@ output$Cat2TestPvalue <- renderUI({
     }
     # print(c(y1_new, n1, DF[1,1], y2_new, n2, DF[1,2], diff.p))
     count2 <- data.frame(count = as.integer(c(y1_new, y2_new)), 
-                     "Sample Size" = as.integer(c(n1, n2)),
+                     "SampleSize" = as.integer(c(n1, n2)),
                      Proportion = props)
     colnames(count2)[1] <- cat2_data$names[1]
     rownames(count2) <- cat2_data$groups[c(1,3)]
@@ -2246,11 +2258,10 @@ output$Cat2TestPvalue <- renderUI({
   
   
   output$cat2Test_Plot2 <- renderPlot({
-    if(input$cat2_submitButton == 0) return()
+    ##if(input$cat2_submitButton == 0) return()
     if(is.null(cat2Test$difprop)) return()
-    
     DF <- sort(cat2Test$difprop)
-    
+    ## print(head(DF))
     if(length(DF) == 1){
       w <- 1
       radius = 4
@@ -2348,10 +2359,7 @@ output$Cat2TestPvalue <- renderUI({
     }
   })
   
-  cat2Estimate <- reactiveValues(difprop = NULL, phat1 = NULL, phat2 = NULL, observed = NULL, colors = blu,
-                             confLevel = NULL, CI = NULL, selected = NULL)
-  
-  
+
   output$Cat2EstimateShuffle <- renderUI({
     if(!is.null(cat2Estimate$selected)) {
       div(
@@ -2502,7 +2510,7 @@ output$Cat2TestPvalue <- renderUI({
     n1 <- sum(cat2_data$counts[1], cat2_data$counts[3])
     n2 <- sum(cat2_data$counts[2], cat2_data$counts[4])
     
-    if(length(cat2Estimate$difprop) < 2 ){
+    if(is.null(cat2Estimate$difprop)  ){
       DF <- cat2_test_shuffles(1, cat2_data$counts[1], cat2_data$counts[2], n1, n2)
       cat2Estimate$selected <- as.numeric(DF[1,3])
       cat2Estimate$difprop <- DF[1,3]
@@ -2538,7 +2546,7 @@ output$Cat2TestPvalue <- renderUI({
   
   
   output$cat2Estimate_Plot2 <- renderPlot({
-    if(input$cat2_submitButton == 0) return()
+    ## if(input$cat2_submitButton == 0) return()
     if(is.null(cat2Estimate$difprop)) return()
     
     DF <- sort(cat2Estimate$difprop)
