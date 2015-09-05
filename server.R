@@ -1258,23 +1258,23 @@ output$q1_TestPlot1 <- renderPlot({
 
 },  height = 360, width = 300)
 
-output$q1_TestPrep2 <- renderTable({
-  if( is.null(q1$data))  return()
-  DF <- rbind(mean = mean(q1$data[, 1], na.rm = TRUE ),
-              sd = sd(q1$data[, 1], na.rm = TRUE),
-              n = length(q1$data[,1]))
-  colnames(DF) <- q1$names
-  DF
-})
-
-output$q1_TestTable1 <- renderTable({
-  if( is.null(q1$data))  return()
-  DF <- rbind(mean = mean(q1Test$shuffles[,1], na.rm = TRUE ),
-              sd = sd(q1Test$shuffles[,1], na.rm = TRUE),
-              length = length(q1Test$shuffles[,1]))
-  colnames(DF) <- q1$names
-  DF
-})
+# output$q1_TestPrep2 <- renderTable({
+#   if( is.null(q1$data))  return()
+#   DF <- rbind(mean = mean(q1$data[, 1], na.rm = TRUE ),
+#               sd = sd(q1$data[, 1], na.rm = TRUE),
+#               n = length(q1$data[,1]))
+#   colnames(DF) <- q1$names
+#   DF
+# })
+# 
+# output$q1_TestTable1 <- renderTable({
+#   if( is.null(q1$data))  return()
+#   DF <- rbind(mean = mean(q1Test$shuffles[,1], na.rm = TRUE ),
+#               sd = sd(q1Test$shuffles[,1], na.rm = TRUE),
+#               length = length(q1Test$shuffles[,1]))
+#   colnames(DF) <- q1$names
+#   DF
+# })
 
 observeEvent(input$q1_test_shuffle_10, {
   q1Test$moreExtremeCount <- NULL
@@ -3476,6 +3476,8 @@ observeEvent(  input$c1q1_useLddBtn, {
   DF <- DF[, whichIsFactor:(3 - whichIsFactor)]
   c1q1$names <- names(DF)
   c1q1$data <- data.frame(DF)
+  c1q1Test$shuffles <- c1q1Test$diff <- NULL
+  c1q1Est$shuffles <- c1q1Test$diff <- NULL
   output$c1q1DataIn <- renderText({
     "Data are entered, you may now choose to estimate or test the true difference in means"
   })
@@ -3494,6 +3496,8 @@ observeEvent(  input$c1q1_useCSVBtn,{
   if("V1" %in% names(DF)[1])    names(DF) <- c("group", "y")
   c1q1$names <- names(DF)
   c1q1$data <- data.frame(DF)
+  c1q1Test$shuffles <- c1q1Test$diff <- NULL
+  c1q1Est$shuffles <- c1q1Test$diff <- NULL
   output$c1q1DataIn <- renderText({
     "Data are entered, you may now choose to estimate or test the true difference in means"
   })
@@ -3506,6 +3510,8 @@ observeEvent(  input$c1q1_useHotBtn,{
   names(DF) <- c("group","y")
   c1q1$names <- names(DF)
   c1q1$data <- DF
+  c1q1Test$shuffles <- c1q1Test$diff <- NULL
+  c1q1Est$shuffles <- c1q1Test$diff <- NULL
   output$c1q1DataIn <- renderText({
     "Data are entered, you may now choose to estimate or test the true difference in means"
   })
@@ -3532,12 +3538,12 @@ output$c1q1_hot = renderRHandsontable({
   ##  Describe and summarize ------------------------------------------------- 1c1q
 {
 
-c1q1Test <- reactiveValues(shuffles = NULL,  observed = NULL, diff = NULL, confLevel = NULL, colors = NULL, 
+c1q1Test <- reactiveValues(shuffles = NULL,  observed = NULL, diff = NULL,  colors = NULL, 
                            moreExtremeCount = NULL, pvalue = NULL, direction = NULL, cutoff = NULL,
-                           sampleCount = NULL)
+                           sampleCount = NULL, selected = NULL)
 
 c1q1Est <- reactiveValues(shuffles = NULL,  observed = NULL, diff = NULL, confLevel = NULL, colors = NULL, 
-                          ndx1 = NULL, ndx2 = NULL, CI = NULL )
+                          ndx1 = NULL, ndx2 = NULL, CI = NULL, selected = NULL )
 
 output$c1q1_Plot <- renderPlot( {
   if( is.null(c1q1$data)) 
@@ -3612,19 +3618,10 @@ output$c1q1_Summary2 <- renderTable({
             h3("Test: 'Are Two Means Equal?'"),
             fluidRow(
               column(4, 
-                      plotOutput("c1q1_TestPrep1")
+                      plotOutput("c1q1_TestPlot1")
                       ),
                column(3,
-                      br(),
-                      br(),
-                      tableOutput("c1q1_TestPrep2"),
-                      h5(paste("Original Difference in means = ", 
-                               round(-diff(tapply(c1q1$data[, 2], c1q1$data[, 1], mean, na.rm=TRUE)), 3))),
-                      
-                      br(),
-                      br(),
-                      tableOutput("c1q1_TestTable1"),
-                      h5(paste("Shuffled difference in means = ", round(as.numeric(c1q1Test$diff[1]),3)))
+                      uiOutput("c1q1_TestTables")
                      ),
                column(5, 
                       h4(HTML("Null hypothesis: &mu;<sub>1</sub> = &mu;<sub>2</sub>")),
@@ -3649,20 +3646,30 @@ output$c1q1_Summary2 <- renderTable({
           )
       }
     })
+   output$c1q1_TestTables <- renderUI({
+     div(
+      tableOutput("c1q1_TestTable1"),
+      h5(paste("Original Difference in means = ", 
+              round(-diff(tapply(c1q1$data[, 2], c1q1$data[, 1], mean, na.rm=TRUE)), 3))),
+      br(),
+      tableOutput("c1q1_TestTable2"),
+      h5(paste("Shuffled difference in means = ", round(as.numeric(c1q1Test$selected),3)))
+    )  
+   })
+   
+    output$c1q1_SampDistPlot <- renderUI({ 
+      plotOutput('c1q1_TestPlot2', click = 'c1q1_Test_click')
+   })
       
-      output$c1q1_SampDistPlot <- renderUI({ 
-        plotOutput('c1q1_TestPlot2') #, click = 'c1q1_Test_click')
-      })
-      
-      output$c1q1TestPvalue <- renderUI({
-        if(!is.null(c1q1Test$moreExtremeCount)){
-          #fluidRow(
-          #  column(9,  
-          h4(paste(c1q1Test$moreExtremeCount, " of ", c1q1Test$sampleCount, "values are ",
+   output$c1q1TestPvalue <- renderUI({
+      if(!is.null(c1q1Test$moreExtremeCount)){
+         #fluidRow(
+         #  column(9,  
+         h4(paste(c1q1Test$moreExtremeCount, " of ", c1q1Test$sampleCount, "values are ",
                                             c1q1Test$direction," than", c1q1Test$cutoff, ",  p-value =  ", round(c1q1Test$pvalue,5)))
-          #  ))
-        }
-      })
+        #  ))
+     }
+   })
       
       output$c1q1TestXtremes <- renderUI({
         fluidRow(
@@ -3691,39 +3698,51 @@ output$c1q1_Summary2 <- renderTable({
       
       # -------- 1 cat  1 quant test plots ------------------
       
-      output$c1q1_TestPrep1 <- renderPlot({
+      output$c1q1_TestPlot1  <- renderPlot({
         if(is.null(c1q1$data)) return()
         ## Original Data
         DF <- c1q1$data
         names(DF) <- c("group","y")
         DF$group <- factor(DF$group)
         #print(DF)
-        
-        plot1 <- qplot(y=y, x=group, data = DF, geom="boxplot", main = "Original Data") +
-          theme_bw() + xlab("") +  coord_flip() + ylab(c1q1$names[2])
+        par(mfrow = c(2,1), mar = c(4.1,5.1,3.1,.1))
+        boxplot( y ~ group, data = DF, horizontal = TRUE,  main = "Original Data", las =1)
+      #  plot1 <- qplot(y=y, x=group, data = DF, geom="boxplot", main = "Original Data") +
+      #    theme_bw() + xlab("") +  coord_flip() + ylab(c1q1$names[2])
 
-                ## Plot One Shuffle 
-     
-        shuffle <- sample(c1q1$data[,1])
-        c1q1Test$shuffles <- as.matrix(shuffle, ncol = 1)
-        c1q1Test$diff <- -diff(tapply(DF$y, shuffle, mean))
-        c1q1Test$colors <- blu
-        ### stores samples as columns
-        
-        DF$group2 <- shuffle
+        ## Plot One Shuffle 
+        if(!is.null(input$c1q1_Test_click)){
+          ##  We already have shuffled data and want to pick the clicked point
+          closestPnt <- which.min(abs( c1q1Test$diff - input$c1q1_Test_click$x))
+          #cat("Close to number: ", closestPoint, "\n")
+          DF$group2 <- c1q1Test$shuffles[, closestPnt]
+          c1q1Test$colors <- rep( blu, length(c1q1Test$diff))
+        } else if(is.null(c1q1Test$diff)){
+          shuffle <- sample(c1q1$data[,1])
+          c1q1Test$shuffles <- as.matrix(shuffle, ncol = 1)
+          c1q1Test$diff <- -diff(tapply(DF$y, shuffle, mean))
+          c1q1Test$colors <- blu
+          ### stores samples as columns
+          DF$group2 <- shuffle
+        } else {
+          ## use latests shuffle
+          DF$group2 <- c1q1Test$shuffles[, ncol(c1q1Test$shuffles)]
+        }
         #print(DF)
-        plot2 <- qplot(y=y, x=group2, data = DF, geom="boxplot", main = "Shuffled Sample") +
-          theme_bw() + xlab("") +  coord_flip() + ylab(c1q1$names[2])
+      #  plot2 <- qplot(y=y, x=group2, data = DF, geom="boxplot", main = "Shuffled Sample") +
+      #    theme_bw() + xlab("") +  coord_flip() + ylab(c1q1$names[2])
+       boxplot( y ~ group2, data = DF, horizontal = TRUE,  main = "Shuffled Sample", las =1)
         
         
 #         w2 <- unlist(tapply(DF$y, list(z, DF$group2), function(x) 1:length(x)))
 #         tempDF <- data.frame(DF, w=w2[!is.na(w2)])
 #         plot2 <- qplot(data = tempDF, x = y, y = w, colour = I(blu), size = I(4), main = "Shuffled Data") + 
 #                     theme_bw() + xlab(c1q1$names[2]) + ylab("Count") + facet_wrap( ~ group2)
-         grid.arrange(plot1, plot2, heights = c(3, 3)/6, ncol=1)
+       #plot1
+        #         grid.arrange(plot1, plot2, heights = c(3, 3)/6, ncol=1)
       }, height = 360, width = 320)
       
-      output$c1q1_TestPrep2 <- renderTable({
+      output$c1q1_TestTable1 <- renderTable({
         if(is.null(c1q1$data))  return()
         #print(c1q1$data)
         DF <- data.frame(mean = tapply(c1q1$data[,2], c1q1$data[,1], mean, na.rm = TRUE ),
@@ -3732,19 +3751,26 @@ output$c1q1_Summary2 <- renderTable({
         rownames(DF) <- levels(c1q1$data[,1])
         DF
       })
-      
-      
-      output$c1q1_TestTable1 <- renderTable({
+
+      output$c1q1_TestTable2  <- renderTable({
         if( is.null(c1q1$data))  return()
-        DF <- data.frame(mean = tapply(c1q1$data[, 2], c1q1Test$shuffles[, 1], mean, na.rm = TRUE ),
-                    sd = tapply(c1q1$data[, 2], c1q1Test$shuffles[, 1], sd, na.rm = TRUE ),
-                    n = tapply(c1q1$data[, 2], c1q1Test$shuffles[, 1], length))
+        if(!is.null(input$c1q1_Test_click)){
+          closestPt <- which.min(abs( c1q1Test$diff - input$c1q1_Test_click$x))
+          #cat("Close to number: ", closestPoint, "\n")
+        } else {
+          closestPt <- ncol(c1q1Test$shuffles)
+        }
+        DF <- data.frame(mean = tapply(c1q1$data[, 2], c1q1Test$shuffles[, closestPt], mean, na.rm = TRUE ),
+              sd = tapply(c1q1$data[, 2], c1q1Test$shuffles[, closestPt], sd, na.rm = TRUE ),
+              n = tapply(c1q1$data[, 2], c1q1Test$shuffles[, closestPt], length))
+        c1q1Test$selected <- -diff(DF$mean)
         rownames(DF) <- levels(c1q1$data[,1])
         DF
       })
       
       observeEvent(input$c1q1_test_shuffle_10, {
         c1q1Test$moreExtremeCount <- NULL
+        c1q1Test$selected <- NA
         newShuffles <- sapply(1:10, function(x) sample(c1q1$data[,1]) )
         c1q1Test$shuffles <- cbind(c1q1Test$shuffles, newShuffles)
         c1q1Test$diff <- c(c1q1Test$diff, apply(newShuffles, 2, function(x) -diff(tapply(c1q1$data[,2], x, mean, na.rm=TRUE))))
@@ -3754,6 +3780,7 @@ output$c1q1_Summary2 <- renderTable({
       
       observeEvent(input$c1q1_test_shuffle_100, {
         c1q1Test$moreExtremeCount <- NULL
+        c1q1Test$selected <- NA
         newShuffles <- sapply(1:100, function(x) sample(c1q1$data[,1]) )
         c1q1Test$shuffles <- cbind(c1q1Test$shuffles, newShuffles)
         c1q1Test$diff <- c(c1q1Test$diff, apply(newShuffles, 2, function(x) -diff(tapply(c1q1$data[, 2], x, mean, na.rm=TRUE))))
@@ -3761,6 +3788,7 @@ output$c1q1_Summary2 <- renderTable({
         c1q1Test$colors <- rep(blu, length(c1q1Test$diff))
       })
       observeEvent(input$c1q1_test_shuffle_1000, {        
+        c1q1Test$selected <- NA
         c1q1Test$moreExtremeCount <- NULL
         newShuffles <- sapply(1:1000, function(x) sample(c1q1$data[,1]) )
         c1q1Test$shuffles <- cbind(c1q1Test$shuffles, newShuffles)
@@ -3769,6 +3797,7 @@ output$c1q1_Summary2 <- renderTable({
         c1q1Test$colors <- rep(blu, length(c1q1Test$diff))
       })
       observeEvent(input$c1q1_test_shuffle_5000, {
+        c1q1Test$selected <- NA
         c1q1Test$moreExtremeCount <- NULL
         newShuffles <- sapply(1:5000, function(x) sample(c1q1$data[,1]) )
         c1q1Test$shuffles <- cbind(c1q1Test$shuffles, newShuffles)
