@@ -20,7 +20,7 @@ grn <- rgb(0, 1, 0, alpha=.4)
 rd  <- rgb(1, 0, 0, alpha=.5)
 blu <- rgb(0, 0, 1, alpha=.4)
 
-shinyServer(function(input, output, session) {
+ shinyServer( function(input, output, session) {
 
   ## 1 Categorical  -----------------------------------------------------------
  
@@ -936,9 +936,8 @@ output$normalProbPlot1 <- renderPlot({
                                confLevel = NULL, colors = NULL, colors = NULL, CI = NULL)
   
   
- 
-##  Enter data    ----------------------------------------- quant 1
 
+##  Enter data    ----------------------------------------- quant 1
 {
 
 output$quant1DataIn <- renderText({ "How would you like to input the data? " 
@@ -3083,9 +3082,7 @@ output$q2_testUI <- renderUI({
               plotOutput('q2_TestPlot1')
        ),
        column(5,
-              # h5("Click on a point to see that shuffle"),
               uiOutput('q2_SampDistPlot')
-       ###
        )
      ),
      fluidRow(
@@ -3101,7 +3098,9 @@ output$q2_testUI <- renderUI({
                actionButton("q2_shuffle_5000", label = "5000"))
      ),
      br(),
-     br(),
+     fluidRow(
+       column(5, offset = 4,  h4("Click on a point to see that shuffle"))
+     ),
      fluidRow(
         column(10, offset = 2, 
           uiOutput("slopeTestXtremes")
@@ -3117,7 +3116,7 @@ output$q2_testUI <- renderUI({
  })
 
 output$q2_SampDistPlot <- renderUI({ 
-  plotOutput('q2_TestPlot2')#, click = 'q2_Test_click')
+  plotOutput('q2_TestPlot2', click = 'q2_Test_click')
   })
 
 output$slopeTestPvalue <- renderUI({
@@ -3148,7 +3147,70 @@ fluidRow(
   ###  Estimate slope / correlation with CI ----------------------------------- q2 
   ##  
 {
-  output$q2_CIPrep <- renderTable({
+
+output$q2_estimateUI <- renderUI({
+  if( is.null(q2$data)){
+    h4(" You must first enter data. Choose 'Enter/Describe Data'.")
+  } else {
+    fluidPage(
+      fluidRow(
+        column(3, tableOutput('q2_EstTable1'),
+               br(),
+               br(),
+               radioButtons('q2_EstParam', label = "Parameter: ", list("Slope","Correlation"), 
+                            "Slope", inline = TRUE)
+        ),
+        ##  show plots of original data  and one of resampled x,y data
+        ##  by default,show latest resample. Allow user ot click on a point to see the data which have that slope
+        ##  
+        column(4, 
+               plotOutput('q2_EstPlot1')
+        ),
+        column(5,
+               uiOutput('q2_EstResampDistn')
+        )),
+      fluidRow(
+        column(4, offset = 1, 
+               h4("How many more shuffles?")),
+        column(1,  actionButton("q2_resample_10", label = "10")),
+        column(1,  actionButton("q2_resample_100", label = "100")),
+        column(1,  actionButton("q2_resample_1000", label = "1000")),
+        column(1,  actionButton("q2_resample_5000", label = "5000"))
+      ),
+      fluidRow(
+        column(4, offset = 5, h4("Click on a point to see that shuffle"))
+      ),
+      br(),
+      fluidRow(
+        column(3, offset = 2, h4("Select Confidence Level (%)")
+        ),
+        column(6,
+               fluidRow(
+                 column(2,  actionButton('q2_conf80', label = "80")),
+                 column(2,  actionButton('q2_conf90', label = "90")),
+                 column(2,  actionButton('q2_conf95', label = "95")),
+                 column(2,  actionButton('q2_conf99', label = "99"))
+                )
+        )
+      ),
+      if(!is.null(q2Estimate$CI)){
+        fluidRow(
+          column(8, offset = 4,
+                 h4(paste(round(100 * q2Estimate$confLevel), "% Confidence Interval Estimate: (", 
+                          round(q2Estimate$CI[1],3), ",", 
+                          round(q2Estimate$CI[2], 3), ")"))
+          )
+        )
+      } else {br()}
+    )
+  }
+})
+
+output$q2_EstResampDistn <- renderUI({
+  plotOutput('q2_EstPlot2', click = 'q2Est_click')
+})
+
+  output$q2_EstTable1 <- renderTable({
   ##  print("in q2_CIPrep")
     out <- list("Correlation: " =  q2$corr,
                 "Slope: " = q2$slope )
@@ -3160,36 +3222,37 @@ fluidRow(
   output$q2_EstPlot1 <- renderPlot({
     if(is.null(q2$slope))
       return()
-   b1hat <- round(q2$slope, 3)
-   rhat0 <- round(q2$corr, 3)
+   b1hat <- q2$slope
+   rhat0 <- q2$corr
    plotOrig <- qplot(x=x, y=y, data=q2$data, xlab = q2$names[1], ylab = q2$names[2], col = I(blu), 
          main = "Original Data") + theme_bw() + 
          geom_abline(intercept = q2$intercept, slope = b1hat, colour = blu)
 #    mtext(side = 3,  at = min(q2$data$x)*2/3 + max(q2$data$x)/3, bquote(hat(beta)[1] == .(b1hat) ))
 #    mtext(side = 3,  line = .3, at = min(q2$data$x)/3 + max(q2$data$x)*2/3, bquote(r == .(rhat0)))
       ## Bootstrap resample 
-#      if(!is.null(input$q2Est_click) ){
-#        ## grab clicked resample
-#        #print(input$q2Est_click$x)
-#        clickX <- input$q2Est_click$x
-#        nearest <- which.min( abs(q2Estimate$slopes - clickX) )
-#        resample <- q2Estimate$resample[nearest,]
-#        DF1 <- q2$data[resample, ]
-#        lmfit1 <- lm(y ~ x, DF1)    
-#      }  else {
-       resample <- sort(sample(1:nrow(q2$data), replace=TRUE))
-       q2Estimate$resamples <-  matrix(resample, nrow=1)
-       DF1 <- q2$data[resample, ]
-       lmfit1 <- lm(y ~ x, DF1)    
-       q2Estimate$slopes <- beta <- round(coef(lmfit1)[2], 3)
-       q2Estimate$corr <- rhat1 <- round(cor(DF1$x, DF1$y), 3)
-       q2Estimate$colors <- blu
-#      }
-    DF1$sizes <- rep(table(resample), table(resample))
-    plotNew <- qplot(x=x, y=y, data = DF1,  colour = I(grn), size = factor(DF1$sizes)) + 
-                    labs(x = q2$names[1], y=q2$names[2], title="One Resampled Dataset") + 
-                    theme_bw() + scale_size_discrete( "repeats", range=c(3, 6))+
-                    geom_abline(intercept = coef(lmfit1)[1], slope=coef(lmfit1)[2]) 
+      if(!is.null(input$q2Est_click) ){
+        closestPnt <- ifelse( input$q2_EstParam == "Slope", 
+          which.min(abs( q2Estimate$slopes - input$q2Est_click$x)),
+          which.min(abs( q2Estimate$corr - input$q2Est_click$x)))
+            ## print(closestPnt)
+          resample <- q2Estimate$resamples[, closestPnt]
+      } else if(!is.null(q2Estimate$resamples) ){
+        closestPnt <- ncol(q2Estimate$resamples)
+        resample <- q2Estimate$resamples[, closestPnt]
+      } else {
+        resample <- q2Estimate$resamples <- matrix(
+               sample(1:nrow(q2$data), nrow(q2$data), replace = TRUE), ncol = 1)
+        q2Estimate$slopes <- coef( lm(y ~ x, data = q2$data[resample, ]))[2]
+        q2Estimate$corr <- with(q2$data[resample, ], cor(x, y))
+        closestPnt <- 1 
+      }
+      DF1 <- q2$data[q2Estimate$resamples[, closestPnt], ]
+      q2Estimate$colors <- rep( blu, length(q2Estimate$slopes))
+      DF1$sizes <- rep(table(resample), table(resample))
+      plotNew <- qplot(x=x, y=y, data = DF1,  colour = I(grn), size = factor(DF1$sizes)) + 
+                       labs(x = q2$names[1], y=q2$names[2], title="One Resampled Dataset") + 
+                       theme_bw() + scale_size_discrete( "repeats", range=c(3, 6))+
+                       geom_abline(intercept = coef(lmfit1)[1], slope=coef(lmfit1)[2]) 
      
     #mtext(side = 3, at = min(DF1$x)*2/3 + max(DF1$x)/3, bquote(hat(beta)[1] == .(beta) ) )
     #mtext(side = 3, line = .3,  at = min(DF1$x)/3 + max(DF1$x)*2/3, bquote(r == .(rhat1)))
@@ -3198,41 +3261,41 @@ fluidRow(
   
   observeEvent(input$q2_resample_10, {
     q2Estimate$CI <- NULL
-    resamples <- t( sapply(1:10, function(x) sample(1:nrow(q2$data), replace = TRUE)))
-    resamples <- resamples[apply(resamples,1, function(ndx) var(q2$data[ndx, 2])) > 1.e-15, ]
-    q2Estimate$resamples <- rbind(q2Estimate$resamples, resamples)
-    q2Estimate$slopes <- c(q2Estimate$slopes, apply(resamples, 1, function(ndx) coef(lm(y ~ x, q2$data[ndx, ]))[2]))
-    q2Estimate$corr <- c(q2Estimate$corr, apply(resamples, 1, function(ndx) cor(q2$data$x[ndx], q2$data$y[ndx])))
+    resamples <-  sapply(1:10, function(x) sample(1:nrow(q2$data), replace = TRUE))
+    resamples <- resamples[, apply(resamples, 2, function(ndx) var(ndx) > 1.e-15) ]
+    q2Estimate$resamples <- cbind(q2Estimate$resamples, resamples)
+    q2Estimate$slopes <- c(q2Estimate$slopes, apply(resamples, 2, function(ndx) coef(lm(y ~ x, q2$data[ndx, ]))[2]))
+    q2Estimate$corr <- c(q2Estimate$corr, apply(resamples, 2, function(ndx) cor(q2$data$x[ndx], q2$data$y[ndx])))
     q2Estimate$colors <- rep(blu, length(q2Estimate$slopes))
   })
   
 observeEvent(input$q2_resample_100, {
   q2Estimate$CI <- NULL
-  resamples <- t( sapply(1:100, function(x) sample(1:nrow(q2$data), replace = TRUE)))
-  resamples <- resamples[apply(resamples,1, function(ndx) var(q2$data[ndx,2])) > 1.e-15, ]
-  q2Estimate$resamples <- rbind(q2Estimate$resamples, resamples)
-  q2Estimate$slopes <- c(q2Estimate$slopes, apply(resamples, 1, function(ndx) coef(lm(y ~ x, q2$data[ndx, ]))[2]))
-  q2Estimate$corr <- c(q2Estimate$corr, apply(resamples, 1, function(ndx) cor(q2$data$x[ndx], q2$data$y[ndx])))
+  resamples <-  sapply(1:100, function(x) sample(1:nrow(q2$data), replace = TRUE))
+  resamples <- resamples[, apply(resamples,2, function(ndx) var(ndx) > 1.e-15) ]
+  q2Estimate$resamples <- cbind(q2Estimate$resamples, resamples)
+  q2Estimate$slopes <- c(q2Estimate$slopes, apply(resamples, 2, function(ndx) coef(lm(y ~ x, q2$data[ndx, ]))[2]))
+  q2Estimate$corr <- c(q2Estimate$corr, apply(resamples, 2, function(ndx) cor(q2$data$x[ndx], q2$data$y[ndx])))
   q2Estimate$colors <- rep(blu, length(q2Estimate$slopes))
 })
 
 observeEvent(input$q2_resample_1000, {
   q2Estimate$CI <- NULL
-  resamples <- t( sapply(1:1000, function(x) sample(1:nrow(q2$data), replace = TRUE)))
-  resamples <- resamples[apply(resamples,1, function(ndx) var(q2$data[ndx,2])) > 1.e-15, ]
-  q2Estimate$resamples <- rbind(q2Estimate$resamples, resamples)
-  q2Estimate$slopes <- c(q2Estimate$slopes, apply(resamples, 1, function(ndx) coef(lm(y ~ x, q2$data[ndx, ]))[2]))
-  q2Estimate$corr <- c(q2Estimate$corr, apply(resamples, 1, function(ndx) cor(q2$data$x[ndx], q2$data$y[ndx])))
+  resamples <-  sapply(1:1000, function(x) sample(1:nrow(q2$data), replace = TRUE))
+  resamples <- resamples[, apply(resamples,2, function(ndx) var(ndx) > 1.e-15) ]
+  q2Estimate$resamples <- cbind(q2Estimate$resamples, resamples)
+  q2Estimate$slopes <- c(q2Estimate$slopes, apply(resamples, 2, function(ndx) coef(lm(y ~ x, q2$data[ndx, ]))[2]))
+  q2Estimate$corr <- c(q2Estimate$corr, apply(resamples, 2, function(ndx) cor(q2$data$x[ndx], q2$data$y[ndx])))
   q2Estimate$colors <- rep(blu, length(q2Estimate$slopes))
 })
 
 observeEvent(input$q2_resample_5000, {
   q2Estimate$CI <- NULL
-  resamples <- t( sapply(1:5000, function(x) sample(1:nrow(q2$data), replace = TRUE)))
-  resamples <- resamples[apply(resamples,1, function(ndx) var(q2$data[ndx,2])) > 1.e-15, ]
-  q2Estimate$resamples <- rbind(q2Estimate$resamples, resamples)
-  q2Estimate$slopes <- c(q2Estimate$slopes, apply(resamples, 1, function(ndx) coef(lm(y ~ x, q2$data[ndx, ]))[2]))
-  q2Estimate$corr <- c(q2Estimate$corr, apply(resamples, 1, function(ndx) cor(q2$data$x[ndx], q2$data$y[ndx])))
+  resamples <-  sapply(1:5000, function(x) sample(1:nrow(q2$data), replace = TRUE))
+  resamples <- resamples[, apply(resamples,2, function(ndx) var(ndx) > 1.e-15) ]
+  q2Estimate$resamples <- cbind(q2Estimate$resamples, resamples)
+  q2Estimate$slopes <- c(q2Estimate$slopes, apply(resamples, 2, function(ndx) coef(lm(y ~ x, q2$data[ndx, ]))[2]))
+  q2Estimate$corr <- c(q2Estimate$corr, apply(resamples, 2, function(ndx) cor(q2$data$x[ndx], q2$data$y[ndx])))
   q2Estimate$colors <- rep(blu, length(q2Estimate$slopes))
 })
 
@@ -3250,21 +3313,22 @@ output$q2_EstPlot2 <- renderPlot({
   parm <- sort(parm)
   ## print(summary(parm))
   if(length(parm) == 1){
-    y <- .5
+    yy <- .5
     radius <- 4
     nsims <- 1
   } else {
     z <- cut(parm, breaks = .5 * nclass.Sturges(parm)^2 )
     #  print(summary(z))
-    y <- unlist(tapply(z, z, function(v) 1:length(v)))
-    y <-  y[!is.na(y)]
-    q2Estimate$y <- y
+    yy <- unlist(tapply(z, z, function(v) 1:length(v)))
+    yy <-  yy[!is.na(yy)]
+    q2Estimate$y <- yy
     nsims <- length(parm)
     radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
   }
-  plot(parm, y, ylab = "", cex = radius/2, pch = 16, col = q2Estimate$colors,  
+  plot(parm, yy, ylab = "", cex = radius/2, pch = 16, col = q2Estimate$colors,  
        xlab = ifelse(input$q2_EstParam == "Slope", "Slope", "Correlation"), main = "RE-Sampling Distribution")
-  legend("topright", bty = "n", paste(length(parm), "points \n Mean = ", 
+  corner <- ifelse(q2$corr >= 0, "topleft", "topright")
+  legend(corner, bty = "n", paste(length(parm), "points \n Mean = ", 
                                      round(mean(parm),3), "\n SE = ", round(sd(parm),3)))
 }, height = 400, width = 400)
 
@@ -3285,7 +3349,7 @@ observeEvent(input$q2_conf80,{
 })
 
 observeEvent(input$q2_conf90,{
-  if(is.null(q2Estimate$slopes) | (nsims <- length(q2Estimate$slopes)) < 10){
+  if(is.null(q2Estimate$slopes) | (nsims <- length(q2Estimate$slopes)) < 20){
     return()
   }
   q2Estimate$confLevel <- .90
@@ -3301,7 +3365,7 @@ observeEvent(input$q2_conf90,{
 })
 
 observeEvent(input$q2_conf95,{
-  if(is.null(q2Estimate$slopes) | (nsims <- length(q2Estimate$slopes)) < 10){
+  if(is.null(q2Estimate$slopes) | (nsims <- length(q2Estimate$slopes)) < 40){
     return()
   }
   q2Estimate$confLevel <- .95
@@ -3317,7 +3381,7 @@ observeEvent(input$q2_conf95,{
 })
 
 observeEvent(input$q2_conf99,{
-  if(is.null(q2Estimate$slopes) | (nsims <- length(q2Estimate$slopes)) < 10){
+  if(is.null(q2Estimate$slopes) | (nsims <- length(q2Estimate$slopes)) < 200){
     return()
   }
   q2Estimate$confLevel <- .99
@@ -3332,75 +3396,8 @@ observeEvent(input$q2_conf99,{
   }
 })
 
-
-
-output$q2_estimateUI <- renderUI({
-  if( is.null(q2$data)){
-    h4(" You must first enter data. Choose 'Enter/Describe Data'.")
-  } else {
-    fluidPage(
-      fluidRow(
-        column(3, tableOutput('q2_CIPrep'),
-               br(),
-               br(),
-               radioButtons('q2_EstParam', label = "Parameter: ", list("Slope","Correlation"), 
-                            "Slope", inline = TRUE)
-        ),
-        ## for 1 resample, show equal size plots of original and resampled x,y data
-        ##  for more resamples, make original data and click --> resample plots smaller, large plot of 
-        ##  resampling distribution for slope / correlation.
-        column(4, 
-               plotOutput('q2_EstPlot1')
-        ),
-        column(5,
-               # h5("Click on a point to see that shuffle")
-               plotOutput('q2_EstPlot2', click = 'q2Est_click')
-        )),
-       fluidRow(
-           column(4, offset = 1, 
-                  h4("How many more shuffles?")),
-           column(1,
-                  actionButton("q2_resample_10", label = "10")),
-           column(1,
-                  actionButton("q2_resample_100", label = "100")),
-           column(1,
-                  actionButton("q2_resample_1000", label = "1000")),
-           column(1,
-                  actionButton("q2_resample_5000", label = "5000"))
-        ),
-         br(),
-         br(),
-         fluidRow(
-           column(3, offset = 2, 
-                  h4("Select Confidence Level (%)")
-           ),
-           column(6,
-                  fluidRow(
-                    column(2,  
-                           actionButton('q2_conf80', label = "80")),
-                    column(2,
-                           actionButton('q2_conf90', label = "90")),
-                    column(2,
-                           actionButton('q2_conf95', label = "95")),
-                    column(2,
-                           actionButton('q2_conf99', label = "99"))
-                  )
-           )
-         ),
-         if(!is.null(q2Estimate$CI)){
-           fluidRow(
-             column(8, offset = 4,
-                    h4(paste(round(100 * q2Estimate$confLevel), "% Confidence Interval Estimate: (", 
-                             round(q2Estimate$CI[1],3), ",", 
-                             round(q2Estimate$CI[2], 3), ")"))
-             )
-           )
-         } else {br()}
-      )
-    }
-})
-
 }
+
 
 ## 1 categorical & 1 quantitative   ---------------------------------------  1 cat 1 quant
 
