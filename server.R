@@ -982,19 +982,32 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
             )
             
           },
-          "Type/Paste into Data Table" = {
+          "Type/Paste into Text Box" = {
             #h4("Edit the values in Column 2.  Column 1 will be ignored.  To paste, use Cntrl-V or Cmd-V(on a mac)"), 
             ## take inputs here for number of rows (& columns?)
             fluidRow(
-              column(4, 
-                     rHandsontableOutput("q1_hot")) 
-              ,
-               column(4, actionButton("q1_useHotBtn", "Use These Data"))
+              column(4,   textInput("q1_text", label = "Data Input", width = '500px')
+                     #rHandsontableOutput("q1_hot") 
+              ),
+              column(4, #actionButton("q1_useHotBtn", "Use These Data"))
+                        actionButton("q1_useText", "Use These Data"))
             )
             
-          }, 
-          NULL
+          },
+          "Type/Paste into Data Sheet" = {
+            div(
+               h4("Edit the values in Column 2.  Column 1 will be ignored.  To paste, use Cntrl-V or Cmd-V(on a mac)") 
+            ## take inputs here for number of rows (& columns?)
+              ,
+            fluidRow(
+              column(4, rHandsontableOutput("q1_hot") 
+              ),
+              column(4, actionButton("q1_useHotBtn", "Use These Data"))
+            )
           )
+        },
+        NULL
+      )
  })
                  
  ##  grab data according to input method
@@ -1039,7 +1052,35 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
      "Data are entered, you may now choose to estimate or test one mean"
    })
  })
-
+  observeEvent(input$q1_useText,{
+    if(nchar(input$q1_text) < 1){
+      return()
+    }
+    #print(input$q1_text)
+    if (grepl(",", input$q1_text)){          ## check for commas,
+      q1Text <- gsub(","," ",input$q1_text)  ## replace commas with spaces
+    } else {
+      q1Text <- input$q1_text
+    }
+    tempData <- scan(text = q1Text, what = "a") ## read in as text
+    # print(tempData)
+    if(is.na(as.numeric(tempData[1]))){         # is the first "word" numeric or character?
+      q1$names <- tempData[1]                   # character becomes name of this column
+      tempData <- as.numeric(tempData[-1])      
+    } else{
+      q1$names <- "x"                           # numeric, so name it "x"
+      tempData <- as.numeric(tempData)
+    }
+    q1Test$nsims <- 0
+    q1$data <- data.frame( x = tempData)
+    q1Test$shuffles <-  q1Test$new.xbars <-  q1Test$xbar <-   q1Test$colors <- NULL
+    q1Estimate$shuffles <- q1Estimate$xbars <- q1Estimate$observed <- q1Estimate$colors <- NULL
+    #print(q1$data)
+    output$quant1DataIn <- renderText({
+      "Data are entered, you may now choose to estimate or test one mean"
+    })
+  })
+ 
    q1_values = list()
    q1_setHot = function(x) q1_values[["hot"]] <<- x
    q1_setHot(read.csv("data/dummyData.csv", stringsAsFactors = FALSE, head = TRUE) )
