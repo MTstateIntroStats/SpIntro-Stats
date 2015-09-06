@@ -2908,20 +2908,26 @@ output$q2_testUI <- renderUI({
     h4(" You must first enter data. Choose 'Enter/Describe Data'.")
   } else {
     fluidPage(
-      h3("Test: is slope (or correlation) zero?"),
       fluidRow(
-        column(3, 
-               tableOutput('q2_TestPrep'),
-               radioButtons('q2_TestParam', label = "Parameter: ", choices = list("Slope","Correlation"), 
-                            selected = "Slope", inline = TRUE)
-        ),
+        column(3,       h3("Test either")        ),
+        column(4,
+               radioButtons('q2_TestParam', label = "", list("Slope OR","Correlation"), 
+                            "Slope OR", inline = TRUE)),
+        column(3, h3("is zero."))
+      ),
+      fluidRow(
+#         column(3, 
+#                tableOutput('q2_TestPrep'),
+#                radioButtons('q2_TestParam', label = "Parameter: ", choices = list("Slope","Correlation"), 
+#                             selected = "Slope", inline = TRUE)
+#         ),
         ## for 1 shuffle, show equal size plots of original and reshuffled x,y data
         ##  for more shuffles, make original data and click --> shuffle plots smaller, large plot of 
         ##  sampling distribution for slope / correlation.
-        column(4, 
+        column(5, 
                plotOutput('q2_TestPlot1')
         ),
-        column(5,
+        column(6,
                uiOutput('q2_SampDistPlot')
         )
       ),
@@ -2980,6 +2986,7 @@ output$slopeTestXtremes <- renderUI({
     column(1, actionButton("q2_countXtremes","Go")   )
   )
 }) 
+
 output$q2_TestPrep <- renderTable({
 #  names(q2$data) <- c("x","y")
   fit0 <- lm( y ~ x, q2$data)
@@ -2995,11 +3002,14 @@ output$q2_TestPrep <- renderTable({
 
 
 output$q2_TestPlot1 <- renderPlot({
-  if(is.null(q2$slope))
+  if(is.null(q2$data))
     return()
+  fit0 <- lm( y ~ x, q2$data)
+  q2$slope <- coef(fit0)[2]
+  q2$qr <- fit0$qr
+  q2$corr <- cor(q2$data[,1], q2$data[,2])
   par(mfrow=c(2,1), mar = c(2.4,2,4,2))
   DF0 <- q2$data
- # colnames(DF0) <- c("x","y")
   plot(y ~ x, data=DF0, xlab = q2$names[1], ylab = q2$names[2], col = blu, pch = 16,
        main = "Original Data")
   #lmfit0 <- lm(y ~ x, DF0)
@@ -3008,7 +3018,7 @@ output$q2_TestPlot1 <- renderPlot({
   mtext(side = 3,   at = min(DF0$x)*2/3 + max(DF0$x)/3, bquote(hat(beta)[1] == .(round(q2$slope,3))))
  
    if(!is.null(input$q2Test_click) ){
-      closestPnt <- ifelse( input$q2_TestParam == "Slope", 
+      closestPnt <- ifelse( input$q2_TestParam == "Slope OR", 
                           which.min(abs( q2Test$slopes - input$q2Test_click$x)),
                          which.min(abs( q2Test$corr - input$q2Test_click$x)))
       #print(closestPnt)
@@ -3023,7 +3033,6 @@ output$q2_TestPlot1 <- renderPlot({
       q2Test$corr <-  cor(q2$data$x, q2$data$y[shuffle])
       closestPnt <- 1 
     }
-  DF0 <- q2$data
   DF0$newy <- q2$data$y[q2Test$shuffles[, closestPnt] ]
   q2Test$colors <- rep( blu, length(q2Test$slopes))
   
@@ -3081,7 +3090,7 @@ observeEvent(input$q2_shuffle_5000, {
 })
 
 observeEvent(input$q2_countXtremes, {
-  if(input$q2_TestParam == "Slope") {
+  if(input$q2_TestParam == "Slope OR") {
     parm <-  q2Test$slopes
   } else { 
     parm <- q2Test$corr
@@ -3118,7 +3127,7 @@ observeEvent( input$q2_test_cutoff, {
 output$q2_TestPlot2 <- renderPlot({
   if(is.null( q2Test$shuffles) )
     return() 
-  if(input$q2_TestParam == "Slope") {
+  if(input$q2_TestParam == "Slope OR") {
       parm <-  q2Test$slopes
       q2Test$observed <- q2$slope
    } else { 
@@ -3140,7 +3149,7 @@ output$q2_TestPlot2 <- renderPlot({
     radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
   }
   plot(parm, y, ylab = "", cex = radius/2, pch = 16, col = q2Test$colors,  
-        xlab = ifelse(input$q2_TestParam == "Slope", "Slope", "Correlation"), main = "Sampling Distribution")
+        xlab = ifelse(input$q2_TestParam == "Slope OR", "Slope", "Correlation"), main = "Sampling Distribution")
   legend("topright", bty = "n", paste(length(parm), "points \n Mean = ", 
                                      round(mean(parm),3), "\n SE = ", round(sd(parm),3)))
 }, height = 400, width = 400)
@@ -3231,14 +3240,19 @@ output$q2_EstResampDistn <- renderUI({
   output$q2_EstPlot1 <- renderPlot({
     if(is.null(q2$slope))
       return()
-   b1hat <- q2$slope
-   rhat0 <- q2$corr
-   plotOrig <- qplot(x=x, y=y, data=q2$data, xlab = q2$names[1], ylab = q2$names[2], col = I(blu), 
-         main = "Original Data") + theme_bw() + 
-         geom_abline(intercept = q2$intercept, slope = b1hat, colour = blu)
-#    mtext(side = 3,  at = min(q2$data$x)*2/3 + max(q2$data$x)/3, bquote(hat(beta)[1] == .(b1hat) ))
-#    mtext(side = 3,  line = .3, at = min(q2$data$x)/3 + max(q2$data$x)*2/3, bquote(r == .(rhat0)))
-      ## Bootstrap resample 
+    ## change these to look like the "Test" plots with values in subtitle.
+    DF0 <- q2$data
+    par(mfrow=c(2,1), mar = c(4.1,5.1,3.1,.1) )
+    plot(y ~ x, data=DF0, xlab = q2$names[1], ylab = q2$names[2], col = blu, pch = 16,
+        main = "Original Data")
+    abline(q2$intercept, q2$slope)
+    mtext(side = 3, line = .0, at = min(DF0$x)*4/5 + max(DF0$x)/5, bquote(hat(beta)[1] == .(round(q2$slope,3))))
+    mtext(side = 3, line = .2, at = min(DF0$x)/5 + max(DF0$x)*4/5, bquote(r == .(round(q2$corr,3))))
+    
+    #plotOrig <- qplot(x=x, y=y, data=q2$data, xlab = q2$names[1], ylab = q2$names[2], col = I(blu), 
+    #       main = "Original Data") + theme_bw() + 
+    #       geom_abline(intercept = q2$intercept, slope = b1hat, colour = blu)
+   ## Bootstrap resample 
       if(!is.null(input$q2Est_click) ){
         closestPnt <- ifelse( input$q2_EstParam == "Slope OR", 
           which.min(abs( q2Estimate$slopes - input$q2Est_click$x)),
@@ -3257,15 +3271,20 @@ output$q2_EstResampDistn <- renderUI({
       }
       DF1 <- q2$data[q2Estimate$resamples[, closestPnt], ]
       q2Estimate$colors <- rep( blu, length(q2Estimate$slopes))
-      DF1$sizes <- rep(table(resample), table(resample))
-      plotNew <- qplot(x=x, y=y, data = DF1,  colour = I(grn), size = factor(DF1$sizes)) + 
-                       labs(x = q2$names[1], y=q2$names[2], title="One Resampled Dataset") + 
-                       theme_bw() + scale_size_discrete( "repeats", range=c(3, 6))+
-                       geom_abline(intercept = coef(lmfit1)[1], slope=coef(lmfit1)[2]) 
-     
-    #mtext(side = 3, at = min(DF1$x)*2/3 + max(DF1$x)/3, bquote(hat(beta)[1] == .(beta) ) )
-    #mtext(side = 3, line = .3,  at = min(DF1$x)/3 + max(DF1$x)*2/3, bquote(r == .(rhat1)))
-    grid.arrange(plotOrig, plotNew, heights = c(4,  4)/8, ncol=1)
+      DF1$sizes <- rep(table(resample), table(resample))/2
+      ##
+      plot(y ~ x, data = DF1, xlab = q2$names[1], ylab = q2$names[2], col = grn, pch =16,
+           cex = sizes, main = "Shuffled Data", xlim = range(DF0$x), ylim = range(DF0$y))
+      lmfit1 <- lm(y ~ x, DF1)
+      abline(lmfit1)
+      beta1hat <- round(q2Estimate$slopes[closestPnt], 3)
+      rhat1 <- round(q2Estimate$corr[closestPnt], 3)
+      mtext(side = 3, line = 0, at = min(DF0$x)*4/5 + max(DF0$x)/5, bquote(hat(beta)[1] == .(beta1hat) ) )
+      mtext(side = 3, line = .2, at = min(DF0$x)/5 + max(DF0$x)*4/5, bquote(r == .(rhat1)))
+      corner <- ifelse(beta1hat>=0, "bottomright", "topright")
+      repeats <- 1:3
+      legend(corner,cex = .8, legend = as.character(repeats), title = "Repeats", pt.cex = repeats/2, pch = 16, col = "green", bty = "n")
+    #grid.arrange(plotOrig, plotNew, heights = c(4,  4)/8, ncol=1)
   }, height = 400, width = 300)
   
   observeEvent(input$q2_resample_10, {
