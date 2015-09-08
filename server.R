@@ -985,22 +985,23 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
           "Type/Paste into Text Box" = {
             #h4("Edit the values in Column 2.  Column 1 will be ignored.  To paste, use Cntrl-V or Cmd-V(on a mac)"), 
             ## take inputs here for number of rows (& columns?)
-            fluidRow(
-              column(4,   textInput("q1_text", label = "Data Input", width = '500px')
-                     #rHandsontableOutput("q1_hot") 
-              ),
-              column(4, #actionButton("q1_useHotBtn", "Use These Data"))
-                        actionButton("q1_useText", "Use These Data"))
+            div(#fluidRow(
+              HTML('<textarea name="q1_text" cols="30" rows="10"></textarea>'),
+              #column(4,    tags$input(name='q1_text', type='text', value=' ', label ='Data Input', size='100', height = 20)
+                     ## textInput("q1_text", label = "Data Input", width = '500px')
+              #),
+              #column(4,   
+              actionButton("q1_useText", "Use These Data")#)
             )
-            
           },
           "Type/Paste into Data Sheet" = {
             div(
-               h4("Edit the values in Column 2.  Column 1 will be ignored.  To paste, use Cntrl-V or Cmd-V(on a mac)") 
+               h4("Edit the values in Column 2.  Column 1 will be ignored.  To paste, use Cntrl-V or Cmd-V(on a mac)"), 
             ## take inputs here for number of rows (& columns?)
-              ,
+              ## tags$input(name='q1Hot_rows', type='text', value=10, label = 'Number of rows', size='10', height = 20),
+               ## tags$input(name='q1Hot_cols', type='text', value='0', size='10'),
             fluidRow(
-              column(4, rHandsontableOutput("q1_hot") 
+              column(4, rHandsontableOutput("q1_hot") #, rows = input$q1Hot_rows) 
               ),
               column(4, actionButton("q1_useHotBtn", "Use These Data"))
             )
@@ -1009,6 +1010,8 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
         NULL
       )
  })
+ 
+ 
                  
  ##  grab data according to input method
  q1 <- reactiveValues(data = NULL, names = NULL)
@@ -1052,7 +1055,9 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
      "Data are entered, you may now choose to estimate or test one mean"
    })
  })
-  observeEvent(input$q1_useText,{
+
+ 
+   observeEvent(input$q1_useText,{
     if(nchar(input$q1_text) < 1){
       return()
     }
@@ -1062,7 +1067,7 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
     } else {
       q1Text <- input$q1_text
     }
-    tempData <- scan(text = q1Text, what = "a") ## read in as text
+    tempData <- scan(text = q1Text, what = "a", quiet = TRUE) ## read in as text
     # print(tempData)
     if(is.na(as.numeric(tempData[1]))){         # is the first "word" numeric or character?
       q1$names <- tempData[1]                   # character becomes name of this column

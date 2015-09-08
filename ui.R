@@ -18,7 +18,7 @@ library(ggplot2)
   ## Load 'spreadsheet' data using:
   ## https://github.com/jrowen/rhandsontable/blob/master/inst/examples/shiny.R
 
-shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
+shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
                     theme = shinytheme("spacelab"),
     ## 
     ## use empty tabPanel to avoid printing "tab-pane active"               
@@ -123,7 +123,8 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                h4(textOutput('quant1DataIn')),
                fluidRow(  
                  column(6, selectInput('q1_entry', ' ', 
-                                      list(" ", "Pre-Loaded Data","Local CSV File","Type/Paste into Data Table"), 
+                                      list(" ", "Pre-Loaded Data","Local CSV File",
+                                           "Type/Paste into Text Box","Type/Paste into Data Sheet"), 
                                       selected = " ",
                                       selectize = FALSE))
                ),
@@ -367,8 +368,20 @@ shinyUI(navbarPage("Intro Stat Apps", id="top-nav", collapsible=TRUE,
                 )  
       )
     )
-}
-      
+},
+  ###  About spintro-stat
+{
+  navbarMenu("About",
+    tabPanel("What Is spintro-stats?", value="aboutUs",
+      h5("Spintro Stats is an open project to provide a set of web apps for introductory statistics."),
+      h5("'Spin' in the title refers to the methods we begin with: spinners, card shuffles, mixing balls in contrast to the classical emphasis on probability axioms."),
+      h5(" Tests are based on permutation/randomization distributions and confidence intervals are derived via bootstrapping."),
+      br(),
+      h5("Similar apps:  StatKey at http://www.lock5stat.com"),
+      h5("  Rossman-Chance applets at http://rossmanchance.com/ISIapplets")
+    )
+    )    
+}    
 )
 )
 
