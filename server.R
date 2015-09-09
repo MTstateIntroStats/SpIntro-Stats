@@ -141,7 +141,7 @@ observeEvent( input$null_p, {
 output$Cat1TestXtremes <- renderUI({
   fluidRow(
     column(3,  
-           h4("Count values")
+           h4("Count values equal to or")
     ),
     column(4,
            tags$div(style="width: 200px",
