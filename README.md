@@ -8,11 +8,11 @@ University using active learning lessons which get students right
 into permutation tests and bootstrap confidence intervals very early
 in the course.  (Materials are available on our companion site, [https://github.com/MTstateIntroStats/IntroStatActivities](https://github.com/MTstateIntroStats/IntroStatActivities) )  
 
-This repo is intended to build and share R/Shiny web apps to automate
+This repo is intended to build and share R/Shiny web apps which automate
 permutation testing and bootstrapping.  
 
 Initially, students need to understand the difference between categorical and quantitative data, as the menu system divides summaries and analysis into these type:  
-  - One categorical  
+  - One Categorical  
   - One Quantitative  
   - Two Categorical  
   - Two Categorical  
@@ -20,7 +20,7 @@ Initially, students need to understand the difference between categorical and qu
 
 In the last 1/3  of our course, normal and t distribution methods are
 be used as short cut approximations of the simulation based
-inference, so the lookup tables are part of this suite.  
+inference, so the lookup tables are part of this suite.  Standard normal lookups are under both the One and the Two Categorical menus while t distributions are available under 1  Quantitative or "One of Each".
 
 To use the app choose the type of data and enter or import it.
 
@@ -28,10 +28,11 @@ To use the app choose the type of data and enter or import it.
   -- for 1 and 2 categorical variables, user will type counts into a form.  
       Click [Use These Data] to proceed.  
 
-  -- Other varaible types get a choice:  
+  -- Other variable types get a choice:  
      select existing data frame,   
-     Upload a local csv file,  
-     type or copy into a table using rhandsontable  
+     Upload a local csv file, 
+     Type or paste into a text box (Currently only for 1 Quant.)  
+     Type or copy into a table using rhandsontable  
        --- need to allow user to set the number of rows.
 
  * Descriptive stats and plots are created to suit the type of data.
@@ -57,16 +58,17 @@ To use the app choose the type of data and enter or import it.
    correlation and slope  
 
  *  Demos:  
-  -- What does 'confidence' mean under 1 Categorical allows user to generate many CI's under the artifical assumption of known "p", and check the coverage rate.  
-  -- Lurking Demos under '1 Categ' and '1 Quant' show how randomly assigning treatments evens out the effects of lurking variables (in the long run).  
+  -- "What does 'confidence' mean?" under 1 Categorical allows user to generate many CI's under the artificial assumption of known "p", and check the coverage rate.  
+  -- "Lurking Demos"" under '1 Categ' and '1 Quant' show how randomly assigning treatments evens out the effects of lurking variables (in the long run).  
 
 ### Known issues:  
-  Under 1 Categ and 1 Quant, user can click on one of the points in the samplin/resampling distribution and see the data that generated that statistic.  Need to make that work for 2 Categ, 2 Quant, and one-of-each.  
-
-  Need to figure out how packrat works with github.  
 
   Need to reduce margins around some of the plots.  
 
-  Need to improve the use of rhandsontable for data entry.  Currently the number of rows is locked. Could just ask user how many rows they need.
+  Need to improve the use of rhandsontable for data entry.  Currently the number of rows is locked. 
 
+## Comments?  
+
+ Please click on our Wiki page to comment, suggest improvements, or otherwise contribute.  
+ 
 
