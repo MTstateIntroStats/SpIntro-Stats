@@ -1231,7 +1231,7 @@ output$q1TestPvalue <- renderUI({
 output$q1TestXtremes <- renderUI({
   fluidRow(offset = 1,
     column(3,  
-           h4("Count values")
+           h4("Count values equal to or ")
     ),
     column(4,
            tags$div(style="width: 200px",
@@ -2122,7 +2122,7 @@ output$Cat2TestShuffle <- renderUI({
 output$Cat2TestXtremes <- renderUI({
   fluidRow(
     column(3, 
-           h4("Count values")
+           h4("Count values equal to or")
     ),
     column(4,
            tags$div(style="width: 200px",
@@ -3018,7 +3018,7 @@ output$slopeTestPvalue <- renderUI({
 output$slopeTestXtremes <- renderUI({
   fluidRow(
     column(3, 
-           h4("Count values")  ),
+           h4("Count values equal to or")  ),
     column(3,
            tags$div(style="width: 200px",
                     tags$select(id='q2_testDirection',class="form-control",
@@ -3748,7 +3748,7 @@ output$c1q1_Summary2 <- renderTable({
       output$c1q1TestXtremes <- renderUI({
         fluidRow(
           column(2,
-                 h4("Count values")
+                 h4("Count values equal to or ")
           ),
           column(5,
                  tags$div(style="width: 200px",
