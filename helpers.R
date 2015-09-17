@@ -58,3 +58,78 @@ c1q1_estimate_shuffles <- function(shuffles, ndx1, ndx2){
   rbind( matrix(sample(ndx1, length(ndx1) * shuffles, replace = TRUE), ncol = shuffles), 
          matrix(sample(ndx2, length(ndx2) * shuffles, replace = TRUE), ncol = shuffles))
 }
+
+## functions for SPINNERS
+
+draws2get1 <-  function( prob, reps){
+  ## randomly spins til we get one of the first category
+  ## returns the number of spins needed
+  nCat <- length(prob)
+  prob <-  prob/sum(prob)
+  if(nCat < 2)
+    stop("Must have at least 2 categories")
+  rgeom(reps, prob = prob[1]) +1
+} 
+
+draws2get1ofEach <- function( prob, reps, fullOut=FALSE){
+  ## randomly spin til we get one of each category
+  ## returns the number of spins needed
+  ## if fullOut = TRUE, gives info to trace the critical steps
+  ##  of each sequence of spins: Category seen, and
+  ##  spins to the next new category
+  nCat <- length(prob)
+  prob <-  prob/sum(prob)
+  reps <- as.numeric(reps)
+  if(nCat < 2)
+    stop("Must have at least 2 categories")
+  tempDraw <- matrix(sample(1:nCat, reps * nCat * round(4/min(prob)), prob = prob, replace=TRUE), nrow = reps)
+  noDups <- !t( apply(tempDraw, 1, duplicated))
+  check <- any(apply(noDups, 1, function(x) sum(as.numeric(x)) < nCat))
+  if(check)
+    stop("Whoops, we missed some large runs")
+  nDraws <- apply(noDups, 1, function(x) max(which(x)))
+  if(!fullOut)
+    return(nDraws)
+  draws <-  t(sapply(1:reps, function(i) tempDraw[i,][noDups[i,]]))
+  cols <- t(apply(noDups, 1, which))
+  return(data.frame(nDraws, draws, cols))
+}
+
+reconstructSpins <- function( output, prob){
+  ## uses fullOut from 'draws2get1ofEach()' or a count from 'draws2get1()'
+  ## and reconstructs a history of spins.  With more than 2 categories,
+  ## the sequence is not unique, as intermediate draws could have come
+  ## from any of several sequences which have the same 'new categories'
+  ## in the same positions, but differ in the "filler" spots.
+  nCat <-  length(prob)
+  prob <-  prob/sum(prob)
+  output <- unlist(output)
+  if(length(output) == 1){
+    if(output == 1) return(1)
+    if(nCat == 2) return(rep(2:1, c(output-1,1)))
+    return(c(sample(2:nCat, output - 1, prob[-1], replace=TRUE), 1))
+    ## returns output for 'draws2get1()'
+  }
+  ## else we're doing 'draws2get1ofEach()
+  
+  ## output <- unlist(output[1,])
+  
+  if(abs(nCat - (length(output) -1) / 2) > .01)
+    stop("Output dimensions don't match length(prob)")
+  
+  catObs <- output[ 2:(nCat + 1)]
+  trial <-  output[ -(1 + 0:nCat)]
+  
+  val <- rep(catObs[1:2], c(trial[2]-trial[1],1))
+  ## uses first 2 categories observed
+  if(nCat > 2){
+    for(ndx in 3:nCat){
+      covered <- catObs[1:(ndx-1)]
+      ## print(covered)
+      ## print( trial[ndx] - trial[ndx-1] )
+      val <-  c(val, sample(covered, trial[ndx] - trial[ndx-1] -1,  prob = prob[covered], replace = TRUE),
+                catObs[ndx])
+    }
+  }
+  val
+}

@@ -3,6 +3,8 @@
 includeScript("www/helper.js")
 source("helpers.R")
 
+functionList <- c( "Count in Group1","Count in Group 2", "Max Run Length")
+
 quant1_contents <- load("data/quant1.RData")
 quant2_contents <- load("data/quant2.RData")
 c1q1_contents <- load("data/cat1quant1.RData")
@@ -804,7 +806,156 @@ output$cat1Estimate_Plot2 <- renderPlot({
 
   
   }
+   ##  Spinner
+{
+  spin_data <- reactive( {
+    run = input$spin_RunButton
+    groups <- sapply(strsplit(input$spin_categories, ","), function(x)
+      gsub("[[:space:]]", "", x))##[order(-prob)]
+    nCat <-  length(groups)
+    prob <- sapply(strsplit(input$spin_probs, ","), as.numeric)
+    prob <-  prob/sum(prob)
+    if(input$spin_stopRule == "Fixed number of spins"){
+      nDraws <- input$spin_nDraws
+      spinAngle <- runif(input$spin_nDraws)
+      drawColor <- as.numeric(cut( spinAngle, c(0, cumsum(prob)))) 
+      nDraws <- as.numeric(input$spin_nDraws)
+    } else {
+      ## apply a stopping rule
+      if(input$spin_stopRule == "One spin in 1st category"){
+        drawSumry <- draws2get1( prob, 1)
+        if(drawSumry == 1){ ## got it on 1st spin
+          drawColor <-  1
+          nDraws <- 1
+          spinAngle <-  runif(1) * prob[1]
+        } else{  ## take a few spins first
+          cumProb <-  c(0, cumsum(prob) )
+          drawColor <- reconstructSpins( drawSumry, prob)
+          nDraws <- drawSumry
+          spinAngle <-  runif(drawSumry[1]) * prob[drawColor] + cumProb[drawColor]
+          ##  gives random spin in 1st category for last draw,
+          ## in other categories for prior draws.
+          
+        }
+      } else{
+        ## Stop after we get one of each type
+        drawSumry <- draws2get1ofEach( prob, 1, fullOut =TRUE)
+        nDraws <- drawSumry$nDraws
+        cumProb <-  c(0,cumsum(prob))
+        drawColor <- reconstructSpins( drawSumry , prob)
+        names(drawColor) <-  NULL
+        spinAngle <-  runif(nDraws[1]) * prob[drawColor] + cumProb[drawColor]
+      }
+    }
+    data.df <- list(nCat = input$spin_nCat,
+                    nDraws = nDraws[1],
+                    pieValues = prob,
+                    pieLabels = groups,
+                    spinAngle = as.list((spinAngle + 1 ) * 360),
+                    drawColor = as.list(drawColor - 1)
+    )
+    return(data.df)
+    
+  })
   
+  functionList <- c( "Count in Group1","Count in Group 2", "Max Run Length")
+  
+  repData <- reactive( {
+    run = input$spin_RunButton
+    prob <- sapply(strsplit(input$spin_probs, ","), as.numeric)
+    prob <-  prob/sum(prob)
+    groups <- sapply(strsplit(input$spin_categories, ","), function(x)
+      gsub("[[:space:]]", "", x))##[order(-prob)]
+    ##prob <- -sort(-prob)
+    nCat <-  length(groups)
+    nReps <-  ifelse(is.null(input$spin_reps), 1, as.numeric(input$spin_reps))
+    fixedN <- (input$spin_stopRule == "Fixed number of spins")
+    if(fixedN){ 
+      nDraws <- as.numeric(input$spin_nDraws)
+      samplData <- matrix(sample(1:input$spin_nCat, nReps * nDraws,
+                                 prob = prob,replace = TRUE), ncol=nDraws)
+      fn <- match(input$spin_fn, functionList)
+      if(fn==3){
+        return(apply(samplData, 1 , function(x)  max(rle(x)[[1]])))
+      } else
+        return(apply(samplData, 1 , function(x) table(c(1:fn,x))[fn]-1))
+    } else {
+      ## apply stopping rule
+      if(input$spin_stopRule =="One spin in 1st category"){
+        nDraws <- draws2get1( prob, nReps)
+        return(nDraws)
+      } else {  ## input$stopRule =="One of Each"
+        nDraws <-  draws2get1ofEach( prob, nReps)
+        return(nDraws)
+      }
+    }
+    
+  })
+  
+  output$spin_Plot <- reactive( {
+    if(input$spin_RunButton == 0) return()
+    spin_data()
+  })  # execute when run is clicked
+  
+  output$spin_Summary <- renderPrint({
+    if(input$spin_RunButton ==0) return()
+    isolate({
+      data.df <- spin_data()
+      out1 <-   summary( factor(data.df$pieLabels[unlist(data.df$drawColor)+1],  levels=data.df$pieLabels))
+      
+      if(input$spin_stopRule =="Fixed number of spins"){
+        runs <-  rle(unlist(data.df$drawColor)[1:data.df$nDraws])
+        out1 <-  c( out1, max(runs[[1]]))
+        names(out1)[data.df$nCat + 1] <- "maxRunLength"
+      }else{
+        out1 <-  c( out1, length(data.df$drawColor))
+        names(out1)[data.df$nCat + 1] <- "spins"
+      }
+      out1
+    })
+  })
+  ## run more:
+  output$spin_Summry2 <- renderPrint({
+    ##  isolate({
+    rData <-  repData()
+    unlist(list( c(summary(rData), stdDev = sd(rData))))
+    ## })
+  })
+  
+  output$spin_Summry3 <- renderTable({
+    ##isolate({
+    counts  <- repData()
+    if(input$spin_stopRule =="Fixed number of spins"){
+      output <- t(table(c(counts,0:input$spin_nDraws))-1)
+    } else if(input$spin_stopRule =="One spin in 1st category"){
+      output <-  t(table(c(counts, 1:max(counts)))-1)
+    } else  if(input$spin_stopRule =="One of each type"){
+      output <-   t(table(c(counts, input$spin_nCat:max(counts)))-1)
+    }
+    rownames(output) <- "Counts"
+    output
+    ##})
+  })
+  
+  output$spin_Histogrm <- renderPlot({
+    ##isolate({
+    x <- sort(repData())
+    y <- unlist(tapply(x, x, function(z) 1:length(z)))
+    if(input$spin_stopRule =="Fixed number of spins"){
+      stat <-  input$spin_fn
+      begin <- 0 + (input$spin_fn == functionList[3]) 
+      xlimits = c(begin, input$spin_nDraws)
+    }
+    if(substr(input$spin_stopRule,1,3) == "One") {
+      stat = "Number of Spins"
+      xlimits = range(x)
+    }
+    plot(jitter(x, .3), y, main = paste("Distribution of ", stat), xlab = "", ylab = "Frequency",  xlim=xlimits)
+    ##})
+  })
+  
+   
+} 
 
   ## Normal probability computations  ----------------------- cat 1
 {
