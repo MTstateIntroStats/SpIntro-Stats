@@ -1,28 +1,43 @@
-# README #
-
 
 ### Repo of Course materials for Stat 216, Fall 2015 ###
- at Montana State University
+#### at Montana State University ####  
 
-*  Three units
+ Three units  
+ Our sequencing follows the lead of Nathan Tintle and the authors of [_Introduction to Statistical Investigations_](http://math.hope.edu/isi/)  
+Unit 1   
+ - Brief review of statistical summaries and plots  
+ - Hypothesis Testing of one proportion  
+ - Bootstrap confidence interval of one proportion  
+Unit 2   
+ - Hypothesis testing and confidence interval estimate of the difference in two proportions  
+ - Hypothesis testing and confidence interval estimate of the difference in two means    
+ - Hypothesis testing and confidence interval estimate of a single mean  
+ - Hypothesis testing and confidence interval estimate of a slope or correlation  
+Unit 3   
+ - Use of "z" procedures to test and estimate one proportion  
+ - Use of "z" procedures to test and estimate the difference between two proportions    
+ - Use of "t" procedures to test and estimate one mean      
+ - Use of "t" procedures to test and estimate the difference between two means    
+
+Throughout, the course we emphasize interpretation of statstical concepts and discuss the "scope of inference" for our conclusions.  
 
 ### LaTeX code requires a full LaTeX setup ###
 
 * Packages:  
   letterpaper, amsmath, amssymb, graphicx, ifthen, comment, natbib, color, fancyhdr, hyperref, pdflatex
 
-* cd to TR-F2015/coursePack directory  
+* To build the pdf file, you shuld cd to coursePack directory and run   
   pdflatex TR-coursePack.tex  
 
-  That automatically includes the files it needs like U1-D1.tex for unit 1, day 1, on down to U3-D28.tex.
+  The coursePack file automatically includes the files it needs like U1-D1.tex for unit 1, day 1, on down to U3-D28.tex.  Currently the only difference between MWF and TR versions is the calendar.  
 
 ### Known issues:  
-  We have developed these activities over the last two years at MSU and have used them extensively in Stat216 (Intro Stats) meeting twice a week for 75 minutes each time.  This fall we are also using them in the same class with a different schedule: meeting MWF for 50 minutes each. We expect some issues at getting them to fit.  In fact, the original activities do not all fit well in the 75 minute classes as well.  One purpose of this repository is to provide a discussion platform to discuss what work, what doesn't, and how these could be improved.
+  We have developed these activities over the last two years at MSU and have used them extensively in Stat216 (Intro Stats) meeting twice a week for 75 minutes each time.  This fall we are also using them in the same class with a different schedule: meeting MWF for 50 minutes each. We expect some issues at getting them to fit.  In fact, the original activities do not all fit well in the 75 minute classes as well.  One purpose of this repository is to provide a discussion platform to discuss what work, what doesn't, and how these could be improved.  
 
 ### Companion site:  
   We have written our own web apps which are used in most of these activities.  
    [https://github.com/MTstateIntroStats/IntroStatApps](https://github.com/MTstateIntroStats/IntroStatApps)
 
-### Who do I talk to? ###
+### Comments? Suggestions? ... ###
 
-* jimrc@bresnan.net  
+Please post your comments and feedback to our google forum: [MT State Intro Stat Activities](https://groups.google.com/forum/#!forum/mt-state-intro-stat-activities)
