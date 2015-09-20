@@ -67,8 +67,7 @@ To use the app choose the type of data and enter or import it.
 
   Need to improve the use of rhandsontable for data entry.  Currently the number of rows is locked. 
 
-## Comments?  
+### Comments? Suggestions?  
 
- Please click on our Wiki page to comment, suggest improvements, or otherwise contribute.  
- 
+ Please make comments in our google forum: [spintro-stats](https://groups.google.com/forum/#!forum/spintro-stats)
 
