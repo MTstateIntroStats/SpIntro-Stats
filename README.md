@@ -1,3 +1,5 @@
+# README #
+
 
 ### Repo of Course materials for Stat 216, Fall 2015 ###
 #### at Montana State University ####  
