@@ -19,14 +19,16 @@ Unit 3
  - Use of "t" procedures to test and estimate one mean      
  - Use of "t" procedures to test and estimate the difference between two means    
 
-Throughout, the course we emphasize interpretation of statstical concepts and discuss the "scope of inference" for our conclusions.  
+Throughout, the course we emphasize interpretation of statistical concepts and discuss the "scope of inference" for our conclusions.  
+
+
 
 ### LaTeX code requires a full LaTeX setup ###
 
 * Packages:  
   letterpaper, amsmath, amssymb, graphicx, ifthen, comment, natbib, color, fancyhdr, hyperref, pdflatex
 
-* To build the pdf file, you shuld cd to coursePack directory and run   
+* To build the pdf file, you should cd to coursePack directory and run   
   pdflatex TR-coursePack.tex  
 
   The coursePack file automatically includes the files it needs like U1-D1.tex for unit 1, day 1, on down to U3-D28.tex.  Currently the only difference between MWF and TR versions is the calendar.  
@@ -40,4 +42,4 @@ Throughout, the course we emphasize interpretation of statstical concepts and di
 
 ### Comments? Suggestions? ... ###
 
-Please post your comments and feedback to our google forum: [MT State Intro Stat Activities](https://groups.google.com/forum/#!forum/mt-state-intro-stat-activities)
+Please post your comments and feedback to our Google forum: [MT State Intro Stat Activities](https://groups.google.com/forum/#!forum/mt-state-intro-stat-activities)
