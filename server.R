@@ -1,5 +1,3 @@
-
-
 includeScript("www/helper.js")
 source("helpers.R")
 
@@ -616,6 +614,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
   }, height = 275)
 }
   
+ 
   ##  Lurking Demo -----------------------------------------  cat 1
    
    ## data input
@@ -806,8 +805,77 @@ output$cat1Estimate_Plot2 <- renderPlot({
 
   
   }
-   ##  Spinner
+   ##  Spinner  ## ---------------------------------------------------------------
 {
+  
+  functionList <- c( "Count in Group1","Count in Group 2", "Max Run Length")
+  
+  reactiveSpin <- function (outputId) {
+    HTML(paste("<div id=\"", outputId, "\" class=\"shiny-network-output\"><svg /></div>", sep=""))
+  }
+  
+    output$c1_spinnerUI <- renderUI({
+     div(  
+       titlePanel("Spinner"),
+       fluidRow(
+         column(4, 
+          div(
+            tags$label("Number of Categories", 
+                       tags$input(name='spin_nCat', type='number', value= 3, size=4)),
+            tags$label("Category names: ", 
+                       tags$input(name = "spin_categories", type = 'text', value = "A, B, C", size = 12)),
+            h5("(separate with commas)"),
+            tags$label( "Percentages: ", 
+                        tags$input(name = "spin_probs",type = "text", value = "50, 30, 20")),
+            h5("Separate with commas. Relative size is the key."),
+            hr() ,
+            selectInput("spin_stopRule","Stop after", c("Fixed number of spins",
+                                                  "One spin in 1st category", "One of each type")),
+           conditionalPanel( 
+             condition = "input.spin_stopRule =='Fixed number of spins'", 
+             numericInput("spin_nDraws", "Stop after how many spins?", 5 )
+           ),
+      
+          selectInput("spin_reps", "Number of Trials:", c("1","10","100","1000"),1),
+           ## helpText("Start with 1 for an animation"),
+           hr() ,
+           conditionalPanel(
+             condition = "input.spin_reps != 1 && input.spin_stopRule =='Fixed number of spins'" ,
+             selectInput("spin_fn","Store what result?", functionList)
+           ),
+           conditionalPanel(
+             condition = "input.spin_stopRule !='Fixed number of spins' && input.spin_reps != 1", 
+             helpText("Display shows number of spins needed" )
+           ),
+           actionButton("spin_RunButton", "Run")  
+        )), 
+        #mainPanel(
+       column(7,
+          includeHTML("www/spin.js"),
+          reactiveSpin(outputId = "spin_Plot"),
+          conditionalPanel(
+            condition = "input.spin_reps == 1",
+            verbatimTextOutput("spin_Summary") 
+          ),
+          hr() ,
+          conditionalPanel(
+            condition = "input.spin_reps != 1",
+            plotOutput("spin_Histogrm")
+          ),
+          conditionalPanel(
+            condition = "input.spin_reps != 1",
+            verbatimTextOutput("spin_Summry2")
+          ),
+          conditionalPanel(
+            condition = "input.spin_reps != 1",
+            tableOutput("spin_Summry3")
+          )
+        )
+      )
+     )
+  })
+
+
   spin_data <- reactive( {
     run = input$spin_RunButton
     groups <- sapply(strsplit(input$spin_categories, ","), function(x)
@@ -872,7 +940,8 @@ output$cat1Estimate_Plot2 <- renderPlot({
     fixedN <- (input$spin_stopRule == "Fixed number of spins")
     if(fixedN){ 
       nDraws <- as.numeric(input$spin_nDraws)
-      samplData <- matrix(sample(1:input$spin_nCat, nReps * nDraws,
+      nCat <- as.numeric(input$spin_nCat)
+      samplData <- matrix(sample(1:nCat, nReps * nDraws,
                                  prob = prob,replace = TRUE), ncol=nDraws)
       fn <- match(input$spin_fn, functionList)
       if(fn==3){
@@ -953,9 +1022,8 @@ output$cat1Estimate_Plot2 <- renderPlot({
     plot(jitter(x, .3), y, main = paste("Distribution of ", stat), xlab = "", ylab = "Frequency",  xlim=xlimits)
     ##})
   })
-  
-   
 } 
+  
 
   ## Normal probability computations  ----------------------- cat 1
 {
