@@ -94,7 +94,54 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
             uiOutput('c1_LurkingUI')        
           ),
         tabPanel("Spinner", value = "cat1_spin",
-            uiOutput('c1_spinnerUI')     
+                 titlePanel("Spinner"),
+                 
+                 sidebarPanel(
+                   numericInput("spin_nCat", "Number of categories:", 3, min = 2, max = 10),
+                   textInput("spin_categories","Category names (separate with commas):", "A, B, C"),
+                   textInput("spin_probs", "Percentages (separate with commas):", "50, 30, 20"),
+                   helpText("Relative size is the key."),
+                   hr() ,
+                   selectInput("spin_stopRule","Stop after", c("Fixed number of spins",
+                                                          "One spin in 1st category", "One of each type")),
+                   conditionalPanel( 
+                     condition = "input.spin_stopRule =='Fixed number of spins'", 
+                     numericInput("spin_nDraws", "Stop after how many spins?", 5 )
+                   ),
+                   
+                   selectInput("spin_reps", "Number of Trials:", c("1","10","100","1000"),1),
+                   ## helpText("Start with 1 for an animation"),
+                   hr() ,
+                   conditionalPanel(
+                     condition = "input.spin_reps != 1 && input.spin_stopRule =='Fixed number of spins'" ,
+                     selectInput("spin_fn","Store what result?", functionList)
+                   ),
+                   conditionalPanel(
+                     condition = "input.spin_stopRule !='Fixed number of spins' && input.spin_reps != 1", 
+                     helpText("Display shows number of spins needed" )
+                   ),
+                   actionButton("spin_RunButton", "Run")  
+                 ), 
+                 mainPanel(
+                   includeHTML("www/spin.js"),
+                   reactiveSpin(outputId = "spin_Plot"),
+                   conditionalPanel(
+                     condition = "input.spin_reps == 1",
+                     verbatimTextOutput("spin_Summary") ),
+                   hr() ,
+                   conditionalPanel(
+                     condition = "input.spin_reps != 1",
+                     plotOutput("spin_Histogrm")
+                   ),
+                   conditionalPanel(
+                     condition = "input.spin_reps != 1",
+                     verbatimTextOutput("spin_Summry2")
+                   ),
+                   conditionalPanel(
+                     condition = "input.spin_reps != 1",
+                     tableOutput("spin_Summry3")
+                   )
+                 )
         ),
         tabPanel("Normal Distribution" , value="cat1_Normal",
                  titlePanel("Normal Probabilities"),
@@ -375,14 +422,15 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
   ###  About spintro-stat
 {
   navbarMenu("About",
-    tabPanel("What Is spintro-stats?", value="aboutUs",
-      h5("Spintro Stats is an open project to provide a set of web apps for introductory statistics."),
+    tabPanel("What Is Spin-tRo Stats?", value="aboutUs",
+      h5("Spin-tRo Stats is an open project to provide a set of simulation web apps for introductory statistics."),
       h5("'Spin' in the title refers to the methods we begin with: spinners, card shuffles, mixing balls in contrast to the classical emphasis on probability axioms."),
       h5(" Tests are based on permutation/randomization distributions and confidence intervals are derived via bootstrapping."),
       br(),
-      h5("Similar apps:  StatKey at http://www.lock5stat.com"),
-      h5("  Rossman-Chance applets at http://rossmanchance.com/ISIapplets")
-    )
+      HTML(" For our discussion group see <a href='https://groups.google.com/forum/#!forum/spintro-stats'> the spintro-stats </a> google group"),
+      HTML(" and our code is available as a  <a href='https://github.com/MTstateIntroStats/SpIntro-Stats'> github repository </a>")
+      
+            )
     )    
 }    
 )
