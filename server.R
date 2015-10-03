@@ -820,25 +820,32 @@ output$cat1Estimate_Plot2 <- renderPlot({
        fluidRow(
          column(4, 
           div(
-            tags$label("Number of Categories", 
-                       tags$input(name='spin_nCat', type='number', value= 3, size=4)),
+            tags$label("Number of Categories",       
+                     tags$input(name='spin_nCat', type='number', value= 3, size=10,style="width: 40px" )),
             tags$label("Category names: ", 
                        tags$input(name = "spin_categories", type = 'text', value = "A, B, C", size = 12)),
             h5("(separate with commas)"),
             tags$label( "Percentages: ", 
-                        tags$input(name = "spin_probs",type = "text", value = "50, 30, 20")),
+                        tags$input(name = "spin_probs",type = "text", value = "50, 30, 20",style="width: 150px" )),
             h5("Separate with commas. Relative size is the key."),
-            hr() ,
-            selectInput("spin_stopRule","Stop after", c("Fixed number of spins",
-                                                  "One spin in 1st category", "One of each type")),
-           conditionalPanel( 
-             condition = "input.spin_stopRule =='Fixed number of spins'", 
-             numericInput("spin_nDraws", "Stop after how many spins?", 5 )
-           ),
-      
-          selectInput("spin_reps", "Number of Trials:", c("1","10","100","1000"),1),
-           ## helpText("Start with 1 for an animation"),
-           hr() ,
+            #hr() ,
+            tags$label("Stop after: ",
+                tags$div(style="width: 200px", 
+                     tags$select(id='spin_stopRule', class="form-control",
+                                 tags$option( value = "Fixed number of spins","Fixed number of spins", selected = TRUE ),
+                                 tags$option( value = "One spin in 1st category", "One spin in 1st category"),
+                                 tags$option( value = "One of each type", "One of each type"))
+            )),
+          conditionalPanel(
+            condition = "input.spin_stopRule =='Fixed number of spins'" ,
+            tags$label("Last Spin:",       
+                       tags$input(name='spin_nDraws', type='number', value= 5, size=10, style="width: 40px" ))
+          ),
+          tags$label("Number of Trials: ",       
+                     tags$input(name='spin_reps', type='number', value= 1, size=10, style="width: 40px" )),
+          #selectInput("spin_reps", "Number of Trials:", c("1","10","100","1000"),1),
+           helpText("Start with 1 for an animation"),
+           ## hr() ,
            conditionalPanel(
              condition = "input.spin_reps != 1 && input.spin_stopRule =='Fixed number of spins'" ,
              selectInput("spin_fn","Store what result?", functionList)
@@ -846,18 +853,23 @@ output$cat1Estimate_Plot2 <- renderPlot({
            conditionalPanel(
              condition = "input.spin_stopRule !='Fixed number of spins' && input.spin_reps != 1", 
              helpText("Display shows number of spins needed" )
-           ),
-           actionButton("spin_RunButton", "Run")  
+           )
         )), 
         #mainPanel(
-       column(7,
+        column(1,
+               actionButton("spin_RunButton", "Run")  
+        ),
+       column(6,
           includeHTML("www/spin.js"),
-          reactiveSpin(outputId = "spin_Plot"),
+          reactiveSpin(outputId = "spin_Plot")
+          ),
+       fluidRow(
+         column(10, offset = 1,
           conditionalPanel(
             condition = "input.spin_reps == 1",
-            verbatimTextOutput("spin_Summary") 
+            verbatimTextOutput("spin_Summary")
           ),
-          hr() ,
+          #hr() ,
           conditionalPanel(
             condition = "input.spin_reps != 1",
             plotOutput("spin_Histogrm")
@@ -871,6 +883,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
             tableOutput("spin_Summry3")
           )
         )
+      )
       )
      )
   })
@@ -982,12 +995,12 @@ output$cat1Estimate_Plot2 <- renderPlot({
       }
       out1
     })
-  })
+  }, width = 120)
   ## run more:
   output$spin_Summry2 <- renderPrint({
     ##  isolate({
     rData <-  repData()
-    unlist(list( c(summary(rData), stdDev = sd(rData))))
+    round(unlist(list(summary(rData), stdDev = sd(rData))),3)
     ## })
   })
   
