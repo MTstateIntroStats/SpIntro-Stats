@@ -59,6 +59,18 @@ c1q1_estimate_shuffles <- function(shuffles, ndx1, ndx2){
          matrix(sample(ndx2, length(ndx2) * shuffles, replace = TRUE), ncol = shuffles))
 }
 
+  ## control the way p-values are printed  ##  
+
+pvalue2print <- function(extremes, nreps, direction, cutoff, pvalue){
+  if(extremes > 0){
+    paste(extremes," of ",nreps," values are ",direction," than ", cutoff,
+          ". P-value = ", round(pvalue,5))
+  } else {
+    paste(extremes," of ",nreps," values are ",direction," than ", cutoff,
+          ". P-value < 1/", nreps, "=", round(1/nreps, ceiling(log10(nreps))))    
+  }
+}
+
 ## functions for SPINNERS
 
 draws2get1 <-  function( prob, reps){

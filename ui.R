@@ -375,8 +375,8 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
   ###  About spintro-stat
 {
   navbarMenu("About",
-    tabPanel("What Is Spin-tRo Stats?", value="aboutUs",
-      h5("Spin-tRo Stats is an open project to provide a set of simulation web apps for introductory statistics."),
+    tabPanel("What Is Sp-IntRo Stats?", value="aboutUs",
+      h5("Sp-IntRo Stats is an open project to provide a set of simulation web apps for introductory statistics."),
       h5("'Spin' in the title refers to the methods we begin with: spinners, card shuffles, mixing balls in contrast to the classical emphasis on probability axioms."),
       h5(" Tests are based on permutation/randomization distributions and confidence intervals are derived via bootstrapping."),
       br(),
