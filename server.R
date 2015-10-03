@@ -285,17 +285,17 @@ output$Cat1TestPvalue <- renderUI({
       
       if(length(DF) == 1){
         w <- 1
-        radius = 4
+        radius = 6
       } 
       else {
-        nbreaks <- 0.5*nclass.Sturges(DF)^2
-        z <- cut(DF, breaks = nbreaks)
-        w <- unlist(tapply(z, z, function(V) 1:length(V)))
-        w <- w[!is.na(w)]
+        #nbreaks <- 0.5*nclass.Sturges(DF)^2
+        #z <- cut(DF, breaks = nbreaks)
+        #w <- unlist(tapply(z, z, function(V) 1:length(V)))
+        w <- newy(DF)
         #print(w)
         #print(max(w))
         nsims <- length(DF)
-        radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
+        radius = pmax(1, 11 - round(log(length(DF))))        
       }
       plot(DF, w, ylab = "", ylim = c(0.5, max(w)), cex = radius/2, pch = 16, col = cat1Test$colors,  
            xlab = expression(hat(p)), main = "Sampling Distribution")
@@ -514,10 +514,10 @@ output$cat1Estimate_Plot2 <- renderPlot({
     radius = 4
   } 
   else {
-    nbreaks <- 0.5*nclass.Sturges(DF)^2
-    z <- cut(DF, breaks = nbreaks)
-    w <- unlist(tapply(z, z, function(V) 1:length(V)))
-    w <- w[!is.na(w)]
+    #nbreaks <- 0.5*nclass.Sturges(DF)^2
+    #z <- cut(DF, breaks = nbreaks)
+    #w <- unlist(tapply(z, z, function(V) 1:length(V)))
+    w <- newy(DF)
     #print(w)
     #print(max(w))
     nsims <- length(DF)
@@ -783,10 +783,10 @@ output$cat1Estimate_Plot2 <- renderPlot({
       radius <- 4 + diffs*0
     } 
     else {
-      nbreaks <- 0.5*nclass.Sturges(diffs)^2
-      z <- cut(diffs, breaks = nbreaks)
-      w <- unlist(tapply(z, z, function(V) 1:length(V)))
-      w <- w[!is.na(w)]
+      #nbreaks <- 0.5*nclass.Sturges(diffs)^2
+      #z <- cut(diffs, breaks = nbreaks)
+      #w <- unlist(tapply(z, z, function(V) 1:length(V)))
+      w <- newy(diffs)
       # print(summary(w))
       # print(max(w))
       nsims <- length(diffs)
@@ -1357,8 +1357,8 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
     # Plot stacked x values. 
     x <- sort(q1$data[,1])
     ## print(x)
-    z <- cut(x, breaks = nclass.Sturges(x) ^2 )
-    w <- unlist(tapply(x, z, function(x) 1:length(x)))
+    #z <- cut(x, breaks = nclass.Sturges(x) ^2 )
+    w <- newy(x)  #unlist(tapply(x, z, function(x) 1:length(x)))
     tempDF <- data.frame(x, w=w[!is.na(w)])
     myBlue <- rgb(0, 100/256, 224/256, alpha = .8)  
     q1_plot2 <- qplot(data=tempDF, x=x, y=w, colour = I(myBlue), size = I(4)) + theme_bw() + xlab(q1$names)
@@ -1493,11 +1493,8 @@ output$q1_TestPlot1 <- renderPlot({
   par(mfrow = c(2,1), mar = c(4,3.5,3,1))
   ## Plot Original Data
   x <- sort(q1$data[,1])
-  z <- cut(x, breaks = nclass.Sturges(x) ^2 )
-  w <- unlist(tapply(x, z, function(x) 1:length(x)))
-  tempDF <- data.frame(x, w=w[!is.na(w)])
-  z <- cut(x, breaks = nclass.Sturges(x) ^2 )
-  w <- unlist(tapply(x, z, function(x) 1:length(x)))
+  #z <- cut(x, breaks = nclass.Sturges(x) ^2 )
+  w <- newy(x) #unlist(tapply(x, z, function(x) 1:length(x)))
   tempDF <- data.frame(x=x, w=w[!is.na(w)])
   plot(w ~ x, data = tempDF, col = blu, pch = 16, main = "Original Data", xlab = q1$names, ylab = "Count")
   legend("topleft", bty = "n", paste(" n = ",nn,"\n Mean = ", round(mean(x),3), "\n SD = ", round(sd(x),3)))
@@ -1727,9 +1724,9 @@ output$q1_EstPlot1 <- renderPlot({
   
   ## Plot Original Data
   x <- sort(q1$data[,1])
-  z <- cut(x, breaks = nclass.Sturges(x) ^2 )
-  w <- unlist(tapply(x, z, function(x) 1:length(x)))
-  w <- w[!is.na(w)]
+  #z <- cut(x, breaks = nclass.Sturges(x) ^2 )
+  #w <- unlist(tapply(x, z, function(x) 1:length(x)))
+  w <- newy(x) # w[!is.na(w)]
   #par(mar = c(2,2,2,1))
   plot(x=x, y=w, col = blu, pch = 16, main = "Original Data", xlab = q1$names, ylab = "Count")
   legend("topleft", bty = "n", paste(" n = ", nn, "\n Mean = ", round(mean(x),3), "\n SD = ", round(sd(x),3)))
@@ -1751,9 +1748,9 @@ output$q1_EstPlot1 <- renderPlot({
   } else  {
     return()
   }
-  z <- cut(DF0, breaks = nclass.Sturges(DF0) ^2 )
-  w <- unlist(tapply(DF0, z, function(DF0) 1:length(DF0)))
-  w <- w[!is.na(w)]
+  #z <- cut(DF0, breaks = nclass.Sturges(DF0) ^2 )
+  #w <- unlist(tapply(DF0, z, function(DF0) 1:length(DF0)))
+  w <- newy(DF0) #w[!is.na(w)]
   #par(mar = c(2,2,2,1))
   plot(x=DF0, y=w, col = blu, pch = 16, main = "Resampled Data", xlab = q1$names, ylab = "Count")
   legend("topleft", bty = "n", paste(" n = ", nn, "\n Mean = ", round(mean(DF0),3), "\n SD = ", round(sd(DF0),3)))
@@ -2541,10 +2538,10 @@ output$Cat2TestPvalue <- renderUI({
       radius = 4
       } 
     else {
-      nbreaks <- 0.5*nclass.Sturges(DF)^2
-      z <- cut(DF, breaks = nbreaks)
-      w <- unlist(tapply(z, z, function(V) 1:length(V)))
-      w <- w[!is.na(w)]
+      #nbreaks <- 0.5*nclass.Sturges(DF)^2
+      ##z <- cut(DF, breaks = nbreaks)
+      #w <- unlist(tapply(z, z, function(V) 1:length(V)))
+      w <- newy(DF) #w[!is.na(w)]
       #print(w)
       #print(max(w))
       nsims <- length(DF)
@@ -2830,10 +2827,10 @@ output$Cat2TestPvalue <- renderUI({
       radius = 4
     } 
     else {
-      nbreaks <- 0.5 * nclass.Sturges(DF)^2
-      z <- cut(DF, breaks = nbreaks)
-      w <- unlist(tapply(z, z, function(V) 1:length(V)))
-      w <- w[!is.na(w)]
+      #nbreaks <- 0.5 * nclass.Sturges(DF)^2
+      #z <- cut(DF, breaks = nbreaks)
+      #w <- unlist(tapply(z, z, function(V) 1:length(V)))
+      w <- newy(DF) #w[!is.na(w)]
       #print(w)
       #print(max(w))
       nsims <- length(DF)
@@ -3855,10 +3852,10 @@ output$c1q1_Plot <- renderPlot( {
   c1q1_plot1 <- qplot(y=y, x=group, data = DF, geom="boxplot") +
     theme_bw() + xlab("") +  coord_flip() + ylab(c1q1$names[2]) 
   DF <- DF[order(DF$y), ]
-  nbreaks <- min(c(length(unique(DF$y)), floor(.5*nclass.Sturges(DF$y)^2)))
-  z <- cut(DF$y, breaks =  nbreaks )
-  w <- unlist(tapply(DF$y, list(z, DF$group), function(x) 1:length(x)))
-  w <- w[!is.na(w)]  
+  #nbreaks <- min(c(length(unique(DF$y)), floor(.5*nclass.Sturges(DF$y)^2)))
+  #z <- cut(DF$y, breaks =  nbreaks )
+  #w <- unlist(tapply(DF$y, list(z, DF$group), function(x) 1:length(x)))
+  w <- newy(DF$y)  #w[!is.na(w)]  
   myBlue <- rgb(0, 100/256, 224/256, alpha = .8)  
   c1q1_plot2 <- qplot(data= DF, x=y, y=w , colour = I(myBlue), size = I(4))+ facet_wrap( ~group) + 
     theme_bw() + ylab("Count") + xlab( c1q1$names[2])
