@@ -59,6 +59,30 @@ c1q1_estimate_shuffles <- function(shuffles, ndx1, ndx2){
          matrix(sample(ndx2, length(ndx2) * shuffles, replace = TRUE), ncol = shuffles))
 }
 
+ ## finding break points for dot plots
+newy  <- function(simStats){
+  nbreaks <- 0.5*nclass.Sturges(simStats)^2
+  z <- cut(simStats, breaks = nbreaks) 
+  checkBreaks <- (length(simStats) < 3000)
+  ## look at center 30 bins to see if we have lots of variation
+  ## if so, try more bins
+  oldDifQuant <- 100
+  while(nbreaks > 30 & checkBreaks){
+    zt <- as.numeric(table(z))
+    hipt <- which.max(zt)
+    zt <- zt[pmax(1, hipt -10):pmin(length(zt), hipt+10)]
+    #print(
+    difquant <- diff(quantile(zt,c(.75,1)))/ median(zt) #)
+    if(difquant > .8 & difquant < oldDifQuant){
+      nbreaks <- nbreaks * 1.1
+      z <- cut(simStats, breaks = nbreaks) 
+      oldDifQuant <- difquant
+    } else { break()}
+  }
+  w <- unlist(tapply(z, z, function(V) 1:length(V)))
+  w[!is.na(w)]
+}
+
   ## control the way p-values are printed  ##  
 
 pvalue2print <- function(extremes, nreps, direction, cutoff, pvalue){
