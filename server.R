@@ -20,6 +20,14 @@ grn <- rgb(0, 1, 0, alpha=.4)
 rd  <- rgb(1, 0, 0, alpha=.5)
 blu <- rgb(0, 0, 1, alpha=.4)
 
+pvalue2print <- function(extremes, nreps, direction, cutoff, pvalue){
+  if(extremes > 0){
+    paste(extremes," of ",nreps," values are ",direction," than ", cutoff,". P-value = ", round(pvalue,5))
+  } else {
+    paste(extremes," of ",nreps," values are ",direction," than ", cutoff,". P-value < 1/", nreps)    
+  }
+}
+
  shinyServer( function(input, output, session) {
 
   ## 1 Categorical  -----------------------------------------------------------
@@ -177,9 +185,10 @@ output$Cat1TestPvalue <- renderUI({
   if(!is.null(cat1Test$moreExtremeCount)){
     #     fluidRow(
     #       column(8, offset = 3, 
-    h4(paste(cat1Test$moreExtremeCount, " of ", cat1Test$sampleCount, "values are ",
-             cat1Test$direction," than", as.numeric(cat1Test$cutoff),",  p-value =  ", round(cat1Test$pvalue,5))
-    )
+    h4(pvalue2print(cat1Test$moreExtremeCount,  cat1Test$sampleCount, cat1Test$direction, cat1Test$cutoff, cat1Test$pvalue))
+    #h4(paste(cat1Test$moreExtremeCount, " of ", cat1Test$sampleCount, "values are ",
+    #         cat1Test$direction," than", as.numeric(cat1Test$cutoff),",  p-value =  ", round(cat1Test$pvalue,5))
+    #)
     #      ))
   }
 })
@@ -1454,9 +1463,10 @@ observeEvent( input$null_mu, {
 
 output$q1TestPvalue <- renderUI({
   if(!is.null(q1Test$moreExtremeCount)){
-    h4(paste(q1Test$moreExtremeCount, " of ", q1Test$sampleCount, "values are ",
-                                    q1Test$direction," than", q1Test$cutoff, ",  p-value =  ", round(q1Test$pvalue,5))
-    )
+    h4(pvalue2print(q1Test$moreExtremeCount,  q1Test$sampleCount, q1Test$direction, q1Test$cutoff, q1Test$pvalue))
+#     h4(paste(q1Test$moreExtremeCount, " of ", q1Test$sampleCount, "values are ",
+#                                     q1Test$direction," than", q1Test$cutoff, ",  p-value =  ", round(q1Test$pvalue,5))
+    
   }
 })
 
