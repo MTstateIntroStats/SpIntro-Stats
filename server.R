@@ -305,7 +305,7 @@ output$Cat1TestPvalue <- renderUI({
 
 }
 
-   ###  estimate phat  -------------------------------------- cat 1
+   ###  estimate p.hat  -------------------------------------- cat 1
 {
 output$cat1_estimateUI <- renderUI({
   if( is.null(cat1_data$counts)){
@@ -1005,14 +1005,14 @@ output$cat1Estimate_Plot2 <- renderPlot({
     ##isolate({
     counts  <- repData()
     if(input$spin_stopRule =="Fixed number of spins"){
-      output <- t(table(c(counts,0:input$spin_nDraws))-1)
+      output <- t(table(counts))#c(counts,0:input$spin_nDraws))-1)
     } else if(input$spin_stopRule =="One spin in 1st category"){
       output <-  t(table(c(counts, 1:max(counts)))-1)
     } else  if(input$spin_stopRule =="One of each type"){
       output <-   t(table(c(counts, input$spin_nCat:max(counts)))-1)
     }
     rownames(output) <- "Counts"
-    output
+    output#[1, output>0]
     ##})
   })
   
@@ -1023,7 +1023,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
     if(input$spin_stopRule =="Fixed number of spins"){
       stat <-  input$spin_fn
       begin <- 0 + (input$spin_fn == functionList[3]) 
-      xlimits = c(begin, input$spin_nDraws)
+      xlimits = range(x) ## c(begin, input$spin_nDraws)
     }
     if(substr(input$spin_stopRule,1,3) == "One") {
       stat = "Number of Spins"
@@ -1184,7 +1184,8 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
   switch( input$q1_entry,
           "Pre-Loaded Data" ={ 
             fluidRow(  
-              column(4, selectInput('q1_data1', 'Available Datasets',  choices = as.list(quant1_contents))
+              column(4, selectInput('q1_data1', 'Available Datasets',  
+                                    choices = as.list(quant1_contents))
                      ),
               column(4, actionButton("q1_useLddBtn", "Use These Data") )
             )
@@ -1213,30 +1214,24 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
             
           },
           "Type/Paste into Text Box" = {
-            #h4("Edit the values in Column 2.  Column 1 will be ignored.  To paste, use Cntrl-V or Cmd-V(on a mac)"), 
-            ## take inputs here for number of rows (& columns?)
-            div(#fluidRow(
-              HTML('<textarea name="q1_text" cols="30" rows="10"></textarea>'),
-              #column(4,    tags$input(name='q1_text', type='text', value=' ', label ='Data Input', size='100', height = 20)
-                     ## textInput("q1_text", label = "Data Input", width = '500px')
-              #),
-              #column(4,   
-              actionButton("q1_useText", "Use These Data")#)
-            )
-          },
-          "Type/Paste into Data Sheet" = {
             div(
-               h4("Edit the values in Column 2.  Column 1 will be ignored.  To paste, use Cntrl-V or Cmd-V(on a mac)"), 
-            ## take inputs here for number of rows (& columns?)
-              ## tags$input(name='q1Hot_rows', type='text', value=10, label = 'Number of rows', size='10', height = 20),
-               ## tags$input(name='q1Hot_cols', type='text', value='0', size='10'),
-            fluidRow(
-              column(4, rHandsontableOutput("q1_hot") #, rows = input$q1Hot_rows) 
-              ),
-              column(4, actionButton("q1_useHotBtn", "Use These Data"))
+              HTML('<textarea name="q1_text" cols="30" rows="10"></textarea>'),
+              actionButton("q1_useText", "Use These Data")
             )
-          )
-        },
+           },
+#           "Type/Paste into Data Sheet" = {
+#             div(
+#                h4("Edit the values in Column 2.  Column 1 will be ignored.  To paste, use Cntrl-V or Cmd-V(on a mac)"), 
+#             ## take inputs here for number of rows (& columns?)
+#               ## tags$input(name='q1Hot_rows', type='text', value=10, label = 'Number of rows', size='10', height = 20),
+#                ## tags$input(name='q1Hot_cols', type='text', value='0', size='10'),
+#             fluidRow(
+#               column(4, rHandsontableOutput("q1_hot") #, rows = input$q1Hot_rows) 
+#               ),
+#               column(4, actionButton("q1_useHotBtn", "Use These Data"))
+#             )
+#           )
+#         },
         NULL
       )
  })
@@ -1272,19 +1267,19 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
    })
  })
 
- observeEvent(input$q1_useHotBtn,{
-   DF = data.frame(x=as.numeric(q1_values[["hot"]][,2]))
-   # print(DF)
-   q1$names <- names(DF)
-   q1Test$nsims <- 0
-   q1$data <- data.frame( x = as.numeric(unlist(DF)))
-   q1Test$shuffles <-  q1Test$new.xbars <-  q1Test$xbar <-   q1Test$colors <- NULL
-   q1Estimate$shuffles <- q1Estimate$xbars <- q1Estimate$observed <- q1Estimate$colors <- NULL
-   #print(q1$data)
-   output$quant1DataIn <- renderText({
-     "Data are entered, you may now choose to estimate or test one mean"
-   })
- })
+#  observeEvent(input$q1_useHotBtn,{
+#    DF = data.frame(x=as.numeric(q1_values[["hot"]][,2]))
+#    # print(DF)
+#    q1$names <- names(DF)
+#    q1Test$nsims <- 0
+#    q1$data <- data.frame( x = as.numeric(unlist(DF)))
+#    q1Test$shuffles <-  q1Test$new.xbars <-  q1Test$xbar <-   q1Test$colors <- NULL
+#    q1Estimate$shuffles <- q1Estimate$xbars <- q1Estimate$observed <- q1Estimate$colors <- NULL
+#    #print(q1$data)
+#    output$quant1DataIn <- renderText({
+#      "Data are entered, you may now choose to estimate or test one mean"
+#    })
+#  })
 
  
    observeEvent(input$q1_useText,{
@@ -1317,25 +1312,25 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
   })
  
    q1_values = list()
-   q1_setHot = function(x) q1_values[["hot"]] <<- x
-   q1_setHot(read.csv("data/dummyData.csv", stringsAsFactors = FALSE, head = TRUE) )
+  # q1_setHot = function(x) q1_values[["hot"]] <<- x
+  # q1_setHot(read.csv("data/dummyData.csv", stringsAsFactors = FALSE, head = TRUE) )
 
-  output$q1_hot = renderRHandsontable({
-    if (!is.null(input$q1_hot)) {
-      q1_DF = hot_to_r(input$q1_hot)
-      q1_setHot(q1_DF)
-      rhandsontable(q1_DF) %>%
-        hot_table(highlightCol = TRUE, highlightRow = TRUE, copyPaste = TRUE, pasteMode = "shift_down")
-    } else {
-      ## seems that HOT needs at least 2 columns, so column 1 is just row numbers.
-      q1_DF = read.csv("data/dummyData.csv", stringsAsFactors = FALSE, head = TRUE)
-      #cat("loading \n")
-      #print(q1_DF)
-      q1_setHot(q1_DF)    
-      rhandsontable(q1_values[["hot"]], height = 200) %>%
-        hot_table(highlightCol = TRUE, highlightRow = TRUE)
-    }
-  })
+#   output$q1_hot = renderRHandsontable({
+#     if (!is.null(input$q1_hot)) {
+#       q1_DF = hot_to_r(input$q1_hot)
+#       q1_setHot(q1_DF)
+#       rhandsontable(q1_DF) %>%
+#         hot_table(highlightCol = TRUE, highlightRow = TRUE, copyPaste = TRUE, pasteMode = "shift_down")
+#     } else {
+#       ## seems that HOT needs at least 2 columns, so column 1 is just row numbers.
+#       q1_DF = read.csv("data/dummyData.csv", stringsAsFactors = FALSE, head = TRUE)
+#       #cat("loading \n")
+#       #print(q1_DF)
+#       q1_setHot(q1_DF)    
+#       rhandsontable(q1_values[["hot"]], height = 200) %>%
+#         hot_table(highlightCol = TRUE, highlightRow = TRUE)
+#     }
+#   })
 
 
 
@@ -3022,15 +3017,22 @@ output$normalProbPlot2 <- renderPlot({
               )
             )
           },
-          "Type/Paste into Data Table" = {
-            #h4("Edit the values in Column 2.  Column 1 will be ignored.  To paste, use Cntrl-V or Cmd-V(on a mac)"), 
-            fluidRow(
-              column(4, 
-                     rHandsontableOutput("q2_hot")) 
-              ,
-              column(4, actionButton("q2_useHotBtn", "Use These Data"))
-            )            
-          }, 
+          "Type/Paste into Text Box" = {
+            div(
+              HTML('<textarea name="q2_text" cols="30" rows="10"></textarea>'),
+              actionButton("q2_useText", "Use These Data")
+            )
+          },
+          
+#           "Type/Paste into Data Table" = {
+#             #h4("Edit the values in Column 2.  Column 1 will be ignored.  To paste, use Cntrl-V or Cmd-V(on a mac)"), 
+#             fluidRow(
+#               column(4, 
+#                      rHandsontableOutput("q2_hot")) 
+#               ,
+#               column(4, actionButton("q2_useHotBtn", "Use These Data"))
+#             )            
+#           }, 
           NULL
   )
   ##  Need to grab names from the data input
@@ -3070,40 +3072,71 @@ observeEvent(  input$q2_useCSVBtn,{
   
 })
 
-observeEvent(  input$q2_useHotBtn,{
-  ##  Wipe out any old data  
-  q2Test$shuffles <- q2Test$slopes <- q2Test$corr <- q2Test$observed <- 
-    q2Test$colors <- q2Test$moreExtremeCount <- q2Test$pvalue <- NULL
-  q2Estimate$resamples <- q2Estimate$slopes <- q2Estimate$corr <- q2Estimate$observed <-
-    q2Estimate$CI <- q2Estimate$colors <- NULL
-  
-  DF <- data.frame(q2_values[["hot"]])
-  # print(DF)
-  q2$names <- names(DF) 
-  q2$data <- data.frame(DF)
+# observeEvent(  input$q2_useHotBtn,{
+#   ##  Wipe out any old data  
+#   q2Test$shuffles <- q2Test$slopes <- q2Test$corr <- q2Test$observed <- 
+#     q2Test$colors <- q2Test$moreExtremeCount <- q2Test$pvalue <- NULL
+#   q2Estimate$resamples <- q2Estimate$slopes <- q2Estimate$corr <- q2Estimate$observed <-
+#     q2Estimate$CI <- q2Estimate$colors <- NULL
+#   
+#   DF <- data.frame(q2_values[["hot"]])
+#   # print(DF)
+#   q2$names <- names(DF) 
+#   q2$data <- data.frame(DF)
+#   names(q2$data) <- c("x","y")
+#   output$quant2DataIn <- renderText({
+#     "Data are entered, you may now choose to estimate or test the true slope or correlation"
+#   })
+# })
+
+q2_values = list()
+
+observeEvent(input$q2_useText,{
+  if(nchar(input$q2_text) < 1){
+    return()
+  }
+  #print(input$q2_text)
+  if (grepl(",", input$q2_text)){          ## check for commas,
+    q2Text <- gsub(","," ",input$q2_text)  ## replace commas with spaces
+  } else {
+    q2Text <- input$q2_text
+  }
+  ## tempData <- input$q2_text # readLines(text = ) ## read in as text
+  if(is.na(as.numeric(unlist(strsplit(q2Text," "))))){ # is the first "word" numeric or character?
+    tempData <- read.table(text = q2Text, head = TRUE)      
+    q2$names <- names(tempData)
+  } else{
+    q2$names <- c("x","y")                           # numeric, so name it "x"
+    tempData <- read.table(text = q2Text, head = FALSE)
+    names(tempData) <- q2$names
+  }
+  print(tempData)
+  q2Test$nsims <- 0
+  q2$data <- tempData
   names(q2$data) <- c("x","y")
+  q2Test$shuffles <-  q2Test$new.xbars <-  q2Test$xbar <-   q2Test$colors <- NULL
+  q2Estimate$shuffles <- q2Estimate$xbars <- q2Estimate$observed <- q2Estimate$colors <- NULL
   output$quant2DataIn <- renderText({
-    "Data are entered, you may now choose to estimate or test the true slope or correlation"
+    "Data are entered, you may now choose to estimate or test slope"
   })
 })
 
-q2_values = list()
-q2_setHot = function(x) q2_values[["hot"]] <<- x
+#q2_setHot = function(x) q2_values[["hot"]] <<- x
 
-output$q2_hot = renderRHandsontable({
-  if (!is.null(input$q2_hot)) {
-    q2_DF = hot_to_r(input$q2_hot)
-    q2_setHot(q2_DF)
-    rhandsontable(q2_DF) %>%
-      hot_table(highlightCol = TRUE, highlightRow = TRUE)
-  } else {
-    ## seems that HOT needs at least 2 columns, so column 1 is just row numbers.
-    q2_DF = read.csv("data/dummyData.csv", stringsAsFactors = FALSE, head = TRUE)
-    q2_setHot(q2_DF)    
-    rhandsontable(q2_DF, height = 230) %>%
-      hot_table(highlightCol = TRUE, highlightRow = TRUE)
-  }
-})
+# output$q2_hot = renderRHandsontable({
+#   if (!is.null(input$q2_hot)) {
+#     q2_DF = hot_to_r(input$q2_hot)
+#     q2_setHot(q2_DF)
+#     rhandsontable(q2_DF) %>%
+#       hot_table(highlightCol = TRUE, highlightRow = TRUE)
+#   } else {
+#     ## seems that HOT needs at least 2 columns, so column 1 is just row numbers.
+#     q2_DF = read.csv("data/dummyData.csv", stringsAsFactors = FALSE, head = TRUE)
+#     q2_setHot(q2_DF)    
+#     rhandsontable(q2_DF, height = 230) %>%
+#       hot_table(highlightCol = TRUE, highlightRow = TRUE)
+#   }
+# })
 }
 
 ###  Data Summary ----------------------------------------------------------  q2
@@ -3742,19 +3775,25 @@ output$c1q1_ui <- renderUI({
             ## check which is numeric / character
             
           },
-          "Type/Paste into Data Table" = {
-            #h4("Edit the values in Column 2.  Column 1 will be ignored.  To paste, use Cntrl-V or Cmd-V(on a mac)"), 
-            fluidRow(
-              column(4, 
-                     rHandsontableOutput("c1q1_hot")) 
-              ,
-              ## allow user to change names of the columns:
-              # column(4,
-              #       )
-              column(4, actionButton("c1q1_useHotBtn", "Use These Data"))
+          "Type/Paste into Text Box" = {
+            div(
+              HTML('<textarea name="c1q1_text" cols="30" rows="10"></textarea>'),
+              actionButton("c1q1_useText", "Use These Data")
             )
-            
-          }, 
+          },
+#           "Type/Paste into Data Table" = {
+#             #h4("Edit the values in Column 2.  Column 1 will be ignored.  To paste, use Cntrl-V or Cmd-V(on a mac)"), 
+#             fluidRow(
+#               column(4, 
+#                      rHandsontableOutput("c1q1_hot")) 
+#               ,
+#               ## allow user to change names of the columns:
+#               # column(4,
+#               #       )
+#               column(4, actionButton("c1q1_useHotBtn", "Use These Data"))
+#             )
+#             
+#           }, 
           NULL
   )
 })
@@ -3800,36 +3839,66 @@ observeEvent(  input$c1q1_useCSVBtn,{
   
 })
 
-observeEvent(  input$c1q1_useHotBtn,{
-  DF <- data.frame(c1q1_values[["hot"]])
-  # print(DF)
-  names(DF) <- c("group","y")
-  c1q1$names <- names(DF)
-  c1q1$data <- DF
-  c1q1Test$shuffles <- c1q1Test$diff <- NULL
-  c1q1Est$shuffles <- c1q1Est$diff <- NULL
+observeEvent(input$c1q1_useText,{
+  if(nchar(input$c1q1_text) < 1){
+    return()
+  }
+  print(input$c1q1_text)
+  if (grepl(",", input$c1q1_text)){          ## check for commas,
+    c1q1Text <- gsub(","," ",input$c1q1_text)  ## replace commas with spaces
+  } else {
+    c1q1Text <- input$c1q1_text
+  }
+  if(is.na(as.numeric(unlist(strsplit(c1q1Text," "))[2]))){ # is the 2nd "word" numeric or character?
+    tempData <- read.table(text = c1q1Text, head = TRUE)      
+    c1q1$names <- names(tempData)
+  } else{
+    c1q1$names <- c("group","y")   # numeric, so name it "x"
+    tempData <- read.table(text = q2Text, head = FALSE)
+    names(tempData) <- q2$names
+    whichIsNumeric <- which(sapply(DF, is.numeric))
+    whichIsFactor <- which(sapply(DF, is.factor))
+  } 
+  c1q1Test$nsims <- 0
+  c1q1$data <- data.frame( x = tempData)
+  c1q1Test$shuffles <-  c1q1Test$new.xbars <-  c1q1Test$xbar <-   c1q1Test$colors <- NULL
+  c1q1Est$shuffles <- c1q1Est$xbars <- c1q1Est$observed <- c1q1Est$colors <- NULL
+  #print(c1q1$data)
   output$c1q1DataIn <- renderText({
-    "Data are entered, you may now choose to estimate or test the true difference in means"
+    "Data are entered, you may now choose to estimate or test one mean"
   })
 })
 
-c1q1_values = list()
-c1q1_setHot = function(x) c1q1_values[["hot"]] <<- x
+# observeEvent(  input$c1q1_useHotBtn,{
+#   DF <- data.frame(c1q1_values[["hot"]])
+#   # print(DF)
+#   names(DF) <- c("group","y")
+#   c1q1$names <- names(DF)
+#   c1q1$data <- DF
+#   c1q1Test$shuffles <- c1q1Test$diff <- NULL
+#   c1q1Est$shuffles <- c1q1Est$diff <- NULL
+#   output$c1q1DataIn <- renderText({
+#     "Data are entered, you may now choose to estimate or test the true difference in means"
+#   })
+# })
 
-output$c1q1_hot = renderRHandsontable({
-  if (!is.null(input$c1q1_hot)) {
-    c1q1_DF = hot_to_r(input$c1q1_hot)
-    c1q1_setHot(c1q1_DF)
-    rhandsontable(c1q1_DF) %>%
-      hot_table(highlightCol = TRUE, highlightRow = TRUE)
-  } else {
-    ## seems that HOT needs at least 2 columns, so column 1 is just row numbers.
-    c1q1_DF = read.csv("data/dummyDatac1q1.csv", stringsAsFactors = FALSE, head = TRUE)
-    c1q1_setHot(c1q1_DF)    
-    rhandsontable(c1q1_DF, height = 230) %>%
-      hot_table(highlightCol = TRUE, highlightRow = TRUE)
-  }
-})
+c1q1_values = list()
+#c1q1_setHot = function(x) c1q1_values[["hot"]] <<- x
+
+# output$c1q1_hot = renderRHandsontable({
+#   if (!is.null(input$c1q1_hot)) {
+#     c1q1_DF = hot_to_r(input$c1q1_hot)
+#     c1q1_setHot(c1q1_DF)
+#     rhandsontable(c1q1_DF) %>%
+#       hot_table(highlightCol = TRUE, highlightRow = TRUE)
+#   } else {
+#     ## seems that HOT needs at least 2 columns, so column 1 is just row numbers.
+#     c1q1_DF = read.csv("data/dummyDatac1q1.csv", stringsAsFactors = FALSE, head = TRUE)
+#     c1q1_setHot(c1q1_DF)    
+#     rhandsontable(c1q1_DF, height = 230) %>%
+#       hot_table(highlightCol = TRUE, highlightRow = TRUE)
+#   }
+# })
 }
   ##  Describe and summarize ------------------------------------------------- 1c1q
 {

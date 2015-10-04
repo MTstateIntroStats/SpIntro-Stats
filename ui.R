@@ -127,7 +127,7 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
                fluidRow(  
                  column(6, selectInput('q1_entry', ' ', 
                                       list(" ", "Pre-Loaded Data","Local CSV File",
-                                           "Type/Paste into Text Box","Type/Paste into Data Sheet"), 
+                                           "Type/Paste into Text Box"), #"Type/Paste into Data Sheet"), 
                                       selected = " ",
                                       selectize = FALSE))
                ),
@@ -290,7 +290,8 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
                fluidRow(  
                  
                  column(6, selectInput('q2_entry', '', 
-                                       list(" ", "Pre-Loaded Data","Local CSV File","Type/Paste into Data Table"), 
+                                       list(" ", "Pre-Loaded Data","Local CSV File",
+                                            "Type/Paste into Text Box"), 
                                        selected = " ",
                                        selectize = FALSE))
                ),
@@ -325,7 +326,8 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
        h4(textOutput('c1q1DataIn')),
         fluidRow(  
             column(6, selectInput('c1q1_entry', ' ', 
-                                list(" ", "Pre-Loaded Data","Local CSV File","Type/Paste into Data Table"), 
+                                list(" ", "Pre-Loaded Data","Local CSV File",
+                                     "Type/Paste into Text Box"), 
                                 selected = " ",
                                 selectize = FALSE))
         ),
