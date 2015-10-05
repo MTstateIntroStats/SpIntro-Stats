@@ -151,7 +151,8 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
         uiOutput('q1_estimateUI')
       ),
       tabPanel("Bootstrap Demo", value="1quantBoot",
-        a(href="http://www.math.montana.edu/~jimrc/randomization/BootDemo.html","Click to see Bootstrap Demo") 
+        uiOutput('q1_bootstrap')
+        #a(href="http://www.math.montana.edu/~jimrc/randomization/BootDemo.html","Click to see Bootstrap Demo") 
       ),
       tabPanel("Lurking Demo", value="1quantLurk",
                h3("What does Randomization do to a LURKing Variable?"),

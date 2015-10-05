@@ -1857,7 +1857,15 @@ output$q1_EstimatePlot2 <- renderPlot({
 }, height = 360, width = 480)
 
 }
-
+  ## Bootstrap Demo  ---------------------------------------
+{
+  output$q1_bootstrap <- renderUI({
+    h2("Bootstrap Demo")
+  ##  includeScript("www/d3.v3.min.js")
+   ## includeScript("www/costs.js")
+    includeHTML("www/BootDemo.html")
+  })
+}  
   ## Lurking Demo  --------------------------------------    quant 1
   {
   

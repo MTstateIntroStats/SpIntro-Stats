@@ -1,4 +1,3 @@
-
 <script src="http://d3js.org/d3.v3.js"></script>
 <script type="text/javascript">
  var networkOutputBinding = new Shiny.OutputBinding();
