@@ -91,7 +91,7 @@ pvalue2print <- function(extremes, nreps, direction, cutoff, pvalue){
           ". P-value = ", round(pvalue,5))
   } else {
     paste(extremes," of ",nreps," values are ",direction," than ", cutoff,
-          ". P-value < 1/", nreps, "=", round(1/nreps, ceiling(log10(nreps))))    
+          ". P-value < 1/", nreps, " or P-value < ", round(1/nreps, ceiling(log10(nreps))+1))    
   }
 }
 

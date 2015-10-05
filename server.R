@@ -175,8 +175,6 @@ observeEvent( input$cat1_test_cutoff, {
 
 output$Cat1TestPvalue <- renderUI({
   if(!is.null(cat1Test$moreExtremeCount)){
-    #     fluidRow(
-    #       column(8, offset = 3, 
     h4(pvalue2print(cat1Test$moreExtremeCount,  cat1Test$sampleCount, cat1Test$direction, cat1Test$cutoff, cat1Test$pvalue))
   }
 })
@@ -2384,8 +2382,11 @@ observeEvent( input$cat2_test_cutoff, {
 
 output$Cat2TestPvalue <- renderUI({
   if(!is.null(cat2Test$moreExtremeCount)){
-    h4(paste(cat2Test$moreExtremeCount, " of ", cat2Test$sampleCount, "values are ",
-                      cat2Test$direction," than", as.numeric(cat2Test$cutoff),",  p-value =  ", round(cat2Test$pvalue,5))
+    h4(pvalue2print(cat2Test$moreExtremeCount,  cat2Test$sampleCount,
+                    cat2Test$direction, cat2Test$cutoff, cat2Test$pvalue)
+    
+#     h4(paste(cat2Test$moreExtremeCount, " of ", cat2Test$sampleCount, "values are ",
+#                       cat2Test$direction," than", as.numeric(cat2Test$cutoff),",  p-value =  ", round(cat2Test$pvalue,5))
     )
   }
 })
@@ -3276,8 +3277,10 @@ output$q2_SampDistPlot <- renderUI({
 
 output$slopeTestPvalue <- renderUI({
   if(!is.null(q2Test$moreExtremeCount)){
-    h4(paste(q2Test$moreExtremeCount, " of ", q2Test$sampleCount, "values are ",
-             q2Test$direction," than", q2Test$cutoff, ",  p-value =  ", round(q2Test$pvalue,5)))
+    h4(pvalue2print(q2Test$moreExtremeCount,  q2Test$sampleCount, q2Test$direction, 
+                    q2Test$cutoff, q2Test$pvalue))
+#    h4(paste(q2Test$moreExtremeCount, " of ", q2Test$sampleCount, "values are ",
+ #            q2Test$direction," than", q2Test$cutoff, ",  p-value =  ", round(q2Test$pvalue,5)))
   }
 })
 
@@ -4039,11 +4042,8 @@ output$c1q1_Summary2 <- renderTable({
       
    output$c1q1TestPvalue <- renderUI({
       if(!is.null(c1q1Test$moreExtremeCount)){
-         #fluidRow(
-         #  column(9,  
-         h4(paste(c1q1Test$moreExtremeCount, " of ", c1q1Test$sampleCount, "values are ",
-                                            c1q1Test$direction," than", c1q1Test$cutoff, ",  p-value =  ", round(c1q1Test$pvalue,5)))
-        #  ))
+        h4(pvalue2print(c1q1Test$moreExtremeCount,  c1q1Test$sampleCount, c1q1Test$direction, 
+                        c1q1Test$cutoff, c1q1Test$pvalue))
      }
    })
       
