@@ -1,6 +1,6 @@
 library(shiny) 
 library(shinythemes)
-library(rhandsontable)
+#library(rhandsontable)
 library(gridExtra)
 library(ggplot2)
 #library(markdown)

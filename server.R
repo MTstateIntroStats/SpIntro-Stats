@@ -2631,7 +2631,7 @@ output$Cat2TestPvalue <- renderUI({
     if(!is.null(cat2Estimate$selected)) {
       div(
         tableOutput('cat2Estimate_Table') , 
-        h5(paste("Shuffled difference in proportions: ", round(cat2Estimate$selected, 3) ))
+        h5(paste("Difference in resampled proportions: ", round(cat2Estimate$selected, 3) ))
       )
     }
   }) 
@@ -3578,7 +3578,7 @@ output$q2_EstResampDistn <- renderUI({
       DF1$sizes <- rep(table(resample), table(resample))/2
       ##
       plot(y ~ x, data = DF1, xlab = q2$names[1], ylab = q2$names[2], col = grn, pch =16,
-           cex = sizes, main = "Shuffled Data", xlim = range(DF0$x), ylim = range(DF0$y))
+           cex = sizes, main = "Re-sampled Data", xlim = range(DF0$x), ylim = range(DF0$y))
       lmfit1 <- lm(y ~ x, DF1)
       abline(lmfit1)
       beta1hat <- round(q2Estimate$slopes[closestPnt], 3)
