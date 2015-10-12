@@ -1,7 +1,7 @@
-<script src="http://d3js.org/d3.v3.js"></script>
+<script src="./d3.v3.min.js"></script>
 <script type="text/javascript">
- var networkOutputBinding = new Shiny.OutputBinding();
-   $.extend(networkOutputBinding, {
+ var spinnerBinding = new Shiny.OutputBinding();
+   $.extend(spinnerBinding, {
     find: function(scope) {
       return $(scope).find('.shiny-network-output');
     },
@@ -184,7 +184,7 @@
 
     }
    });
-  Shiny.outputBindings.register(networkOutputBinding, 'jimrc.networkbinding');
+  Shiny.outputBindings.register(spinnerBinding, 'jimrc.spinnerBinding');
     // http://jsfiddle.net/xu4sz/4/
 </script>
 

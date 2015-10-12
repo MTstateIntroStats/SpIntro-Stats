@@ -35,43 +35,39 @@ body {
 
 
 </style>
-/comment -->
 <header>  <h2> Bootstrap Resampling</h2>
 </header>
-
+-->
 
 <!-- Load D3 
-/comment -->
+-->
 <script src="d3.v3.min.js" charset="utf-8"></script>
 <!-- Load data on textbook cost  -->
 <script src= "costs.js"> </script>
-
+<!-- -->
 Start with a known "population". In this case our values are textbook
-costs for one semester at MSU in 10's of dollars.<BR>
-<ul>
-  
-  <li> We start with confidence level 95% and sample size n =
-  8. Change them later if you wish. </li>
-  <li> Click "Sample" and watch values get pulled from the population
-  to the sample below.<BR>
-  The population then disappears, because in real data collection we
-  never know  it.<BR>
-  Bootstrap resamples are based on just the one sample.
-     </li>
-<li> Click "1 Resample".  You'll see a re-sample of size 8 get selected
+         costs for one semester at MSU in tens of dollars.<BR>
+      <ul>
+      <li> Click [Sample] and watch values get pulled from the population
+      to the sample below.<BR>
+      The population then disappears, because in real data collection we
+      never know  it.<BR>
+      Bootstrap resamples are based on just one sample.
+      </li>
+      <li> Click [1 Resample].  You will see a re-sample of size 8 get selected
   from the original sample <b>with replacement</b>.  Some of the items in the
   sample get chosen multiple times (giving a darker background), and
   some not at all (background stays white).  The mean of
-  the resample is shown as a point in the plot.  Click "slower" or
-  "faster" to vary the speed.
+  the resample is shown as a point in the plot. It disappears after a few seconds.
+  Click [slower] or [faster] to vary the speed.
 </li>
-<li> We'll need many samples, so click one
-  of the "Many Resamples" options. Only the resample means are shown.
-  A confidence interval appears on the plot as red boundary
-  lines.  It's computed by the "percentile" method.  
+<li> Once you understand how one resample is picked,  click one
+      of the "Many Resamples" options. Only the resample means are shown.
+      A confidence interval appears on the plot as red boundary
+      lines.  It is computed by the "percentile" method with the given 
+      percentage of means in the middle and equal numbers of points above and below.  
 </li>
 </ul>
-
 	<div data-role="content">
   	  <div data-role="fieldcontain" style="width: 290px; float: left;">
             <fieldset data-role="controlgroup" id = "confLevel">
@@ -106,10 +102,6 @@ costs for one semester at MSU in 10's of dollars.<BR>
             </fieldset>
           </div>
 	</div>
-<!--	<pre>
-
-	</pre>
--->
 <br>
 <div  style="width: 500px;">
 <script>
@@ -787,7 +779,7 @@ function rescale() {
 
 	showCI.transition()
           .style("stroke","black")
-          .text( (confidence*100) + "% CI is (" + CI[0].x + ", " + CI[1].x +") based on " + BootCount + " resamples");
+          .text( (confidence*100) + "% CI is (" + d3.round(CI[0].x,2) + ", " + d3.round(CI[1].x,2) +") based on " + BootCount + " resamples");
     
 	showStats.transition()
 	    .style("stroke","black")

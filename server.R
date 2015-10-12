@@ -1,11 +1,11 @@
 includeScript("www/helper.js")
 source("helpers.R")
 
-functionList <- c( "Count in Group1","Count in Group 2", "Max Run Length")
-
+includeScript("www/d3.v3.min.js")
+includeScript( "www/costs.js")
+    
 quant1_contents <- load("data/quant1.RData")
 quant2_contents <- load("data/quant2.RData")
-c1q1_contents <- load("data/cat1quant1.RData")
 load("data/quant1.RData")
 load("data/quant2.RData")
 load("data/cat1quant1.RData")
@@ -19,6 +19,8 @@ load("data/cat1quant1.RData")
 grn <- rgb(0, 1, 0, alpha=.4)
 rd  <- rgb(1, 0, 0, alpha=.5)
 blu <- rgb(0, 0, 1, alpha=.4)
+
+options(scipen = 3, digits = 5)
 
  shinyServer( function(input, output, session) {
 
@@ -295,7 +297,7 @@ output$Cat1TestPvalue <- renderUI({
         nsims <- length(DF)
         radius = pmax(1, 11 - round(log(length(DF))))        
       }
-      plot(DF, w, ylab = "", ylim = c(0.5, max(w)), cex = radius/2, pch = 16, col = cat1Test$colors,  
+      plot(DF, w, ylab = "", ylim = c(0.5, pmax(10,max(w))), cex = radius/2, pch = 16, col = cat1Test$colors,  
            xlab = expression(hat(p)), main = "Sampling Distribution")
       legend("topright", bty = "n", paste(length(DF), "points \n Mean = ", 
                                          round(mean(DF),3), "\n SE = ", round(sd(DF),3)))
@@ -521,7 +523,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
     nsims <- length(DF)
     radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
   }
-  plot(DF, w, ylab = "", ylim = c(0.5, max(w)), cex = radius/2, pch = 16, col = cat1Estimate$colors,  
+  plot(DF, w, ylab = "", ylim = c(0.5, pmax(10, max(w))), cex = radius/2, pch = 16, col = cat1Estimate$colors,  
        xlab = expression(hat(p)), main = "Re-Sampling Distribution")
   legend("topright", bty = "n", paste(length(DF), "points \n Mean = ", 
                                      round(mean(DF),3), "\n SE = ", round(sd(DF),3)))
@@ -568,7 +570,8 @@ output$cat1Estimate_Plot2 <- renderPlot({
     par(mar=c(4,2,1,1))
     isolate({
       plot(y ~ phat, data= phatDF, col = rgb(70, 130, 180, 127, max = 255), pch=16, bty="l",
-           cex = radius/2, ylab = "", xlab = expression(hat(p)))#, main = "Sampling Distribution")
+           cex = radius/2, ylab = "", xlab = expression(hat(p)),
+           ylim=c(.5, pmax(10, max(y))))#, main = "Sampling Distribution")
     })
   }, height = 275)
   
@@ -718,7 +721,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
     diff.p <- c1Lurk$difprop[1]
     # print(c(y1_new, n1, DF[1,1], y2_new, n2, DF[1,2], diff.p))
     table1 <- data.frame(count = as.integer(c(y1_new, y2_new)), 
-                         N = with(c1Lurk$data, as.integer(c(m1, m2))),
+                         n = with(c1Lurk$data, as.integer(c(m1, m2))),
                          Prop = c(c1Lurk$phat1[1], c1Lurk$phat2[1]))
     colnames(table1)[1] <- c1Lurk$names[1]
     rownames(table1) <- c("Treatment","Control")
@@ -734,7 +737,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
     diff.p <- c1Lurk$difprop[2]
     # print(c(y1_new, n1, DF[1,1], y2_new, n2, DF[1,2], diff.p))
     table2 <- data.frame(count = as.integer(c(y1_new, y2_new)), 
-                         N = with(c1Lurk$data, as.integer(c(m1, m2))),
+                         n = with(c1Lurk$data, as.integer(c(m1, m2))),
                          Prop = c(c1Lurk$phat1[2], c1Lurk$phat2[2]))
     colnames(table2)[1] <- c1Lurk$names[1]
     rownames(table2) <- c("Treatment","Control")
@@ -790,7 +793,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
       nsims <- length(diffs)
       radius <- 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
     }
-    plot(diffs, w, ylab = "", ylim = c(0.5, max(w)), cex = radius/2, pch = 16, col = c1Lurk$colors,  
+    plot(diffs, w, ylab = "", ylim = c(0.5, pmax(10, max(w))), cex = radius/2, pch = 16, col = c1Lurk$colors,  
          xlab = expression(hat(p)[1] - hat(p)[2]), main = "Randomization Distribution")
     legend("topright", bty = "n", paste(length(diffs), "points \n Mean = ", 
                                         round(mean(diffs),3), "\n SE = ", round(sd(diffs),3)))
@@ -803,7 +806,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
    ##  Spinner  ## ---------------------------------------------------------------
 {
   
-  functionList <- c( "Count in Group1","Count in Group 2", "Max Run Length")
+  spin_functionList <- c( "Count in Group1","Count in Group 2", "Max Run Length")
   
   reactiveSpin <- function (outputId) {
     HTML(paste("<div id=\"", outputId, "\" class=\"shiny-network-output\"><svg /></div>", sep=""))
@@ -818,10 +821,11 @@ output$cat1Estimate_Plot2 <- renderPlot({
             tags$label("Number of Categories",       
                      tags$input(name='spin_nCat', type='number', value= 3, size=10,style="width: 40px" )),
             tags$label("Category names: ", 
-                       tags$input(name = "spin_categories", type = 'text', value = "A, B, C", size = 12)),
+                       tags$input(name = "spin_categories", type = 'text', value = "A, B, C", size = 12,style="width: 90px" )),
             h5("(separate with commas)"),
             tags$label( "Percentages: ", 
-                        tags$input(name = "spin_probs",type = "text", value = "50, 30, 20",style="width: 150px" )),
+                        tags$input(name = "spin_probs",type = "text", value = "50, 30, 20",
+                                   style="width: 120px" )),
             h5("Separate with commas. Relative size is the key."),
             #hr() ,
             tags$label("Stop after: ",
@@ -843,7 +847,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
            ## hr() ,
            conditionalPanel(
              condition = "input.spin_reps != 1 && input.spin_stopRule =='Fixed number of spins'" ,
-             selectInput("spin_fn","Store what result?", functionList)
+             selectInput("spin_fn","Store what result?", spin_functionList)
            ),
            conditionalPanel(
              condition = "input.spin_stopRule !='Fixed number of spins' && input.spin_reps != 1", 
@@ -862,19 +866,13 @@ output$cat1Estimate_Plot2 <- renderPlot({
          column(10, offset = 1,
           conditionalPanel(
             condition = "input.spin_reps == 1",
-            verbatimTextOutput("spin_Summary")
+            tableOutput("spin_Summary")
           ),
           #hr() ,
           conditionalPanel(
             condition = "input.spin_reps != 1",
-            plotOutput("spin_Histogrm")
-          ),
-          conditionalPanel(
-            condition = "input.spin_reps != 1",
-            verbatimTextOutput("spin_Summry2")
-          ),
-          conditionalPanel(
-            condition = "input.spin_reps != 1",
+            plotOutput("spin_Histogrm"),
+            tableOutput("spin_Summry2"),
             tableOutput("spin_Summry3")
           )
         )
@@ -882,7 +880,6 @@ output$cat1Estimate_Plot2 <- renderPlot({
       )
      )
   })
-
 
   spin_data <- reactive( {
     run = input$spin_RunButton
@@ -934,8 +931,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
     
   })
   
-  functionList <- c( "Count in Group1","Count in Group 2", "Max Run Length")
-  
+
   repData <- reactive( {
     run = input$spin_RunButton
     prob <- sapply(strsplit(input$spin_probs, ","), as.numeric)
@@ -951,7 +947,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
       nCat <- as.numeric(input$spin_nCat)
       samplData <- matrix(sample(1:nCat, nReps * nDraws,
                                  prob = prob,replace = TRUE), ncol=nDraws)
-      fn <- match(input$spin_fn, functionList)
+      fn <- match(input$spin_fn, spin_functionList)
       if(fn==3){
         return(apply(samplData, 1 , function(x)  max(rle(x)[[1]])))
       } else
@@ -961,7 +957,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
       if(input$spin_stopRule =="One spin in 1st category"){
         nDraws <- draws2get1( prob, nReps)
         return(nDraws)
-      } else {  ## input$stopRule =="One of Each"
+      } else {  ## input$spin_stopRule =="One of Each"
         nDraws <-  draws2get1ofEach( prob, nReps)
         return(nDraws)
       }
@@ -974,44 +970,46 @@ output$cat1Estimate_Plot2 <- renderPlot({
     spin_data()
   })  # execute when run is clicked
   
-  output$spin_Summary <- renderPrint({
+  output$spin_Summary <- renderTable({
     if(input$spin_RunButton ==0) return()
     isolate({
       data.df <- spin_data()
-      out1 <-   summary( factor(data.df$pieLabels[unlist(data.df$drawColor)+1],  levels=data.df$pieLabels))
-      
+      out1 <- summary(factor(data.df$pieLabels[unlist(data.df$drawColor)+1],
+                             levels=data.df$pieLabels))
       if(input$spin_stopRule =="Fixed number of spins"){
         runs <-  rle(unlist(data.df$drawColor)[1:data.df$nDraws])
         out1 <-  c( out1, max(runs[[1]]))
         names(out1)[data.df$nCat + 1] <- "maxRunLength"
-      }else{
+      } else{
         out1 <-  c( out1, length(data.df$drawColor))
         names(out1)[data.df$nCat + 1] <- "spins"
       }
+      out1 <- t(as.table(out1))
+      rownames(out1) <- " "
       out1
     })
   }, width = 120)
+  
   ## run more:
-  output$spin_Summry2 <- renderPrint({
-    ##  isolate({
+  output$spin_Summry2 <- renderTable({
     rData <-  repData()
-    round(unlist(list(summary(rData), stdDev = sd(rData))),3)
-    ## })
+    as.table(matrix(c(quantile(rData,c(0,.25,.5,.75,1)), mean(rData), sd(rData)),nrow=1,
+                    dimnames = list(" ", c("Min","Q1","Median","Q3","Max","Mean","SD") )))
   })
   
   output$spin_Summry3 <- renderTable({
     ##isolate({
     counts  <- repData()
     if(input$spin_stopRule =="Fixed number of spins"){
-      output <- t(table(counts))#c(counts,0:input$spin_nDraws))-1)
+      temp <- t(table(counts)) ## c(counts,0:input$spin_nCat))-1)
     } else if(input$spin_stopRule =="One spin in 1st category"){
-      output <-  t(table(c(counts, 1:max(counts)))-1)
+      temp <-  t(table(c(counts, 1:max(counts)))-1)
     } else  if(input$spin_stopRule =="One of each type"){
-      output <-   t(table(c(counts, input$spin_nCat:max(counts)))-1)
+      temp <-   t(table(c(counts, input$spin_nCat:max(counts)))-1)
     }
-    rownames(output) <- "Counts"
-    output#[1, output>0]
-    ##})
+    #print(temp)
+    rownames(temp) <- "Counts"
+    temp
   })
   
   output$spin_Histogrm <- renderPlot({
@@ -1020,20 +1018,308 @@ output$cat1Estimate_Plot2 <- renderPlot({
     y <- unlist(tapply(x, x, function(z) 1:length(z)))
     if(input$spin_stopRule =="Fixed number of spins"){
       stat <-  input$spin_fn
-      begin <- 0 + (input$spin_fn == functionList[3]) 
+      begin <- 0 + (input$spin_fn == spin_functionList[3]) 
       xlimits = range(x) ## c(begin, input$spin_nDraws)
     }
     if(substr(input$spin_stopRule,1,3) == "One") {
       stat = "Number of Spins"
       xlimits = range(x)
     }
-    plot(jitter(x, .3), y, main = paste("Distribution of ", stat), xlab = "", 
-         ylab = "Frequency",  xlim=xlimits, pch = 16, col = blu)
+    plot(jitter(x, .3), y, main = paste("Distribution of ", stat), xlab = "", cex=2, 
+         ylab = "Frequency",  xlim=xlimits, ylim=c(.5, pmax(10, max(y))), pch = 16, col = blu)
     ##})
   })
 } 
   
+   ##  Mixer  ## ---------------------------------------------------------------
+   {
+   mix_functionList <-  c( "Count in Group 1","Count in Group 2", "Max Run Length","Matches")
+     
+     output$c1_mixerUI <- renderUI({
+       div(  
+         titlePanel("Mix It Up"),
+         fluidRow(
+           column(4, 
+                  div(
+                    tags$label("Number of Categories",       
+                               tags$input(name='mix_nCat', type='number', value= 3, size=10,style="width: 40px" )),
+                    tags$label("Category names: ", 
+                               tags$input(name = "mix_categories", type = 'text', value = "A, B, C", size = 12,style="width: 90px" )),
+                    h5("(separate with commas)"),
+                    tags$label( "Numbers of balls: ", 
+                                tags$input(name = "mix_counts",type = "text", value = "5, 3, 2",style="width: 80px" )),
+                    h5("Separate with commas."),
+                    tags$label( "Replace each ball? ", 
+                                tags$select(id='mix_replace', class="form-control",
+                                            tags$option( value = "Yes","Yes", selected = TRUE ),
+                                            tags$option( value = "No", "No"))
+                    ),
+                    #hr() ,
+                    tags$label("Stop after: ",
+                               tags$div(style="width: 200px", 
+                                        tags$select(id='mix_stopRule', class="form-control",
+                                                    tags$option( value = "Fixed number of draws","Fixed number of draws", selected = TRUE ),
+                                                    tags$option( value = "One in 1st category", "One in 1st category"),
+                                                    tags$option( value = "One of each type", "One of each type"))
+                               )),
+                    conditionalPanel(
+                      condition = "input.mix_stopRule =='Fixed number of draws'" ,
+                      tags$label("Last Draw:",       
+                                 tags$input(name='mix_nDraws', type='number', value= 5, size=10, style="width: 40px" ))
+                    ),
+                    tags$label("Number of Trials: ",       
+                               tags$input(name='mix_reps', type='number', value= 1, size=10, style="width: 40px" )),
+                    helpText("Start with 1 for an animation"),
+                    conditionalPanel(
+                      condition = "input.mix_reps != 1 && input.mix_stopRule =='Fixed number of spins'" ,
+                      selectInput("mix_fn","Store what result?", mix_functionList)
+                    ),
+                    conditionalPanel(
+                      condition = "input.mix_stopRule !='Fixed number of draws' && input.mix_reps != 1", 
+                      helpText("Display shows number of draws needed" )
+                    )
+                  )), 
+           column(1,
+                  actionButton("mix_RunButton", "Run")  
+           ),
+           column(6,
+                  includeHTML("www/mix.js"),
+                  reactiveSpin(outputId = "mix_Plot")
+           ),
+           fluidRow(
+             column(10, offset = 1,
+                    conditionalPanel(
+                      condition = "input.mix_reps == 1",
+                      tableOutput("mix_Summary")
+                    ),
+                    #hr() ,
+                    conditionalPanel(
+                      condition = "input.mix_reps != 1",
+                      plotOutput("mix_Histogrm"),
+                      tableOutput("mix_Summry2"),
+                      tableOutput("mix_Summry3")
+                    )
+             )
+           )
+         )
+       )
+     })
+     
+     h <-  330
+     mix_data <- reactive( {
+       run = input$mix_RunButton
+       counts <- sapply(strsplit(input$mix_counts, ","), as.integer)
+       groups <- sapply(strsplit(input$mix_categories, ","), function(x)
+         gsub("[[:space:]]", "", x))##[order(-prob)]
+       nCat <-  length(groups)
+       nBalls <-  sum(counts)
+       prob <-  counts/nBalls
+       ## make radius small enough so that only about half of the
+       ##  (h/r)^2 points are utilized
+       radius <-  pmin(16, round( h/2 / sqrt(2 * nBalls)))
+       gridpoints <- expand.grid( x = seq( 0, h, 2*radius),
+                                  y = seq( 0, h, 2*radius))
+       gridpoints <- subset( gridpoints, sqrt((x-h/2)^2 + (y-h/2)^2) < h/2 - radius)
+       balls <- sample( rep(groups, counts))
+       
+       ballNums <- as.numeric(factor(balls, levels=groups)) 
+       sampleLocs <- gridpoints[sample(length(gridpoints$x), nBalls),]
 
+       ### Fixed number of Draws
+       if(input$mix_stopRule == "Fixed number of draws"){
+         nDraws <- as.numeric(input$mix_nDraws)
+         if(input$mix_replace == "Yes"){
+           ## don't need prob, just sample from counted balls
+           draws <- sample(1:nBalls, nDraws, replace=TRUE) - 1
+           ## zero-initialized indices
+         } else {  ## no replacement, use sampled order
+           draws <-  1:nDraws - 1
+         }  
+       } else
+         ### Stop on first category
+         if(input$mix_stopRule == "One draw in 1st category"){
+           if(input$mix_replace == "Yes"){
+             drawSumry <- draws2get1( prob, 1)
+             if(drawSumry == 1){
+               draws <- sample(which(ballNums == 1),1) - 1
+               nDraws <- 1
+             } else{
+               drawGrp <- reconstructSpins( drawSumry, prob) 
+               ##  gives category. need to convert to a ball of that category
+               draws <-  sapply(drawGrp, function(x) sample(which( ballNums == x),1)) - 1
+               
+               nDraws <-  drawSumry}
+           } else {  ## don't replace balls drawn
+             nDraws <- min(which( ballNums == 1))
+             if( nDraws > 1){
+               draws <-  1:nDraws - 1
+             } else  draws = 0 ## stop on first pick
+           }
+         } else{
+           ## Stop after one of each type
+           if(input$mix_replace == "No"){
+             nUnique <-  sapply(nCat:nBalls, function(x) length(unique(ballNums[1:x])))
+             nDraws <- min(which(nUnique == nCat)) + nCat - 1
+             draws <-  1:nDraws - 1
+           } else {
+             ## do replace each drawn ball  (replace == "Yes")
+             drawSumry <- draws2get1ofEach( prob, 1, full=TRUE)
+             nDraws <-  drawSumry$nDraws
+             drawGrp <- reconstructSpins( drawSumry, prob)
+             names(drawGrp) <-  1:nDraws
+             ##  gives category. need to convert to a ball of that category
+             draws <-  sapply(drawGrp, function(x) which( ballNums  == x)[1]) - 1
+             names(draws) <-  NULL
+           }
+         }
+       ##cat("# draws: ", nDraws, " draw: ",draws," balls: ",balls[draws] ,"\n")
+       if (length(draws) == 1) draws <-  as.list(draws)
+       data.df <- list(height = h,
+                       run = input$mix_RunButton,
+                       nCat = nCat,
+                       counts = as.list(counts),
+                       nBalls = nBalls, 
+                       radius = radius,
+                       nDraws = nDraws,
+                       x = as.list(sampleLocs$x - h/2), ## sample from a grid of points
+                       y = as.list(sampleLocs$y - h/2 - radius) ,
+                       labels = groups,
+                       replace = input$mix_replace,
+                       balls = balls,
+                       draws = draws,
+                       drawColor = ballNums - 1
+                       )
+       data.df
+} )
+     
+
+  mix_repData <- reactive( {
+       run = input$mix_RunButton
+       counts <- sapply(strsplit(input$mix_counts, ","), as.integer)
+       groups <- sapply(strsplit(input$mix_categories, ","), function(x)
+         gsub("[[:space:]]", "", x))##[order(-prob)]
+       nCat <-  length(groups)
+       nBalls <-  sum(counts)
+       prob <-  counts/nBalls
+       nReps <-  ifelse(is.null(input$mix_reps), 1, as.numeric(input$mix_reps))
+       fixedN <- (input$mix_stopRule == "Fixed number of draws")
+       if(fixedN){
+         fn <- match(input$mix_fn, mix_functionList) 
+         nDraws <- as.numeric(input$mix_nDraws)
+         if(input$mix_replace == "No"){
+           samplData <- t(sapply(1:nReps, function(x) sample(rep(groups,counts))[1:nDraws]))
+           ## not working ##
+         } else {
+           samplData <- matrix(sample(1:input$mix_nCat, nReps * nDraws,
+                                      prob = counts/nBalls, replace = TRUE),
+                               ncol=nDraws)
+         }
+         if(fn == 3){
+           return(apply(samplData, 1 , function(x)  max(rle(x)[[1]])))
+         } else if(fn ==4){
+           return(apply(samplData, 1 , function(x) sum( x == groups[1:length(x)])))
+         } else
+           return(apply(samplData, 1 , function(x) table(x)[fn]))
+       } else {
+         ## apply stopping rule
+         ##if(input$mix_replace == "No" ){
+         ##  warning("Please choose to replace each draw.")
+         ##}
+         if(input$mix_stopRule == "One draw in 1st category"){
+           if(input$mix_replace == "No" ){
+             nDraws <- sapply(1:nReps, function(x) min(which(sample(rep(groups,counts), nBalls) == groups[1])))
+             ##drawColor <- reconstructSpins(nDraws[1], counts/nBalls ) - 1
+             return(nDraws)
+           } else{  ## input$mix_replace =="Yes"
+             nDraws <- draws2get1( counts/nBalls, nReps)
+             ##drawColor <- reconstructSpins(  nDraws[1], counts/nBalls ) - 1
+             return(nDraws)
+           }
+           ##  gives random draw in 1st category for last draw,
+           ## in other categories for prior draws.
+         } else{ ## one of each type
+           if( input$mix_replace =="No"){
+             tempDraws <- sapply(1:nReps, function(x) sample(rep(groups, counts)))
+             nUnique <-  tempDraws[1:(nBalls - nCat),]
+             if(nCat > nBalls)
+               stop("Need more balls to draw from")
+             nDraws <- apply(tempDraws, 2, function(x) max(which(!duplicated(x))))
+             return(nDraws)
+           } else { ## input$replace =="Yes"
+             nDraws <- draws2get1ofEach(prob, rep=nReps)
+             return(nDraws)
+           }
+         }
+       }
+  })
+     
+  output$mix_Plot <- reactive( {
+    if(input$mix_RunButton ==0) return()
+    isolate( mix_data() )
+  }) 
+  
+  output$mix_Summary <- renderTable({
+    if(input$mix_RunButton == 0) return()
+    isolate({
+      data.df <- mix_data()
+      out1 <- summary(factor(data.df$balls[unlist(data.df$draws)+1],
+                                levels=data.df$labels))
+      if(input$mix_stopRule =="Fixed number of draws"){
+        runs <-  rle(data.df$balls[unlist(data.df$draws) + 1])
+        out1 <-  c( out1, max(runs[[1]]))
+        names(out1)[data.df$nCat + 1] <- "maxRunLength"
+      } else{
+        out1 <-  c( out1, length(data.df$draws))
+        names(out1)[data.df$nCat + 1] <- "draws"
+      }
+      out1 <- t(as.table(out1))
+      rownames(out1) <- " "
+      out1
+    })
+  })
+  
+  ## run more:
+  output$mix_Summry2 <- renderTable({
+    rData <-  mix_repData()
+    as.table(matrix(c(quantile(rData,c(0,.25,.5,.75,1)), mean(rData), sd(rData)),nrow=1,
+                     dimnames = list(" ", c("Min","Q1","Median","Q3","Max","Mean","SD") )))
+  })
+  
+  output$mix_Summry3 <- renderTable({
+    ##isolate({
+    counts  <- mix_repData()
+    if(input$mix_stopRule =="Fixed number of draws"){
+      temp <- t(table(counts))
+    } else if(input$mix_stopRule =="One draw in 1st category"){
+      temp <-  t(table(c(counts, 1:max(counts)))-1)
+    } else  if(input$mix_stopRule =="One of each type"){
+      temp <-   t(table(c(counts, input$mix_nCat:max(counts)))-1)
+    }
+    rownames(temp) <- "Counts"
+    temp
+    ##})
+  })
+  
+
+       output$mix_Histogrm <- renderPlot({
+       ##isolate({
+       x <- sort(mix_repData())
+       y <- unlist(tapply(x, x, function(z) 1:length(z)))
+       if(input$mix_stopRule =="Fixed number of draws"){
+         stat <-  input$mix_fn
+         begin <- 0 + (input$mix_fn == mix_functionList[3]) 
+         xlimits = range(x) ## c(begin, input$spin_nDraws)
+       }
+       if(substr(input$mix_stopRule,1,3) == "One") {
+         stat = "Number of Draws"
+         xlimits = range(x)
+       }
+       plot(jitter(x, .3), y, main = paste("Distribution of ", stat), xlab = "", 
+            ylab = "Frequency",  xlim=xlimits, ylim = c(.5, pmax(10, max(y))), 
+            pch = 16, col = blu,cex  = 2)
+   })
+ } 
+   
   ## Normal probability computations  ----------------------- cat 1
 {
   ##  Set storage for reactive values
@@ -1638,7 +1924,7 @@ output$q1_TestPlot2 <- renderPlot({
       nsims <- length(parm)
       radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
     }
-  plot(x = parm + as.numeric(input$null_mu), y = y, ylim = c(0.5, max(y)), ylab = "", 
+  plot(x = parm + as.numeric(input$null_mu), y = y, ylim = c(0.5, pmax(10, max(y))), ylab = "", 
        cex = radius/2, pch = 16, col = q1Test$colors,  
        xlab = expression(bar(x)), main = "Shifted Resampling Distribution")
   legend("topright", bty = "n", paste(length(parm), "points \n Mean = ", 
@@ -1848,7 +2134,7 @@ output$q1_EstimatePlot2 <- renderPlot({
     nsims <- length(parm)
     radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
   }
-  plot(x = parm, y = y, ylim = c(0.5, max(y)), ylab = "", cex = radius/2, pch = 16, col = q1Estimate$colors,  
+  plot(x = parm, y = y, ylim = c(0.5, pmax(10, max(y))), ylab = "", cex = radius/2, pch = 16, col = q1Estimate$colors,  
        xlab = expression(bar(x)), main = "Resampling Distribution")
   legend("topright", bty = "n", paste(length(parm), "points \n Mean = ", 
                                       round(mean(parm),3), "\n SE = ", round(sd(parm),3)))
@@ -1857,14 +2143,26 @@ output$q1_EstimatePlot2 <- renderPlot({
 }
   ## Bootstrap Demo  ---------------------------------------
 {
+#   reactiveBoot <- function (outputId) {
+#     div(id=outputId, class="shiny-html-output",
+#          includeScript("www/bootDemo.js"))
+#   }
+   
   output$q1_bootstrap <- renderUI({
-    h2("Bootstrap Demo")
-  ##  includeScript("www/d3.v3.min.js")
-   ## includeScript("www/costs.js")
-    includeHTML("www/BootDemo.html")
+    div(
+    h2("Bootstrap Demo"),
+    #includeHTML("www/just_HtmlBootDemo.html"),
+    if(TRUE){
+      #     div( style="width: 500px;", 
+      renderUI(expr=  includeHTML("www/BootDemo.html") )
+    #          )
+    ##reactiveBoot(outputId = "boot")
+    }
+    )
   })
 }  
-  ## Lurking Demo  --------------------------------------    quant 1
+
+    ## Lurking Demo  --------------------------------------    quant 1
   {
   
   q1Lurk <- reactiveValues(data = NULL, shuffles = NULL, diff = NULL, 
@@ -1953,11 +2251,9 @@ output$q1_EstimatePlot2 <- renderPlot({
     #q1Lurk$diff <- -diff(tapply(DF$y, DF$group, mean))
     #
     ### stores samples as columns
-    plot2 <- qplot(y=y, x=group2, data = DF, geom="boxplot", main = "Randomization 2") +
-      theme_bw() + xlab("") +  coord_flip() + ylab(q1Lurk$name)
-    
-    
-    grid.arrange(plot1, plot2, heights = c(3, 3)/6, ncol=1)
+  plot2 <- qplot(y=y, x=group2, data = DF, geom="boxplot", main = "Randomization 2", 
+   ylim = c(.5, pmax(10, max(y))) ) + theme_bw() + xlab("") + coord_flip() + ylab(q1Lurk$name)
+  grid.arrange(plot1, plot2, heights = c(3, 3)/6, ncol=1)
   }, height = 360, width = 320)
   
   
@@ -2552,7 +2848,7 @@ output$Cat2TestPvalue <- renderUI({
       nsims <- length(DF)
       radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
     }
-    plot(DF, w, ylab = "", ylim = c(0.5, max(w)), cex = radius/2, pch = 16, col = cat2Test$colors,  
+    plot(DF, w, ylab = "", ylim = c(0.5, pmax(10, max(w))), cex = radius/2, pch = 16, col = cat2Test$colors,  
          xlab = expression(hat(p)[1] - hat(p)[2]), main = "Sampling Distribution")
     legend("topright", bty = "n", paste(length(DF), "points \n Mean = ", 
                                        round(mean(DF),3), "\n SE = ", round(sd(DF),3)))
@@ -2841,7 +3137,7 @@ output$Cat2TestPvalue <- renderUI({
       nsims <- length(DF)
       radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
     }
-    plot(DF, w, ylab = "", ylim = c(0.5, max(w)), cex = radius/2, pch = 16, col = cat2Estimate$colors,  
+    plot(DF, w, ylab = "", ylim = c(0.5, pmax(10, max(w))), cex = radius/2, pch = 16, col = cat2Estimate$colors,  
          xlab = expression(hat(p)[1] - hat(p)[2]), main = "Re-Sampling Distribution")
     #mtext(side = 1, at = cat2Estimate$observed, line = 0, bquote(hat(p)[1] - hat(p)[2]))
     legend("topright", bty = "n", paste(length(DF), "points \n Mean = ", 
@@ -3854,7 +4150,7 @@ observeEvent(input$c1q1_useText,{
   if(nchar(input$c1q1_text) < 1){
     return()
   }
-  print(input$c1q1_text)
+  #print(input$c1q1_text)
   if (grepl(",", input$c1q1_text)){          ## check for commas,
     c1q1Text <- gsub(","," ",input$c1q1_text)  ## replace commas with spaces
   } else {
@@ -3938,8 +4234,9 @@ output$c1q1_Plot <- renderPlot( {
   #w <- unlist(tapply(DF$y, list(z, DF$group), function(x) 1:length(x)))
   w <- newy(DF$y)  #w[!is.na(w)]  
   myBlue <- rgb(0, 100/256, 224/256, alpha = .8)  
-  c1q1_plot2 <- qplot(data= DF, x=y, y=w , colour = I(myBlue), size = I(4))+ facet_wrap( ~group) + 
-    theme_bw() + ylab("Count") + xlab( c1q1$names[2])
+  c1q1_plot2 <- qplot(data= DF, x=y, y=w , colour = I(myBlue), size = I(4), ylim = 
+                        c(.5, pmax(10, max(w)))) + facet_wrap( ~group) + 
+                      theme_bw() + ylab("Count") + xlab( c1q1$names[2])
   grid.arrange(c1q1_plot1, c1q1_plot2, heights = c(2,  5)/7, ncol=1)
   #})
 }, height=400)
@@ -4228,7 +4525,7 @@ output$c1q1_Summary2 <- renderTable({
           nsims <- length(parm)
           radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
         }
-        plot(parm, y, ylim = c(0.5, max(y)), ylab = "", cex = radius/2, pch = 16, col = c1q1Test$colors,  
+        plot(parm, y, ylim = c(0.5, pmax(10, max(y))), ylab = "", cex = radius/2, pch = 16, col = c1q1Test$colors,  
              xlab = expression(bar(x)[1] - bar(x)[2]), main = "Sampling Distribution")
         legend("topright", bty = "n", paste(length(parm), "points \n Mean = ", 
                                             round(mean(parm),3), "\n SE = ", round(sd(parm),3)))
@@ -4345,7 +4642,7 @@ output$c1q1_EstPlot2 <- renderPlot({
     nsims <- length(parm)
     radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
   }
-  plot(x = parm, y = y, ylim = c(0.5, max(y)), ylab = "", cex = radius/2, pch = 16, col = c1q1Est$colors,  
+  plot(x = parm, y = y, ylim = c(0.5, pmax(10, max(y))), ylab = "", cex = radius/2, pch = 16, col = c1q1Est$colors,  
        xlab = expression(bar(x)[1] - bar(x)[2]), main = "Resampling Distribution")
   legend("topright", bty = "n", paste(length(parm), "points \n Mean = ", 
                                       round(mean(parm),3), "\n SE = ", round(sd(parm),3)))
