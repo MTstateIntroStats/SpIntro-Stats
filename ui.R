@@ -96,6 +96,9 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
         tabPanel("Spinner", value = "cat1_spin",
             uiOutput('c1_spinnerUI')
         ),
+        tabPanel("Mixer", value = "cat1_mix",
+            uiOutput('c1_mixerUI')
+        ),
         tabPanel("Normal Distribution" , value="cat1_Normal",
                  titlePanel("Normal Probabilities"),
                  column(3, inputPanel(
