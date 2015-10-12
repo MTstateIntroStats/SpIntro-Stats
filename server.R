@@ -77,7 +77,7 @@ options(scipen = 3, digits = 5)
       dimnames(counts) = list(cat1_data$names,"Proportions")
       prop.table(counts)
     #})
-  })
+  }, digits = 3)
 } 
     ##  Test for single proportion ------------------------------------------------ cat 1
 { 
@@ -192,7 +192,7 @@ output$Cat1TestPvalue <- renderUI({
       counts[,2] <- as.numeric(prop.table(as.table(counts[,1])))
       counts[,1] <- as.integer(counts[,1])
       counts
-    })
+    }, digits = c(0,0,3))
     
     output$cat1Test_Table <- renderTable({
       #if(input$cat2_submitButton == 0) return()
@@ -221,7 +221,7 @@ output$Cat1TestPvalue <- renderUI({
       counts[,1] <- as.integer(counts[,1])
       #print(counts)
       counts
-    })
+    }, digits = c(0,0,3))
     
     
     observeEvent(input$cat1_test_shuffle_10, {
@@ -389,7 +389,7 @@ output$cat1_CIPrep <- renderTable({
   counts[,1] <- as.integer(counts[,1])
   counts
   
-})
+}, digits = c(0,0,3))
 
 
 output$cat1Estimate_Table <- renderTable({
@@ -418,7 +418,7 @@ output$cat1Estimate_Table <- renderTable({
   counts[,2] <- as.numeric(prop.table(as.table(counts[,1])))
   counts[,1] <- as.integer(counts[,1])
   counts
-})
+}, digits = c(0,0,3))
 
 
 observeEvent(input$cat1_estimate_shuffle_10, {
@@ -728,7 +728,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
     colnames(table1)[1] <- c1Lurk$names[1]
     rownames(table1) <- c("Treatment","Control")
     table1
-  })
+  }, digits = c(0,0,0,3))
   
   
   output$c1Lurk_Table2 <- renderTable({
@@ -744,7 +744,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
     colnames(table2)[1] <- c1Lurk$names[1]
     rownames(table2) <- c("Treatment","Control")
     table2
-  })
+  }, digits = c(0,0,0,3))
   
   observeEvent(input$c1_Lurk_shuffle_10, {
     DF <- c1Lurk_shuffles(shuffles = 10, c1Lurk$data$n1 , c1Lurk$data$n2, c1Lurk$data$m1)
@@ -997,7 +997,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
     rData <-  repData()
     as.table(matrix(c(quantile(rData,c(0,.25,.5,.75,1)), mean(rData), sd(rData)),nrow=1,
                     dimnames = list(" ", c("Min","Q1","Median","Q3","Max","Mean","SD") )))
-  })
+  }, digits = 3)
   
   output$spin_Summry3 <- renderTable({
     ##isolate({
@@ -1012,7 +1012,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
     #print(temp)
     rownames(temp) <- "Counts"
     temp
-  })
+  }, digits = 0)
   
   output$spin_Histogrm <- renderPlot({
     ##isolate({
@@ -1278,7 +1278,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
       rownames(out1) <- " "
       out1
     })
-  })
+  }, digits = 0)
   
   ## run more:
   output$mix_Summry2 <- renderTable({
@@ -1300,7 +1300,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
     rownames(temp) <- "Counts"
     temp
     ##})
-  })
+  }, digits = 0)
   
 
        output$mix_Histogrm <- renderPlot({
@@ -2254,7 +2254,8 @@ output$q1_EstimatePlot2 <- renderPlot({
     #
     ### stores samples as columns
   plot2 <- qplot(y=y, x=group2, data = DF, geom="boxplot", main = "Randomization 2", 
-   ylim = c(.5, pmax(10, max(y))) ) + theme_bw() + xlab("") + coord_flip() + ylab(q1Lurk$name)
+   #ylim = c(.5, pmax(10, max(DF$y))) 
+   ) + theme_bw() + xlab("") + coord_flip() + ylab(q1Lurk$name)
   grid.arrange(plot1, plot2, heights = c(3, 3)/6, ncol=1)
   }, height = 360, width = 320)
   
@@ -2332,7 +2333,7 @@ output$q1_EstimatePlot2 <- renderPlot({
       nsims <- length(parm)
       radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
     }
-    plot(parm, y, ylim = c(0.5, max(y)), ylab = "", cex = radius/2, pch = 16, col = q1Lurk$colors,  
+    plot(parm, y, ylim = c(0.5, pmax(10,max(y))), ylab = "", cex = radius/2, pch = 16, col = q1Lurk$colors,  
          xlab = expression(bar(x)[1] - bar(x)[2]), main = "Randomization Distribution")
     legend("topright", bty = "n", paste(length(parm), "points \n Mean = ", 
                                         round(mean(parm),3), "\n SE = ", round(sd(parm),3)))
@@ -2556,7 +2557,7 @@ observeEvent(input$cat2_submitButton, {
     rownames(counts) <- cat2_data$groups[c(1,3)]
     round(t(prop.table(counts, 1)),3)
   #})
- })
+ }, digits = 3)
   
 
  output$cat2Plot <- renderPlot( {
@@ -2713,12 +2714,12 @@ output$Cat2TestPvalue <- renderUI({
     p2 = round(y2/n2,3)
     # print(c(y1, n1, y2, n2, p1, p2))
     counts <- data.frame(count = as.integer(c(y1, y2)), 
-                         "SampleSize" = as.integer(c(n1, n2)),
+                         "n" = as.integer(c(n1, n2)),
                          Proportion = c(p1, p2))
     colnames(counts)[1] <- cat2_data$names[1]
     rownames(counts) <- cat2_data$groups[c(1,3)]
     counts
-  })
+  }, digits = c(0,0,0,3))
   
   observeEvent(input$cat2_test_shuffle_10, {
     cat2Test$moreExtremeCount <-  NULL
@@ -2803,12 +2804,12 @@ output$Cat2TestPvalue <- renderUI({
     }
     # print(c(y1_new, n1, DF[1,1], y2_new, n2, DF[1,2], diff.p))
     count2 <- data.frame(count = as.integer(c(y1_new, y2_new)), 
-                     "SampleSize" = as.integer(c(n1, n2)),
+                     "n" = as.integer(c(n1, n2)),
                      Proportion = props)
     colnames(count2)[1] <- cat2_data$names[1]
     rownames(count2) <- cat2_data$groups[c(1,3)]
     count2
-  })
+  }, digits = c(0,0,0,3))
 
     observeEvent(input$cat2_test_countXtremes, {
     x <- sort(cat2Test$difprop)
@@ -2966,11 +2967,11 @@ output$Cat2TestPvalue <- renderUI({
     
     #print(c(y1, n1, y2, n2, p1, p2))
     counts <- as.table(matrix(as.numeric(c(y1, y2, n1, n2, p1, p2)), 2, 3))
-    colnames(counts) <- c("Success", "Sample Size", "Proportion")
+    colnames(counts) <- c(cat2_data$names[1], "n", "Proportion")
     rownames(counts) <- cat2_data$groups[c(1,3)]
     counts 
 
-  })
+  }, digits = c(0,0,0,3))
   
 
   observeEvent(input$cat2_estimate_shuffle_10, {
@@ -3113,10 +3114,10 @@ output$Cat2TestPvalue <- renderUI({
     #diff.p <- DF[1,1] - DF[1,3]
     #print(c(y1_new, n1, DF[1,1], y2_new, n2, DF[1,2], diff.p))
     count2 <- as.table(matrix(as.numeric(c(y1_new, y2_new, n1, n2, props)), 2, 3))
-    colnames(count2) <- c("Success", "Sample Size", "Proportion")
+    colnames(count2) <- c(cat2_data$names[1], "n", "Proportion")
     rownames(count2) <- cat2_data$groups[c(1,3)]
     count2
-  })
+  }, digits = c(0,0,0,3))
   
   
   output$cat2Estimate_Plot2 <- renderPlot({
