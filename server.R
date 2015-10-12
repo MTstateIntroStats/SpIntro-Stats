@@ -2956,7 +2956,7 @@ output$Cat2TestPvalue <- renderUI({
     p2 = round(y2/n2,3)
     
     if(is.null(cat2Estimate$difprop)  ){
-      DF <- cat2_test_shuffles(1, y1, y2, n1, n2)
+      DF <- cat2_estimate_shuffles(1, y1, y2, n1, n2)
       cat2Estimate$selected <- as.numeric(DF[1,3])
       cat2Estimate$difprop <- DF[1,3]
       cat2Estimate$phat1 <- DF[1,1]
