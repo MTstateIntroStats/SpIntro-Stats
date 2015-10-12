@@ -6,7 +6,6 @@ includeScript( "www/costs.js")
     
 quant1_contents <- load("data/quant1.RData")
 quant2_contents <- load("data/quant2.RData")
-c1q1_contents <- load("data/cat1quant1.RData")
 load("data/quant1.RData")
 load("data/quant2.RData")
 load("data/cat1quant1.RData")
