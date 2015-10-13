@@ -2151,15 +2151,13 @@ output$q1_EstimatePlot2 <- renderPlot({
 #   }
    
   output$q1_bootstrap <- renderUI({
-    div(
+    div( id = 'BootDiv',
     h2("Bootstrap Demo"),
     #includeHTML("www/just_HtmlBootDemo.html"),
-    if(TRUE){
-      #     div( style="width: 500px;", 
+    #conditionalPanel(  condition = "input.q1.data == null",
       renderUI(expr=  includeHTML("www/BootDemo.html") )
-    #          )
+    #)
     ##reactiveBoot(outputId = "boot")
-    }
     )
   })
 }  
