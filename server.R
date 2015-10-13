@@ -4084,9 +4084,20 @@ output$c1q1_ui <- renderUI({
             
           },
           "Type/Paste into Text Box" = {
-            div(
-              HTML('<textarea name="c1q1_text" cols="30" rows="10"></textarea>'),
-              actionButton("c1q1_useText", "Use These Data")
+            fluidRow(  
+              column(4, HTML('<textarea name="c1q1_text" cols="30" rows="10"></textarea>'),
+                     actionButton("c1q1_useText", "Use These Data")
+              ),
+              column(3, checkboxInput('c1q1_header2', 'Row One is column names', TRUE)
+              ),
+              column(3, radioButtons('c1q1_sep2', 'Separator',
+                                     c(Comma=',', Semicolon=';', Tab='\t'),
+                                     ',')
+              ),
+              column(2, radioButtons('c1q1_quote2', 'Quote',
+                                     c(None='', 'Double Quote'='"','Single Quote'="'"),
+                                     '"')
+              )
             )
           },
 #           "Type/Paste into Data Table" = {
@@ -4148,33 +4159,50 @@ observeEvent(  input$c1q1_useCSVBtn,{
 })
 
 observeEvent(input$c1q1_useText,{
-  if(nchar(input$c1q1_text) < 1){
-    return()
+  DF <- read.csv(text = input$c1q1_text, header=input$c1q1_header2,
+                 sep=input$c1q1_sep2, quote=input$c1q1_quote2)
+  whichIsNumeric <- which(sapply(DF, is.numeric))
+  whichIsFactor <- which(sapply(DF, is.factor))
+  if(length(whichIsFactor) < 1) {
+    whichIsFactor <- which.min(sapply(D,  function(x) length(unique(x))))
+    DF[,whichIsFactor] <- factor( DF[,whichIsFactor])
   }
-  #print(input$c1q1_text)
-  if (grepl(",", input$c1q1_text)){          ## check for commas,
-    c1q1Text <- gsub(","," ",input$c1q1_text)  ## replace commas with spaces
-  } else {
-    c1q1Text <- input$c1q1_text
-  }
-  if(is.na(as.numeric(unlist(strsplit(c1q1Text," "))[2]))){ # is the 2nd "word" numeric or character?
-    tempData <- read.table(text = c1q1Text, head = TRUE)      
-    c1q1$names <- names(tempData)
-  } else{
-    c1q1$names <- c("group","y")   # numeric, so name it "x"
-    tempData <- read.table(text = q2Text, head = FALSE)
-    names(tempData) <- q2$names
-    whichIsNumeric <- which(sapply(DF, is.numeric))
-    whichIsFactor <- which(sapply(DF, is.factor))
-  } 
-  c1q1Test$nsims <- 0
-  c1q1$data <- data.frame( x = tempData)
-  c1q1Test$shuffles <-  c1q1Test$new.xbars <-  c1q1Test$xbar <-   c1q1Test$colors <- NULL
-  c1q1Est$shuffles <- c1q1Est$xbars <- c1q1Est$observed <- c1q1Est$colors <- NULL
-  #print(c1q1$data)
+  DF <- DF[, whichIsFactor:(3 - whichIsFactor)]
+  if("V1" %in% names(DF)[1])    names(DF) <- c("group", "y")
+  c1q1$names <- names(DF)
+  c1q1$data <- data.frame(DF)
+  c1q1Test$shuffles <- c1q1Test$diff <- NULL
+  c1q1Est$shuffles <- c1q1Est$diff <- NULL
   output$c1q1DataIn <- renderText({
-    "Data are entered, you may now choose to estimate or test one mean"
+    "Data are entered, you may now choose to estimate or test the true difference in means"
   })
+#   if(nchar(input$c1q1_text) < 1){
+#     return()
+#   }
+#   #print(input$c1q1_text)
+#   if (grepl(",", input$c1q1_text)){          ## check for commas,
+#     c1q1Text <- gsub(","," ",input$c1q1_text)  ## replace commas with spaces
+#   } else {
+#     c1q1Text <- input$c1q1_text
+#   }
+#   if(is.na(as.numeric(unlist(strsplit(c1q1Text," "))[2]))){ # is the 2nd "word" numeric or character?
+#     tempData <- read.table(text = c1q1Text, head = TRUE)      
+#     c1q1$names <- names(tempData)
+#   } else{
+#     c1q1$names <- c("group","y")   # numeric, so name it "x"
+#     tempData <- read.table(text = q2Text, head = FALSE)
+#     names(tempData) <- q2$names
+#     whichIsNumeric <- which(sapply(DF, is.numeric))
+#     whichIsFactor <- which(sapply(DF, is.factor))
+#   } 
+#   c1q1Test$nsims <- 0
+#   c1q1$data <- data.frame( x = tempData)
+#   c1q1Test$shuffles <-  c1q1Test$new.xbars <-  c1q1Test$xbar <-   c1q1Test$colors <- NULL
+#   c1q1Est$shuffles <- c1q1Est$xbars <- c1q1Est$observed <- c1q1Est$colors <- NULL
+#   #print(c1q1$data)
+#   output$c1q1DataIn <- renderText({
+#     "Data are entered, you may now choose to estimate or test one mean"
+#   })
 })
 
 # observeEvent(  input$c1q1_useHotBtn,{
