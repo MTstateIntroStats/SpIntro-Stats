@@ -2600,7 +2600,7 @@ observeEvent(input$cat2_submitButton, {
                   h4("Original Data"),
                   tableOutput("cat2OriginalData"),
                   h5(paste("Original difference in proportions: ", 
-                            round(- diff(prop.table(as.table(matrix(cat2_data$counts, 2, 2)), 1))[1], 3)
+                            round(-diff(prop.table(as.table(matrix(cat2_data$counts, 2, 2)), 1))[1], 3)
                    )),
                   br(),
                   h4("Shuffled Sample"),
@@ -4303,7 +4303,7 @@ output$c1q1_Summary2 <- renderTable({
   if( is.null(c1q1$data))  
     #if(input$c1q1_useHotBtn == 0 && input$c1q1_useExistingBtn == 0 && input$c1q1_useFileBtn == 0) 
     return()
-    val <- round( -diff(tapply(c1q1$data[, 2], c1q1$data[, 1], mean, na.rm=TRUE)), 3)
+    val <- round( diff(tapply(c1q1$data[, 2], c1q1$data[, 1], mean, na.rm=TRUE)), 3)
     names(val) <- NULL
     c1q1$diff <- -val
   matrix( -val, ncol= 1, dimnames = list("Difference in Means", c1q1$names[2]))
