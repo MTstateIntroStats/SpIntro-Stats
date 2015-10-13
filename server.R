@@ -1643,7 +1643,8 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
     w <- newy(x)  #unlist(tapply(x, z, function(x) 1:length(x)))
     tempDF <- data.frame(x, w=w[!is.na(w)])
     myBlue <- rgb(0, 100/256, 224/256, alpha = .8)  
-    q1_plot2 <- qplot(data=tempDF, x=x, y=w, colour = I(myBlue), size = I(4)) + theme_bw() + xlab(q1$names)
+    q1_plot2 <- qplot(data=tempDF, x=x, y=w, colour = I(myBlue), size = I(4)) + 
+      theme_bw() + xlab(q1$names)
     grid.arrange(q1_plot1, q1_plot2, heights = c(1,3)/4, ncol=1)
   #})
 }, height=360)
@@ -4260,8 +4261,8 @@ output$c1q1_Plot <- renderPlot( {
   DF <- DF[order(DF$y), ]
   #nbreaks <- min(c(length(unique(DF$y)), floor(.5*nclass.Sturges(DF$y)^2)))
   #z <- cut(DF$y, breaks =  nbreaks )
-  #w <- unlist(tapply(DF$y, list(z, DF$group), function(x) 1:length(x)))
-  w <- newy(DF$y)  #w[!is.na(w)]  
+  w <- unlist(tapply(DF$y, DF$group, newy))
+  ##w <- newy(DF$y)  #w[!is.na(w)]  
   myBlue <- rgb(0, 100/256, 224/256, alpha = .8)  
   c1q1_plot2 <- qplot(data= DF, x=y, y=w , colour = I(myBlue), size = I(4), ylim = 
                         c(.5, pmax(10, max(w)))) + facet_wrap( ~group) + 
