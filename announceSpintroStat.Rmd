@@ -1,20 +1,21 @@
 ---  
-title: "Announcing SpintroStats Web Applets"  
+title: "Announcing SpIntro-Stats Web Applets"  
 author: "Jim Robison-Cox and Allison Theobold, Montana State University"  
-date: "Sept 17, 2015"  
+date: "October 13, 2015"  
 ---  
 
-Software applications are an essential component of any simulation based inference (SBI) statistics course. At least two suites of web applets for introductory statistics currently exist (http://lock5stat.com/Statkey) and (http://rossmanchance.com/applets)  
- and each allows public access. Because interest is on the rise in SBI courses, we thought it time for an open source software project focusing on SBI for introductory statistics which uses the interactive capabilities of web applications. We have begun a framework for such apps based on the Shiny web interface to R. We offer these to the SBI community for comment, feature requests, and collaboration.
+Software applications are an essential component of any simulation based inference (SBI) statistics course. At least two suites of web applets for introductory statistics currently exist (http://lock5stat.com/Statkey) and (http://rossmanchance.com/applets) and each allows public access. 
+With the increasing interest in the simulation approach, we think it time for an open source software project focusing on SBI for introductory statistics which uses the interactive capabilities of web applications. We have begun a framework for such apps based on the Shiny web interface to R. We offer these to the SBI community for comment, feature requests, and collaboration.
 
 The repository for the code is   
   [https://github.com/MTstateIntroStats/SpIntro-Stats.git](https://github.com/MTstateIntroStats/SpIntro-Stats.git)
 
+### Running Spintro-Stats 
 There are several ways to run the web apps:  
 
 1) To check features without installing you can view it in this web page:  
      http://shiny.math.montana.edu/jimrc/IntroStatShinyApps/    
-      Please do not send students to this site, as we can't handle a large load.  
+      Please do not send students to this site, as we can't handle hordes of users.   
       
 2) To test on an individual computer running R (free and open source software):  
  * Install packages: ggplot2, gridExtra, shiny, shinythemes and their dependencies.   
@@ -26,7 +27,7 @@ runGitHub("MTstateIntroStats/SpIntro-Stats")
 ## Use control-C in the R console to exit.  
 ```  
 
-3) If you want to use these apps in a classroom setting, you need to install a "Shiny server",
+3) If you want to use these apps in a classroom setting, you'll need some IT expertise. Specifically,  a "Shiny server"
    which is free for academic purposes, from [https://www.rstudio.com/products/shiny/](https://www.rstudio.com/products/shiny/)    
    Be sure git is installed, and clone the code as in:   
 ```
@@ -42,31 +43,36 @@ Clone the repository  [https://github.com/MTstateIntroStats/SpIntro-Stats.git](h
 ### Basic layout
 
 To run the apps, the user has to choose the _Type_ of data to analyze:   
-* One Categorical,  
-* One Quantitative,   
-* Two Categorical,   
-* Two Quantitative,  OR   
-* One of Each -- One Categorical (currently only two groups) & One Quantitative.  
 
-The first option under each variable type is "Enter/Describe Data" and this option must be run before one can proceed to the next choices under each "Variable Type": Test or Estimate.
+ * One Categorical,  
+ * One Quantitative,   
+ * Two Categorical,   
+ * Two Quantitative,  or  
+ * One of Each -- One Categorical & One Quantitative.  
 
-Testing is performed by sampling from the null model (one categorical) or via permutation test (Two Categorical or One-of-each) or by bootstrap (Two quantitative).  The "One Quantitative" test of a single mean slides the data over to have the hypothesized mean, then resamples from the shifted distribution.
+The first option under each variable type is [Enter/Describe Data] which must be run before one can proceed to the next choices under each Variable Type: [Test] or [Estimate].
 
-Confidence intervals are all based on bootstrap resamples. Plots show percentile intervals, but summary statistics are displayed for those who want to build _Estimate +/- Multiplier * SE_ intervals (We do both).   
+ * Testing is performed by sampling from the null model (One Categorical) or via permutation test (Two Categorical or One-of-Each) or by bootstrap (Two Quantitative).  The "One Quantitative" test of a single mean slides the data over to have the hypothesized mean, then resamples from the shifted distribution.
+
+ * Confidence intervals are all based on bootstrap resamples. Plots show percentile intervals, but summary statistics are displayed for those who want to build _Estimate &#177; Multiplier * SE_ intervals (We do both).   
 
 The apps also include 
-a demo of confidence interval coverage (under "One Categ") 
-a demo of the bootstrap process (under "One Quant"),  
-a "spinner" for generating random categorical variates (under "One Categ"), and
-z and t probability and quantile "look up" pages.  
+
+ * a demo of confidence interval coverage (under "One Categ")  
+ * an animated demo of the bootstrap process (under "One Quant"),  
+ * demos of the effect of randomization on a "lurking" variable (under "One Categ" and "One Quant")  
+ * "spinner" and "mixer" (balls drawn from a box) apps for generating random categorical variates (under "One Categ"), and  
+ * z and t probability and quantile "look up" pages.  
 
 
 ### Contributing  
 
 To correct errors or suggest features please use the google group: [https://groups.google.com/forum/#!forum/spintro-stats](https://groups.google.com/forum/#!forum/spintro-stats)
 
-Suggestions are welcome, but be advised that no one is being paid to fix errors or implement feature requests.  
-If you would like to help with the project, the level of R programming needed is moderate. However, some knowledge of shiny, of html, and possibly of JavaScript is necessary.  With R programming, the computer immediately responds to commands, but a web app has to sit quietly watching for events like mouse clicks and then reacts in an appropriate way, so it must be prepared for many possible inputs.
+Suggestions are welcome, but given that this is a volunteer project, it might take some time to implement feature requests.  
+If you would like to help with the project, the level of R programming needed is moderate. However, some knowledge of shiny, of html, and possibly of JavaScript is necessary.  
+
+### Related Materials
 
 We have also developed activities which utilize the web apps for a one semester statistics intro course. 
 See our other github repository: [https://github.com/MTstateIntroStats/IntroStatActivities](https://github.com/MTstateIntroStats/IntroStatActivities) and [https://groups.google.com/forum/#!forum/mt-state-intro-stat-activities](its google group)
