@@ -1643,7 +1643,7 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
     w <- newy(x)  #unlist(tapply(x, z, function(x) 1:length(x)))
     tempDF <- data.frame(x, w=w[!is.na(w)])
     myBlue <- rgb(0, 100/256, 224/256, alpha = .8)  
-    q1_plot2 <- qplot(data=tempDF, x=x, y=w, colour = I(myBlue), size = I(4)) + 
+    q1_plot2 <- qplot(data=tempDF, x=x, y=w, colour = I(myBlue), ylim = c(0, pmax(10, max(w))), size = I(4)) + 
       theme_bw() + xlab(q1$names)
     grid.arrange(q1_plot1, q1_plot2, heights = c(1,3)/4, ncol=1)
   #})
