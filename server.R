@@ -3464,7 +3464,7 @@ output$q2_Plot <- renderPlot( {
     #boxplot(q2_dataDF, horizontal = TRUE, main = "")
     #myBlue <- rgb(0, 100/256, 224/256, alpha = .8)  
     q2_plot3 <- qplot(data= DF, x=x, y=y, colour = I(blu), size = I(4)) + theme_bw() +
-                  xlab(q2$names[1]) + ylab(q2$names[2]) 
+                  xlab(q2$names[1]) + ylab(q2$names[2]) + stat_smooth(method ="lm", se = FALSE)
     grid.arrange(q2_plot1, q2_plot2, q2_plot3, heights = c(1.5, 1.5, 5)/8, ncol=1)
   #}
 }, height=400)
@@ -3486,14 +3486,28 @@ output$q2_Summary <- renderTable({
                 Q3     = apply(q2$data, 2, quantile, .75),
                 max    = apply(q2$data, 2, max),
                 n = apply(q2$data, 2, length),
-                correlation = c(q2$corr, NA),
-                beta.hat = round(coef(fit0),3),
-                "resid SD" = c(summary(fit0)$sigma, NA) )
+                correlation = c(q2$corr, NA))
+                #beta.hat = round(coef(fit0),3),
+                #"resid SD" = c(summary(fit0)$sigma, NA) )
     colnames(DF) <- q2$names
     DF
   #})
 })
 
+output$q2_headRegrLine <- renderText({
+  if( is.null(q2$data))  
+    return()
+  "Least Squares line: "
+})
+
+output$q2_SLR_line <- renderText({
+  if( is.null(q2$data))  
+    #if(input$q2_useHotBtn == 0 && input$q2_useExistingBtn == 0 && input$q2_useFileBtn == 0) 
+    return()
+  beta.hat = round(coef(lm(y ~ x, q2$data)),3)
+  paste( q2$names[1], " = ", beta.hat[1], " + ", beta.hat[2], " * ", q2$names[2], sep = "")  
+})
+  
 
 observeEvent(  input$q2_swapXwithY,{
   if(is.null(q2$data))
