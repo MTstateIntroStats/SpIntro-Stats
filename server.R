@@ -4353,7 +4353,7 @@ output$c1q1_Summary2 <- renderTable({
               column(1, actionButton("c1q1_test_shuffle_5000", label = "5000"))
             ),
             fluidRow(
-                column(4, offset = 5, h4("Click a point to see its resample."))
+                column(4, offset = 5, h4("Click a point to see its shuffle."))
                 ),
             br(),
             fluidRow(
