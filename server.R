@@ -299,7 +299,8 @@ output$Cat1TestPvalue <- renderUI({
         nsims <- length(DF)
         radius = pmax(1, 11 - round(log(length(DF))))        
       }
-      plot(DF, w, ylab = "", ylim = c(0.5, pmax(10,max(w))), cex = radius/2, pch = 16, col = cat1Test$colors,  
+      plot(DF, w, ylab = "", ylim = c(0.5, pmax(10,max(w))), cex = radius/2, pch = 16, 
+           col = cat1Test$colors,  ylim=c(.5, pmax(10,max(y))),
            xlab = expression(hat(p)), main = "Sampling Distribution")
       legend("topright", bty = "n", paste(length(DF), "points \n Mean = ", 
                                          round(mean(DF),3), "\n SE = ", round(sd(DF),3)))
@@ -3505,7 +3506,7 @@ output$q2_SLR_line <- renderText({
     #if(input$q2_useHotBtn == 0 && input$q2_useExistingBtn == 0 && input$q2_useFileBtn == 0) 
     return()
   beta.hat = round(coef(lm(y ~ x, q2$data)),3)
-  paste( q2$names[1], " = ", beta.hat[1], " + ", beta.hat[2], " * ", q2$names[2], sep = "")  
+  paste( q2$names[2], " = ", beta.hat[1], " + ", beta.hat[2], " * ", q2$names[1], sep = "")  
 })
   
 
@@ -3775,7 +3776,7 @@ output$q2_TestPlot2 <- renderPlot({
     nsims <- length(parm)
     radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
   }
-  plot(parm, y, ylab = "", cex = radius/2, pch = 16, col = q2Test$colors,  
+  plot(parm, y, ylab = "", cex = radius/2, pch = 16, col = q2Test$colors,   ylim=c(.45, pmax(10,max(y))),
         xlab = ifelse(input$q2_TestParam == "Slope OR", "Slope", "Correlation"), main = "Sampling Distribution")
   legend("topright", bty = "n", paste(length(parm), "points \n Mean = ", 
                                      round(mean(parm),3), "\n SE = ", round(sd(parm),3)))
@@ -3980,7 +3981,7 @@ output$q2_EstPlot2 <- renderPlot({
     nsims <- length(parm)
     radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
   }
-  plot(parm, yy, ylab = "", cex = radius/2, pch = 16, col = q2Estimate$colors,  
+  plot(parm, yy, ylab = "", cex = radius/2, pch = 16, col = q2Estimate$colors, ylim=c(.5, pmax(10,max(yy))),  
        xlab = ifelse(input$q2_EstParam == "Slope OR", "Slope", "Correlation"), main = "RE-Sampling Distribution")
   corner <- ifelse(q2$corr >= 0, "topleft", "topright")
   legend(corner, bty = "n", paste(length(parm), "points \n Mean = ", 
