@@ -1643,7 +1643,7 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
     w <- newy(x)  #unlist(tapply(x, z, function(x) 1:length(x)))
     tempDF <- data.frame(x, w=w[!is.na(w)])
     myBlue <- rgb(0, 100/256, 224/256, alpha = .8)  
-    q1_plot2 <- qplot(data=tempDF, x=x, y=w, colour = I(myBlue), size = I(4)) + 
+    q1_plot2 <- qplot(data=tempDF, x=x, y=w, colour = I(myBlue), ylim = c(0, pmax(10, max(w))), size = I(4)) + 
       theme_bw() + xlab(q1$names)
     grid.arrange(q1_plot1, q1_plot2, heights = c(1,3)/4, ncol=1)
   #})
@@ -2600,7 +2600,7 @@ observeEvent(input$cat2_submitButton, {
                   h4("Original Data"),
                   tableOutput("cat2OriginalData"),
                   h5(paste("Original difference in proportions: ", 
-                            round(- diff(prop.table(as.table(matrix(cat2_data$counts, 2, 2)), 1))[1], 3)
+                            round(-diff(prop.table(as.table(matrix(cat2_data$counts, 2, 2)), 1))[1], 3)
                    )),
                   br(),
                   h4("Shuffled Sample"),
@@ -3464,7 +3464,7 @@ output$q2_Plot <- renderPlot( {
     #boxplot(q2_dataDF, horizontal = TRUE, main = "")
     #myBlue <- rgb(0, 100/256, 224/256, alpha = .8)  
     q2_plot3 <- qplot(data= DF, x=x, y=y, colour = I(blu), size = I(4)) + theme_bw() +
-                  xlab(q2$names[1]) + ylab(q2$names[2]) 
+                  xlab(q2$names[1]) + ylab(q2$names[2]) + stat_smooth(method ="lm", se = FALSE)
     grid.arrange(q2_plot1, q2_plot2, q2_plot3, heights = c(1.5, 1.5, 5)/8, ncol=1)
   #}
 }, height=400)
@@ -3486,14 +3486,28 @@ output$q2_Summary <- renderTable({
                 Q3     = apply(q2$data, 2, quantile, .75),
                 max    = apply(q2$data, 2, max),
                 n = apply(q2$data, 2, length),
-                correlation = c(q2$corr, NA),
-                beta.hat = round(coef(fit0),3),
-                "resid SD" = c(summary(fit0)$sigma, NA) )
+                correlation = c(q2$corr, NA))
+                #beta.hat = round(coef(fit0),3),
+                #"resid SD" = c(summary(fit0)$sigma, NA) )
     colnames(DF) <- q2$names
     DF
   #})
 })
 
+output$q2_headRegrLine <- renderText({
+  if( is.null(q2$data))  
+    return()
+  "Least Squares line: "
+})
+
+output$q2_SLR_line <- renderText({
+  if( is.null(q2$data))  
+    #if(input$q2_useHotBtn == 0 && input$q2_useExistingBtn == 0 && input$q2_useFileBtn == 0) 
+    return()
+  beta.hat = round(coef(lm(y ~ x, q2$data)),3)
+  paste( q2$names[1], " = ", beta.hat[1], " + ", beta.hat[2], " * ", q2$names[2], sep = "")  
+})
+  
 
 observeEvent(  input$q2_swapXwithY,{
   if(is.null(q2$data))
@@ -4303,7 +4317,7 @@ output$c1q1_Summary2 <- renderTable({
   if( is.null(c1q1$data))  
     #if(input$c1q1_useHotBtn == 0 && input$c1q1_useExistingBtn == 0 && input$c1q1_useFileBtn == 0) 
     return()
-    val <- round( -diff(tapply(c1q1$data[, 2], c1q1$data[, 1], mean, na.rm=TRUE)), 3)
+    val <- round( diff(tapply(c1q1$data[, 2], c1q1$data[, 1], mean, na.rm=TRUE)), 3)
     names(val) <- NULL
     c1q1$diff <- -val
   matrix( -val, ncol= 1, dimnames = list("Difference in Means", c1q1$names[2]))
@@ -4339,7 +4353,7 @@ output$c1q1_Summary2 <- renderTable({
               column(1, actionButton("c1q1_test_shuffle_5000", label = "5000"))
             ),
             fluidRow(
-                column(4, offset = 5, h4("Click a point to see its resample."))
+                column(4, offset = 5, h4("Click a point to see its shuffle."))
                 ),
             br(),
             fluidRow(
