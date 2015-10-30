@@ -3657,8 +3657,7 @@ output$q2_TestPlot1 <- renderPlot({
       closestPnt <- ncol(q2Test$shuffles)
       resample <- q2Test$shuffles[, closestPnt]
     } else {
-      shuffle <- q2Test$shuffles <- matrix(
-                      sample(1:nrow(q2$data), nrow(q2$data), replace = TRUE), ncol = 1)
+      shuffle <- q2Test$shuffles <- matrix( sample(1:nrow(q2$data)), ncol = 1)
       q2Test$slopes <- coef( lm(q2$data$y[shuffle] ~ q2$data$x))[2]
       q2Test$corr <-  cor(q2$data$x, q2$data$y[shuffle])
       closestPnt <- 1 
