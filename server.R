@@ -299,8 +299,8 @@ output$Cat1TestPvalue <- renderUI({
         nsims <- length(DF)
         radius = pmax(1, 11 - round(log(length(DF))))        
       }
-      plot(DF, w, ylab = "", ylim = c(0.5, pmax(10,max(w))), cex = radius/2, pch = 16, 
-           col = cat1Test$colors,  ylim=c(.5, pmax(10,max(y))),
+      plot(DF, w, ylab = "", cex = radius/2, pch = 16, 
+           col = cat1Test$colors,  ylim=c(.5, pmax(10,max(w))),
            xlab = expression(hat(p)), main = "Sampling Distribution")
       legend("topright", bty = "n", paste(length(DF), "points \n Mean = ", 
                                          round(mean(DF),3), "\n SE = ", round(sd(DF),3)))
