@@ -299,8 +299,8 @@ output$Cat1TestPvalue <- renderUI({
         nsims <- length(DF)
         radius = pmax(1, 11 - round(log(length(DF))))        
       }
-      plot(DF, w, ylab = "", ylim = c(0.5, pmax(10,max(w))), cex = radius/2, pch = 16, 
-           col = cat1Test$colors,  ylim=c(.5, pmax(10,max(y))),
+      plot(DF, w, ylab = "", cex = radius/2, pch = 16, 
+           col = cat1Test$colors,  ylim=c(.5, pmax(10,max(w))),
            xlab = expression(hat(p)), main = "Sampling Distribution")
       legend("topright", bty = "n", paste(length(DF), "points \n Mean = ", 
                                          round(mean(DF),3), "\n SE = ", round(sd(DF),3)))
@@ -3657,8 +3657,7 @@ output$q2_TestPlot1 <- renderPlot({
       closestPnt <- ncol(q2Test$shuffles)
       resample <- q2Test$shuffles[, closestPnt]
     } else {
-      shuffle <- q2Test$shuffles <- matrix(
-                      sample(1:nrow(q2$data), nrow(q2$data), replace = TRUE), ncol = 1)
+      shuffle <- q2Test$shuffles <- matrix( sample(1:nrow(q2$data)), ncol = 1)
       q2Test$slopes <- coef( lm(q2$data$y[shuffle] ~ q2$data$x))[2]
       q2Test$corr <-  cor(q2$data$x, q2$data$y[shuffle])
       closestPnt <- 1 
