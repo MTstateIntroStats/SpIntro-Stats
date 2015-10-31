@@ -4056,6 +4056,12 @@ observeEvent(input$q2_conf99,{
 
 }
 
+  ##  Least Squares Line Demo ####################################
+  {
+    ## Which data?  Arbitrary data makes it hard to predict slider input values
+    
+    
+  }  
 
 ## 1 categorical & 1 quantitative   ---------------------------------------  1 cat 1 quant
 

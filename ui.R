@@ -191,7 +191,7 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
                                min=4, max=50, value=10),
                    # std deviation
                    sliderInput("pwr_sd", "Standard Deviation:", 
-                               min = 0.4, max = 13, value = 1.0, step= 0.2),
+                               min = 0.4, max = 3.2, value = 1.0, step= 0.2),
                    # 
                    sliderInput("pwr_altMean", "Alternative Mean:",
                                min = 0, max = 8, value = 2, step=.1),
@@ -307,15 +307,12 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
                  column(6, 
                         plotOutput('q2_Plot') ),
                  column(5, 
-                        tableOutput('q2_Summary'),
-                        column(4, uiOutput("q2_swap"))
-                 )
+                        tableOutput('q2_Summary'))
                ),
-               fluidRow(
-                 column(2, offset = 3, textOutput('q2_headRegrLine')),
-                 column(7, textOutput('q2_SLR_line'))
+               fluidRow( 
+                 column(4, uiOutput("q2_swap"))
                )
-      ),      
+               ),      
       tabPanel("Test", value="2quantTest",
                uiOutput('q2_testUI')
       ),
