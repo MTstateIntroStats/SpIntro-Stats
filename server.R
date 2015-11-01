@@ -3348,7 +3348,7 @@ output$normalProbPlot2 <- renderPlot({
 
 observeEvent(  input$q2_useLddBtn, {
   ##  Wipe out any old data  
-  q2Test$shuffles <- q2Test$slopes <- q2Test$corr <- q2Test$observed <- 
+  q2Test$shuffles <- q2Test$intercepts <- q2Test$slopes <- q2Test$corr <- q2Test$observed <- 
     q2Test$colors <- q2Test$moreExtremeCount <- q2Test$pvalue <- NULL
   q2Estimate$resamples <- q2Estimate$slopes <- q2Estimate$corr <- q2Estimate$observed <-
     q2Estimate$CI <- q2Estimate$colors <- NULL
@@ -3364,7 +3364,7 @@ observeEvent(  input$q2_useLddBtn, {
 
 observeEvent(  input$q2_useCSVBtn,{
   ##  Wipe out any old data    
-  q2Test$shuffles <- q2Test$slopes <- q2Test$corr <- q2Test$observed <- 
+  q2Test$shuffles <- q2Test$intercepts <-q2Test$slopes <- q2Test$corr <- q2Test$observed <- 
     q2Test$colors <- q2Test$moreExtremeCount <- q2Test$pvalue <- NULL
   q2Estimate$resamples <- q2Estimate$slopes <- q2Estimate$corr <- q2Estimate$observed <-
     q2Estimate$CI <- q2Estimate$colors <- NULL
@@ -3643,25 +3643,37 @@ output$q2_TestPlot1 <- renderPlot({
   plot(y ~ x, data=DF0, xlab = q2$names[1], ylab = q2$names[2], col = blu, pch = 16,
        main = "Original Data")
   #lmfit0 <- lm(y ~ x, DF0)
-  abline(q2$intercept, q2$slope)
+  if(!is.null(input$q2Test_click) ){
+    closestPnt <- ifelse( input$q2_TestParam == "Slope  OR", 
+                          which.min(abs( q2Test$slopes - input$q2Test_click$x)),
+                          which.min(abs( q2Test$corr - input$q2Test_click$x)))
+    hiLiteShuffle <- q2Test$shuffles[, closestPnt]
+  } else if(!is.null(q2Test$shuffles) ){
+    closestPnt <- ncol(q2Test$shuffles)
+    ##resample <- q2Test$shuffles[, closestPnt]
+  } else {
+    shuffle <- q2Test$shuffles <- matrix( sample(1:nrow(q2$data)), ncol = 1)
+    newCoef <- coef( lm(q2$data$y[shuffle] ~ q2$data$x))
+    q2Test$intercepts <- newCoef[1]
+    q2Test$slopes <- newCoef[2]
+    q2Test$corr <-  cor(q2$data$x, q2$data$y[shuffle])
+    closestPnt <- 1 
+  }
+  nShuffles <- length(q2Test$slopes) 
+  #print(nShuffles)
+  if(nShuffles > 1){
+    for(ndx in 1:nShuffles)
+     abline(q2Test$intercepts[ndx], q2Test$slopes[ndx], col = rgb(0,1,0,1/50))
+  }
+  
+  if(closestPnt > 1){
+    abline(q2Test$intercepts[closestPnt], q2Test$slopes[closestPnt], col = rd)
+    #print(closestPnt)
+  }
+  abline(fit0)
   mtext(side = 3, line=.4, at = min(DF0$x)/3 + max(DF0$x)*2/3, bquote(r == .(round(q2$corr,3))))
   mtext(side = 3,   at = min(DF0$x)*2/3 + max(DF0$x)/3, bquote(hat(beta)[1] == .(round(q2$slope,3))))
  
-   if(!is.null(input$q2Test_click) ){
-      closestPnt <- ifelse( input$q2_TestParam == "Slope or", 
-                          which.min(abs( q2Test$slopes - input$q2Test_click$x)),
-                         which.min(abs( q2Test$corr - input$q2Test_click$x)))
-      #print(closestPnt)
-      resample <- q2Test$shuffles[, closestPnt]
-    } else if(!is.null(q2Test$shuffles) ){
-      closestPnt <- ncol(q2Test$shuffles)
-      resample <- q2Test$shuffles[, closestPnt]
-    } else {
-      shuffle <- q2Test$shuffles <- matrix( sample(1:nrow(q2$data)), ncol = 1)
-      q2Test$slopes <- coef( lm(q2$data$y[shuffle] ~ q2$data$x))[2]
-      q2Test$corr <-  cor(q2$data$x, q2$data$y[shuffle])
-      closestPnt <- 1 
-    }
   DF0$newy <- q2$data$y[q2Test$shuffles[, closestPnt] ]
   q2Test$colors <- rep( blu, length(q2Test$slopes))
   
@@ -3672,8 +3684,8 @@ output$q2_TestPlot1 <- renderPlot({
   with(subset(DF0, abs(y - newy) > .0001),
     arrows(x, y, x, newy, col = grey(.5), length = .1, angle = 15)
   )
-  lmfit1 <- lm(newy ~ x, DF0)
-  abline(lmfit1)
+  abline(q2Test$intercepts[closestPnt], q2Test$slopes[closestPnt])
+  #abline(lm(y ~ x, data = DF0))
   beta1hat <- round(q2Test$slopes[closestPnt], 3)
   rhat1 <- round(q2Test$corr[closestPnt], 3)
   mtext(side = 3, at = min(DF0$x)*2/3 + max(DF0$x)/3, bquote(hat(beta)[1] == .(beta1hat) ) )
@@ -3686,9 +3698,12 @@ observeEvent(input$q2_TestParam, {
 
 observeEvent(input$q2_shuffle_10, {
   q2Test$moreExtremeCount <- NULL
-  newShuffles <-  sapply(1:10, function(x) sample(1:nrow(q2$data)))
-  q2Test$shuffles <- cbind(q2Test$shuffles, newShuffles)
-  q2Test$slopes <- c(q2Test$slopes, apply(newShuffles, 2, function(x) qr.coef(q2$qr, q2$data[x, 2])[2]))
+   newShuffles <-  sapply(1:10, function(x) sample(1:nrow(q2$data)))
+   q2Test$shuffles <- cbind(q2Test$shuffles, newShuffles)
+  newCoef <- qr.coef(q2$qr, matrix(q2$data$y[newShuffles], ncol=10))
+  q2Test$intercepts <- c(q2Test$intercepts, newCoef[1,])
+  q2Test$slopes <- c(q2Test$slopes, newCoef[2,])
+#  q2Test$slopes <- c(q2Test$slopes, apply(newShuffles, 2, function(ndx) qr.coef(q2$qr, q2$data$y[ndx])[2]))
   q2Test$corr <- c(q2Test$corr, apply(newShuffles, 2, function(ndx) cor(q2$data$x, q2$data[ndx, 2])))
   q2Test$colors <- rep(blu, length(q2Test$slopes))
 })
@@ -3697,7 +3712,10 @@ observeEvent(input$q2_shuffle_100, {
   q2Test$moreExtremeCount <- NULL
   newShuffles <-  sapply(1:100, function(x) sample(1:nrow(q2$data)))
   q2Test$shuffles <- cbind(q2Test$shuffles, newShuffles)
-  q2Test$slopes <- c(q2Test$slopes, apply(newShuffles, 2, function(x) qr.coef(q2$qr, q2$data[x, 2])[2]))
+  newCoef <- apply(newShuffles, 2, function(x) qr.coef(q2$qr, q2$data[x, 2]))
+  q2Test$intercepts <- c(q2Test$intercepts, newCoef[1,])
+  q2Test$slopes <- c(q2Test$slopes, newCoef[2,])
+#  q2Test$slopes <- c(q2Test$slopes, apply(newShuffles, 2, function(ndx) qr.coef(q2$qr, q2$data$y[ndx])[2]))
   q2Test$corr <- c(q2Test$corr, apply(newShuffles, 2, function(ndx) cor(q2$data$x, q2$data[ndx, 2])))
   q2Test$colors <- rep(blu, length(q2Test$slopes))
 })
@@ -3705,7 +3723,10 @@ observeEvent(input$q2_shuffle_1000, {
   q2Test$moreExtremeCount <- NULL
   newShuffles <-  sapply(1:1000, function(x) sample(1:nrow(q2$data)))
   q2Test$shuffles <- cbind(q2Test$shuffles, newShuffles)
-  q2Test$slopes <- c(q2Test$slopes, apply(newShuffles, 2, function(x) qr.coef(q2$qr, q2$data[x, 2])[2]))
+  newCoef <- apply(newShuffles, 2, function(x) qr.coef(q2$qr, q2$data[x, 2]))
+  q2Test$intercepts <- c(q2Test$intercepts, newCoef[1,])
+  q2Test$slopes <- c(q2Test$slopes, newCoef[2,])
+#  q2Test$slopes <- c(q2Test$slopes, apply(newShuffles, 2, function(ndx) qr.coef(q2$qr, q2$data$y[ndx])[2]))
   q2Test$corr <- c(q2Test$corr, apply(newShuffles, 2, function(ndx) cor(q2$data$x, q2$data[ndx, 2])))
   q2Test$colors <- rep(blu, length(q2Test$slopes))
 })
@@ -3713,7 +3734,10 @@ observeEvent(input$q2_shuffle_5000, {
   q2Test$moreExtremeCount <- NULL
   newShuffles <-  sapply(1:5000, function(x) sample(1:nrow(q2$data)))
   q2Test$shuffles <- cbind(q2Test$shuffles, newShuffles)
-  q2Test$slopes <- c(q2Test$slopes, apply(newShuffles, 2, function(x) qr.coef(q2$qr, q2$data[x, 2])[2]))
+  newCoef <- apply(newShuffles, 2, function(x) qr.coef(q2$qr, q2$data[x, 2]))
+  q2Test$intercepts <- c(q2Test$intercepts, newCoef[1,])
+  q2Test$slopes <- c(q2Test$slopes, newCoef[2,])
+ # q2Test$slopes <- c(q2Test$slopes, apply(newShuffles, 2, function(ndx) qr.coef(q2$qr, q2$data$y[ndx])[2]))
   q2Test$corr <- c(q2Test$corr, apply(newShuffles, 2, function(ndx) cor(q2$data$x, q2$data[ndx, 2])))
   q2Test$colors <- rep(blu, length(q2Test$slopes))
 })
