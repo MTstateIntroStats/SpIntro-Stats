@@ -190,8 +190,8 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
                    sliderInput("pwr_n", "SampleSize:", 
                                min=4, max=50, value=10),
                    # std deviation
-                   sliderInput("pwr_sd", "Standard Deviation:", 
-                               min = 0.4, max = 13.2, value = 1.0, step= 0.2),
+                   sliderInput("pwr_sd", "Standard Deviation:",   
+                               min = 0.4, max = 13.0, value = 1.0, step= 0.2),
                    # 
                    sliderInput("pwr_altMean", "Alternative Mean:",
                                min = 0, max = 8, value = 2, step=.1),
