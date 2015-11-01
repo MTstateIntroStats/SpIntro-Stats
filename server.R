@@ -3367,7 +3367,7 @@ observeEvent(  input$q2_useCSVBtn,{
   q2Test$shuffles <- q2Test$intercepts <-q2Test$slopes <- q2Test$corr <- q2Test$observed <- 
     q2Test$colors <- q2Test$moreExtremeCount <- q2Test$pvalue <- NULL
   q2Estimate$resamples <- q2Estimate$slopes <- q2Estimate$corr <- q2Estimate$observed <-
-    q2Estimate$CI <- q2Estimate$colors <- NULL
+    q2Estimate$intercepts <- q2Estimate$CI <- q2Estimate$colors <- NULL
   
   DF <- read.csv(input$q2_file1$datapath, header=input$q2_header,
                       sep=input$q2_sep, quote=input$q2_quote)
@@ -3898,14 +3898,9 @@ output$q2_EstResampDistn <- renderUI({
     par(mfrow=c(2,1), mar = c(4.1,5.1,3.1,.1) )
     plot(y ~ x, data=DF0, xlab = q2$names[1], ylab = q2$names[2], col = blu, pch = 16,
         main = "Original Data")
-    abline(q2$intercept, q2$slope)
     mtext(side = 3, line = .0, at = min(DF0$x)*4/5 + max(DF0$x)/5, bquote(hat(beta)[1] == .(round(q2$slope,3))))
     mtext(side = 3, line = .2, at = min(DF0$x)/5 + max(DF0$x)*4/5, bquote(r == .(round(q2$corr,3))))
-    
-    #plotOrig <- qplot(x=x, y=y, data=q2$data, xlab = q2$names[1], ylab = q2$names[2], col = I(blu), 
-    #       main = "Original Data") + theme_bw() + 
-    #       geom_abline(intercept = q2$intercept, slope = b1hat, colour = blu)
-   ## Bootstrap resample 
+   ## Check for click on a point
       if(!is.null(input$q2Est_click) ){
         closestPnt <- ifelse( input$q2_EstParam == "Slope  OR", 
           which.min(abs( q2Estimate$slopes - input$q2Est_click$x)),
@@ -3918,18 +3913,33 @@ output$q2_EstResampDistn <- renderUI({
       } else {
         resample <- q2Estimate$resamples <- matrix(
                sample(1:nrow(q2$data), nrow(q2$data), replace = TRUE), ncol = 1)
-        q2Estimate$slopes <- coef( lm(y ~ x, data = q2$data[resample, ]))[2]
+        newCoef <- coef( lm(y ~ x, data = q2$data[resample, ]))
+        q2Estimate$intercepts <- newCoef[1]
+        q2Estimate$slopes <- newCoef[2]
         q2Estimate$corr <- with(q2$data[resample, ], cor(x, y))
         closestPnt <- 1 
       }
-      DF1 <- q2$data[q2Estimate$resamples[, closestPnt], ]
+    nSims <- length(q2Estimate$slopes) 
+    if(nSims > 1){
+      for(ndx in 1:nSims)
+        abline(q2Estimate$intercepts[ndx], q2Estimate$slopes[ndx], col = rgb(0,1,0,1/50))
+    }
+    abline(q2$intercept, q2$slope)
+    
+    if(closestPnt > 0){
+      abline(q2Estimate$intercepts[closestPnt], q2Estimate$slopes[closestPnt], col = rd)
+      #print(closestPnt)
+    }
+    
+    ## Bootstrap resample 
+    DF1 <- q2$data[q2Estimate$resamples[, closestPnt], ]
       q2Estimate$colors <- rep( blu, length(q2Estimate$slopes))
       DF1$sizes <- rep(table(resample), table(resample))/2
       ##
       plot(y ~ x, data = DF1, xlab = q2$names[1], ylab = q2$names[2], col = grn, pch =16,
            cex = sizes, main = "Re-sampled Data", xlim = range(DF0$x), ylim = range(DF0$y))
       lmfit1 <- lm(y ~ x, DF1)
-      abline(lmfit1)
+      abline(q2Estimate$intercepts[closestPnt], q2Estimate$slopes[closestPnt] )
       beta1hat <- round(q2Estimate$slopes[closestPnt], 3)
       rhat1 <- round(q2Estimate$corr[closestPnt], 3)
       mtext(side = 3, line = 0, at = min(DF0$x)*4/5 + max(DF0$x)/5, bquote(hat(beta)[1] == .(beta1hat) ) )
@@ -3945,7 +3955,9 @@ output$q2_EstResampDistn <- renderUI({
     resamples <-  sapply(1:10, function(x) sample(1:nrow(q2$data), replace = TRUE))
     resamples <- resamples[, apply(resamples, 2, function(ndx) var(ndx) > 1.e-15) ]
     q2Estimate$resamples <- cbind(q2Estimate$resamples, resamples)
-    q2Estimate$slopes <- c(q2Estimate$slopes, apply(resamples, 2, function(ndx) coef(lm(y ~ x, q2$data[ndx, ]))[2]))
+    newCoefs <- apply(resamples, 2, function(ndx) coef(lm(y ~ x, q2$data[ndx, ])))
+    q2Estimate$intercepts <- c(q2Estimate$intercepts, newCoefs[1, ])
+    q2Estimate$slopes <- c(q2Estimate$slopes, newCoefs[2, ])
     q2Estimate$corr <- c(q2Estimate$corr, apply(resamples, 2, function(ndx) cor(q2$data$x[ndx], q2$data$y[ndx])))
     q2Estimate$colors <- rep(blu, length(q2Estimate$slopes))
   })
@@ -3955,7 +3967,10 @@ observeEvent(input$q2_resample_100, {
   resamples <-  sapply(1:100, function(x) sample(1:nrow(q2$data), replace = TRUE))
   resamples <- resamples[, apply(resamples,2, function(ndx) var(ndx) > 1.e-15) ]
   q2Estimate$resamples <- cbind(q2Estimate$resamples, resamples)
-  q2Estimate$slopes <- c(q2Estimate$slopes, apply(resamples, 2, function(ndx) coef(lm(y ~ x, q2$data[ndx, ]))[2]))
+  newCoefs <- apply(resamples, 2, function(ndx) coef(lm(y ~ x, q2$data[ndx, ])))
+  q2Estimate$intercepts <- c(q2Estimate$intercepts, newCoefs[1, ])
+  q2Estimate$slopes <- c(q2Estimate$slopes, newCoefs[2, ])
+#  q2Estimate$slopes <- c(q2Estimate$slopes, apply(resamples, 2, function(ndx) coef(lm(y ~ x, q2$data[ndx, ]))[2]))
   q2Estimate$corr <- c(q2Estimate$corr, apply(resamples, 2, function(ndx) cor(q2$data$x[ndx], q2$data$y[ndx])))
   q2Estimate$colors <- rep(blu, length(q2Estimate$slopes))
 })
@@ -3965,7 +3980,10 @@ observeEvent(input$q2_resample_1000, {
   resamples <-  sapply(1:1000, function(x) sample(1:nrow(q2$data), replace = TRUE))
   resamples <- resamples[, apply(resamples,2, function(ndx) var(ndx) > 1.e-15) ]
   q2Estimate$resamples <- cbind(q2Estimate$resamples, resamples)
-  q2Estimate$slopes <- c(q2Estimate$slopes, apply(resamples, 2, function(ndx) coef(lm(y ~ x, q2$data[ndx, ]))[2]))
+  newCoefs <- apply(resamples, 2, function(ndx) coef(lm(y ~ x, q2$data[ndx, ])))
+  q2Estimate$intercepts <- c(q2Estimate$intercepts, newCoefs[1, ])
+  q2Estimate$slopes <- c(q2Estimate$slopes, newCoefs[2, ])
+  #q2Estimate$slopes <- c(q2Estimate$slopes, apply(resamples, 2, function(ndx) coef(lm(y ~ x, q2$data[ndx, ]))[2]))
   q2Estimate$corr <- c(q2Estimate$corr, apply(resamples, 2, function(ndx) cor(q2$data$x[ndx], q2$data$y[ndx])))
   q2Estimate$colors <- rep(blu, length(q2Estimate$slopes))
 })
@@ -3975,7 +3993,10 @@ observeEvent(input$q2_resample_5000, {
   resamples <-  sapply(1:5000, function(x) sample(1:nrow(q2$data), replace = TRUE))
   resamples <- resamples[, apply(resamples,2, function(ndx) var(ndx) > 1.e-15) ]
   q2Estimate$resamples <- cbind(q2Estimate$resamples, resamples)
-  q2Estimate$slopes <- c(q2Estimate$slopes, apply(resamples, 2, function(ndx) coef(lm(y ~ x, q2$data[ndx, ]))[2]))
+  newCoefs <- apply(resamples, 2, function(ndx) coef(lm(y ~ x, q2$data[ndx, ])))
+  q2Estimate$intercepts <- c(q2Estimate$intercepts, newCoefs[1, ])
+  q2Estimate$slopes <- c(q2Estimate$slopes, newCoefs[2, ])
+  #q2Estimate$slopes <- c(q2Estimate$slopes, apply(resamples, 2, function(ndx) coef(lm(y ~ x, q2$data[ndx, ]))[2]))
   q2Estimate$corr <- c(q2Estimate$corr, apply(resamples, 2, function(ndx) cor(q2$data$x[ndx], q2$data$y[ndx])))
   q2Estimate$colors <- rep(blu, length(q2Estimate$slopes))
 })
@@ -4076,6 +4097,8 @@ observeEvent(input$q2_conf99,{
     sort(q2Estimate$corr)[c(tailCount, nsims+1 -tailCount)]
   }
 })
+
+  ## Issues with switching from slope to correlation CIs. Seem to want to go right back to slopes.
 
 }
 
