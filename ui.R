@@ -386,6 +386,10 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
       h5("'Spin' in the title refers to the methods we begin with: spinners, card shuffles, mixing balls in contrast to the classical emphasis on probability axioms."),
       h5(" Tests are based on permutation/randomization distributions and confidence intervals are derived via bootstrapping."),
       br(),
+      h5("This software is intended to demonstrate the concepts underlying statistical analysis."),
+      h5("It is not, in itself, a statistical analysis package."),
+      h5("We hope users find it useful, but no explicit or implicit warrantee is made for accuracy of results. "),
+      br(),
       HTML(" For our discussion group see <a href='https://groups.google.com/forum/#!forum/spintro-stats'> the spintro-stats </a> google group"),
       HTML(" and our code is available as a  <a href='https://github.com/MTstateIntroStats/SpIntro-Stats'> github repository </a>")
       
