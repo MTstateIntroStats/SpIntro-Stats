@@ -311,8 +311,12 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
                ),
                fluidRow( 
                  column(4, uiOutput("q2_swap"))
+               ), 
+               fluidRow(
+                 column(2, offset = 3, textOutput('q2_headRegrLine')),
+                 column(7, textOutput('q2_SLR_line'))
                )
-               ),      
+        ),      
       tabPanel("Test", value="2quantTest",
                uiOutput('q2_testUI')
       ),

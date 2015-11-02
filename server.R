@@ -3505,7 +3505,7 @@ output$q2_SLR_line <- renderText({
   if( is.null(q2$data))  
     #if(input$q2_useHotBtn == 0 && input$q2_useExistingBtn == 0 && input$q2_useFileBtn == 0) 
     return()
-  beta.hat = round(coef(lm(y ~ x, q2$data)),3)
+  beta.hat = round(coef(lm(y ~ x, q2$data)),4)
   paste( q2$names[2], " = ", beta.hat[1], " + ", beta.hat[2], " * ", q2$names[1], sep = "")  
 })
   
