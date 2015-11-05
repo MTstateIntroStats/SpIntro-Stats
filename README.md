@@ -27,13 +27,9 @@ To use the app choose the type of data and enter or import it.
  * Data input  
   -- for 1 and 2 categorical variables, user will type counts into a form.  
       Click [Use These Data] to proceed.  
-
   -- Other variable types get a choice:  
-     select existing data frame,   
-     Upload a local csv file, 
-     Type or paste into a text box (Currently only for 1 Quant.)  
-     Type or copy into a table using rhandsontable  
-       --- need to allow user to set the number of rows.
+     select a "Pre-loaded" data frame,   Upload a local csv file,  or
+     Type or paste into a text box
 
  * Descriptive stats and plots are created to suit the type of data.
 
@@ -41,8 +37,6 @@ To use the app choose the type of data and enter or import it.
   -- Test  or  
   -- Estimate  
  
- * Demo to show coverage of CI's for the artificial case of a known proportion or mean.  
-
  * Permutation Tests:  
    one proportion  
    equality of two proportions  
@@ -60,12 +54,26 @@ To use the app choose the type of data and enter or import it.
  *  Demos:  
   -- "What does 'confidence' mean?" under 1 Categorical allows user to generate many CI's under the artificial assumption of known "p", and check the coverage rate.  
   -- "Lurking Demos"" under '1 Categ' and '1 Quant' show how randomly assigning treatments evens out the effects of lurking variables (in the long run).  
+  -- Bootstrap Demo under [One Quant] is an animation of the resamping process.
 
+### How to run these web apps?  
+
+You are welcome to fork these pages and/or clone them to your own computer.  
+You can also run them without cloning in this way:  
+
+ * Install R and RStudio  
+ * install.packages("shiny")  
+ * shiny::runGitHub("MTstateIntroStats/SpIntro-Stats")  
+ 
+ Alternately, you could explore them on our departmental server:  [http://shiny.math.montana.edu/jimrc/IntroStatShinyApps/](http://shiny.math.montana.edu/jimrc/IntroStatShinyApps/)
+ 
 ### Known issues:  
 
   Need to reduce margins around some of the plots.  
 
-  Need to improve the use of rhandsontable for data entry.  Currently the number of rows is locked. 
+  It would be nice to use rhandsontable for data entry. Trying it on the handsontable website I am able to paste in multiple cells, but that doesn't work for me in the r packaged version.
+  
+  We'd like to add a tab which takes simple linear regression data and allows the user to find a line which fits well, then compare to the least squares line.  
 
 ### Comments? Suggestions?  
 
