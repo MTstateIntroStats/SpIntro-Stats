@@ -1,5 +1,6 @@
 includeScript("www/helper.js")
 source("helpers.R")
+source("packrat/init.R")
 
 includeScript("www/d3.v3.min.js")
 includeScript( "www/costs.js")
