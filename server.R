@@ -13,7 +13,7 @@ load("data/quant2.RData")
 load("data/cat1quant1.RData")
 
  ##  These were created to hold sample data with:
- ##  save(birthWeights, REDvsCntrl, REDvsREDA, REDAvsCntrl, file = "data/cat1quant1.RData")
+ ##  save(birthWeights, REDvsCntrl, REDvsREDA, REDAvsCntrl, MusicvsSilence1,MusicvsSilence2,file = "data/cat1quant1.RData")
  ##  save(bodytemp, birthweights, arsenic, geyser2011, file="data/quant1.RData")
  ##  save(shuttle, womenRateMen, menRateWomen, Dental, file = "data/quant2.RData")
 
