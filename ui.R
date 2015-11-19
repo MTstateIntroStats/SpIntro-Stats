@@ -322,7 +322,10 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
       ),
       
       tabPanel("Estimate Slope/Correlation", value="2quantEstimate",
-               uiOutput('q2_estimateUI')
+               uiOutput('q2_estimateUI') 
+       ), 
+      tabPanel("Least Squares Demo", value = "2quantSLRDemo",
+               uiOutput('q2_leastSquaresDemoUI')
       )
     )
 },

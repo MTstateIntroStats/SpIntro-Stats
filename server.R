@@ -1,5 +1,6 @@
 includeScript("www/helper.js")
 source("helpers.R")
+source("packrat/init.R")
 
 includeScript("www/d3.v3.min.js")
 includeScript( "www/costs.js")
@@ -3281,7 +3282,7 @@ output$normalProbPlot2 <- renderPlot({
 
   q2Estimate <- reactiveValues( resamples = NULL,   slopes = NULL,  corr =  NULL,
                               observed = NULL,    confLevel = NULL, colors = blu,
-                              CI = NULL)
+                              CI = NULL, param = NULL)
 
   ##  grab data according to input method
   q2 <- reactiveValues(data = NULL, names = NULL, intercept = NULL, slope = NULL, 
@@ -3352,6 +3353,7 @@ observeEvent(  input$q2_useLddBtn, {
     q2Test$colors <- q2Test$moreExtremeCount <- q2Test$pvalue <- NULL
   q2Estimate$resamples <- q2Estimate$slopes <- q2Estimate$corr <- q2Estimate$observed <-
     q2Estimate$CI <- q2Estimate$colors <- NULL
+  q2Estimate$param <- "Slope"
   
   DF <- eval(parse( text = input$q2_data1))
   q2$names <- names(DF) 
@@ -3368,6 +3370,7 @@ observeEvent(  input$q2_useCSVBtn,{
     q2Test$colors <- q2Test$moreExtremeCount <- q2Test$pvalue <- NULL
   q2Estimate$resamples <- q2Estimate$slopes <- q2Estimate$corr <- q2Estimate$observed <-
     q2Estimate$intercepts <- q2Estimate$CI <- q2Estimate$colors <- NULL
+  q2Estimate$param <- "Slope"
   
   DF <- read.csv(input$q2_file1$datapath, header=input$q2_header,
                       sep=input$q2_sep, quote=input$q2_quote)
@@ -3537,18 +3540,13 @@ output$q2_testUI <- renderUI({
       fluidRow(
         column(2, offset =2,
           h4('Test either')),
-        column(3,
+        column(3, 
           radioButtons("q2_TestParam", label = "", list("Slope  OR"," Correlation"),
                        "Slope  OR", inline = TRUE)
           ),
         column(3,  h4('is zero'))
       ),
       fluidRow(
-#         column(3, 
-#                tableOutput('q2_TestPrep'),
-#                radioButtons('q2_TestParam', label = "Parameter: ", choices = list("Slope","Correlation"), 
-#                             selected = "Slope", inline = TRUE)
-#         ),
         ## for 1 shuffle, show equal size plots of original and reshuffled x,y data
         ##  for more shuffles, make original data and click --> shuffle plots smaller, large plot of 
         ##  sampling distribution for slope / correlation.
@@ -3820,20 +3818,12 @@ output$q2_estimateUI <- renderUI({
     fluidPage(   
       fluidRow(
         column(3,       h3("Estimate either")        ),
-        column(4,
-               radioButtons('q2_EstParam', label = "", list("Slope  OR","Correlation"), 
-                                                       "Slope  OR", inline = TRUE))
+        column(4, uiOutput('q2_getEstParam') )
         ),
       fluidRow(
-#         column(3, tableOutput('q2_EstTable1'),
-#                br(),
-#                br(),
-#                radioButtons('q2_EstParam', label = "Parameter: ", list("Slope  OR","Correlation"), 
-#                             "Slope  OR", inline = TRUE)
-#         ),
         ##  show plots of original data  and one of resampled x,y data
         ##  by default,show latest resample. Allow user to click on a point to see the data which have that slope
-        ##  
+      
         column(5, 
                plotOutput('q2_EstPlot1')
         ),
@@ -3855,27 +3845,52 @@ output$q2_estimateUI <- renderUI({
       fluidRow(
         column(4, offset = 2, h4("Select Confidence Level (%)")
         ),
-        column(6,
-               fluidRow(
-                 column(2,  actionButton('q2_conf80', label = "80")),
-                 column(2,  actionButton('q2_conf90', label = "90")),
-                 column(2,  actionButton('q2_conf95', label = "95")),
-                 column(2,  actionButton('q2_conf99', label = "99"))
-                )
+        column(6, uiOutput('q2_confLevels')
         )
       ),
-      if(!is.null(q2Estimate$CI)){
         fluidRow(
-          column(8, offset = 4,
-                 h4(paste(round(100 * q2Estimate$confLevel), "% Confidence Interval Estimate: (", 
-                          round(q2Estimate$CI[1],3), ",", 
-                          round(q2Estimate$CI[2], 3), ")"))
-          )
+          column(8, offset = 4, uiOutput('q2_showCI') )
         )
-      } else {br()}
     )
   }
 })
+
+output$q2_showCI <- renderUI({
+  if(is.null(q2Estimate$CI))  {
+    return()}
+  h4(paste(round(100 * q2Estimate$confLevel), "% Confidence Interval Estimate for ",
+           q2Estimate$param,": (", 
+           round(q2Estimate$CI[1],3), ",", 
+           round(q2Estimate$CI[2], 3), ")"))
+}) 
+
+output$q2_getEstParam <- renderUI({
+  radioButtons('q2_EstParam', label = "", list("Slope  OR","Correlation"), 
+               "Slope  OR", inline = TRUE)
+})
+
+output$q2_confLevels <- renderUI({        
+  fluidRow(
+  column(2,  actionButton('q2_conf80', label = "80")),
+  column(2,  actionButton('q2_conf90', label = "90")),
+  column(2,  actionButton('q2_conf95', label = "95")),
+  column(2,  actionButton('q2_conf99', label = "99"))
+)
+})
+
+observeEvent(input$q2_EstParam, {
+  temp <- q2Estimate$param 
+  if(input$q2_EstParam == "Correlation" ){
+    q2Estimate$param <- "Correlation"
+  } else{
+    q2Estimate$param <- "Slope"
+  }
+  if( (temp == "Slope" & input$q2_EstParam != "Slope  OR") ||
+      (temp == "Correlation" & input$q2_EstParam != "Correlation")) {
+       q2Estimate$CI <- NULL
+     }
+  } 
+) 
 
 output$q2_EstResampDistn <- renderUI({
   plotOutput('q2_EstPlot2', click = 'q2Est_click')
@@ -4019,10 +4034,6 @@ output$q2_EstPlot2 <- renderPlot({
     radius <- 4
     nsims <- 1
   } else {
-#     z <- cut(parm, breaks = .5 * nclass.Sturges(parm)^2 )
-#     #  print(summary(z))
-#     yy <- unlist(tapply(z, z, function(v) 1:length(v)))
-#     yy <-  yy[!is.na(yy)]
     q2Estimate$y <- yy <- newy(parm)
     nsims <- length(parm)
     radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
@@ -4098,14 +4109,17 @@ observeEvent(input$q2_conf99,{
   }
 })
 
-  ## Issues with switching from slope to correlation CIs. Seem to want to go right back to slopes.
 
 }
 
   ##  Least Squares Line Demo ####################################
   {
     ## Which data?  Arbitrary data makes it hard to predict slider input values
-    
+    q2_leastSquaresDemoUI <- renderUI({
+      fluidPage(   
+        fluidRow(
+          column(3, h4("Which Line Fits Best?"))))
+    })  
     
   }  
 
