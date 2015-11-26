@@ -1,0 +1,413 @@
+\def\theTopic{Energy Drinks }
+\def\dayNum{14}
+
+\begin{center}
+{\bf {\large Energy Drinks}}
+\end{center}
+\vspace{-.1in}
+
+From Red Bull to Monster to -- you name it -- in the last few years
+we've seen a large increase in the availability of so called ``Energy
+Drinks''. 
+
+{\bf Share and discuss your responses to each of the following
+  questions with your group. }
+\begin{enumerate}
+  \item  Why are energy drinks popular? 
+\begin{students}
+    \vspace{4cm}    
+\end{students}
+
+\begin{key}
+  {\it  AWV}
+\end{key}
+
+  \item  What claims are made in the advertising of energy drinks?
+\begin{students}
+     \vspace{5cm}    
+\end{students}
+
+\begin{key}
+  {\it  AWV }
+\end{key}
+
+  \item  How do energy drinks interact with alcohol?
+\begin{students}
+    \vspace{5cm}    
+\end{students}
+
+\begin{key}
+  {\it  AWV}
+\end{key}
+
+\item An experiment tried to compare the effects of energy drinks with
+  and without alcohol on human subjects.  Pharmacology is the study of
+  how drugs affect the body, and ``psychopharmacology'' studies
+  effects of drugs on the nervous system. An article in {\it Human
+    Psycopharmacology} in 2009 reported on an experiment intended to
+  tease out some of the effects and to compare an energy drink without
+  alcohol to one with alcohol and to a non-energy drink.  The research
+  question is:
+
+  {\sf
+    Does neuropsychological performance (as measured on the RBANS
+    test) change after drinking an energy drink?  After drinking an
+    energy drink with alcohol? }
+
+   Higher RBANs scores indicate better memory skills. 
+
+Go to the site:\\
+  \url{http://shiny.math.montana.edu/jimrc/IntroStatShinyApps}. 
+  Select \fbox{Enter / Describe Data} under \fbox{\sf One of
+    Each}. Select \fbox{PreLoaded Data} as the data entry method, and
+  select \fbox{REDAvsCntrl} and \fbox{Use These Data} to load today's
+  data. 
+ 
+ \begin{fmpage}{.3\linewidth}
+ {\footnotesize
+ \begin{verbatim}
+ treatment RBAN
+ REDA	6.84
+ REDA	-9.83
+ REDA	-0.02
+ REDA	-9.12
+ REDA	-10.07
+ REDA	-19.34
+ REDA	3.97
+ REDA	-16.37
+ REDA	-21.02
+ Control	6.33
+ Control	1.65
+ Control	-3.58
+ Control	3.3
+ Control	-6.6
+ Control	3.29
+ Control	1.8
+ Control	1.8
+ Control	2.98
+ \end{verbatim}
+ }
+ \end{fmpage}
+ \hfill
+ \begin{minipage}{.6\linewidth}
+
+   Examine the boxplots and dotplots. Describe any differences in the
+   response (Change in RBANS) you see  between Red+A and Control groups. \\
+
+   Center
+\begin{students}
+    \vspace{1.4cm}    
+\end{students}
+
+\begin{key}
+  {\it Mean of RED+A is clearly  lower (-8.3), Control  (1.2)\\
+  Similarly, median for RED+A is -9.8; median for Control is 1.8 }
+\end{key}
+
+   Spread  (SD and IQR)
+\begin{students}
+    \vspace{1.4cm}    
+\end{students}
+
+\begin{key}
+  {\it      Control has smaller spread (SD = 3.9, IQR = 1.64)
+     compared to  RED+A (SD = 10.0, IQR = 10) 
+}
+\end{key}
+
+
+   Shape
+\begin{students}
+    \vspace{1.4cm}    
+\end{students}
+
+\begin{key}
+  {\it            RED+A seems most symmetric (boxplot), Cotrol
+         has some outliers.
+}
+\end{key}
+\end{minipage}
+
+
+The researchers used a computer randomization to assign the 
+subjects into the groups. We'll shuffle cards instead. 
+
+\item  Take 18 index cards and write the numbers 1 through 18 in a top
+  corner, and the score of each individual in the middle starting with
+  6.84 for card 1, on to -21.02 for card 9, then continue with the
+  second row. Line them up in the two rows  like this data table: 
+
+  \begin{tabular}{l|rrrrrrrrrr} \hline
+RED+A & 6.84&-9.83&-0.02&-9.12&-10.07&-19.34&3.97&-16.37&-21.02&\\ \hline
+Control&6.33&1.65&-3.58&3.30&-6.60&3.29&1.80&1.80&2.98&\\ \hline
+\end{tabular}\\
+Compute the two means and take their difference: $\xb_1 - \xb_2$.
+\vspace{1in}
+
+
+\item We want to test the hypothesis that the means are equal:\\
+  $H_0: \mu_1 = \mu_2$  (no difference in mean 'change in RBANS score'
+  between REDA and control groups.)  versus:\\
+  $H_a:  \mu_1 \neq \mu_2$\\
+\end{enumerate}
+Consider this important question:\\
+
+{\bf \sf
+If the treatments have no effect on RBANS scores, then where do the
+observed differences in distributions and in means come from?
+}\vspace*{.2cm}
+
+
+\begin{enumerate}
+  \setcounter{enumi}{5}
+\item 
+   Discuss this within your group and write down your answer.
+  Don't say that it has anything to do with the drink they were given
+  because we are assuming the drinks are all having the same effect. 
+  (Give this about 2 minutes of serious discussion, then go on.
+   If you get stuck here, we  won't have time to finish the activity.)
+\begin{students}
+    \vspace{7cm}    
+\end{students}
+
+\begin{key}
+  {\it   Random variation}
+\end{key}
+
+\item  Turn the index cards over and slide them around or shuffle by
+  some other method, until you think they are thoroughly mixed up.
+  Line up the shuffled cards (turned face up again) in 2 rows of 9 and
+  compute the mean of each row. 
+  \vspace{1cm} \\
+
+  Does the difference in the new means agree well with the original
+  difference?   If not,  how much has it changed? 
+\begin{students}
+    \vspace{3cm}    
+\end{students}
+
+\begin{key}
+  {\it  They should be similar but not exactly the same.}
+\end{key}
+
+
+\item  Suppose the first persons' change in RBANs was going to be
+  6.824 no matter which drink she was given, that the second would
+  always be -9.83, and so on to the last person's score of 2.98.  If
+  we re-shuffle the people and deal them into two groups of 9 again
+  and label then  RED+A and Control, why do the means change? (You
+  are describing a model of how the data are generated) 
+\begin{students}
+    \vspace{5cm}    
+\end{students}
+
+\begin{key}
+  {\it     The scores within each group change so the means change.  The person
+  from RED+A no longer has to be in RED+A, etc.  Who was in which
+  treatment group is randomized. 
+}
+\end{key}
+
+
+ \item  Go back to the applet and select \fbox{Test} under \fbox{One of Each}.
+   \begin{enumerate}
+   \item 
+   Do the means and SD's in the summary table match what we had
+   earlier?  Did they subtract in the same order as we did?
+\begin{students}
+    \vspace{1cm}    
+\end{students}
+
+\begin{key}
+  {\it  They should! If it's reversed, swap the order in the data.}
+\end{key}
+
+    \item  What are the means for control and RED+A in the
+      reshuffled version?  The difference?
+\begin{students}
+    \vspace{1cm}    
+\end{students}
+
+\begin{key}
+  {\it  AWV, but difference should be closer to 0.}
+\end{key}
+
+
+
+ \item Explain how our shuffling the cards is like what the computer does to
+   the data.
+\begin{students}
+    \vspace{3cm}    
+\end{students}
+
+\begin{key}
+  {\it  The computer just randomized which group each score came from
+   similar to shuffling the scores and replacing them into different
+   groups.  }
+\end{key}
+
+ \item Click \fbox{\sf 1000}   three times.  Where is the plot
+   centered?   Why is it centered there?
+\begin{students}
+    \vspace{2cm}    
+\end{students}
+
+\begin{key}
+  {\it     Centered close to 0 because the null is that treatment has no
+   effect (i.e. the means are the same). }
+\end{key}
+%\vspace{3cm}
+
+
+ \item  Below the plot, keep  \fbox{\sf more extreme}  and  enter the
+   {\bf observed difference in means from the original data} in the
+   last box.  Click \fbox{Go}. What proportion of the samples are this
+   extreme?   
+\begin{students}
+    \vspace{2cm}    
+\end{students}
+
+\begin{key}
+  {\it 0.008 in my sample. }
+\end{key}
+
+   \end{enumerate}
+
+ \item  There are other reasons that one person might show more change
+   in RBANS than another person.  Write down at least one. (Again,
+   don't get stuck here.) 
+\begin{students}
+    \vspace{2cm}    
+\end{students}
+
+\begin{key}
+  {\it   Genetic differences, difference in education levels, difference
+     in amount of sleep the previous night, etc. 
+}
+\end{key}
+\vspace{6cm}
+
+ \item  Lurking variables were discussed on Activity 10.  When we
+   randomly assign treatments, how should the groups compare on any
+   lurking variable? 
+\begin{students}
+    \vspace{3cm}    
+\end{students}
+
+\begin{key}
+  {\it  The should be approximately equivalent in the long run (or on average). }
+\end{key}
+   
+ \item  Are you willing to conclude that the differences we see
+   between the two groups are caused by REDA?  Explain
+   your reasoning. 
+\begin{students}
+    \vspace{4cm}    
+\end{students}
+
+\begin{key}
+  {\it  
+   Most will say probably no because of the lurking variables or
+   sample size (?) but we {\bf can} since we have random assignment.
+ }
+\end{key}
+%    \item We will also estimate the difference in the true
+%      mean RBANS change (REDA versus control) using StatKey.  Select
+%      the {\sf  CI for Difference in Means} option.
+%      \begin{enumerate}
+%      \item Click \fbox{\sf Edit Data} and delete all of their data.
+%        Insert the RBANS data from D2L. Add commas between the label
+%        and RBANS value in each line. Click \fbox{\sf OK} and check the
+%        sample statistics right under {\sf Original Sample}. Do they
+%        agree with what we had above?
+% \begin{students}
+%     \vspace{2cm}    
+% \end{students}
+
+% \begin{key}
+%   {\it  If not, data were entered wrong.  }
+% \end{key}
+%      \item Click \fbox{\sf Generate 1 Sample}, then generate 1000
+%        more.  The app is creating a 
+%        bootstrap resample from the 9 REDA values and a bootstrap
+%        resample from the 9 Control values, finding the mean of each,
+%        and subtracting to get a difference in means which shows up in
+%        the plot.  Click again until you are positive you know what it
+%        is doing. For your last single sample, write the two bootstrap
+%        means and their difference.
+% \begin{students}
+%     \vspace{2cm}    
+% \end{students}
+
+% \begin{key}
+%   {\it  I got 1.09 for Control, -7.97 for REDA with difference = -9.06.  }
+% \end{key}
+%     \item Obtain a 95\% bootstrap percentile interval by clicking {\sf
+%         Two-Tail} and write it here.
+% \begin{students}
+%     \vspace{2cm}    
+% \end{students}
+
+% \begin{key}
+%   {\it (-15.99, -2.70)  }
+% \end{key}
+    \item Write your interpretation of this interval.
+\begin{students}
+    \vspace{1cm}    
+\end{students}
+
+\begin{key}
+  {\it  We are 95\% confident that the true mean ``change in RBANS score''
+  is  2.7 to 15.99 points lower when people drink REDA than when they
+   drink the control beverage. Be sure to indicate which one is higher
+ (or lower). } 
+\end{key}
+\item Build a confidence interval using ``estimate $\pm t^*$SE'' where the
+  estimate is the observed difference in means, $t^* = 2.12$, and
+  using the st.dev. from the plot as our SE.  Does it contain zero?
+ \begin{students}
+    \vspace{2cm}    
+\end{students}
+
+\begin{key}
+  {\it (-16.65, -2.45)  No.}
+\end{key}
+
+
+\item Write up the results of the hypothesis test as a report using
+  the five elements from Activity 12.  Be sure to refer to the response
+  variable as ``change in RBANS'', not just RBANS score. \\ \ \\
+
+\begin{students}
+ \newpage 
+\end{students}
+ \end{enumerate}
+
+
+{\sf\bf Take Home Messages:}
+\begin{itemize}
+  \item 
+  If there is no treatment effect, then differences in distribution
+  are just due to the random assignment of treatments.  This
+  corresponds to a ``null hypothesis'' of no difference between
+  treatment groups.
+\item  By randomly applying treatments, we are creating groups that
+  should be very similar because differences between groups (age,
+  reaction to alcohol, memory) are “evened out” by the random group
+  allocation. If we see a difference between groups, then we doubt the
+  null hypothesis that treatments don't matter.  Any difference
+  between groups is caused by the treatment applied.  Random
+  assignment is a very powerful tool.  When reading a study, it's one
+  of the key points to look for. 
+ \item 
+  Use the remaining space for any questions or your own summary of the
+  lesson. \vfill
+
+\end{itemize}
+{\sf\bf Reference}
+
+ Curry K, Stasio MJ.  (2009). The effects of energy drinks alone and with
+ alcohol on neuropsychological functioning. {\it Human  Psychopharmacology}.
+{\bf 24}(6):473-81. doi: 10.1002/hup.1045. 
+
+

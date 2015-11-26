@@ -1,0 +1,367 @@
+
+\def\theTopic{Confidence }
+\def\dayNum{7}
+
+\begin{center}
+\vspace*{-.2in}
+{\bf {\large What Does ``Confidence'' Mean?}}\\
+\end{center}
+
+Mark Twain said:
+\begin{quotation}
+All you need in this life is ignorance and confidence, and then
+success is sure.   
+\end{quotation}
+
+ from quarterback Joe Namath:
+\begin{quotation}
+When you have confidence, you can have a lot of fun. And when you have fun, you can do amazing things.  
+\end{quotation}
+
+and from scientist Marie Curie:
+\begin{quotation}
+  Life is not easy for any of us. But what of that? We must have
+  perseverance and above all confidence in ourselves. We must believe
+  that we are gifted for something and that this thing must be
+  attained. 
+\end{quotation}
+
+The above quotes (from brainyquote.com) refer to  ``self confidence''
+which is certainly important in any endeavor.
+In statistics, the word ``confidence'' is best summarized as {\bf
+  faith in the process} by which an estimate (in our case, an interval
+estimate) was created.  A confidence interval carries information
+about the {\bf location} of the parameter of interest, and tells us a lot
+about the {\bf precision} of the estimate through the interval
+length. 
+
+
+In the news, interval estimates are often reported as a point value
+and a {\bf margin of error}. 
+
+\begin{quotation}
+  71\% of Democrats and independents who lean to the Democratic Party
+  say the Earth is warming due to human activity, compared with 27\%
+  among their Republican counterparts (a difference of 44 percentage
+  points). This report shows that these differences hold even when
+  taking into account the differing characteristics of Democrats and
+  Republicans, such as their different age and racial profiles. 
+\end{quotation}
+
+  If you read the ``fine print'' from the  Pew Research Center which
+  conducted the poll,
+\url{http://www.pewinternet.org/2015/07/01/appendix-a-about-the-general-public-survey-2/}
+you find that the margin of error for a 95\% confidence interval is
+listed as $\pm$ 5.1\% for Republican/lean Republican and $\pm 4.5$\%
+for Democrat/lean Democrat proportions.\vspace{2cm}
+
+\begin{center}
+  {\Large \bf Plus or Minus Confidence Intervals}
+\end{center}
+
+In the web app used in previous activities, we clicked on a confidence
+level and the web app colored in the right number of dots as red to
+put our selected percentage of sampled proportions in the center
+(these stayed blue) and split the remainder into the two tails,
+turning these more extreme points red.  We call this a ``percentile''
+method because, for example, a 90\% CI has lower endpoint of the 5th
+percentile and upper endpoint of the 95th percentile.
+
+Another common way of building a 95\% confidence interval is to take
+the estimated value and add and subtract twice the standard error of
+the statistic.  A 95\% confidence interval for $p$ is then
+ $$ \phat \pm 2 SE(\phat)$$
+where $SE(\phat)$ is a number coming from the plot on the web app.
+Why 2?  Well, it's easy to remember, and with a symmetric
+distribution, 95\% of the data will fall within 2 SD's (standard
+deviations) of the mean.
+
+Margin of error is then the amount we add and subtract.  In this case,
+it is twice $SE(\phat)$.  (Note: the parentheses do not mean
+multiplication, say of SE times $\phat$. They indicate that $SE$ is a
+function of $\phat$, in the same way we use $\log(x)$ or $\sin(\theta)$.)
+
+\begin{enumerate}
+\item Go back to the rat data from Activity 6 where 23 rats opened the
+  cage and 7 did not.  Reenter the data in the \fbox{One Categ} part
+  of the web app, and select \fbox{Estimate}. 
+  \begin{enumerate}
+  \item Generate 5000 to 10,000 resamples and click 95\%. Record the
+    interval here:
+\begin{students}
+\vspace{.8cm}
+\end{students}
+
+\begin{key}
+  {\em (0.60, 0.90)}
+\end{key}
+\item Now write down the SE shown near the top right corner of the
+  plot.  (We will not use the mean of the plotted values).
+\begin{students}
+\vspace{.8cm}
+\end{students}
+
+\begin{key}
+  {\em 0.077}
+\end{key}
+\item Add and subtract $2SE$ from the original proportion given in the
+  box at left ( {\bf Do not} use the mean from the plot.) and write it
+  in interval notation.
+
+\begin{students}
+\vspace{.8cm}
+\end{students}
+
+\begin{key}
+  {$ 0.77 \pm 2\times 0.077 =  (0.63, 0.91)$}
+\end{key}
+\item Compare the two intervals.  Is one wider? Is there a shift?
+
+\begin{students}
+\vspace{.8cm}
+\end{students}
+
+\begin{key}
+  {\em The percentile CI is shifted slightly to the left and is
+    slightly wider.}
+\end{key}
+
+  \end{enumerate}
+\end{enumerate}
+
+\begin{center}
+  {\Large\bf Meaning of ``Confidence''}
+\end{center}
+
+To understand the meaning of the term ``confidence'', you have to step
+back from the data at hand and look at the process we use to create
+the interval.
+\begin{itemize}
+  \item Select a random sample from a population, measure each unit,
+    and compute a  statistic like $\phat$ from it.
+  \item Resample based on the statistic to create the interval.
+  \end{itemize}
+
+To check to see how well the techniques work, we have to take a
+ special case where we actually know the true parameter value.
+ Obviously, if we know the value, we don't need to estimate it, but we
+ have another purpose in mind: we will use the true value to generate
+ many samples, then use each sample to estimate the parameter, and
+ finally, we can check to see how well the confidence interval
+ procedure worked by looking at the proportion of intervals which
+ succeed in capturing the parameter value we started with.
+
+ Again go to \url{http://shiny.math.montana.edu/jimrc/IntroStatShinyApps/}
+ and select \fbox{Confidence Interval Demo} from the \fbox{One Categ} menu.
+ 
+ The first slider on this page allows us to set the sample size --
+ like the number of units or subjects in the experiment.  Let's start with
+ \fbox{40}.\\
+ The second slider sets the true proportion of successes for each
+ trial or spin (one trial).  Let's set that at \fbox{0.75} or 75\%
+ which is close to the observed $\phat$ of the rat study.\\
+ You can then choose the number of times to repeat the process (gather
+ new data and build a confidence interval [CI]: 10, 100, 1000 or 10K
+ times) and the level of confidence you want (80, 90, 95, or 99\%).\\
+ We'll start wih \fbox{100} simulations of a \fbox{90}\% CI.
+
+  The upper plot shows 100  $\phat$'s -- one from each of the 100 simulations.
+  \\
+  The second plot shows the interval estimate we get from each
+  $\phat$.  These  are stacked up to put smallest estimates on the
+  bottom, largest on top. The vertical axis has no real meaning. 
+
+  \begin{enumerate}
+    \setcounter{enumi}{1}
+  \item   Click on a point in the first plot to see its corresponding CI in
+  the second plot.  Especially try the largest and smallest points.
+  Which intervals do they create (in terms of left or right position)?
+\begin{students}
+  \vspace{1cm}
+\end{students}
+\begin{key}
+  {\it lowest and highest CI's, resp.}
+\end{key}
+\item There is a light gray vertical line in the center of the lower
+  plot. What is the value (on the $x$ axis) for this plot and why is
+  it marked?
+\begin{students}
+  \vspace{1cm}
+\end{students}
+\begin{key}
+  {\it It is the true parameter value: 0.75 if you followed the directions.}
+\end{key}
+\item What color are the intervals which do not cross the vertical
+  line? \\How many are there?
+\begin{students}
+  \vspace{1cm}
+\end{students}
+
+\begin{key}
+  {\it red, AWV about 10}
+\end{key}
+
+\item What color are the intervals which cross over the vertical
+  line? \\How many are there?
+\begin{students}
+  \vspace{1cm}
+\end{students}
+
+\begin{key}
+  {\it green, AWV about 90}
+\end{key}
+
+\item Change the confidence level to \fbox{95}\%. Does the upper plot
+  change?  Does the lower plot?  Describe any changes.
+\begin{students}
+  \vspace{1cm}
+\end{students}
+\begin{key}
+  {\it Upper plot should not change. Each interval in the lower plot
+    gets longer, so some that were red may turn green now.}
+\end{key}
+
+
+\item If you want an interval which is stronger for confidence
+  (has a higher level), what will happen to its width?
+\begin{students}
+  \vspace{.6cm}
+\end{students}
+\begin{key}
+  {\it it must be wider}
+\end{key}
+
+  \item Go up to 1000 or more intervals, try each confidence level in
+    turn and record the coverage rate   (under plot 2) for each.\\
+    \begin{tabular}{|r|r|r|r|} \hline
+      {\Large 80} &  {\Large 90} &  {\Large 95} &  {\Large 99}\\ \hline
+   {\Large  \phantom{9000} } & {\Large \phantom{9000}  } &  {\Large
+     \phantom{9000} } &  {\Large  \phantom{9000} } \\
+       & & & \\ \hline
+    \end{tabular}
+
+  \item Now back to the Pew study we started with. Of the 2002 people
+    they contacted, 737 were classified as Republican (or Independents
+    voting Rep) voters and 959 as Democrats (or Indep leaning Dem).
+    \begin{enumerate}
+    \item What integer number is closest to 27\% of the Republicans?
+      Enter that value into the \fbox{One Categ} ``Enter Data'' boxes
+      as successes (relabel success as you see fit)  and the balance
+      of those 737 in the bottom box. Check that the proportion on the
+      summary page is  close to 0.27. 
+      \begin{enumerate}
+      \item What is your proportion of Republicans who think global
+        warming is caused by human activity?
+\begin{students}
+\vspace{.8cm}
+\end{students}
+
+\begin{key}
+  {\em 199 ``successes'', 538 ``Failures'', $\phat = $0.27}
+\end{key}
+      \item Go to the ``Estimate'' page and run several 1000
+        samples. What is the standard error?
+\begin{students}
+\vspace{.8cm}
+\end{students}
+
+\begin{key}
+  {\em 0.016}
+\end{key}
+      \item Find the ``margin of error'' for a 95\% Confidence
+        interval and write down the interval.
+
+\begin{students}
+\vspace{.8cm}
+\end{students}
+
+\begin{key}
+  {\em ME = 0.032, 95\% CI: 0.27$\pm 0.032 = (0.38, 0.302)$}
+\end{key}
+  \item Compare that interval to one you get by clicking the
+    appropriate button in the app.
+
+\begin{students}
+\vspace{.8cm}
+\end{students}
+
+\begin{key}
+  {\em almost identical: ( 0.237 , 0.303 )}
+\end{key}
+      \end{enumerate}
+    \item Repeat for the Democrats:
+      \begin{enumerate}
+      \item Numbers of ``successes'' and ``failures''.
+\begin{students}
+\vspace{.8cm}
+\end{students}
+
+\begin{key}
+  {\em 700, 259 }
+\end{key}
+      \item Margin of error and 95\% CI related to it.
+\begin{students}
+\vspace{.8cm}
+\end{students}
+
+\begin{key}
+  {\em 0.028, (0.702, 0.758)}
+\end{key}
+      \item Percentile interval and comparison.
+\begin{students}
+\vspace{.8cm}
+\end{students}
+
+\begin{key}
+  {\em (0.701, 0.758), again very close. }
+\end{key}
+      \end{enumerate}
+    \item Explain what we mean by ``confidence'' in these intervals we
+      created.
+\begin{students}
+\vspace{4.8cm}
+\end{students}
+
+\begin{key}
+  {\em We are 95\% confident that the true }
+\end{key}
+
+\item What can we say about the proportions of Republicans and the
+  proportion Democrats on this issue? Is it conceivable that the
+  overall proportion is the same?  Explain.
+
+\begin{students}
+\vspace{2.8cm}
+\end{students}
+
+\begin{key}
+  {\em The intervals do not come close to overlapping, so we have to
+    think that there is a strong difference of opinion between these
+    two groups. I am ``quite confident'' of that.}
+\end{key}
+    \end{enumerate}
+  
+  \end{enumerate}
+
+
+\begin{center}
+  {\large \bf Take Home Message} 
+\end{center}
+
+\begin{itemize}
+\item Interval estimates are better than point estimates.
+\item Our confidence in a particular interval is actually in the
+  process used to create the interval.  We know that using this
+  process over and over again (go out and collect a new random sample
+  for each time) gives intervals which will usually
+  cover the true value.\\
+   We cannot know if a particular interval covered or not, so you have
+   to be tolerant of some uncertainty.
+ \item 
+  Use the remaining space for any questions or your own summary of the
+  lesson. 
+\end{itemize}
+
+
+
+
