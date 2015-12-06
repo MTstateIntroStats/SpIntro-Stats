@@ -14,7 +14,7 @@ load("data/quant2.RData")
 load("data/cat1quant1.RData")
 
  ##  These were created to hold sample data with:
- ##  save(birthWeights, REDvsCntrl, REDvsREDA, REDAvsCntrl, file = "data/cat1quant1.RData")
+ ##  save(birthWeights, REDvsCntrl, REDvsREDA, REDAvsCntrl, MusicvsSilence1,MusicvsSilence2,file = "data/cat1quant1.RData")
  ##  save(bodytemp, birthweights, arsenic, geyser2011, file="data/quant1.RData")
  ##  save(shuttle, womenRateMen, menRateWomen, Dental, file = "data/quant2.RData")
 
@@ -1471,7 +1471,7 @@ output$normalProbPlot1 <- renderPlot({
     text(x= c(-absz - 4, absz + 4)/2 , y= max(yrr)/2 + .02, 
          round(prob * ifelse(cat1_normalProb$findP,1,.5), 3), col = "darkblue")
     place.x <- c(-absz, absz)
-    if(absz < 1) place.x <- place.x/absz * .8
+    if(!is.na(abz) & (absz < 1)) place.x <- place.x/absz * .8
     text(place.x, y = text.height, round(c(-absz,absz),3))
   } else if (input$cat1_area == "Center") {   ## fill & label center
     polygon(xrr, yrr, col = grn)
@@ -2408,9 +2408,10 @@ observeEvent( input$q1_prob_txt,{
 #     print(q1_tProb$findP)
 #     print(input$q1_df)
 #     print(input$q1_area)
-    if(is.null(q1_tProb$findP))
+    if(is.null(q1_tProb$findP) | is.null(input$q1_df))
       return()
-    
+    if(is.null(q1_tProb$prob) & is.null(q1_tProb$z))
+      return()
     df <- as.numeric(input$q1_df)
     
     par(mar=c(24,1,1,1)/10)
@@ -2477,7 +2478,7 @@ observeEvent( input$q1_prob_txt,{
         prob <- diff( pt(c(-absz,absz), df) )
       }
     }
-  
+  if(is.null(df)) return
   plot(x, dt(x, df), type = "l", bty='n', xlab="Z Score", ylab="", yaxt="n")
   abline(h=0)
   max.height <- dt(0, df) *.9
@@ -4987,6 +4988,8 @@ output$tProbPlot2 <-    renderPlot({
   #     print(input$c1q1_df)
   #     print(input$c1q1_area)
   if(is.null(c1q1_tProb$findP))
+    return()
+  if(is.null(c1q1_tProb$prob) & is.null(c1q1_tProb$z))
     return()
   
   df <- as.numeric(input$c1q1_df)
