@@ -93,6 +93,12 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
             uiOutput('c1_LurkDataUI'),
             uiOutput('c1_LurkingUI')        
           ),
+          tabPanel("Sampling Demo", value="1catSample",
+            h3("Random Sampling Demo"),
+            ##h4("Choose Sample sizes"),
+            uiOutput('c1_SampDataUI'),
+            uiOutput('c1_SamplingUI')        
+          ),
         tabPanel("Spinner", value = "cat1_spin",
             uiOutput('c1_spinnerUI')
         ),
@@ -322,7 +328,10 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
       ),
       
       tabPanel("Estimate Slope/Correlation", value="2quantEstimate",
-               uiOutput('q2_estimateUI')
+               uiOutput('q2_estimateUI') 
+       ), 
+      tabPanel("Least Squares Demo", value = "2quantSLRDemo",
+               uiOutput('q2_leastSquaresDemoUI')
       )
     )
 },
