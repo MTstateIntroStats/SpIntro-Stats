@@ -169,3 +169,11 @@ reconstructSpins <- function( output, prob){
   }
   val
 }
+
+cleanText <- function(txt){
+ ## function to take a string of text, converrt to just letters, and split into words. 
+  txt <- tolower(txt) ## convert all to lower case
+  txt <- gsub("[:;(),.?']", "", trimws(txt))
+  words <- unlist(strsplit(txt, " "))
+  data.frame(words, count =nchar(words))
+}
