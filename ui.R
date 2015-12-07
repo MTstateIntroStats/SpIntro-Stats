@@ -93,12 +93,6 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
             uiOutput('c1_LurkDataUI'),
             uiOutput('c1_LurkingUI')        
           ),
-          tabPanel("Sampling Demo", value="1catSample",
-            h3("Random Sampling Demo"),
-            ##h4("Choose Sample sizes"),
-            uiOutput('c1_SampDataUI'),
-            uiOutput('c1_SamplingUI')        
-          ),
         tabPanel("Spinner", value = "cat1_spin",
             uiOutput('c1_spinnerUI')
         ),
@@ -168,6 +162,12 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
                h4("Choose a data type for this demo, random data will be generated."),
                uiOutput('q1_LurkDataUI'),
                uiOutput('q1_LurkingUI')        
+      ),
+      tabPanel("Sampling Demo", value="1quantSample",
+               h3("Random Sampling Demo"),
+               ##h4("Choose Sample sizes"),
+               uiOutput('q1_SampDataUI'),
+               uiOutput('q1_SamplingUI')        
       ),
       tabPanel("t Distribution",  value="1quantT",
                titlePanel("t Probabilities"),

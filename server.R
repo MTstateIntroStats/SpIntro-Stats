@@ -807,49 +807,6 @@ output$cat1Estimate_Plot2 <- renderPlot({
 
   
   }
-   
-   ##  Sampling Demo -----------------------------------------  cat 1
-   
-   ## data input
-   {
-   
-   c1Samp <- reactiveValues(data = NULL, samples = NULL, textIn = NULL, 
-                            colors = NULL,  names = NULL )
-   
-   ##  Use text box for input -- Paste in any text?
-   ## set sample size. Allow population to increase.
-   output$c1_SampDataUI <- renderUI({
-     fluidPage(
-       column(6,
-          HTML("<textarea name='c1_SampleText' cols='50' rows='12'> Four college friends were so confident that the weekend before finals, 
-they decided to go to a city several hours away to party with some friends. They had a great time. 
-               However, after all the partying, they slept all day Sunday and didn't make it back to school until early Monday morning. 
-               Rather than taking the final then, they decided to find their professor after the final and explain to him why they missed it.They explained that they had gone to the city for the weekend with the plan to come back and study but, unfortunately, they had a flat tire on the way back,  didn't have a spare, and couldn't get help for a long time. As a result, they missed the final.    
-               The Professor thought it over and then agreed they could make up the final the following day. The four were elated and relieved.
-               They studied that night and went in the next day at the time the professor had told them. He placed them in separate rooms and handed each of them a test booklet, and told them to begin. 
-               They looked at the first problem, worth 5 points. It was something simple about exploratory data analysis. 
-               `Cool,` they thought at the same time, each one in his separate room. 'This is going to be easy.' 
-               Each finished the problem and then turned the page. On the second page was written: 
-               For 95 points: Which tire? </textarea>")
-          ),
-       column(4,
-           div(actionButton("c1_useSampleText", "Use These Data"),
-              numericInput('c1_sampSize', label = "Sample Size: ", value = 10))
-           )
-     )
-   })
-   
-   ## For 1 sample, Show the words sampled and their lengths.
-   output$c1_SamplingUI<- renderUI({
-     observeEvent(input$c1_useSampleText,{
-       if(nchar(input$c1_SampleText) < 1){
-         return()
-       }
-       print(input$c1_SampleText)
-    })
-   })
-   
- }
      ##    
    ##  Spinner  ## ---------------------------------------------------------------
 {
@@ -1502,7 +1459,7 @@ output$normalProbPlot1 <- renderPlot({
   
 
 ##  Enter data    ----------------------------------------- quant 1
-{
+ {
 
 output$quant1DataIn <- renderText({ "How would you like to input the data? " 
   })
@@ -2385,7 +2342,61 @@ output$q1_EstimatePlot2 <- renderPlot({
   }, width = 400)      
   
   }
+ 
   
+  ##  Sampling Demo -----------------------------------------  cat 1
+  
+  ## data input
+  {
+  
+  q1Samp <- reactiveValues(data = NULL, samples = NULL, textIn = NULL, 
+                           colors = NULL,  names = NULL )
+  
+  ##  Use text box for input -- Paste in any text?
+  ## set sample size. Allow population to increase.
+  output$q1_SampDataUI <- renderUI({
+    fluidPage(
+      column(6,  div(
+             HTML('<textarea name="q1_SampleText" cols="80" rows="12"> Four college friends were so confident that the weekend before finals, 
+              they decided to go to a city several hours away to party with some friends. They had a great time. 
+               However, after all the partying, they slept all day Sunday and didnt make it back to school until early Monday morning. 
+               Rather than taking the final then, they decided to find their professor after the final and explain to him why they missed it.
+            They explained that they had gone to the city for the weekend with the plan to come back and study but, unfortunately, 
+               they had a flat tire on the way back,  didnt have a spare, and couldnt get help for a long time. As a result, they missed the final.    
+               The Professor thought it over and then agreed they could make up the final the following day. The four were elated and relieved.
+               They studied that night and went in the next day at the time the professor had told them. He placed them in separate rooms and 
+              handed each of them a test booklet, and told them to begin. 
+               They looked at the first problem, worth five points. It was something simple about exploratory data analysis. 
+               Cool, they thought at the same time, each one in his separate room. This is going to be easy. 
+               Each finished the problem and then turned the page. On the second page was written: 
+               For 95 points: Which tire? </textarea>'),
+             br(),
+             actionButton("q1_useSampleText", "Use These Data")
+            )
+      ),
+       column(4,
+              div(
+                  numericInput('q1_sampSize', label = "Sample Size: ", value = 10))
+       )
+    )
+  })
+  
+  ## For 1 sample, Show the words sampled and their lengths.
+  output$q1_SamplingUI <- renderUI({
+    if(is.null(q1Samp$data)){
+      return()
+    }
+    renderText(summary(q1Samp$data))
+  })
+  
+  observeEvent(input$q1_useSampleText, {
+      q1Samp$data <- cleanText(input$q1_SampleText)
+      ## print(summary(q1Samp$data))
+  })
+
+  }
+  
+   
   ###  t dist'n option ------------------------------------- quant 1
 
 {
