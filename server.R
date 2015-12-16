@@ -2149,11 +2149,7 @@ output$q1_EstimatePlot2 <- renderPlot({
 }
   ## Bootstrap Demo  ---------------------------------------
 {
-#   reactiveBoot <- function (outputId) {
-#     div(id=outputId, class="shiny-html-output",
-#          includeScript("www/bootDemo.js"))
-#   }
-   
+
   output$q1_bootstrap <- renderUI({
     div( id = 'BootDiv',
     h2("Bootstrap Demo"),

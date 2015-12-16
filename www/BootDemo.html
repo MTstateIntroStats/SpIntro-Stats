@@ -733,14 +733,14 @@ function rescale() {
 
     var drawCI = function(BootCount){  // draw percentile conf interval
       if(BootCount > 90){	
-	if(CItext.length >0){
+        	if(CItext.length >0){
           //remove CI text
           CItext.transition().style("fill","white").remove(function(d) { d.remove;});
-	}
-	if(BootCount < 200){
-	    if(confidence > .98){
-	    confidence = .98;
-	    }  // with only 100 resample, we can't split .01 into 2 tails
+	     }
+	   if(BootCount < 200){
+	      if(confidence > .98){
+	      confidence = .98;
+	     }  // with only 100 resample, we can't split .01 into 2 tails
 	} 
 	if((confidence > .95) && (BootCount > 100)){
 	    confidence = .99;
@@ -754,8 +754,8 @@ function rescale() {
 	while( upperBd < lowerBd){
 	    upperBd = resampMean[Math.floor(upperCount--) ];
 	}
-       CI = [ {"x": lowerBd, "y": height/4, "txt": lowerBd},
-              {"x": upperBd, "y": height/4, "txt": upperBd}];
+       CI = [ {"x": lowerBd, "y": height/4, "txt": d3.round(lowerBd,2)},
+              {"x": upperBd, "y": height/4, "txt": d3.round(upperBd,2)}];
 
        CIline.data(CI)
           .transition()
@@ -830,9 +830,11 @@ function rescale() {
   <FORM name="restart">
     <INPUT NAME="restartButton" TYPE="button" VALUE="Get New Sample " 
     onClick="newSample()">
-    </FORM>  Note: in real applications, we only get one sample, but for a demo, this is needed to change sample size.
-
+    </FORM>  Note: in real applications, we only get one sample, but for a demo, this is needed to change sample size.<br>
+Because we are using a "known" population, we can compare the bootstrap mean to the true value: 35.54,<br>
+and the standard deviations are actually 9.75 for n=4, 6.745 for n = 8, and 4.56 for n = 16.
 
 </div>
 
 <br>
+
