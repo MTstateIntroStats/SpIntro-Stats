@@ -1,0 +1,140 @@
+Guidelines for assessment and instruction in statistics education
+
+GAISE 2005
+
+College Report
+
+Recommendations: 
+1. Emphasize statistical literacy and develop statistical thinking
+2. Use real data
+3. Stress conceptual understanding, rather than mere knowledge of procedures
+4. Foster active learning in the classroom
+5. Use technology for developing conceptual understanding and analyzing data
+6. Use assessments to improve and evaluate student learning 
+
+Stat Thinking:
+ need data
+ getting good data is hard
+ variability is everywhere
+ we can quantify and describe variability
+
+Active Learning
+
+Understand:
+* Data beat anecdotes
+* Variability is natural, predictable, and quantifiable
+* Random sampling allows results of surveys and experiments
+  to be extended to the population from which the sample was
+  taken
+* Random assignment in comparative experiments allows cause-
+  and-effect conclusions to be drawn
+* Association is not causation
+* Statistical significance does not necessarily imply practical
+  importance, especially for studies with large sample sizes.
+* Finding no statistically significant difference or relationship
+  does not necessarily mean there is no difference or no relationship 
+  in the population, especially for studies with small sample
+  sizes
+
+Recognize:
+
+* Common sources of bias in surveys and experiments
+* How to determine the population to which the results of statistical
+  inference can be extended, if any, based on how the data were collected
+* How to determine when a cause-and-effect inference can be
+  drawn from an association based on how the data were collected 
+  (e.g., the design of the study)
+* That words such as “normal," “random,” and “correlation” have 
+  specific meanings in statistics that may differ from common usage
+
+Understand Process:
+* How to obtain or generate data
+* How to graph the data as a first step in analyzing data, and
+  how to know when that’s enough to answer the question of
+  interest
+* How to interpret numerical summaries and graphical displays
+  of data—both to answer questions and to check conditions (to
+  use statistical procedures correctly)
+* How to make appropriate use of statistical inference
+* How to communicate the results of a statistical analysis
+
+Basic ideas:
+* The concept of a sampling distribution and how it applies to
+  making statistical inferences based on samples of data (including
+  the idea of standard error)
+* The concept of statistical significance, including significance
+  levels and p-values
+* The concept of confidence interval, including the interpretation
+  of confidence level and margin of error
+
+Skills:
+* How to interpret statistical results in context
+* How to critique news stories and journal articles that include
+  statistical information, including identifying what’s missing in
+  the presentation and the flaws in the studies or methods used
+  to generate the information
+* When to call for help from a statistician
+
+SUGGESTIONS FOR TEACHERS:
+✓ Model statistical thinking for students, working examples and
+explaining the questions and processes involved in solving
+statistical problems from conception to conclusion.
+✓ Use technology and show students how to use technology
+effectively to manage data, explore data, perform inference,
+and check conditions that underlie inference procedures.
+✓ Give students practice developing and using statistical think-
+ing. This should include open-ended problems and projects.
+✓ Give students plenty of practice with choosing appropriate
+questions and techniques, rather than telling them which tech-
+nique to use and merely having them implement it.
+✓ Assess and give feedback on students’ statistical thinking.
+
+Use activities -- finish in the same period.
+
+Provide feedback.
+
+Tech tools:
+* Ease of data entry, ability to import data in multiple formats
+* Interactive capabilities
+* Dynamic linking between data, graphical, and numerical analyses
+* Ease of use for particular audiences
+* Availability to students, portability
+
+Assessment:
+✓ Integrate assessment as an essential component of the course.
+  Assessment tasks that are well-coordinated with what the
+  teacher is doing in class are more effective than tasks that focus
+  on what happened in class two weeks earlier.
+✓ Use a variety of assessment methods to provide a more complete 
+   evaluation of student learning.
+✓ Assess statistical literacy using assessments such as interpreting 
+   or critiquing articles in the news and graphs in media.
+✓ Assess statistical thinking using assessments such as student
+   projects and open-ended investigative tasks.
+
+
+Assessment items to avoid using on tests: 
+  True/False, 
+  pure computation without a context or interpretation, 
+  items with too much data to enter and compute or analyze, 
+  items that only test memorization of definitions or formulas
+
+Rank advice from best to worst and explain why.
+(is a p-value from a test of mu1=mu2 better than a 95% CI?)
+
+Critique a causation = correlation claim from the news.
+
+For each of the following three settings, state the type of analysis you
+would conduct (e.g., one-sample t-test, regression, chi-square test of
+independence, chi-square goodness-of-fit test, etc.) if you had all the
+raw data and specify the roles of the variable(s) on which you would
+perform the analysis, but do not actually carry out the analysis.
+
+fiber vs cereal cost per oz regression
+
+which pairs of variables should be plotted as a scatterplot?
+1. Blood pressure and age
+2. Region of country and opinion about stronger gun control laws
+3. Verbal SAT and math SAT score
+4. Handspan and gender (male or female)
+
