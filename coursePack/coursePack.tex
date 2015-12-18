@@ -3,6 +3,7 @@
 %%\usepackage[letterpaper]{geometry} 
 \usepackage{amsmath,amssymb}
  \usepackage{graphicx}
+ \usepackage{pdfcomment}
  \usepackage{ifthen, comment}
 % \usepackage{soul}
 \usepackage{natbib} 
@@ -32,7 +33,7 @@
 {\begin{lrbox}{\fmbox}\begin{minipage}{#1}}
 {\end{minipage}\end{lrbox}\fbox{\usebox{\fmbox}}}
 
-%\input diagxy
+%\input diagxy  
 %\xyoption{curve}
 % Spacing and displaystyle
 \newcommand{\ds}{\displaystyle}
@@ -161,7 +162,7 @@
   \newpage
 
 \fancyhead[LE,RO]{
-   {\it \theTopic }\\
+   {\it \theTopic }\\ 
    {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
 }
  \include{./activities/U1-A5}  %% ESP  5 pgs
@@ -175,7 +176,7 @@
 
 \fancyhead[LE,RO]{
    {\it \theTopic }\\
-   {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
+   {\it Unit \unitNum\  Activity \dayNum \ Page \thepage } 
 }
  \include{./activities/U1-A6}  %% Rats - CI  5 pgs
  \newpage
@@ -186,15 +187,15 @@
 }
   \include{./readings/U1-R6}
   \newpage
-
-\fancyhead[LE,RO]{
+  
+\fancyhead[LE,RO]{ 
    {\it \theTopic }\\
    {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
 }
  \include{./activities/U1-A7}  %%  CI - meaning  2 pgs
  \newpage
 
-\fancyhead[LE,RO]{
+\fancyhead[LE,RO]{ 
    {\it \theTopic }\\
    {\it Unit \unitNum\   \ Page \thepage }
 }

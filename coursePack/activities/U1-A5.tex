@@ -5,27 +5,11 @@
 \vspace{-.1in}
 \end{center}
 
-
-Mind readers often appear in spooky SciFi movies. (Insert spooky music
-here.)  Is it
-possible that some people can read minds? In the 1930's
-Dr.~J.B.~Rhine at Duke University designed experiments to see if some
-undergraduate students could tell which card (see the five ``Zener''
-cards below) a ``sender'' was looking at. The deck of cards (5 of each
-type) was shuffled and a card drawn at random. After each attempt, the
-card was returned to the deck and the deck was reshuffled (we call
-this sampling with replacement).  Therefore each of the five card types has
-an equal chance of occurring at any draw. 
-\begin{center}
-  \includegraphics[width=.5\linewidth]{../plots/Zener_cards.png}
-\end{center}
-
- Rhine found one exceptional subject in his extrasensory perception
- (ESP) research, Adam Linzmayer, an economics undergraduate at Duke.
- Linzmayer went through the experiments in 1931, and correctly
- identified 36\% of 25 cards as the ``receiver'' in the study.   We will
- start by investigating this student's result as Rhine did, hoping to
- prove that Linzmayer does have extrasensory perception. 
+  We will investigate the data from Adam Linzmayer who correctly
+  identified 9 of 25 Zener cards.  Do these data show that
+  Linzmayer had extrasensory perception?  More broadly, Rhine wanted
+  to know if anyone can catch a signal sent from another's mind using
+  no other form of communication.
 
 {\bf Step 1. State the research question. }\\
 1. Based on the description of the study, state the research question.
@@ -40,12 +24,12 @@ an equal chance of occurring at any draw.
 
 
 
-{\bf Step 2. Design a study and collect data.}\\
- Linzmayer correctly identified the card 9 out of 25 times in one
- trial.\vspace{-.3cm}
+{\bf Step 2. Describe the study design and report the data collected.}\\
+ Linzmayer was tested 25 times, and correctly identified the card 9
+ times in one trial.\vspace{-.3cm}
  \begin{enumerate}
    \setcounter{enumi}{1}
-   \item  What were the possible outcomes for 1 attempt (guessing one card)
+   \item  What were the possible outcomes for each attempt (guessing one card)
      that Rhine would have recorded?
 \begin{students}
   \vspace{1cm}
@@ -68,14 +52,15 @@ an equal chance of occurring at any draw.
    \end{enumerate}
    
 {\bf Step 3. Explore the data. }\\
-With categorical data, we  report the number of “successes”
+With categorical data, we  report the number of ``successes''
 or the proportion of successes as the ``statistic'' gathered from the
 sample.  
  \begin{enumerate}
    \setcounter{enumi}{3}
    \item   What is the sample size in this study?  $n = $ 
 \begin{students}
-  \vspace{1cm}
+  \vspace{1cm}\\
+  Hint: it is not the nunmber of people tested (just Adam).
 \end{students}
 
 \begin{key}
@@ -126,8 +111,8 @@ Two things could have happened:\vspace{-.5cm}
  \begin{enumerate}
    \setcounter{enumi}{7}
    \item   Of the two possibilities listed above, which was Rhine
-     trying to demonstrate (the alternative) and which corresponds to
-     ``nothing happening'' (the null)? 
+     trying to demonstrate (which is the alternative?) and which corresponds to
+     ``nothing happening'' (which is the null?)? 
 \begin{students}
   \vspace{1cm}
 \end{students}
@@ -137,7 +122,7 @@ Two things could have happened:\vspace{-.5cm}
   rather than that he was just guessing (the null).}
 \end{key}
 
-\item\label{trueESP-p} What is the value of the true parameter if
+\item\label{trueESP-p} What is the value of the {\bf true parameter} if
   Linzmayer is picking a card at random? Give a specific value and use
   correct notation to denote it. 
 \begin{students}
@@ -149,9 +134,9 @@ $p = 1/5 = 0.20$
 \end{key}
 
 
-   \item If Linzmayer is not just guessing and did have ESP, what
-     values might the true proportion take on?  Again, use correct notation to
-     denote this range of values. 
+   \item If Linzmayer is not just guessing and did have ESP, would you
+     expect him to get a higher or lower proportin correct? Use
+     correct notation to    denote this range of values. 
 \begin{students}
   \vspace{1cm}
 \end{students}
@@ -196,10 +181,10 @@ $(0.20, 1.00)$
        with the null hypothesis probability.  (Hint: you do not need 5
        segments.) Sketch your spinner on the circle below and shade the area
        where he gets it right just by chance. Put a paper clip on the
-       paper with pen to hold one end on the center.  Spin 25 times
+       paper with a pen to hold one end at the center.  Spin 25 times
        and count the number of successes.
 
-       \includegraphics[width=.3\linewidth]{../plots/spinnerCircle.png}
+       \includegraphics[width=4in, height = 4.2in]{../plots/spinnerCircle.png}
  % png("plots/spinnerCircle.png",height=400,width=400)
  % myValues <- seq(0, 2.01*pi, length = 100)
  % plot(cos(myValues),sin(myValues), type = "l", xlab = "", ylab = "", axes=FALSE, bty="n")
@@ -210,7 +195,7 @@ $(0.20, 1.00)$
 \vspace{-1cm}
 
   \item Now we'll use a web app to speed up the process.  Go to
-     \url{http://shiny.math.montana.edu/jimrc/IntroStatShinyApps/} and click
+     \url{https://jimrc.shinyapps.io/Sp-IntRoStats} and click
        \fbox{Enter / Describe Data} under the \fbox{One Categ} menu.
        Enter the counts to show how many Linzmayer got right and got
        wrong. (These should add up to 25, but neither is 25.)
@@ -223,10 +208,9 @@ $(0.20, 1.00)$
 {\it $\phat = 0.36$}
 \end{key}
 
-   \item Now from the \fbox{One Categ.} menu choose \fbox{Test}. and enter
-     the value from \ref{trueESP-p} as the True Proportion.   Run 5000 samples
-       and sketch the plot below.
-
+   \item Now from the \fbox{One Categ} menu choose \fbox{Test}. and enter
+     the value from \ref{trueESP-p} as the True Proportion.   Run 5000
+     or more samples  and sketch the plot below.
 \begin{students}
   \vspace{2cm}
 \end{students}
@@ -353,9 +337,20 @@ And finally: other reporting on Linzmayer suggests that he was
 cheating, rather than reading minds.
  \item 
   Use the remaining space for any questions or your own summary of the
-  lesson. 
+  lesson. \vfill
   
 \end{itemize}
+
+\noindent
+{\bf Assignment}
+\begin{itemize}
+\item D2Quiz 3 is the next assignment. Do it online. Recall, you can
+  save and keep working on it, but once you submit, it's gone.\\
+  We strongly encourage you to get help in the Math Learning Center.
+\item Watch video \# 6 before the next class.
+\item Read the next two pages.
+\end{itemize}
+
 
 
 
