@@ -1,2 +1,119 @@
 \def\theTopic{Reading 11}
 
+
+\begin{center}
+  {\large\bf Statistical Significance}
+\end{center}
+
+Disclaimer:  Most statisticians prefer to just report p-value as the
+``strength of evidence'' and let readers evaluate the evidence against
+$H_0$ for themselves.  Furthermore, if evidence from a study could be
+summarized with a confidence interval, then that is a good way to
+report results, too.  However, you will see results from many studies
+summarized as ``statistically significant''  or as ``not statistically
+significant'', so we need to talk about the meaning of those phrases.
+
+{\bf Statistical significance} means
+\begin{enumerate}
+\item that researchers decided to use a  cutoff level for their study,
+  typically 0.10 or 0.05 or 0.01, and
+\item the p-value for the study was smaller (stronger evidence) than
+  the chosen cutoff level.
+\item researchers rejected the null hypothesis at the given $\alpha$
+  level. 
+\end{enumerate}
+
+{\bf Significance level}, $\alpha$ is the chosen cutoff. The three
+values listed above are most commonly used, but there is no reason
+(other than an ingrained habit) that we could not use other levels.\\
+How does one choose a significance level?
+\begin{itemize}
+  \item If very strong evidence is required (lives are at stake, or
+    the null hypothesis has very strong support) then a small $\alpha$
+    like 0.01 would be used.
+  \item If we are just exploring a new area or the null hypothesis is
+    not something people believe in, then weak evidence would be all
+    that is needed to reject it, and we could use $\alpha = 0.10$,
+\end{itemize}
+ Note that people will have different opinions on the above.  That's
+ why we would rather let a reader decide how strong the evidence needs
+ to be.  In reports of results, we still want you to report the
+ p-value. 
+
+ {\bf Problems with fixed $\alpha$ significance testing}
+ \begin{itemize}
+ \item Suppose we decide to use $\alpha = 0.01$ and the p-value is
+   0.0103.  We then ``Fail to reject'' at our set $\alpha$ level.  But
+   someone else might repeat the study, get very similar results, and
+   a p-value of 0.0098 which is less than $\alpha$, so they reject
+   $H_0$.  If we just reported the p-value and let readers look at the
+   strength of evidence, we would be able to say that the studies
+   pretty much agree. With fixed level testing, we make quite
+   different conclusions from very similar results.  That is a disturbing {\bf
+     inconsistency}.
+ \item P-values are strongly related to {\bf sample size}. Whether we
+   ``reject'' or ``fail to reject'' depends as much on the sample size
+   as it does   on the true state of nature. \\
+   For example, the LEAP study of peanut allergies in the last
+   activity used sample sizes of 245 and 255 infants and we had a
+   p-value $< 0.0001$.  What if they had used one tenth the sample
+   size as here:\\
+\begin{tabular}[c]{|l|c|c|c|} \hline
+        &Peanuts & Avoiders & total \\ \hline
+Allergic&      0  &   4 &  4\\ \hline
+Not Allergic& 24  &  22 &46 \\ \hline
+Total &       24  &  26 & 50\\ \hline
+\end{tabular}\\
+   The proportions are almost the same, the difference in proportions
+   is  $-0.15$ but the p-value is 0.066.\\
+   Lessons: The researchers were smart to use a large sample
+   size. However, if there was only a little difference in the two
+   groups and they used a huge sample size, they would reject $p_1 =
+   p_2$ when the difference in proportions allergic is very
+   small. Which leads to our third point:
+ \item Obtaining ``Statistical significance'' does not tell us
+   anything about ``{\bf practical importance}''.  In common usage,
+   the word significance  means something like ``importance''. For
+   example, we talk about ``significant events'' in history. Consider
+   these examples: 
+   \begin{itemize}
+   \item YouTube carefully examines how people navigate their web
+     site.  Suppose they test two  web page designs (assigned at random) on 
+     large groups of randomly selected viewers and find that there is
+     a ``significant'' difference in mean time spent on their site
+     (between the two designs) of 0.56 seconds ($\alpha$ was set to
+     0.05). Is that an {\bf important}  difference?
+\begin{key}
+       \\ {\it It might be if it convinces advertisers to invest more
+         in YouTube ads}.
+\end{key}
+   \item  Many businesses use a call center to answer questions from
+     their customers.  They have to decide how many staff to have on
+     hand to answer questions during business hours.  If they have too
+     few people, wait times get long, and customers hang up without
+     getting to a support team member. Suppose they have
+     to decide between having 6 or 8 people and they do a test to
+     measure the proportion of individuals who hang up before getting
+     help. With 6 people the hangup proportion is 0.34 and with 8
+     people it is 0.33.  Because they gathered data on several
+     thousand customers, the p-value for the test is very small,
+     0.002 which is ``statistically significant'' at the $\alpha =
+     0.05$ level. is a difference of 1\% of practical importance?
+\begin{key}
+       \\ {\it I would think not -- that they should look for other
+         ways to improve service -- but it might seem important to the company.}
+\end{key}
+ 
+   \end{itemize}\vfill
+ \end{itemize}
+
+
+
+{\bf Important Points}
+\begin{itemize}
+\item Remember: smaller p-values provide stronger evidence against the
+  null.  When we set a {\bf significance level}, we reject $H_0$ for
+  p-values {\bf smaller} than $\alpha$.
+\item Still report p-values.
+\item Statistical significance $\neq$ practical importance.
+\end{itemize}
