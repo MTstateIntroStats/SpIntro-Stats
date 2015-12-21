@@ -6,22 +6,15 @@
 \end{center}
 \vspace{-.1in}
 
-Peanut allergies are so common in children that all parents have to
-closely watch the snacks they bring to an elementary classroom party. 
-Any hint of peanuts in a cookie can endanger some kids. A recent
-article suggests that peanut allergies can be prevented by giving
-babies (ages 4 to 10 months) some peanut protein every week until they
-are 5 years old. They randomly divided 500 infants into ``Eat
-peanuts'' and ``avoid peanuts'' groups and followed them to age five
-when each child was checked for peanut allergies.
+In the reading for today you learned about the LEAP study of peanut
+allergies. 
 
 The researchers want to answer this question:
 \begin{center}
   {\large\sf  Does feeding children peanut protein prevent peanut allergies?} 
 \end{center}
 {\bf
-Discuss the Following Questions	}
-
+Discuss the following questions	in your groups:}
 \begin{enumerate}
   \item  Is there a treatment condition in this study? (If so, what?)
 \begin{students}
@@ -56,7 +49,7 @@ Discuss the Following Questions	}
 Results: 5 of the 245 infants getting peanut protein,  (2\%)  showed
 allergic symptoms to peanuts, whereas in the peanut
 avoidance group, 35 (13.7\%) of 255 infants developed allergic
-symptoms to peanuts. (BTW, the two groups started with equal, somewhat
+symptoms to peanuts. (The two groups started with equal, somewhat
 larger numbers of infants, but there were dropouts who are assumed
 ignorable. )
 
@@ -70,7 +63,7 @@ ignorable. )
 Allergic    &   &   & \\ \hline
 Not Allergic&   &   & \\ \hline
 Total & & & \\ \hline
-    \end{tabular} \vspace{1cm}
+    \end{tabular} 
 }
 \end{students}
 \begin{key}
@@ -178,22 +171,16 @@ Total & 245  &  255 & 500\\ \hline
      treatment group than the control group?
    \end{itemize}
  
-   One way to examine these questions is to consider what you would
-   likely see if 
+   To examine these questions, think about what you would generally see if 
    40 of the 500 kids were going to develop the allergy (the number of
    infants  who did in our sample) regardless of whether they ate
-   peanuts or not. If that is the case, you would have expected, on
-   average, about 20 of those subjects to end up in each group
-   (the null model suggests this). 
+   peanuts or not. Under that assumption (the null), you would have expect, on
+   average, about 20 of those subjects to end up in each group. 
 
-   We will answer this question by using a web applet to conduct a
-   {\bf permutation} (or randomization) test which lets us see the
-   results one can get just due to variation in random
-   assignment. We'll operate under the null model assumption that the
-   control and peanut conditions have no effect on developing a peanut
-   allergy.  With two proportions, we use   $$H_0: p_1 = p_2$$
-
-   Note: hypotheses are always about parameters. Never use a ``hat''
+   \begin{center}
+     Next we will {\bf Write out the hypotheses}
+   \end{center}
+  Reminder: hypotheses are always about parameters. Never use a ``hat''
    on the $p$'s in the hypothesis.  As before, the direction of the
    alternative depends on what the research is intended to show: no
    difference (could go either way, so use $\neq$), less than, or
@@ -201,17 +188,8 @@ Total & 245  &  255 & 500\\ \hline
    subtracted from the other, because it will change the direction of
    the alternative.
  
-   The term ``permutation'' just means that we are mixing up, or
-   permuting, the group assignments.  In physical terms, it's
-   shuffling the cards and redealing them into two groups.  Because
-   this is a randomized experiment, it's also fine to call this a
-   ``randomization'' test.  We are looking at what might have happened
-   if treatments were equally effective, and we reassigned individuals
-   to (possibly different) groups.
-
  \begin{enumerate}
   \setcounter{enumi}{9}
- 
    \item  The null hypothesis is: $H_0:\  p_1 = p_2$  or $H_0:\  p_1 -
      p_2 = 0$ or $p_{treat} =   p_{control}$. Is the researcher's question looking
      for an increase, decrease, or change in either direction?  Fill
@@ -224,10 +202,22 @@ Total & 245  &  255 & 500\\ \hline
 \begin{key}
    $H_A:  p_{treat} < p_{control}$
 \end{key}     
+\end{enumerate}
 
-   Go to the  web page:
-   \url{http://shiny.math.montana.edu/jimrc/IntroStatShinyApps/}
-   and select ``Enter Data'' under  \underline{\sf 2 Categ}.
+   We will use a {\bf permutation} test to compute our strength of
+   evidence. ``Permutation''  just means that we are mixing up, or
+   permuting, the group assignments.  In physical terms, it's
+   shuffling the cards (40 ``allergy'' cards and 460 ``no allergy''
+   cards)  and redealing them into two groups (treatment and control).
+   Because  this is a randomized experiment, it's also fine to call this a
+   ``randomization'' test.  We are looking at what might have happened
+   if treatments were equally effective, and we reassigned individuals
+   to (possibly different) groups.
+ \begin{enumerate}
+  \setcounter{enumi}{10}
+   \item Go to the  web page:
+   \url{https://jimrc.shinyapps.io/Sp-IntRoStats}
+   and select \fbox{Enter Data} under  \fbox{\sf Two Categ}.
    Enter the numbers and labels from the table in \ref{PnutTable}.
    The proportions should agree with those above, but let's check:
    \begin{enumerate}
@@ -242,7 +232,7 @@ Total & 245  &  255 & 500\\ \hline
 \end{key}
 \item The difference in proportions between the two groups: 
 \begin{students}
-\vspace{2cm}
+\vspace{1cm}
 \end{students}
 
 \begin{key}
@@ -250,8 +240,7 @@ Total & 245  &  255 & 500\\ \hline
 \end{key}
 \end{enumerate}
 
-
-   \item  Click ``Test'' under ``2 categ.'', and generate  1000
+   \item  Click \fbox{Test} under \fbox{Two Categ},  generate  1000
      shuffles and sketch the plot below. 
 \begin{students}
 \vspace{4cm}
@@ -260,21 +249,6 @@ Total & 245  &  255 & 500\\ \hline
 \begin{key}
   \includegraphics[width=.6\linewidth]{../plots/peanutTest-1000.png}
 \end{key}
-
-% \item  If you click on a bar in the histogram, you should see a small
-%   dark rectangle, and the blue/green splits will change between
-%   bars. What does one rectangle in a bar represent?
-% \begin{students}
-% \vspace{3cm}
-% \end{students}
-
-% \begin{key}
-%   {\it      Each rectangle represents a single re--randomized trial in with the
-%      13 improved participants were randomly assigned to one of the
-%      two treatments.  The location of its bar gives the difference
-%      in the proportions of improved subjects in each group (dolphin therapy --
-%      control).  }
-% \end{key}
 
    \item  Where is the plot of the results centered (at which value)?
      Explain why this makes sense. 
@@ -302,10 +276,9 @@ Total & 245  &  255 & 500\\ \hline
   {\it  I got $0/10000 < 0.0001$}
 \end{key}
 
-       Go back to \fbox{Enter Data} and change labels slightly to clear
-       the plot and then  generate 
-       another 5000 random shuffles. How  much does the strength of
-       evidence change?
+       Go back to \fbox{Enter Data} and click \fbox{Use Data} to clear
+       the plot. Generate another 5000 random shuffles. How  much does
+       the strength of evidence change?
 \begin{students}
  \vspace{1cm}
 \end{students}
@@ -337,7 +310,7 @@ Total & 245  &  255 & 500\\ \hline
   {\it        With a p--value of 0.001, there is very  strong evidence to
       reject the null hypothesis.  We can conclude that in the
      group of infants from which these were drawn, eating peanut
-     protein as an infant caused a reduction in prevalence of peaut
+     protein as an infant caused a reduction in prevalence of peanut
      allergy as evidenced by a lower proportion
       of allergic kids in the treatment group over the
       control group. }
@@ -352,8 +325,7 @@ Total & 245  &  255 & 500\\ \hline
 \begin{key}
   {\it       With a p--value of 0.25, there is little to no evidence
       against the null hypothesis.  We cannot conclude that
-      swimming with dolphins is therapeutic for patients suffering
-      from depression.  }
+     the treatment prevents allergic reactions.  }
 \end{key}
 
 
@@ -361,36 +333,34 @@ Total & 245  &  255 & 500\\ \hline
     \item  A third study computed p--value to be 0.73. How would you
       report those results?   
 \begin{students}
-\vspace*{4cm}
+\vspace*{3cm}
 \end{students}
 
 \begin{key}
   {\it        With a p--value of 0.73, there is  no evidence
       against the null hypothesis.  We cannot conclude that
-      swimming with dolphins is therapeutic for patients suffering
-      from depression. }
+      the treatment is therapeutic for patients. }
 \end{key}
 
 
     \item \label{reportBullets} Write up  the pertinent
-      results from the analysis on your own paper. When reporting the
-      results of a permutation test, pertinent information from the
-      analysis that  needs to be included is: 
+      results from the analysis. When reporting the
+      results of a permutation test the following must be included:
       \begin{itemize}
       \item The type of test used in the analysis (including the
-        number of trials [shuffles]);
-      \item The null model assumed in the test;
-      \item The observed result based on the data;
+        number of trials [shuffles]);\vspace{2cm}
+      \item The null model assumed in the test;\vspace{2cm}
+      \item The observed result based on the data;\vspace{2cm}
       \item The p--value and strength of evidence of the test and your
-        conclusion; and
+        conclusion; and\vspace{2cm}
       \item The appropriate scope of inference based on the p--value
         and the study design.  Include:
         \begin{itemize}
         \item How were the subjects selected?  If they are a random
           sample from some population, then our inference goes back to
-          the population.
+          the population.\vspace{2cm}
         \item Were treatments assigned?  If treatments were assigned
-          at random, then we can state a causal conclusion.
+          at random, then we can state a causal conclusion.\vspace{2cm}
         \end{itemize}
       \end{itemize}
 \begin{key}
@@ -402,12 +372,12 @@ Total & 245  &  255 & 500\\ \hline
       allergies: 5 in the treatment group and 35  in the control
       group.  This gave an observed difference in
       proportion of allergic kids between the treatment and
-      control group of -0.117 (peanut proprotion minus control).  This
+      control group of -0.117 (peanut proportion minus control).  This
       resulted in a p--value of $< 0.0001$, which constitutes  strong
       evidence against the null hypothesis.  Since participants
       were randomly assigned to groups and are representative 
       of all infants in the UK, we can
-      conclude that in all UK babies, eatingpeanuts caused a lower
+      conclude that in all UK babies, attainment's caused a lower
       proportion of infants to develop a peanut allergy as compared to a
       control group.   
      }  
@@ -415,7 +385,7 @@ Total & 245  &  255 & 500\\ \hline
 
 \end{enumerate}
 
-\newpage
+
 \begin{center}
   {\bf Take Home Messages}
 \end{center}
@@ -436,8 +406,20 @@ Total & 245  &  255 & 500\\ \hline
     please ask.  You need to get this skills down -- the sooner the
     better. 
  \item 
- Any questions?
+ Any questions?\vfill
   \end{itemize}
 
+
+
+
+
+\noindent
+{\bf Assignment} \vspace{-.2in}
+\begin{itemize}
+\item D2Box 5 is the next assignment.
+    Turn it in as a pdf file in the Drop Box on D2L.
+ %%  We strongly encourage you to get help in the Math Learning Center.
+  \item Read the next two pages before your next class.
+\end{itemize}
 
 

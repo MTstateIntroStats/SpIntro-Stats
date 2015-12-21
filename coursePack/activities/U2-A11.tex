@@ -8,25 +8,26 @@
 
 We would like to know how much the ``typical'' MSU students spends on
 books each semester.  Is this a question we can answer by testing?
-NO!  We need an estimate, and as you now know, we like interval
+  We need an estimate, and as you now know, we like interval
 estimates because they include some information about uncertainty.
 
-So far, the tools we have for working with a mean have dealt with
-testing some pre-specified value, not estimating an unknown parameter.
+So far, the tools we have for working with a mean have allowed us to
+test a pre-specified value, not estimate an unknown parameter.
 We have a point estimate: a sample mean, $\xb$, but we don't know how
-variable it is. 
+variable it is because we don't know $\sigma$, the true standard
+deviation of the data points. 
 
 {\bf Problem}:\\
 We need to know the sampling distribution to know how far away our
 statistic might be from our parameter.  We know the sampling
 distribution of $ \xb$ is centered at the population mean, $\mu$, and
 we know some things about its spread and shape.   However, the sampling
-distribution  of $ \xb$ depends on the unknown parameter $\mu$. How
-can we estimate $\mu$? 
+distribution  of $\xb$ depends on the unknown parameters $\mu$ and $\sigma$. How
+can we estimate $\mu$?  
 
 
 {\bf Solution}:\\Use the ``Resampling'' or Bootstrap distribution as a
-substitute for the unknown sampling distribution. BUT:
+substitute for the unknown sampling distribution.
 \vspace{-.2in}
 \begin{center}
 	{\bf\sf	We only draw {\bf one} sample from the population!}
@@ -61,13 +62,14 @@ distribution.
    
 
 Go to  the applet:\\
-\url{http://shiny.math.montana.edu/jimrc/IntroStatShinyApps} and
-select \fbox{Bootstrap Demo}under the \fbox{One Quant} menu.
+\url{https://jimrc.shinyapps.io/Sp-IntRoStats} and
+select \fbox{Bootstrap Demo}under  \fbox{One Quant}.
 \vspace{-.2in}
 \begin{enumerate}
-  \item  The counts shown are all the values in the population, which
+  \item  The counts shown are all the values in the ``population'', which
     are amounts (in 10's of dollars) stat students in a prior semester
-    spent on textbooks.
+    spent on textbooks.  We will pretend that this is the entire
+    population in order to see how well our methods work.
     \begin{enumerate}
     \item  Click \fbox{Sample} and we'll get a random sample of size
       8 from this population.  The population then disappears because
@@ -106,6 +108,7 @@ select \fbox{Bootstrap Demo}under the \fbox{One Quant} menu.
     \item Get 8 cards from your instructor and write each of the 8 values in
       your sample on a card.  Create your own bootstrap resample to
       mimic what the computer does.  Which of these methods works?
+      (Circle one.)
       \begin{enumerate}
       \item Select one card at random, leave it out, and select
         another card.  Continue until you use all the cards.
@@ -116,7 +119,7 @@ select \fbox{Bootstrap Demo}under the \fbox{One Quant} menu.
       % Explain which technique copies what the computer does when it
       % collects one resample.
 \begin{students}
-        \vspace{2cm}        
+        \vspace{.2cm}        
 \end{students}
 \begin{key}
 \ \  \\
@@ -144,11 +147,11 @@ select \fbox{Bootstrap Demo}under the \fbox{One Quant} menu.
   \\{\it It takes  100 resamples, computes the mean of
     each, and plots the 100 resample means. }
 \end{key}
-  \item One of our favorite quiz/exam questions is ``What does one dot
+  \item A common quiz/exam question is ``What does one dot
     represent?''. Explain where the values came from and what
-    statistic was computed from them. 
+    statistic was computed to make one dot. 
 \begin{students}
-        \vspace{3cm}        
+        \vspace{2.5cm}        
 \end{students}
 \begin{key}
   \\{\it One dot is the mean of one resample which was found by
@@ -212,31 +215,57 @@ going from 95\% to 90\%  confidence 	intervals get shorter
 \item When we started, we saw the whole population of counts
     which has true mean  $\mu = 34.5$ (\$345).
     \begin{enumerate}
-    \item  Look back at all the intervals you wrote down.  Which ones
-      contain the true value?
+    \item  Look back at the 90\% interval you wrote down. Did it
+      contain the true value? Write ``Hit'' or ``Miss''.
 \begin{students}
-        \vspace{2cm}        
+        \vspace{1cm}        
 \end{students}
 \begin{key}
   {\it AWV. All of mine did.}
 \end{key}
 
-\item Click \fbox{Get New Sample}.  Compute a 90\%
-  confidence interval for the mean using 1000 bootstrap
-  iterations. Show the interval and write ``covered'' if it contains
-  34.5, ``missed'' if it does not.  Do \fbox{1000} again, write the
-  interval and ``missed'' or ``covered''.
+\item  We'll now pretend that we can grab new samples and we will
+  build two 90\% CI's from each as a check of consistency.
+ For each row of the table, click \fbox{Get New Sample} once, then
+ click \fbox{1000} to get a 90\% CI for $\mu$.  Record whether your
+ first interval covers 34.5 (Hits) or not (Misses). Click  \fbox{1000}
+ again, and write  ``missed'' or ``hit'' in the second column.\vspace{.5cm}\\
 \begin{students}
-        \vspace{2cm}\\        
+  \begin{tabular}{l|c|c|c|}
+   Click \fbox{New Sample} & \fbox{1000} Hit or Missed?&  \fbox{1000}
+   Hit or Missed?& Same?\\ 
+    \hline
+1   \ \ & \ \ & \ \ & \ \\ 
+   \ \ & \ \ & \ \ & \ \\   \hline
+2   \ \ & \ \ & \ \ & \ \\ 
+   \ \ & \ \ & \ \ & \ \\   \hline
+3   \ \ & \ \ & \ \ & \ \\ 
+   \ \ & \ \ & \ \ & \ \\   \hline
+4   \ \ & \ \ & \ \ & \  \\ 
+   \ \ & \ \ & \ \ & \ \\   \hline
+5   \ \ & \ \ & \ \ & \  \\ 
+   \ \ & \ \ & \ \ & \ \\   \hline
+ \end{tabular}
+
+  \begin{tabular}{l|c|c|c|}
+   Click \fbox{New Sample} & \fbox{1000} Hit or Missed?&  \fbox{1000}
+   Hit or Missed?& Same?\\ 
+    \hline
+6   \ \ & \ \ & \ \ & \  \\ 
+   \ \ & \ \ & \ \ & \ \\   \hline
+7   \ \ & \ \ & \ \ & \ \\ 
+   \ \ & \ \ & \ \ & \ \\   \hline
+8   \ \ & \ \ & \ \ & \ \\ 
+   \ \ & \ \ & \ \ & \ \\   \hline
+9   \ \ & \ \ & \ \ & \  \\ 
+   \ \ & \ \ & \ \ & \  \\   \hline
+10   \ \ & \ \ & \ \ & \  \\ 
+   \ \ & \ \ & \ \ & \  \\   \hline
+  \end{tabular}
 \end{students}
-\begin{key}
-  {\it AWV. Mine covered.}
-\end{key}
-   Repeat 8 more times to get a total of 10 samples with 2 intervals
-   for each.
-\begin{students}
-        \vspace{3cm} \\       
-\end{students}
+
+   In each line above put a check in the last column if the 2
+   intervals agreed (both hit or both missed). 
    Does coverage depend more on the sample or on the particular resample?
 
 \begin{students}
@@ -245,7 +274,8 @@ going from 95\% to 90\%  confidence 	intervals get shorter
 \begin{key}
  {\it The sample.  This is just like the simulation we did for
     proportions, but the method for computing the confidence interval
-    is different.}
+    is different.  We can get a ``good'' or ``bad'' sample, but given
+    the sample, the method is consistent.  }
 \end{key}
 \end{enumerate}
 \item With proportions we used $\widehat{p} \pm 2 SE$ as our
@@ -257,10 +287,10 @@ going from 95\% to 90\%  confidence 	intervals get shorter
   standard error of the resampled means as SD, so we use this as our
   SE.  Build 90, 95, and 99\% CI's using the $\xb \pm t^* SE$ method.
   Also write the bootstrap intervals to compare.\\
-  \begin{enumerate}
+  \begin{enumerate} 
   \item Compute the mean of your sample (from the 8 values, not the
     ``Mean'' printed) \\ $\xb =$ 
-\begin{key}
+\begin{key} 
  {\it AWV, mine is 24.125}
 \end{key}
 \item a 90\% CI for $\mu$ is (show work)
@@ -292,7 +322,7 @@ going from 95\% to 90\%  confidence 	intervals get shorter
   bootstrap percentile methods always wider? shifted? relative to the 
  $\xb \pm t^* SE$ intervals?
 \begin{students}
-        \vspace{1cm}        
+        \vspace{3cm}        
 \end{students}
 \begin{key}
   \\ {\it Bootstrap intervals are narrower.  There is a tendency for
@@ -336,7 +366,7 @@ Will smaller sample size change the width?
 
    Try it and record what happens to center and spread.  (Yes, it is
    important to write it down. It will show up on the exam.)
-   \vspace{4cm}
+   \vfill
 \end{enumerate}
 
 \begin{center}
@@ -360,7 +390,15 @@ Will smaller sample size change the width?
    two should agree well.  These data are skewed to the right, and the
    bootstrap percentile intervals are preferred.
  \item 
-  Use the remaining space for any questions or your own summary of the
-  lesson. 
+  Questions?  What is not clear?\vfill
   \end{itemize}
   
+
+\noindent
+{\bf Assignment} \vspace{-.2in}
+\begin{itemize}
+\item D2Quiz 5 is the next assignment.  Fill it in online.
+ %%  We strongly encourage you to get help in the Math Learning Center.
+\item Read the next two pages before your next class.
+\end{itemize}
+

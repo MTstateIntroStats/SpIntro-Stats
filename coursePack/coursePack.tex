@@ -3,7 +3,7 @@
 %%\usepackage[letterpaper]{geometry} 
 \usepackage{amsmath,amssymb}
  \usepackage{graphicx}
- \usepackage{pdfcomment}
+ %\usepackage{pdfcomment}
  \usepackage{ifthen, comment}
 % \usepackage{soul}
 \usepackage{natbib} 
@@ -41,6 +41,7 @@
 \newcommand{\hs}[1]{\hspace{#1in}}
 \newcommand\textstyleInternetlink[1]{\textcolor{blue}{#1}}
 \newcommand{\xb}{\overline{x}}
+\newcommand{\xbar}{\overline{x}}
 \newcommand{\phat}{\widehat{p}}
 
 %\fancyhead[RE]{\textit{ \nouppercase{\leftmark}} }
@@ -214,7 +215,7 @@
 
 \newpage
 
- \def\unitNum{2}
+ \def\unitNum{2} 
  \thispagestyle{empty}
  \vspace*{\fill}
  \begin{center}
@@ -228,7 +229,7 @@
    {\it \theTopic }\\
    {\it Unit \unitNum\   \ Page \thepage }
 }
-  \include{./readings/U2-R8}
+  \include{./readings/U2-R8}  %% 77-78 buff
   \newpage
  
 \fancyhead[LE,RO]{
@@ -242,7 +243,7 @@
    {\it \theTopic }\\
    {\it Unit \unitNum\   \ Page \thepage }
 }
-  \include{./readings/U2-R10}
+  \include{./readings/U2-R9}
   \newpage
 
 \fancyhead[LE,RO]{
@@ -255,7 +256,7 @@
    {\it \theTopic }\\
    {\it Unit \unitNum\   \ Page \thepage }
 }
-  \include{./readings/U2-R11}
+  \include{./readings/U2-R10}    %% comparative studies  2 pages
   \newpage
 
 \fancyhead[LE,RO]{
@@ -263,20 +264,20 @@
    {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
 }
  \include{./activities/U2-A12}%% Peanut Experiment 6 pgs
- \newpage
-\fancyhead[LE,RO]{
+ \newpage  
+\fancyhead[LE,RO]{ 
    {\it \theTopic }\\
-   {\it Unit \unitNum\   \ Page \thepage }
+   {\it Unit \unitNum\   \ Page \thepage } 
 }
-  \include{./readings/U2-R12}
+  \include{./readings/U2-R11}
   \newpage
 
-\fancyhead[LE,RO]{
+\fancyhead[LE,RO]{ 
    {\it \theTopic }\\
    {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
 }
 
- \include{./activities/U2-A13} %% Change to freed rats?  Wrong weight 5 pgs 
+ \include{./activities/U2-A13} %%  ` Wrong weight`  5 pgs 
  \newpage
 \fancyhead[LE,RO]{
    {\it \theTopic }\\
