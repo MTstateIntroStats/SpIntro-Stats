@@ -39,12 +39,10 @@ Discuss these situations and decide which error would be worse:\vspace{-.6cm}
   \vspace{1.5cm}
 \end{students}
 
-\item  A weather forecaster working at an airport in Indonesia on
-  December 28, 2014 had to decide if it was too dangerous
-   to allow Air Asia Flight 8501 to fly to
-  Singapore.  The flight was allowed, resulting in the deaths of all
-  162 people aboard.  Errors don't get much worse than that, but what
-  would the cost be of grounding a flight?  
+\item  An FAA weather forecaster has to decide if it is too dangerous
+   (due to storms or potential icing conditions) to allow planes to
+   take off.  What is the cost be of grounding a flight? What could
+   happen if a flight should have been kept on the ground, but wasn't?  
 \begin{students}
   \vspace{2.5cm}
 \end{students}
@@ -56,7 +54,7 @@ Discuss these situations and decide which error would be worse:\vspace{-.6cm}
   When would a  decision to open a store in Bozeman  be wrong?\\
   When would a decision to not open a store in Bozeman  be
   wrong?\\
-  Which is the worse error?  
+  What are the trade-offs?  
 \begin{students}
   \vspace{3cm}
 \end{students}
@@ -94,7 +92,9 @@ So $\alpha$ is the probability of making an error when $H_0$ is true.
 
 There is also a symbol for the probability of a Type II error,
 $\beta$, but it changes depending on which alternative parameter
-value is correct. 
+value is correct. Instead of focussing on the negative (error), we
+more often talk about the {\bf power} of a test to detect an effect
+which is really present.  Power = $1-\beta$.
 
 
 
@@ -134,7 +134,7 @@ Type II error is harder to control because it depends on these things:
 \item  Sample size.  P--values are strongly affected by sample
   size. With a big sample we can detect small differences.  With small
   samples, only coarse or obvious ones.
-\item  Significance level.  The fence, usually called $\alpha$ (alpha), is
+\item  Significance level.  The fence, or $\alpha$ (alpha), is
   usually set at .10, .05 or .01 with smaller values requiring
   stronger evidence before we reject the null hypothesis and thus
   lower probability of error.  
@@ -142,9 +142,9 @@ Type II error is harder to control because it depends on these things:
 
 
 Instead of limiting the probability of Type II error, researchers more
-often speak of keeping the power as large as possible.  Power is one
-minus the probability of Type II error.  Go to the Power Demo page:
-\url{http://shiny.math.montana.edu/jimrc/IntroStatShinyApps} and click
+often speak of keeping the power as large as possible.   Go to the
+Power Demo page: 
+\url{https://jimrc.shinyapps.io/Sp-IntRoStats} and click
 \fbox{Power Demo} under \fbox{One Quant}.
 \begin{students}
 \vspace{.5cm}
