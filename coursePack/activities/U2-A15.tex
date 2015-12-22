@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 \def\theTopic{Arsenic}
 \def\dayNum{15 }
 
@@ -40,10 +41,41 @@ poisoning?''
 \begin{enumerate}
 \item  \label{researchQs}Based on the description of the study, state the two research
   questions to be answered.
+=======
+\def\theTopic{Errors }
+\def\dayNum{15 }
+
+\begin{center}
+\vspace*{-.2in}
+{\bf {\large On Being Wrong 5\% of the Time}}\vspace{-.6cm}
+\end{center}
+
+
+Our confidence in a 95\% confidence interval comes from the fact that,
+in the long run, the technique works 95\% of the time to capture the
+unknown parameter.  This leads to an old cheap joke:
+
+{\sf Statisticians are people who require themselves to be wrong 5\%
+  of the time.}
+
+We hope that's not really true, but decision making leads to a dilemma:\\
+  If you want to never be wrong, you have to always put off decisions
+  and collect more data.
+
+Statistics allows us to make decisions based on partial data  while
+controlling our error rates.\\
+Discuss these situations and decide which error would be worse:\vspace{-.6cm}
+\begin{enumerate}
+\item A criminal jury will make an error if
+      they let a guilty defendant go free, or if
+      they convict an innocent defendant.
+     Which is worse? Why?
+>>>>>>> f4001662d4281dfbcc417e2cc1ec4f6d088d24a6
 \begin{students}
-  \vspace{2cm}
+  \vspace{1.5cm}
 \end{students}
 
+<<<<<<< HEAD
 \begin{key}
   {\it 
     \begin{enumerate}
@@ -60,10 +92,18 @@ poisoning?''
 
 \item  Which research question should be answered using a hypothesis
   test and which should be answered using a confidence interval? 
+=======
+\item The doctor gives patients a test designed to detect pancreatic
+  cancer (which is usually quite serious).  The test is wrong if:
+  it says a healthy patient has cancer (a false positive), or if
+  it says a patient with cancer is healthy (a false negative).  Which
+  is worse?  Why? 
+>>>>>>> f4001662d4281dfbcc417e2cc1ec4f6d088d24a6
 \begin{students}
-  \vspace{1cm}
+  \vspace{1.5cm}
 \end{students}
 
+<<<<<<< HEAD
 \begin{key}
   {\it The first should be answered with a CI because we are trying to
     estimate the parameter,  and the second with a test (is there evidence?)}
@@ -75,10 +115,19 @@ poisoning?''
   \setcounter{enumi}{2}
    \item  What is the variable in the study?  Is this variable quantitative
      or categorical?
+=======
+\item  A weather forecaster working at an airport in Indonesia on
+  December 28, 2014 had to decide if it was too dangerous
+   to allow Air Asia Flight 8501 to fly to
+  Singapore.  The flight was allowed, resulting in the deaths of all
+  162 people aboard.  Errors don't get much worse than that, but what
+  would the cost be of grounding a flight?  
+>>>>>>> f4001662d4281dfbcc417e2cc1ec4f6d088d24a6
 \begin{students}
-  \vspace{1cm}
+  \vspace{2.5cm}
 \end{students}
 
+<<<<<<< HEAD
 \begin{key}
   {\it Arsenic concentration in toenails (ppm), quantitative.}
 \end{key}
@@ -140,6 +189,54 @@ done confidence intervals for a single mean back in Activity 11.
 
 {\bf The First Research Question}: How high is the mean arsenic level
 for New Hampshire residents with a private well? 
+=======
+
+
+\item  Large chain stores are always looking for locations into which
+  they can expand -- perhaps into Bozeman. 
+  When would a  decision to open a store in Bozeman  be wrong?\\
+  When would a decision to not open a store in Bozeman  be
+  wrong?\\
+  Which is the worse error?  
+\begin{students}
+  \vspace{3cm}
+\end{students}
+
+\end{enumerate}
+
+{\bf Two Types of Error. }
+
+Definitions:\vspace{-.6cm}
+\begin{itemize}
+  \item To reject $H_0$ when it is true is called a Type I error.
+  \item To fail to reject $H_0$ when it is false is called a Type II error.
+\vspace{-.6cm}
+\end{itemize}
+To remember which is which: we start a hypothesis test by assuming
+$H_0$ is true, so Type I goes with $H_0$ being true. 
+
+This table also helps us stay organized: \hfill
+\begin{tabular}{|l|c|c|}\hline
+   & \multicolumn{2}{|c|}{Decision:} \\
+$H_0$ is:  & Reject $H_0$ & Do not reject $H_0$\\\hline
+true & {\em Type I Error} & Correct  \\ \hline
+false& Correct & {\em Type II error}   \\ \hline\hline
+\end{tabular}
+
+
+
+{\bf Which is worse?}
+
+The setup for hypothesis testing assumes that we really need to
+control the rate of Type I error.  We can do this by setting our
+ significance level, $\alpha$.  If, for example, $\alpha = 0.01$, then
+ when we reject $H_0$ we are making an error less than 1\% of the time.
+So $\alpha$ is the probability of making an error when $H_0$ is true.
+
+There is also a symbol for the probability of a Type II error,
+$\beta$, but it changes depending on which alternative parameter
+value is correct. 
+>>>>>>> f4001662d4281dfbcc417e2cc1ec4f6d088d24a6
 
 \begin{enumerate}
  \setcounter{enumi}{8}
@@ -153,6 +250,7 @@ for New Hampshire residents with a private well?
     compare it to some value.}
 \end{key}
 
+<<<<<<< HEAD
 \item  Explain how you can use a deck of 19 cards to create the
   bootstrap distribution. (Go back to Activity 11 if you don't remember.)
 \begin{students}
@@ -232,11 +330,56 @@ the context of the problem.
 \begin{students}
   \vspace{1cm}
 \end{students}
+=======
+
+\begin{center}
+  {\bf Justice System and Errors }
+\end{center}
+
+Refer to this reading about the justice system:\\
+\url{http://www.intuitor.com/statistics/T1T2Errors.html}  
+
+In both the justice system and in statistics, we can make errors. In
+statistics the only way to avoid making errors is to not state any
+conclusion without measuring or polling the entire population.  That's
+expensive and time consuming, so we instead try to control the chances
+of making an error.  
+ 
+
+For a scientist, committing a Type I error means we would report a
+big discovery when in fact, nothing is going on. (How embarrassing!)
+This is deemed more critical than a Type II error, which happens if
+the scientist does a research project and finds no ``effect'' when, in
+fact, there is one. 
+
+
+Type II error is harder to control because it depends on these things:
+\vspace{-.2cm}
+\begin{itemize}
+\item  The null hypothesis has to be wrong, but it could be wrong just
+  by a small amount or by a large amount.  For example if 
+   we did not reject the null hypothesis that treatment and
+  control  were equally effective,  we could be making a type II
+  error.  If in fact, if there was a small difference, it would be
+  hard to detect, and if the treatment was far better, it would
+  be easy to detect.  This is called the effect size, which is
+  [difference between null model mean and an alternative mean] divided
+  by standard error.
+\item  Sample size.  P--values are strongly affected by sample
+  size. With a big sample we can detect small differences.  With small
+  samples, only coarse or obvious ones.
+\item  Significance level.  The fence, usually called $\alpha$ (alpha), is
+  usually set at .10, .05 or .01 with smaller values requiring
+  stronger evidence before we reject the null hypothesis and thus
+  lower probability of error.  
+\end{itemize}
+>>>>>>> f4001662d4281dfbcc417e2cc1ec4f6d088d24a6
 
 \begin{key}
   {\it $ 0.272 \pm 2.11(0.053) = (0.16, 0.38)$ ppm}
 \end{key}
 
+<<<<<<< HEAD
 \item  \label{percentile95} Create a 95\% confidence interval using
   the bootstrap   Percentile Method.
 \begin{students}
@@ -256,9 +399,33 @@ the context of the problem.
 \begin{key}
   {\it Pretty close, the percentile one is a bit higher on both ends
     than the 2.1SE interval.}
+=======
+Instead of limiting the probability of Type II error, researchers more
+often speak of keeping the power as large as possible.  Power is one
+minus the probability of Type II error.  Go to the Power Demo page:
+\url{http://shiny.math.montana.edu/jimrc/IntroStatShinyApps} and click
+\fbox{Power Demo} under \fbox{One Quant}.
+\begin{students}
+\vspace{.5cm}
+\end{students}
+
+
+\begin{enumerate}
+  \setcounter{enumi}{4}
+  \item  Set Sample size to 8, SD to 2, Alternative Mean to 2, and
+    significance level to 0.01. What is the power?
+\begin{students}
+ \vspace{1cm} %% 
+\end{students}
+
+\begin{key}
+  {\it 0.484 }
+>>>>>>> f4001662d4281dfbcc417e2cc1ec4f6d088d24a6
 \end{key}
 
+  
 
+<<<<<<< HEAD
 \item \label{percentile90}Would you expect a 90\% confidence interval
   to be wider or narrower?  Explain, then give a 90\% (percentile)
   confidence interval.
@@ -280,11 +447,33 @@ the context of the problem.
   {\it We are 90\% confident the true average arsenic level in
     toenails for new Hampshire residents  with a private well is
     between 0.191 and 0.365 ppm. }
+=======
+    Increase sample size until you get power just bigger than 0.80.
+    How large a sample is needed?
+\begin{students}
+\vspace{1cm} %% 
+\end{students}
+
+\begin{key}
+  {\it 13 }
+\end{key}
+
+
+  \item  \label{ss8a}  Return to sample size 8. Adjust SD to get power just over
+    0.80. Do you make it larger or smaller?  What value worked? 
+\begin{students}
+ \vspace{1cm} %% 
+\end{students}
+
+\begin{key}
+  {\it 0.484  Smaller, down to 1.4}
+>>>>>>> f4001662d4281dfbcc417e2cc1ec4f6d088d24a6
 \end{key}
 \end{enumerate}
 
 
 
+<<<<<<< HEAD
 {\bf The Second Research Question}: Is the mean arsenic level
 for New Hampshire residents with a private well above the 0.15 threshold? 
 
@@ -295,6 +484,12 @@ hypotheses also write the null and alternative in notation.\\
 $H_0:$ 
 \begin{students}
   \vspace{1cm}
+=======
+
+    What is your effect size?
+\begin{students}
+\vspace{1cm} %% 
+>>>>>>> f4001662d4281dfbcc417e2cc1ec4f6d088d24a6
 \end{students}
 \begin{key}
   {\it   $ \mu = 0.15$:  The water is, on average safe, so we've just
@@ -306,6 +501,7 @@ $H_a:$
   \vspace{1cm}
 \end{students}
 \begin{key}
+<<<<<<< HEAD
   {\it  $ \mu > 0.15$  The water is, on average, dangerously high in arsenic.}
 \end{key}
 
@@ -367,12 +563,46 @@ null, $\mu = 0.15$.
 
 \begin{key}
   {\it 0.272 – 0.15 = 0.122 above the mean}
+=======
+  {\it $2 - 0 = 2/1.4 = 1.429$}
+\end{key}
+
+  \item \label{ss8b}  Return to SD = 2.  Change Alternative Mean to get power just
+    over 0.80.  Did you make it larger or smaller?  What value did you
+    settle on?
+\begin{students}
+ \vspace{1cm} %% 
+\end{students}
+
+\begin{key}
+  {\it Larger, 2.9 }
+\end{key}
+
+
+    What is your effect size?
+\begin{students}
+ \vspace{1cm} %% 
+\end{students}
+
+\begin{key}
+  {\it $(2.9 - 0)/2 = 2.9/2 = 1.45$}
+\end{key}
+
+  \item   How do the effect sizes in \ref{ss8a} and \ref{ss8b} compare?  
+\begin{students}
+ \vspace{1cm} %% 
+\end{students}
+
+\begin{key}
+  {\it Larger effect  size in the latter. }
+>>>>>>> f4001662d4281dfbcc417e2cc1ec4f6d088d24a6
 \end{key}
 \item We need to shift the original data so that is it centered on the null
       value. 
       Subtract the value from (b) from each of the data numbers to
       get:
 
+<<<<<<< HEAD
 \begin{center}
 \begin{tabular}{|r|r|r|r|r|r|r|r|r|r|} \hline
 -0.003 &-0.004 &-0.023 &-0.004 &0.153 &0.236 &-0.042 &0.036 &0.188 &-0.017
@@ -461,9 +691,74 @@ the plot of the randomization distribution below
  Where is the distribution centered?  Why does that make sense?
 \begin{students}
   \vspace{1cm}
+=======
+
+
+    How do SD and Alternative Mean work together to determine power? 
+\begin{students}
+ \vspace{2cm}
 \end{students}
 
 \begin{key}
+  {\it     Larger effect for same SD means more power, lower SD for same
+    effect means more power.  In general, larger effect and lower
+    SD means more power. }
+\end{key}
+
+
+  \item  Change significance level to 0.05.  What happens to power?
+\begin{students}
+ \vspace{1cm} 
+\end{students}
+
+\begin{key}
+  {\it  .971}
+\end{key}
+
+
+    Change it to 0.10. What is the power? 
+\begin{students}
+ \vspace{1cm}%% 
+\end{students}
+
+\begin{key}
+  {\it .992}
+\end{key}
+
+  \item    In which direction does power change when we decrease the
+    significance level?  
+\begin{students}
+ \vspace{3cm}
+\end{students}
+
+\begin{key}
+  {\it     It would decrease (power and significance level change in the
+    same direction). }
+\end{key}
+
+
+  \item   Suppose that we are planning to do a study of how energy
+    drinks effect RBAN scores similar to the study we read about in
+    Activity 14.  From previous data, we have an estimate of standard
+    deviation of 3.8. We plan to use a significance level of $\alpha =
+    .05$, and want to be able to detect an increase in mean RBAN score
+    of 2 with 90\% power.   How large must our sample size be?
+\begin{students}
+ \vspace{1cm} %%
+\end{students}
+
+\begin{key}
+  {\it  33}
+\end{key}
+
+
+      If we choose $\alpha = .01$, how large a sample is needed?
+\begin{students}
+ \vspace{1cm}
+>>>>>>> f4001662d4281dfbcc417e2cc1ec4f6d088d24a6
+\end{students}
+\begin{key}
+<<<<<<< HEAD
   {\it Again, centered at 0.15, because this is the null value. }
 \end{key}
 
@@ -481,6 +776,23 @@ alone if the ground water in New Hampshire is not hazardous.
 \begin{key}
   {\it Pretty fair in the right tail.  Appears unlikely to occur under
     the null hypothesis. } 
+=======
+\ \ \   {\it 50}
+\end{key}
+
+  \item  Now suppose that we are using a memory test used to study
+    sleep deprivation.  Historical data 
+    provides an estimate of SD = 13.  We want to use $\alpha = .05$ and
+    need to detect an decrease in mean score (when people are sleep
+    deprived) of 6 with 80\% power.  
+    How large a sample is needed? 
+\begin{students}
+ \vspace{1cm} %%
+\end{students}
+
+\begin{key}
+  {\it  31}
+>>>>>>> f4001662d4281dfbcc417e2cc1ec4f6d088d24a6
 \end{key}
 
 \item \label{pval13}Just how unlikely is the observed result?  Calculate your
@@ -493,6 +805,7 @@ alone if the ground water in New Hampshire is not hazardous.
   {\it Right tail p-value = 0.016}
 \end{key}
 
+<<<<<<< HEAD
 
  How many  resamples had a mean at least as extreme as the
  observed result?  
@@ -514,8 +827,44 @@ alone if the ground water in New Hampshire is not hazardous.
 \begin{key}
   {\it p-value = 0.016, which is strong to very strong evidence
     against the null.}
-\end{key}
+=======
+    If we want to limit the chance of Type II error to 10\% or less,
+    how large a sample size is needed? 
+\begin{students}
+ \vspace{1cm}\\
+\end{students}
 
+\begin{key}
+  {\it  Type II = 1--power so we want more than 90\% power.  Need 43
+      people. }
+\end{key}
+\item Suppose we do another study on energy drinks with alcohol using
+  Control and REDA.  This time we test hand-eye coordination using
+  $H_0:\ \mu_{control} = \mu_{REDA}$ versus alternative  $H_a:\
+  \mu_{control} > \mu_{REDA}$.
+  \begin{enumerate}
+  \item What would be a Type I error in this context? 
+\begin{students}
+ \vspace{1cm}\\
+\end{students}
+
+\begin{key}
+  {\it   To conclude that there is a difference in mean coordination between the
+    two treatments when, in fact, REDA has no effect on coordination scores. }
+\end{key}
+  \item What would be a Type II error in this context? 
+\begin{students}
+ \vspace{1cm}\\
+\end{students}
+
+\begin{key}
+  {\it  To fail to find a difference in mean coordination between the
+    two treatments when, in fact, REDA lowers coordination scores. }
+>>>>>>> f4001662d4281dfbcc417e2cc1ec4f6d088d24a6
+\end{key}
+  \end{enumerate}
+
+<<<<<<< HEAD
 
 
 {\bf Step 5: Formulate conclusions.}
@@ -539,6 +888,10 @@ alone if the ground water in New Hampshire is not hazardous.
 \begin{students}
   \vspace{4cm}
 \end{students}
+=======
+\end{enumerate}
+
+>>>>>>> f4001662d4281dfbcc417e2cc1ec4f6d088d24a6
 
 \begin{key}
   {\it Our evidence does not extend to all NH residents drinking from
@@ -550,10 +903,15 @@ alone if the ground water in New Hampshire is not hazardous.
 \end{enumerate}
 
 \begin{center}
+<<<<<<< HEAD
   {\bf Take Home Messages}\vspace{-.1in}
+=======
+  {\bf Take Home Message} \vspace{-.6cm}
+>>>>>>> f4001662d4281dfbcc417e2cc1ec4f6d088d24a6
 \end{center}
 
 \begin{itemize}
+<<<<<<< HEAD
 \item We first reviewed building a CI for a single mean.
 \item You need to know when to discuss means versus proportions.  If
   the response has two categories, then we deal with proportions.  If
@@ -582,3 +940,23 @@ alone if the ground water in New Hampshire is not hazardous.
   the Review Table.
 \item Read the next two pages before your next class.
 \end{itemize}
+=======
+  \item Errors happen.  Use of statistics does not prevent all errors,
+    but it does limit them to a level we can tolerate. We have labels
+    for two types of error.
+  \item The talk about probability of  error is based on the sampling
+    distribution assuming random assignment of treatments or random
+    sampling. It's really a ``best case'' scenario, because there
+    could be other sources of error we have not considered.  For
+    example, we could have not sampled from some part of the
+    population, or we could have errors in our measuring tools.
+  \item If you are designing a study, you might need to consult a
+    statistician to help determine how large a sample size is
+    needed. You'll need to decide what $\alpha$ to use, what the
+    underlying variation is ($\sigma$), and how large a difference you
+    need to detect with a certain level of power.
+ \item 
+  Use the remaining space for any questions or your own summary of the
+  lesson. 
+\end{itemize}
+>>>>>>> f4001662d4281dfbcc417e2cc1ec4f6d088d24a6
