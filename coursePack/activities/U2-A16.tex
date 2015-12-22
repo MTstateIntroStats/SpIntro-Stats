@@ -1,5 +1,5 @@
 \def\theTopic{Errors }
-\def\dayNum{15 }
+\def\dayNum{16 }
 
 \begin{center}
 \vspace*{-.2in}
@@ -92,18 +92,17 @@ So $\alpha$ is the probability of making an error when $H_0$ is true.
 
 There is also a symbol for the probability of a Type II error,
 $\beta$, but it changes depending on which alternative parameter
-value is correct. Instead of focussing on the negative (error), we
+value is correct. Instead of focusing on the negative (error), we
 more often talk about the {\bf power} of a test to detect an effect
-which is really present.  Power = $1-\beta$.
+which is really present.  Power = $1-\beta$ is the probability of
+rejecting $H_0$ when it is false (that's a good thing, so we want
+power to be high). 
 
 
 
 \begin{center}
   {\bf Justice System and Errors }
 \end{center}
-
-Refer to this reading about the justice system:\\
-\url{http://www.intuitor.com/statistics/T1T2Errors.html}  
 
 In both the justice system and in statistics, we can make errors. In
 statistics the only way to avoid making errors is to not state any
@@ -112,16 +111,25 @@ expensive and time consuming, so we instead try to control the chances
 of making an error.  
  
 
-For a scientist, committing a Type I error means we would report a
+For a scientist, committing a Type I error means we could report a
 big discovery when in fact, nothing is going on. (How embarrassing!)
-This is deemed more critical than a Type II error, which happens if
+This is considered to be more critical than a Type II error, which happens if
 the scientist does a research project and finds no ``effect'' when, in
-fact, there is one. 
+fact, there is one. Type I error rate is controlled by setting
+$\alpha$, the significance level, and only rejecting $H_0$ when the
+p-value is less than $\alpha$. 
 
 
 Type II error is harder to control because it depends on these things:
 \vspace{-.2cm}
 \begin{itemize}
+\item  Sample size.  P--values are strongly affected by sample
+  size. With a big sample we can detect small differences.  With small
+  samples, only coarse or obvious ones.
+\item  Significance level.  The fence, or $\alpha$ (alpha), is
+  usually set at .10, .05 or .01 with smaller values requiring
+  stronger evidence before we reject the null hypothesis and thus
+  lower probability of error.  
 \item  The null hypothesis has to be wrong, but it could be wrong just
   by a small amount or by a large amount.  For example if 
    we did not reject the null hypothesis that treatment and
@@ -131,104 +139,135 @@ Type II error is harder to control because it depends on these things:
   be easy to detect.  This is called the effect size, which is
   [difference between null model mean and an alternative mean] divided
   by standard error.
-\item  Sample size.  P--values are strongly affected by sample
-  size. With a big sample we can detect small differences.  With small
-  samples, only coarse or obvious ones.
-\item  Significance level.  The fence, or $\alpha$ (alpha), is
-  usually set at .10, .05 or .01 with smaller values requiring
-  stronger evidence before we reject the null hypothesis and thus
-  lower probability of error.  
 \end{itemize}
 
 
-Instead of limiting the probability of Type II error, researchers more
-often speak of keeping the power as large as possible.   Go to the
-Power Demo page: 
+The Power Demo web app lets us try different values to see what size
+power we get.  Go to 
 \url{https://jimrc.shinyapps.io/Sp-IntRoStats} and click
 \fbox{Power Demo} under \fbox{One Quant}.
-\begin{students}
-\vspace{.5cm}
-\end{students}
 
-
+\begin{center}
+  {\bf Try different sample sizes.}
+\end{center}
 \begin{enumerate}
   \setcounter{enumi}{4}
-  \item  Set Sample size to 8, SD to 2, Alternative Mean to 2, and
-    significance level to 0.01. What is the power?
+  \item  Set SD to 2, Alternative Mean to 1.5, and
+    Significance Level to 0.01. Find the power and the effect size for
+    each sample size:\\ 
 \begin{students}
- \vspace{1cm} %% 
+  \begin{tabular}{ |l|r|r|}\hline
+    n & power& effect size\\ \hline
+    {\large 4} &&\\ \hline
+    {\large 8} &&\\ \hline
+    {\large 16} &&\\ \hline
+    {\large 32} &&\\ \hline
+    {\large 48} &&\\ \hline
+  \end{tabular}
 \end{students}
 
 \begin{key}
-  {\it 0.484 }
+  \begin{tabular}{ |l|r|r|}\hline
+    n & power& effect size\\ \hline
+     4 &0.085& 0.75\\ \hline
+     8 &0.274& 0.75\\ \hline
+     16 &0.656& 0.75\\ \hline
+     32 &0.958 &0.75\\ \hline
+     48 &0.997 &0.75\\ \hline
+  \end{tabular}
 \end{key}
-
-  
-
-    Increase sample size until you get power just bigger than 0.80.
-    How large a sample is needed?
+\item      What happens to power as you increase sample size? Explain why.
 \begin{students}
-\vspace{1cm} %% 
+\vspace{2cm} %% 
 \end{students}
 
 \begin{key}
-  {\it 13 }
+  {\it It appears that the distribution under the null and the
+    alternative mean get further apart.  In fact, variance decreases
+    as sample size increases. }
 \end{key}
 
+\begin{center}
+  {\bf Try different standard deviations.}
+\end{center}
 
-  \item  \label{ss8a}  Return to sample size 8. Adjust SD to get power just over
-    0.80. Do you make it larger or smaller?  What value worked? 
+  \item  Set sample size to 16, Alternative Mean to 1.5, and
+    Significance Level to 0.01. Find the power and the effect size for
+    each Standard Deviation (SD). This SD is the spread of individual
+    data points within our sample.\\ 
 \begin{students}
- \vspace{1cm} %% 
+  \begin{tabular}{ |l|r|r|}\hline
+    SD & power& effect size\\ \hline
+    {\large 0.4} && \\ \hline
+    {\large 1} &&\\ \hline
+    {\large 2} &&\\ \hline
+    {\large 3} &&\\ \hline
+    {\large 4} &&\\ \hline
+  \end{tabular}
 \end{students}
 
 \begin{key}
-  {\it 0.484  Smaller, down to 1.4}
+  \begin{tabular}{ |l|r|r|}\hline
+     SD & power& effect size\\ \hline
+    {\large 0.4}&1.00& 3.75\\ \hline
+    {\large 1}  &0.999&1.5\\ \hline
+    {\large 1.5}&0.856&0.938\\ \hline
+    {\large 2}  &0.656&0.75\\ \hline
+    {\large 3}  &0.307&0.5\\ \hline
+  \end{tabular}
 \end{key}
-
-
-
-    What is your effect size?
+\item      What happens to power as you increase standard deviation? Explain why.
 \begin{students}
-\vspace{1cm} %% 
+\vspace{2cm} %% 
 \end{students}
 
 \begin{key}
-  {\it $2 - 0 = 2/1.4 = 1.429$}
+  {\it It appears that the distribution under the null and the
+    alternative mean get closer together.  In fact, variance increases
+    as SD increases. }
 \end{key}
 
-  \item \label{ss8b}  Return to SD = 2.  Change Alternative Mean to get power just
-    over 0.80.  Did you make it larger or smaller?  What value did you
-    settle on?
+
+\begin{center}
+  {\bf Try different alternative means.}
+\end{center}
+
+  \item  Set sample size to 16, SD to 2, and
+    Significance Level to 0.01. Find the power and the effect size for
+    each Alternative Mean.\\ 
 \begin{students}
- \vspace{1cm} %% 
+  \begin{tabular}{ |l|r|r|}\hline
+    Alternative Mean & power& effect size\\ \hline
+    {\large 0.4} && \\ \hline
+    {\large 0.8} &&\\ \hline
+    {\large 1.2} &&\\ \hline
+    {\large 1.6} &&\\ \hline
+    {\large 2.4} &&\\ \hline
+  \end{tabular}
 \end{students}
 
 \begin{key}
-  {\it Larger, 2.9 }
+  \begin{tabular}{ |l|r|r|}\hline
+     Alt. Mean & power& effect size\\ \hline
+    {\large 0.4} &0.079& 0.25\\ \hline
+    {\large 0.8} &0.307&0.5\\ \hline
+    {\large 1.2}&0.656 &0.75\\ \hline
+    {\large 1.6}&0.903 &1.00\\ \hline
+    {\large 2.4}&0.999 &1.5\\ \hline
+  \end{tabular}
 \end{key}
-
-
-    What is your effect size?
+\item      What happens to power as you increase the alternative mean? Explain why.
 \begin{students}
- \vspace{1cm} %% 
+\vspace{2cm} %% 
 \end{students}
 
 \begin{key}
-  {\it $(2.9 - 0)/2 = 2.9/2 = 1.45$}
+  {\it As the alternative mean increases, it gets easier to
+    distinguish the two means, and hence easier to reject $H_0$ which
+    implies greater power.  }
 \end{key}
 
-  \item   How do the effect sizes in \ref{ss8a} and \ref{ss8b} compare?  
-\begin{students}
- \vspace{1cm} %% 
-\end{students}
-
-\begin{key}
-  {\it Larger effect  size in the latter. }
-\end{key}
-
-
-
+\item Look at the effect sizes in the last two tables.
     How do SD and Alternative Mean work together to determine power? 
 \begin{students}
  \vspace{2cm}
@@ -237,41 +276,54 @@ Power Demo page:
 \begin{key}
   {\it     Larger effect for same SD means more power, lower SD for same
     effect means more power.  In general, larger effect and lower
-    SD means more power. }
+    SD means more power. A given effect size has the same power (for
+    fixed $n$) no matter what SD and Alternative Mean we have.}
 \end{key}
 
 
-  \item  Change significance level to 0.05.  What happens to power?
-\begin{students}
- \vspace{1cm} 
+\begin{center}
+  {\bf Try different significance levels.}
+\end{center}
+
+  \item  Set sample size to 16, SD to 3, and
+    Alternative mean to 1. Find the power and the effect size for
+    each significance level ($\alpha$).\\ 
+\begin{students}\hline
+  \begin{tabular}{ |l|r|r|}
+    $\alpha$ & power& effect size\\ \hline
+    {\large 0.01} && \\ \hline
+    {\large 0.03} &&\\ \hline
+    {\large 0.05} &&\\ \hline
+    {\large 0.07} &&\\ \hline
+    {\large 0.10} &&\\ \hline
+  \end{tabular}
 \end{students}
 
 \begin{key}
-  {\it  .971}
+  \begin{tabular}{ |l|r|r|}\hline
+    $\alpha$ & power& effect size\\ \hline
+    {\large 0.01}&0.54 & 0.667\\ \hline
+    {\large 0.03}&0.734 &0.667\\ \hline
+    {\large 0.05}&0.816 &0.667\\ \hline
+    {\large 0.07}&0.862 &0.667\\ \hline
+    {\large 0.10}&0.905 &0.667\\ \hline
+  \end{tabular}
 \end{key}
 
-
-    Change it to 0.10. What is the power? 
-\begin{students}
- \vspace{1cm}%% 
-\end{students}
-
-\begin{key}
-  {\it .992}
-\end{key}
-
-  \item    In which direction does power change when we decrease the
+  \item    In which direction does power change when we increase the
     significance level?  
 \begin{students}
  \vspace{3cm}
 \end{students}
 
 \begin{key}
-  {\it     It would decrease (power and significance level change in the
+  {\it     It would increase (power and significance level change in the
     same direction). }
 \end{key}
 
-
+\begin{center}
+  {\bf Planning a new study}
+\end{center}
   \item   Suppose that we are planning to do a study of how energy
     drinks effect RBAN scores similar to the study we read about in
     Activity 14.  From previous data, we have an estimate of standard
@@ -327,7 +379,7 @@ Power Demo page:
   \begin{enumerate}
   \item What would be a Type I error in this context? 
 \begin{students}
- \vspace{1cm}\\
+ \vspace{3cm}\\
 \end{students}
 
 \begin{key}
@@ -336,7 +388,7 @@ Power Demo page:
 \end{key}
   \item What would be a Type II error in this context? 
 \begin{students}
- \vspace{1cm}\\
+ \vspace{5cm}\\
 \end{students}
 
 \begin{key}
@@ -367,7 +419,16 @@ Power Demo page:
     underlying variation is ($\sigma$), and how large a difference you
     need to detect with a certain level of power.
  \item 
-  Use the remaining space for any questions or your own summary of the
-  lesson. 
-\end{itemize}
+  Questions? Summarize the  lesson. 
+\end{itemize}\vfill
 
+
+
+\noindent
+{\bf Assignment} \vspace{-.2in}
+\begin{itemize}
+\item D2Box 7 is the next assignment.
+    Turn it in as a pdf file in the Drop Box on D2L.
+ %%  We strongly encourage you to get help in the Math Learning Center.
+\item Read the next two pages before your next class.
+\end{itemize}

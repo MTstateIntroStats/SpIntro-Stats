@@ -66,96 +66,33 @@ describe them with statistics.\vspace{-.5cm}
   $\beta_0$ and $\beta_1$, and also to the left side to say we have an
   estimated response, $\hat{y}$.
   $$ \hat{y} = \hat{\beta}_0 + \hat{\beta}_1 x$$
-\item Take a guess at the  slopes for the two plots above.
+\item Estimate the  slopes for the two plots above.\\
+     Hint: For each plot take a nice range of ages on the x axis, say
+    from 20 to 40, and guess how much the line changes from the lower
+    $x$ value to the upper one.  The change in $y$ over change in $x$
+    gives the slope estimate.
 \begin{students}
  \vspace{2cm}      
 \end{students}
 
 \begin{key}
-  {\it Women: less than one -- perhaps .75?  Men: slightly bigger than
-    zero, like 1/30?  }
+  {\it Women: as x goes from 20 to 45, I'd guess y goes from 25 to 40,
+    so slope is roughly 15/25 = .6\\
+        Men: going from 20 to 50 might raise the $y$ value by 2 so
+        slope estimate could be 2/30 = 0.067  }
 \end{key}
 
-  \item {\bf Correlation} measures the strength and direction of a {\bf
-  linear} relationship between two quantitative variables. It is a
-unit-less number between -1 and 1 with zero meaning ``uncorrelated'' and
-1 or -1 meaning perfect correlation -- points fall right on a
-line. The sample correlation is called $r$, and the true correlation
-is $\rho$, the Greek letter ``rho''. 
- The sign  of the correlation tells us if the one variable
- increases as the other does (positive) or decreases (negative).
-
-   Go to  \url{http://www.tylervigen.com/ } and find a
-    ``spurious'' correlation which has correlation coefficient, $r$ less
-    than -0.90 and one that has $r > 0.99$.  Here are the two
-    variables plotted without year ( a lurking variable).\\
-\includegraphics[width=\linewidth]{../plots/spuriousCorr.png}
-    The point here is that if you search through lots of variables,
-    you can find pairs that increase in the same way, or oppositely.
-
-    Just to show you found the site, what variables are in the first
-    plot, and what is their correlation?
+\item Interpret your estimated slopes.
 \begin{students}
- \vspace{1cm}      
+ \vspace{2cm}      
 \end{students}
 
 \begin{key}
-  {\it  US spending on Science, Space, Technology has correlation 0.99
-  with Suicides by hanging, suffocation, and drowning.}
+  {\it  As women's age goes up one year, the age of her most
+    attractive man increases by about 0.67 years.  For men, as his age
+  increases by one year, the age of his most attractive woman goes up
+  by 0.07 years.}
 \end{key}
-
-\item Why are the values on that page called ``spurious''?
-\begin{students}
- \vspace{1cm}      
-\end{students}
-
-\begin{key}
-  {\it Because there is no reason that the two variables should be
-    correlated. }
-\end{key}
-
-\item Correlations in the following plot are either 0.96 or 0.56.
-  Which is which?\\
-\includegraphics[width=\linewidth]{../plots/realCorr.png}
-\begin{students}
- \vspace{1cm}      
-\end{students}
-
-\begin{key}
-  {\it 0.56 - attractiveness and BAL, and 0.96 - petals}
-\end{key}
-
-  The first is data recreated from summary stats given for a study of
-  how attractive men felt they were and their blood alcohol level (log
-  scale, so negative numbers do make sense).
-  The second shows measurements of iris petals. The clusters are for
-  three different species. Within
-  species correlations are quite different: 0.33, 0.79 and 0.32, but
-  with all the data, correlation is higher. 
-
-\item Look back at the Age-Attraction plots from OKcupid.
-  Guess what those correlations are for women and for men.
-\begin{students}
- \vspace{1cm}
-\end{students}
-
-\begin{key}
-  {\it 0.98  and 0.28}
-\end{key}
-
-\item Correlation contest:\\
-  Go to
-  \url{http://www.rossmanchance.com/applets/GuessCorrelation.html}.
-  Click \fbox{$\surd$} {\sf Track Performance}, then each member of your
-  group guesses correlation for 5 \fbox{New Sample}s. (Click \fbox{\sf
-    Reset} between each person.)  The first plot
-  below {\sf Track Performance} tells you the correlation between your
-  guesses and the true values.  What  is it? What's the best one in
-  your group? 
-\begin{students} 
-\vspace{1cm}
-\end{students}
-
 
 
 \begin{center}
@@ -265,7 +202,7 @@ $$ \mbox{residual} = \mbox{observed} - \mbox{predicted or }
 \begin{key}
   {\it (30, 74)}
 \end{key}
-\item Compute it's predicted value using the equation given.  Also
+\item Compute its predicted value using the equation given.  Also
      compute the residual for the one furthest below the line.
 \begin{students}
  \vspace{1cm}      
@@ -290,6 +227,92 @@ $$ \mbox{residual} = \mbox{observed} - \mbox{predicted or }
 \end{key} 
 Any other line will have larger SSE.
 \end{enumerate}
+
+\begin{center}
+  {\bf Correlation}
+\end{center}
+  \item {\bf Correlation} measures the strength and direction of a {\bf
+  linear} relationship between two quantitative variables. It is a
+unit-less number between -1 and 1 with zero meaning ``uncorrelated'' and
+1 or -1 meaning perfect correlation -- points fall right on a
+line. The sample correlation is called $r$, and the true correlation
+is $\rho$, the Greek letter ``rho''. 
+ The sign  of the correlation tells us if the one variable
+ increases as the other does (positive) or decreases (negative).
+
+   Go to  \url{http://www.tylervigen.com/ } and find a
+    ``spurious'' correlation which has correlation coefficient, $r$ less
+    than -0.90 and one that has $r > 0.99$.  Here are the two
+    variables plotted without year ( a lurking variable).\\
+\includegraphics[width=\linewidth]{../plots/spuriousCorr.png}
+    The point here is that if you search through lots of variables,
+    you can find pairs that increase in the same way, or oppositely.
+
+    Just to show you found the site, what variables are in the first
+    plot, and what is their correlation?
+\begin{students}
+ \vspace{1cm}      
+\end{students}
+
+\begin{key}
+  {\it  US spending on Science, Space, Technology has correlation 0.99
+  with Suicides by hanging, suffocation, and drowning.}
+\end{key}
+
+\item Why are the values on that page called ``spurious''?
+\begin{students}
+ \vspace{1cm}      
+\end{students}
+
+\begin{key}
+  {\it Because there is no reason that the two variables should be
+    correlated. }
+\end{key}
+
+\item Correlations in the following plot are either 0.96 or 0.56.
+  Which is which?\\
+\includegraphics[width=\linewidth]{../plots/realCorr.png}
+\begin{students}
+ \vspace{1cm}      
+\end{students}
+
+\begin{key}
+  {\it 0.56 - attractiveness and BAL, and 0.96 - petals}
+\end{key}
+
+  The first is data recreated from summary stats given for a study of
+  how attractive men felt they were and their blood alcohol level (log
+  scale, so negative numbers do make sense).
+  The second shows measurements of iris petals. The clusters are for
+  three different species. Within
+  species correlations are quite different: 0.33, 0.79 and 0.32, but
+  with all the data, correlation is higher. 
+
+\item Look back at the Age-Attraction plots from OKcupid.
+  Guess what those correlations are for women and for men.
+\begin{students}
+ \vspace{1cm}
+\end{students}
+
+\begin{key}
+  {\it 0.98  and 0.28}
+\end{key}
+
+\item Correlation contest:\\
+  Go to
+  \url{http://www.rossmanchance.com/applets/GuessCorrelation.html}.
+  Click \fbox{$\surd$} {\sf Track Performance}, then each member of your
+  group guesses correlation for 5 \fbox{New Sample}s. (Click \fbox{\sf
+    Reset} between each person.)  The first plot
+  below {\sf Track Performance} tells you the correlation between your
+  guesses and the true values.  What  is it? What's the best one in
+  your group? 
+\begin{students} 
+\vspace{1cm}
+\end{students}
+
+
+
 \end{enumerate}
 
 \begin{center}
@@ -318,4 +341,16 @@ Any other line will have larger SSE.
 \end{itemize}
 
 
+
+
+\noindent
+{\bf Assignment} \vspace{-.2in}
+\begin{itemize}
+\item D2Quiz 8 is the next assignment.  Fill it in online.
+ %%  We strongly encourage you to get help in the Math Learning Center.
+\item Fill in the simulation confidence interval box in column 2 of
+  the Review Table.
+\item Watch the ``Correlation'' video.
+\item Read the next two pages before your next class.
+\end{itemize}
 
