@@ -44,7 +44,7 @@ Drinks''.
   and without alcohol on human subjects.  Pharmacology is the study of
   how drugs affect the body, and ``psychopharmacology'' studies
   effects of drugs on the nervous system. An article in {\it Human
-    Psycopharmacology} in 2009 reported on an experiment intended to
+    Psychopharmacology} in 2009 reported on an experiment intended to
   tease out some of the effects and to compare an energy drink without
   alcohol to one with alcohol and to a non-energy drink.  The research
   question is:
@@ -57,46 +57,46 @@ Drinks''.
    Higher RBANs scores indicate better memory skills. 
 
 Go to the site:\\
-  \url{http://shiny.math.montana.edu/jimrc/IntroStatShinyApps}. 
+  \url{https://jimrc.shinyapps.io/Sp-IntRoStats}
   Select \fbox{Enter / Describe Data} under \fbox{\sf One of
     Each}. Select \fbox{PreLoaded Data} as the data entry method, and
   select \fbox{REDAvsCntrl} and \fbox{Use These Data} to load today's
   data. 
  
- \begin{fmpage}{.3\linewidth}
- {\footnotesize
- \begin{verbatim}
- treatment RBAN
- REDA	6.84
- REDA	-9.83
- REDA	-0.02
- REDA	-9.12
- REDA	-10.07
- REDA	-19.34
- REDA	3.97
- REDA	-16.37
- REDA	-21.02
- Control	6.33
- Control	1.65
- Control	-3.58
- Control	3.3
- Control	-6.6
- Control	3.29
- Control	1.8
- Control	1.8
- Control	2.98
- \end{verbatim}
- }
- \end{fmpage}
- \hfill
- \begin{minipage}{.6\linewidth}
+ % \begin{fmpage}{.3\linewidth}
+ % {\footnotesize
+ % \begin{verbatim}
+ % treatment RBAN
+ % REDA	6.84
+ % REDA	-9.83
+ % REDA	-0.02
+ % REDA	-9.12
+ % REDA	-10.07
+ % REDA	-19.34
+ % REDA	3.97
+ % REDA	-16.37
+ % REDA	-21.02
+ % Control	6.33
+ % Control	1.65
+ % Control	-3.58
+ % Control	3.3
+ % Control	-6.6
+ % Control	3.29
+ % Control	1.8
+ % Control	1.8
+ % Control	2.98
+ % \end{verbatim}
+ % }
+ % \end{fmpage}
+ % \hfill
+% \begin{minipage}{.6\linewidth}
 
    Examine the boxplots and dotplots. Describe any differences in the
    response (Change in RBANS) you see  between Red+A and Control groups. \\
 
    Center
 \begin{students}
-    \vspace{1.4cm}    
+    \vspace{1cm}    
 \end{students}
 
 \begin{key}
@@ -106,7 +106,7 @@ Go to the site:\\
 
    Spread  (SD and IQR)
 \begin{students}
-    \vspace{1.4cm}    
+    \vspace{1cm}    
 \end{students}
 
 \begin{key}
@@ -118,7 +118,7 @@ Go to the site:\\
 
    Shape
 \begin{students}
-    \vspace{1.4cm}    
+    \vspace{1cm}    
 \end{students}
 
 \begin{key}
@@ -126,7 +126,7 @@ Go to the site:\\
          has some outliers.
 }
 \end{key}
-\end{minipage}
+%\end{minipage}
 
 
 The researchers used a computer randomization to assign the 
@@ -138,29 +138,29 @@ subjects into the groups. We'll shuffle cards instead.
   second row. Line them up in the two rows  like this data table: 
 
   \begin{tabular}{l|rrrrrrrrrr} \hline
-RED+A & 6.84&-9.83&-0.02&-9.12&-10.07&-19.34&3.97&-16.37&-21.02&\\ \hline
 Control&6.33&1.65&-3.58&3.30&-6.60&3.29&1.80&1.80&2.98&\\ \hline
+RED+A & 6.84&-9.83&-0.02&-9.12&-10.07&-19.34&3.97&-16.37&-21.02&\\ \hline
 \end{tabular}\\
-Compute the two means and take their difference: $\xb_1 - \xb_2$.
-\vspace{1in}
+Compute the two means and take their difference: $\xb_1 -
+\xb_2$. (Control mean minus REDA mean.)
+\begin{students}
+    \vspace{1cm}    
+\end{students}
+
+\begin{key}
+  {\it   $\xb_1 = -8.33$, $\xb_2 = 1.22$ ,  $\xb_1 -\xb_2 = 9.55$ }
+\end{key}
 
 
 \item We want to test the hypothesis that the means are equal:\\
   $H_0: \mu_1 = \mu_2$  (no difference in mean 'change in RBANS score'
   between REDA and control groups.)  versus:\\
-  $H_a:  \mu_1 \neq \mu_2$\\
-\end{enumerate}
-Consider this important question:\\
-
+  $H_a:  \mu_1 \neq \mu_2$ \hfill Consider this important question:
+  \\
 {\bf \sf
 If the treatments have no effect on RBANS scores, then where do the
 observed differences in distributions and in means come from?
-}\vspace*{.2cm}
-
-
-\begin{enumerate}
-  \setcounter{enumi}{5}
-\item 
+}\vspace*{.2cm} \\
    Discuss this within your group and write down your answer.
   Don't say that it has anything to do with the drink they were given
   because we are assuming the drinks are all having the same effect. 
@@ -180,14 +180,15 @@ observed differences in distributions and in means come from?
   compute the mean of each row. 
   \vspace{1cm} \\
 
-  Does the difference in the new means agree well with the original
+  Is the difference in the new means  the same as the original
   difference?   If not,  how much has it changed? 
 \begin{students}
     \vspace{3cm}    
 \end{students}
 
 \begin{key}
-  {\it  They should be similar but not exactly the same.}
+  {\it  The means should be similar but not exactly the same, so the
+    difference in means should be about 0.}
 \end{key}
 
 
@@ -249,7 +250,7 @@ observed differences in distributions and in means come from?
  \item Click \fbox{\sf 1000}   three times.  Where is the plot
    centered?   Why is it centered there?
 \begin{students}
-    \vspace{2cm}    
+    \vspace{1.5cm}    
 \end{students}
 
 \begin{key}
@@ -264,7 +265,7 @@ observed differences in distributions and in means come from?
    last box.  Click \fbox{Go}. What proportion of the samples are this
    extreme?   
 \begin{students}
-    \vspace{2cm}    
+    \vspace{1cm}    
 \end{students}
 
 \begin{key}
@@ -277,7 +278,7 @@ observed differences in distributions and in means come from?
    in RBANS than another person.  Write down at least one. (Again,
    don't get stuck here.) 
 \begin{students}
-    \vspace{2cm}    
+    \vspace{2.2cm}    
 \end{students}
 
 \begin{key}
@@ -285,13 +286,13 @@ observed differences in distributions and in means come from?
      in amount of sleep the previous night, etc. 
 }
 \end{key}
-\vspace{6cm}
+
 
  \item  Lurking variables were discussed on Activity 10.  When we
    randomly assign treatments, how should the groups compare on any
    lurking variable? 
 \begin{students}
-    \vspace{3cm}    
+    \vspace{1.5cm}    
 \end{students}
 
 \begin{key}
@@ -311,46 +312,34 @@ observed differences in distributions and in means come from?
    sample size (?) but we {\bf can} since we have random assignment.
  }
 \end{key}
-%    \item We will also estimate the difference in the true
-%      mean RBANS change (REDA versus control) using StatKey.  Select
-%      the {\sf  CI for Difference in Means} option.
-%      \begin{enumerate}
-%      \item Click \fbox{\sf Edit Data} and delete all of their data.
-%        Insert the RBANS data from D2L. Add commas between the label
-%        and RBANS value in each line. Click \fbox{\sf OK} and check the
-%        sample statistics right under {\sf Original Sample}. Do they
-%        agree with what we had above?
-% \begin{students}
-%     \vspace{2cm}    
-% \end{students}
+   \item We will also estimate the difference in the true
+     mean RBANS change (REDA versus control) using the web app.  Select
+     the \fbox{\sf  Estimate} option under \fbox{One of Each}.
+      Click \fbox{10} and mouse over the extreme dots in the plot.
+       Notice how the lower boxplots, the lower summary table and the
+       difference in means change.  The app is creating a  
+       bootstrap resample from the 9 REDA values and a bootstrap
+       resample from the 9 Control values, finding the mean of each,
+       and subtracting to get a difference in means which shows up in
+       the plot.  Click again until you are positive you know what it
+       is doing. For your last  resample, write the two bootstrap
+       means and their difference. 
+\begin{students}
+    \vspace{2cm}    
+\end{students}
 
-% \begin{key}
-%   {\it  If not, data were entered wrong.  }
-% \end{key}
-%      \item Click \fbox{\sf Generate 1 Sample}, then generate 1000
-%        more.  The app is creating a 
-%        bootstrap resample from the 9 REDA values and a bootstrap
-%        resample from the 9 Control values, finding the mean of each,
-%        and subtracting to get a difference in means which shows up in
-%        the plot.  Click again until you are positive you know what it
-%        is doing. For your last single sample, write the two bootstrap
-%        means and their difference.
-% \begin{students}
-%     \vspace{2cm}    
-% \end{students}
+\begin{key}
+  {\it  I got 1.09 for Control, -7.97 for REDA with difference = -9.06.  }
+\end{key}
+    \item Obtain a 95\% bootstrap percentile interval based on several
+      1000 resamples and write it here.
+\begin{students}
+    \vspace{2cm}    
+\end{students}
 
-% \begin{key}
-%   {\it  I got 1.09 for Control, -7.97 for REDA with difference = -9.06.  }
-% \end{key}
-%     \item Obtain a 95\% bootstrap percentile interval by clicking {\sf
-%         Two-Tail} and write it here.
-% \begin{students}
-%     \vspace{2cm}    
-% \end{students}
-
-% \begin{key}
-%   {\it (-15.99, -2.70)  }
-% \end{key}
+\begin{key}
+  {\it (2.84, 16.01)  }
+\end{key}
     \item Write your interpretation of this interval.
 \begin{students}
     \vspace{1cm}    
@@ -358,29 +347,48 @@ observed differences in distributions and in means come from?
 
 \begin{key}
   {\it  We are 95\% confident that the true mean ``change in RBANS score''
-  is  2.7 to 15.99 points lower when people drink REDA than when they
+  is  2.8 to 16.01 points lower when people drink REDA than when they
    drink the control beverage. Be sure to indicate which one is higher
  (or lower). } 
 \end{key}
-\item Build a confidence interval using ``estimate $\pm t^*$SE'' where the
+\item Build a 95\% confidence interval using ``estimate $\pm t^*$SE'' where the
   estimate is the observed difference in means, $t^* = 2.12$, and
-  using the st.dev. from the plot as our SE.  Does it contain zero?
+  using the SE the plot.  Does it contain zero?
  \begin{students}
     \vspace{2cm}    
 \end{students}
 
 \begin{key}
-  {\it (-16.65, -2.45)  No.}
+  {\it (2.45, 16.65 )  No.}
 \end{key}
 
 
 \item Write up the results of the hypothesis test as a report using
   the five elements from Activity 12.  Be sure to refer to the response
-  variable as ``change in RBANS'', not just RBANS score. \\ \ \\
+  variable as ``change in RBANS'', not just RBANS score. \\ 
 
 \begin{students}
  \newpage 
 \end{students}
+
+\begin{key}
+  {\it 
+We performed a randomization (permutation) test of 5000 simulations
+from the null distribution which assumed equal means for REDA and
+control groups change in RBANS scores.\\
+We observed a control mean (for 9 women) which was 9.55 points higher
+than the REDA mean.\\
+The simulated p-value was less than 1/5000 which provides very strong
+evidence against the null hypothesis, so we can reject the null (at
+any commonly used $\alpha$ level and conclude that the true REDA mean
+change in RBANS is lower than the true Control mean.\\
+We did not start with a random sample of college women, but treatments
+were randomly assigned, so we can infer that REDA causes a decrease in
+mean change in RBANS scores in this sample of women.
+}
+\end{key}
+
+
  \end{enumerate}
 
 
@@ -400,12 +408,26 @@ observed differences in distributions and in means come from?
   assignment is a very powerful tool.  When reading a study, it's one
   of the key points to look for. 
  \item 
-  Use the remaining space for any questions or your own summary of the
-  lesson. \vfill
+  Questions? Summarize  the  lesson. \vfill
 
 \end{itemize}
-{\sf\bf Reference}
 
+
+
+\noindent
+{\bf Assignment} \vspace{-.2in}
+\begin{itemize}
+\item D2Box 6 is the next assignment.
+    Turn it in as a pdf file in the Drop Box on D2L.
+ %%  We strongly encourage you to get help in the Math Learning Center.
+\item Fill in the top six  boxes in column 4 (one  of each type) of
+  the Review Table.   
+\item Read the next two pages before your next class.
+\end{itemize}
+
+
+{\sf\bf Reference}
+\\
  Curry K, Stasio MJ.  (2009). The effects of energy drinks alone and with
  alcohol on neuropsychological functioning. {\it Human  Psychopharmacology}.
 {\bf 24}(6):473-81. doi: 10.1002/hup.1045. 

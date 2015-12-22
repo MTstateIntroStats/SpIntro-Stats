@@ -1,12 +1,13 @@
 \def\theTopic{Arsenic}
-\def\dayNum{15 }
+\def\dayNum{16 }
 
 \begin{center}
 {\bf {\large Arsenic in Toenails}}
 \end{center}
 
- Symptoms of low--level  arsenic poisoning
-include headaches, confusion, severe diarrhea and
+Arsenic poisoning can be caused by drinking water containing
+a high concentration of arsenic.  Symptoms from
+low-level poisoning include headaches, confusion, severe diarrhea and
 drowsiness.  When the poisoning becomes acute, symptoms include
 vomiting, blood in the urine, hair loss, convulsions, and even death.
 A 2007 study by Peter Ravenscroft found that over 137 million people
@@ -18,13 +19,14 @@ from drinking water.\footnote{Ravenscroft, P. (2007). The global
 Scientists can assay toe nail clippings to measure a person's arsenic
 level in parts per million (ppm).  They did this assay on 19 randomly selected 
 individuals who drink from private wells in New Hampshire (data in the
-table below). They want to know  the mean arsenic 
+table below). First, they would like to know just what is the mean arsenic 
 concentration for New Hampshire residents drinking from private wells.
 
  An arsenic level greater than 0.150 ppm is considered
-hazardous. A secondary question is, `` Is there evidence that people
+hazardous. A second question is, `` Is there evidence that people
 drinking the ground water in New Hampshire are suffering from arsenic
 poisoning?''
+
 
 
 \begin{center}
@@ -203,11 +205,11 @@ for New Hampshire residents with a private well?
 % \begin{key}
 %   {\it  Should be centered at the sample mean, 0.272 ppm. }
 % \end{key}
-\item Use the \fbox{One Quant} option in the web applet
-  \url{https://jimrc.shinyapps.io/Sp-IntRoStats} to use the pre-loaded
-  data (arsenic) and then generate a bootstrap distribution with 5000
-  or more bootstrap statistics.  Draw the plot below and record the
-  summary statistics.  % Show where your value from
+\item 
+ Use the \fbox{One Quant} option in the web applet to use the pre-loaded data
+ (arsenic) and then generate a
+ bootstrap distribution with 5000 or more bootstrap statistics.  Draw the plot
+ below and record the summary statistics.  %  Show where your value from
  % the previous question falls on the plot. 
 \begin{students}
   \vspace{4cm}
@@ -329,12 +331,15 @@ reference distribution are:
  The resamples must be based on the sample data.
 \end{itemize}
 
+% With a single categorical variable, we could create a spinner with the probability of success coming from the null hypothesis (1) and spun the spinner the same number of times as our sample size (2).  We cannot use a spinner 
+% in this case because there are no categories and no proportions to
+% label on the spinner.
   We can use cards like we did for the CI above,
 but we have to change the values so that they are consistent with the
 null, $\mu = 0.15$.
 
 \begin{enumerate}
-\setcounter{enumi}{16}
+\setcounter{enumi}{17}
 \item How you could modify the sample data so as to force the null
   hypothesis to be true without changing the spread?  (Do not spend
   more than 2 minutes on this question.)
@@ -369,7 +374,13 @@ null, $\mu = 0.15$.
   {\it 0.272 – 0.15 = 0.122 above the mean}
 \end{key}
 \item We need to shift the original data so that is it centered on the null
-      value. 
+      value.  % (Circle the correct answers to complete the sentence) To
+      % do this, you will need to  \underline{ \  add \  subtract \  } \  your
+      % answer in \ref{shift} 
+      % \underline{ \   \  to \   \  from \   \  }  each data value,  then take a
+      % bootstrap resample from the shifted data.  In the table below,
+      % write the  new shifted data values. 
+      % Check to see if these values work:
       Subtract the value from (b) from each of the data numbers to
       get:
 
@@ -392,12 +403,50 @@ null, $\mu = 0.15$.
 \end{key}
 
 
+%     \item  Write each shifted data value onto a card. %  Mark the card
+%       % with an S in the upper right-hand corner  so you know the value
+%       % is a shift from the original data. 
+%        Generate 1 randomization sample by sampling, with
+%       replacement, from the shifted data 19 times.  Write down your
+%       randomization sample in the table below.  What is the statistic
+%       from this one randomization sample?  Use proper notation.
+% \begin{students}
+  
+% \begin{center}
+% \begin{tabular}{|r|r|r|r|r|r|r|r|r|r|} \hline
+% \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}
+% \\ \hline
+% \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm} & \\ \hline
+% \end{tabular}  
+% \end{center}
+% \end{students}
+
+
+% \begin{key}
+%   {\it $\xb = $\underline{\hspace{.5in}}. }
+% \end{key}
+
+% \item  On the board, mark your randomization statistic on the null
+% distribution.  Draw the plot below.
+
+% \begin{students}
+%   \vspace{4cm}
+% \end{students}
+
+% \item 
+%  Is the plot centered where you expected?  Explain.
+% \begin{students}
+%   \vspace{1cm}
+% \end{students}
+
+% \begin{key}
+%   {\it Again, centered at 0.15, because this is the null value. }
+% \end{key}
+
 \end{enumerate}
-\item To speed up the process, we use  \fbox{ Test} option under
-  \fbox{One Quant} at  \url{https://jimrc.shinyapps.io/Sp-IntRoStats
-  }. You should have already loaded the data, but if not, go back to
-  \fbox{Enter/Load Data} and select the preloaded \fbox{Arsenic}
-  data. 
+\item To speed up the process, we use  {\sf Test} option under
+  \fbox{One Quant} at
+  \url{http://shiny.math.montana.edu/jimrc/IntroStatShinyApps/}. 
 
   \begin{itemize}
     \item Above the main plot, change the value for the null
@@ -444,9 +493,9 @@ null, $\mu = 0.15$.
 \begin{key}
   {\it The (resample) mean arsenic concentration in toe nails of 19
     New Hampshire residents who use a private well if the true arsenic
-    concentration is 0.15 (right at the edge of being  hazardous) }
+    concentration is 0.15 (not a hazardous level) }
 \end{key}
-\item Generate 5000 or more randomization samples.  Copy the summary statistics and
+\item Generate 5000 randomization samples.  Copy the summary statistics and
 the plot of the randomization distribution below
 \begin{students}
   \vspace{4cm}
@@ -494,7 +543,7 @@ alone if the ground water in New Hampshire is not hazardous.
 \end{key}
 
 
- How many  resamples had a mean at least as extreme as the
+ How many  samples had a mean at least as extreme as the
  observed result?  
 \begin{students}
   \vspace{1cm}
@@ -504,16 +553,17 @@ alone if the ground water in New Hampshire is not hazardous.
   {\it AWV}
 \end{key}
 
-\item How strong is the evidence against the null hypothesis?  Look back to
+\item Is the approximate p-value from your simulation analysis (your
+  answer to \ref{pval13}) small enough to provide much evidence against the
+  null hypothesis? If so, how strong is this evidence?  Look back to
   the guidelines for assessing strength of evidence using p-values
-  given on page 35.
+  given in the ESP activity.
 \begin{students}
   \vspace{1cm}
 \end{students}
 
 \begin{key}
-  {\it p-value = 0.016, which is strong to very strong evidence
-    against the null.}
+  {\it 0.016*3000 = 48}
 \end{key}
 
 
@@ -537,7 +587,7 @@ alone if the ground water in New Hampshire is not hazardous.
   All New Hampshire residents with a private well?  Explain your
   reasoning.
 \begin{students}
-  \vspace{4cm}
+  \newpage
 \end{students}
 
 \begin{key}
@@ -567,18 +617,6 @@ alone if the ground water in New Hampshire is not hazardous.
 
  \item 
   Use the remaining space for any questions and your own summary of the
-  lesson. \vfill
+  lesson. 
 
-\end{itemize}
-
-
-
-\noindent
-{\bf Assignment} \vspace{-.2in}
-\begin{itemize}
-\item D2Quiz 7 is the next assignment.  Fill it in online.
- %%  We strongly encourage you to get help in the Math Learning Center.
-\item Fill in the simulation confidence interval box in column 2 of
-  the Review Table.
-\item Read the next two pages before your next class.
 \end{itemize}

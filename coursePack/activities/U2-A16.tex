@@ -1,622 +1,372 @@
-\def\theTopic{Arsenic}
+\def\theTopic{Errors }
 \def\dayNum{16 }
 
 \begin{center}
-{\bf {\large Arsenic in Toenails}}
+\vspace*{-.2in}
+{\bf {\large On Being Wrong 5\% of the Time}}\vspace{-.6cm}
 \end{center}
 
-Arsenic poisoning can be caused by drinking water containing
-a high concentration of arsenic.  Symptoms from
-low-level poisoning include headaches, confusion, severe diarrhea and
-drowsiness.  When the poisoning becomes acute, symptoms include
-vomiting, blood in the urine, hair loss, convulsions, and even death.
-A 2007 study by Peter Ravenscroft found that over 137 million people
-in more than 70 countries are probably affected by arsenic poisoning
-from drinking water.\footnote{Ravenscroft, P. (2007). The global
-  dimensions of arsenic pollution of groundwater. {\em Tropical
-    Agriculture Association}, {\bf 3}.}
 
-Scientists can assay toe nail clippings to measure a person's arsenic
-level in parts per million (ppm).  They did this assay on 19 randomly selected 
-individuals who drink from private wells in New Hampshire (data in the
-table below). First, they would like to know just what is the mean arsenic 
-concentration for New Hampshire residents drinking from private wells.
+Our confidence in a 95\% confidence interval comes from the fact that,
+in the long run, the technique works 95\% of the time to capture the
+unknown parameter.  This leads to an old cheap joke:
 
- An arsenic level greater than 0.150 ppm is considered
-hazardous. A second question is, `` Is there evidence that people
-drinking the ground water in New Hampshire are suffering from arsenic
-poisoning?''
+{\sf Statisticians are people who require themselves to be wrong 5\%
+  of the time.}
+
+We hope that's not really true, but decision making leads to a dilemma:\\
+  If you want to never be wrong, you have to always put off decisions
+  and collect more data.
+
+Statistics allows us to make decisions based on partial data  while
+controlling our error rates.\\
+Discuss these situations and decide which error would be worse:\vspace{-.6cm}
+\begin{enumerate}
+\item A criminal jury will make an error if
+      they let a guilty defendant go free, or if
+      they convict an innocent defendant.
+     Which is worse? Why?
+\begin{students}
+  \vspace{1.5cm}
+\end{students}
+
+\item The doctor gives patients a test designed to detect pancreatic
+  cancer (which is usually quite serious).  The test is wrong if:
+  it says a healthy patient has cancer (a false positive), or if
+  it says a patient with cancer is healthy (a false negative).  Which
+  is worse?  Why? 
+\begin{students}
+  \vspace{1.5cm}
+\end{students}
+
+\item  A weather forecaster working at an airport in Indonesia on
+  December 28, 2014 had to decide if it was too dangerous
+   to allow Air Asia Flight 8501 to fly to
+  Singapore.  The flight was allowed, resulting in the deaths of all
+  162 people aboard.  Errors don't get much worse than that, but what
+  would the cost be of grounding a flight?  
+\begin{students}
+  \vspace{2.5cm}
+\end{students}
+
+
+
+\item  Large chain stores are always looking for locations into which
+  they can expand -- perhaps into Bozeman. 
+  When would a  decision to open a store in Bozeman  be wrong?\\
+  When would a decision to not open a store in Bozeman  be
+  wrong?\\
+  Which is the worse error?  
+\begin{students}
+  \vspace{3cm}
+\end{students}
+
+\end{enumerate}
+
+{\bf Two Types of Error. }
+
+Definitions:\vspace{-.6cm}
+\begin{itemize}
+  \item To reject $H_0$ when it is true is called a Type I error.
+  \item To fail to reject $H_0$ when it is false is called a Type II error.
+\vspace{-.6cm}
+\end{itemize}
+To remember which is which: we start a hypothesis test by assuming
+$H_0$ is true, so Type I goes with $H_0$ being true. 
+
+This table also helps us stay organized: \hfill
+\begin{tabular}{|l|c|c|}\hline
+   & \multicolumn{2}{|c|}{Decision:} \\
+$H_0$ is:  & Reject $H_0$ & Do not reject $H_0$\\\hline
+true & {\em Type I Error} & Correct  \\ \hline
+false& Correct & {\em Type II error}   \\ \hline\hline
+\end{tabular}
+
+
+
+{\bf Which is worse?}
+
+The setup for hypothesis testing assumes that we really need to
+control the rate of Type I error.  We can do this by setting our
+ significance level, $\alpha$.  If, for example, $\alpha = 0.01$, then
+ when we reject $H_0$ we are making an error less than 1\% of the time.
+So $\alpha$ is the probability of making an error when $H_0$ is true.
+
+There is also a symbol for the probability of a Type II error,
+$\beta$, but it changes depending on which alternative parameter
+value is correct. 
 
 
 
 \begin{center}
-\begin{tabular}{|r|r|r|r|r|r|r|r|r|r|} \hline
-0.119& 0.118& 0.099& 0.118& 0.275& 0.358& 0.080& 0.158& 0.310& 0.105
-\\ \hline
-0.073& 0.832& 0.517& 0.851& 0.269& 0.433& 0.141& 0.135& 0.175 & \\ \hline
-\end{tabular}  
+  {\bf Justice System and Errors }
 \end{center}
 
+Refer to this reading about the justice system:\\
+\url{http://www.intuitor.com/statistics/T1T2Errors.html}  
 
-{\bf Step 1. State the research question. }
-\begin{enumerate}
-\item  \label{researchQs}Based on the description of the study, state the two research
-  questions to be answered.
-\begin{students}
-  \vspace{2cm}
-\end{students}
+In both the justice system and in statistics, we can make errors. In
+statistics the only way to avoid making errors is to not state any
+conclusion without measuring or polling the entire population.  That's
+expensive and time consuming, so we instead try to control the chances
+of making an error.  
+ 
 
-\begin{key}
-  {\it 
-    \begin{enumerate}
-    \item How high is the mean arsenic level for New Hampshire residents
- drinking from a private well?
-    \item Is there evidence that people drinking the ground water in New
- Hampshire are building up a hazardous  level (over 0.15 on average)
- of arsenic concentration? 
-
-    \end{enumerate}
-}
-\end{key}
-  
-
-\item  Which research question should be answered using a hypothesis
-  test and which should be answered using a confidence interval? 
-\begin{students}
-  \vspace{1cm}
-\end{students}
-
-\begin{key}
-  {\it The first should be answered with a CI because we are trying to
-    estimate the parameter,  and the second with a test (is there evidence?)}
-\end{key}
-\end{enumerate}
-
-{\bf Step 2. Design a study and collect data. }
-  \begin{enumerate}
-  \setcounter{enumi}{2}
-   \item  What is the variable in the study?  Is this variable quantitative
-     or categorical?
-\begin{students}
-  \vspace{1cm}
-\end{students}
-
-\begin{key}
-  {\it Arsenic concentration in toenails (ppm), quantitative.}
-\end{key}
-
-\item 
-Define the parameter of interest in the context of the study.  What
-notation should be used to denote it?
-\begin{students}
-  \vspace*{1cm}
-\end{students}
-
-\begin{key}
-  {\it notation: $\mu$, is mean arsenic concentration in toenails for New Hampshire residents with a private well.}
-\end{key}
-\end{enumerate}
-
-{\bf Step 3. Explore the data. }\\
-With quantitative data, we typically report and study the average value, or the mean.
-\begin{enumerate}
-\setcounter{enumi}{4}
-\item  What is the sample size in this study?  n = \begin{key}
-  {\it 19}
-\end{key}
-
-\item \label{xbar} Calculate the observed statistic and use correct notation to
-  denote it (check your answer with another  group!).
-\begin{students}
-  \vspace{1cm}
-\end{students}
-\begin{key}
-   $ \xb =   0.272$. 
-\end{key}
-\item  Could your answer to \ref{xbar} have happened if the arsenic
-  concentrations in New Hampshire residents are not hazardous? 
-\begin{students}
-  \vspace{1cm}
-\end{students}
-\begin{key}
-   {\it Yes, pretty much anything is possible if at least a few people
-     have high arsenic levels.}  
-\end{key}
-\item  Do you think it is likely to have observed a mean like the one
-  you got in \ref{xbar} if the arsenic concentrations in New Hampshire
-  residents are not hazardous?
-  
-\begin{students}
-  \vspace{1cm}
-\end{students}
-\begin{key}
-   {\it Not sure.  Depends on how variable arsenic concentrations are!
-}
-\end{key}
-\end{enumerate}
+For a scientist, committing a Type I error means we would report a
+big discovery when in fact, nothing is going on. (How embarrassing!)
+This is deemed more critical than a Type II error, which happens if
+the scientist does a research project and finds no ``effect'' when, in
+fact, there is one. 
 
 
-{\bf Step 4. Draw inferences beyond the data. }\\
-We'll start with the first research question asked because we have
-done confidence intervals for a single mean back in Activity 11. 
-
-{\bf The First Research Question}: How high is the mean arsenic level
-for New Hampshire residents with a private well? 
-
-\begin{enumerate}
- \setcounter{enumi}{8}
-\item  Explain why this question is better answered using a confidence
-  interval than by conducting a hypothesis test. 
-\begin{students}
-  \vspace{1cm}
-\end{students}
-\begin{key}
-  {\it  Because we want to estimate the parameter (how high?), not
-    compare it to some value.}
-\end{key}
-
-\item  Explain how you can use a deck of 19 cards to create the
-  bootstrap distribution. (Go back to Activity 11 if you don't remember.)
-\begin{students}
-  \vspace{1cm}
-\end{students}
-\begin{key}
-  {\it Write the original data on the cards, then sample with replacement 19
-    times.}
-\end{key}
-
-% \item Write the original sample data on each card and write O (for
-%   Original) on the upper right-hand corner.  Select one bootstrap
-%   resample by shuffling the cards, selecting a card at random,
-%   recording the value in the table below, returning the card to the
-%   deck, and repeating 19 times. 
-
-% \begin{students}
-  
-% \begin{center}
-% \begin{tabular}{|r|r|r|r|r|r|r|r|r|r|} \hline
-% \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}
-% \\ \hline
-% \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm} & \\ \hline
-% \end{tabular}  
-% \end{center}
-% \end{students}
-
-% What is the mean of your bootstrap  resample?  \vspace{1cm}
-
-% \begin{students}
-%   \vspace{1cm}
-% \end{students}
-% \begin{key}
-%   {\it AWV}
-% \end{key}
-
-% \item  Combine your results with the rest of the class to create a
-%   dotplot of the distribution for the average arsenic  level of New
-%   Hampshire residents.   Draw the plot below. 
-% \begin{students}
-%   \vspace{4cm}
-% \end{students}
-
-% Is the plot centered where you expected?  Explain.
-% \begin{students}
-%   \vspace{1cm}
-% \end{students}
-% \begin{key}
-%   {\it  Should be centered at the sample mean, 0.272 ppm. }
-% \end{key}
-\item 
- Use the \fbox{One Quant} option in the web applet to use the pre-loaded data
- (arsenic) and then generate a
- bootstrap distribution with 5000 or more bootstrap statistics.  Draw the plot
- below and record the summary statistics.  %  Show where your value from
- % the previous question falls on the plot. 
-\begin{students}
-  \vspace{4cm}
-\end{students}
-\begin{key}
-  {\it \includegraphics[width=.5\linewidth]{../plots/arsenicCIplot.png}}
-\end{key}
-
-Explain how one dot on the plot was created and what it represents in
-the context of the problem.
-\begin{students}
-  \vspace{1cm}
-\end{students}
-\begin{key}
-  {\it One dot was created by sampling with replacement from the
-    original data 19 times.  The mean level of arsenic concentration
-    in the toenails of the resample is plotted.}
-\end{key}
-
-\item \label{SE2ci} Create a 95\% confidence interval using margin of
-  error $ME =  2.11  \times SE$.
-\begin{students}
-  \vspace{1cm}
-\end{students}
-
-\begin{key}
-  {\it $ 0.272 \pm 2.11(0.053) = (0.16, 0.38)$ ppm}
-\end{key}
-
-\item  \label{percentile95} Create a 95\% confidence interval using
-  the bootstrap   Percentile Method.
-\begin{students}
-  \vspace{1cm}
-\end{students}
-
-\begin{key}
-  {\it $ (0.177, 0.383)$ ppm}
-\end{key}
-
-\item  How similar are the confidence intervals in \ref{percentile95}
-  and \ref{SE2ci}?
-\begin{students}
-  \vspace{1cm}
-\end{students}
-
-\begin{key}
-  {\it Pretty close, the percentile one is a bit higher on both ends
-    than the 2.1SE interval.}
-\end{key}
-
-
-\item \label{percentile90}Would you expect a 90\% confidence interval
-  to be wider or narrower?  Explain, then give a 90\% (percentile)
-  confidence interval.
-\begin{students}
-  \vspace{2cm}
-\end{students}
-
-\begin{key}
-  {\it Narrower, we need to capture fewer dots, so we can move in.
-    (0.191, 0.365)} 
-\end{key}
-
-\item  Interpret the 90\% confidence interval from \ref{percentile90}.
-\begin{students}
-  \vspace{2cm}
-\end{students}
-
-\begin{key}
-  {\it We are 90\% confident the true average arsenic level in
-    toenails for new Hampshire residents  with a private well is
-    between 0.191 and 0.365 ppm. }
-\end{key}
-\end{enumerate}
-
-
-
-{\bf The Second Research Question}: Is the mean arsenic level
-for New Hampshire residents with a private well above the 0.15 threshold? 
-
-
-  There are two possibilities for why the sample average
-was 0.272.  List them here and label them as the null and alternative
-hypotheses also write the null and alternative in notation.\\
-$H_0:$ 
-\begin{students}
-  \vspace{1cm}
-\end{students}
-\begin{key}
-  {\it   $ \mu = 0.15$:  The water is, on average safe, so we've just
-  observed an unusually high sample.}
-\end{key}
-
-$H_a:$
-\begin{students}
-  \vspace{1cm}
-\end{students}
-\begin{key}
-  {\it  $ \mu > 0.15$  The water is, on average, dangerously high in arsenic.}
-\end{key}
-
-Is the alternative hypothesis right-tail, left-tail, or two-tail?
-\begin{students}
-  \vspace{1cm}
-\end{students}
-
-\begin{key}
-  {\it Right tailed.}
-\end{key}
-
-We can simulate the behavior of arsenic concentrations in New
-Hampshire ground water if we assume the null hypothesis which gives a
-specific value for the mean.  The two key ideas when creating the
-reference distribution are:
+Type II error is harder to control because it depends on these things:
+\vspace{-.2cm}
 \begin{itemize}
-\item 
- The resamples must be consistent with the null hypothesis.
-\item 
- The resamples must be based on the sample data.
+\item  The null hypothesis has to be wrong, but it could be wrong just
+  by a small amount or by a large amount.  For example if 
+   we did not reject the null hypothesis that treatment and
+  control  were equally effective,  we could be making a type II
+  error.  If in fact, if there was a small difference, it would be
+  hard to detect, and if the treatment was far better, it would
+  be easy to detect.  This is called the effect size, which is
+  [difference between null model mean and an alternative mean] divided
+  by standard error.
+\item  Sample size.  P--values are strongly affected by sample
+  size. With a big sample we can detect small differences.  With small
+  samples, only coarse or obvious ones.
+\item  Significance level.  The fence, usually called $\alpha$ (alpha), is
+  usually set at .10, .05 or .01 with smaller values requiring
+  stronger evidence before we reject the null hypothesis and thus
+  lower probability of error.  
 \end{itemize}
 
-% With a single categorical variable, we could create a spinner with the probability of success coming from the null hypothesis (1) and spun the spinner the same number of times as our sample size (2).  We cannot use a spinner 
-% in this case because there are no categories and no proportions to
-% label on the spinner.
-  We can use cards like we did for the CI above,
-but we have to change the values so that they are consistent with the
-null, $\mu = 0.15$.
+
+Instead of limiting the probability of Type II error, researchers more
+often speak of keeping the power as large as possible.  Power is one
+minus the probability of Type II error.  Go to the Power Demo page:
+\url{http://shiny.math.montana.edu/jimrc/IntroStatShinyApps} and click
+\fbox{Power Demo} under \fbox{One Quant}.
+\begin{students}
+\vspace{.5cm}
+\end{students}
+
 
 \begin{enumerate}
-\setcounter{enumi}{17}
-\item How you could modify the sample data so as to force the null
-  hypothesis to be true without changing the spread?  (Do not spend
-  more than 2 minutes on this question.)
+  \setcounter{enumi}{4}
+  \item  Set Sample size to 8, SD to 2, Alternative Mean to 2, and
+    significance level to 0.01. What is the power?
 \begin{students}
-  \vspace{2cm}
+ \vspace{1cm} %% 
 \end{students}
 
 \begin{key}
-  {\it  AWV, but if they have read/if you have lectured on this, they
-    should know to shift the data to be centered on the null value,
-    then resample.} 
+  {\it 0.484 }
 \end{key}
 
-\item Next we will simulate one repetition of the 19 toenail values
-  collected by creating a deck of 19 cards to simulate what the data
-  would look like {\bf if the null hypothesis} were true.
-    \begin{enumerate}
-    \item  What is the null value in this study?
-\begin{students}
-  \vspace{2cm}
-\end{students}
-
-\begin{key}
-  {\it 0.15}
-\end{key}
-\item  \label{shift}How far is the sample mean from this null value?
-\begin{students}
-  \vspace{2cm}
-\end{students}
-
-\begin{key}
-  {\it 0.272 – 0.15 = 0.122 above the mean}
-\end{key}
-\item We need to shift the original data so that is it centered on the null
-      value.  % (Circle the correct answers to complete the sentence) To
-      % do this, you will need to  \underline{ \  add \  subtract \  } \  your
-      % answer in \ref{shift} 
-      % \underline{ \   \  to \   \  from \   \  }  each data value,  then take a
-      % bootstrap resample from the shifted data.  In the table below,
-      % write the  new shifted data values. 
-      % Check to see if these values work:
-      Subtract the value from (b) from each of the data numbers to
-      get:
-
-\begin{center}
-\begin{tabular}{|r|r|r|r|r|r|r|r|r|r|} \hline
--0.003 &-0.004 &-0.023 &-0.004 &0.153 &0.236 &-0.042 &0.036 &0.188 &-0.017
-\\ \hline
--0.049 &0.710 &0.395 &0.729 &0.147 &0.311 &0.019 &0.013 &0.053
-& \\ \hline
-\end{tabular}  
-\end{center}
-      What is the mean of the above values? Why do we want this
-      to be the mean?
-\begin{students}
-  \vspace{1cm}
-\end{students}
-
-\begin{key}
-  {\it 0.15, because this is the null value. }
-\end{key}
-
-
-%     \item  Write each shifted data value onto a card. %  Mark the card
-%       % with an S in the upper right-hand corner  so you know the value
-%       % is a shift from the original data. 
-%        Generate 1 randomization sample by sampling, with
-%       replacement, from the shifted data 19 times.  Write down your
-%       randomization sample in the table below.  What is the statistic
-%       from this one randomization sample?  Use proper notation.
-% \begin{students}
   
-% \begin{center}
-% \begin{tabular}{|r|r|r|r|r|r|r|r|r|r|} \hline
-% \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}
-% \\ \hline
-% \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm}& \hspace*{1cm} & \\ \hline
-% \end{tabular}  
-% \end{center}
-% \end{students}
+
+    Increase sample size until you get power just bigger than 0.80.
+    How large a sample is needed?
+\begin{students}
+\vspace{1cm} %% 
+\end{students}
+
+\begin{key}
+  {\it 13 }
+\end{key}
 
 
-% \begin{key}
-%   {\it $\xb = $\underline{\hspace{.5in}}. }
-% \end{key}
+  \item  \label{ss8a}  Return to sample size 8. Adjust SD to get power just over
+    0.80. Do you make it larger or smaller?  What value worked? 
+\begin{students}
+ \vspace{1cm} %% 
+\end{students}
 
-% \item  On the board, mark your randomization statistic on the null
-% distribution.  Draw the plot below.
+\begin{key}
+  {\it 0.484  Smaller, down to 1.4}
+\end{key}
 
-% \begin{students}
-%   \vspace{4cm}
-% \end{students}
 
-% \item 
-%  Is the plot centered where you expected?  Explain.
-% \begin{students}
-%   \vspace{1cm}
-% \end{students}
 
-% \begin{key}
-%   {\it Again, centered at 0.15, because this is the null value. }
-% \end{key}
+    What is your effect size?
+\begin{students}
+\vspace{1cm} %% 
+\end{students}
+
+\begin{key}
+  {\it $2 - 0 = 2/1.4 = 1.429$}
+\end{key}
+
+  \item \label{ss8b}  Return to SD = 2.  Change Alternative Mean to get power just
+    over 0.80.  Did you make it larger or smaller?  What value did you
+    settle on?
+\begin{students}
+ \vspace{1cm} %% 
+\end{students}
+
+\begin{key}
+  {\it Larger, 2.9 }
+\end{key}
+
+
+    What is your effect size?
+\begin{students}
+ \vspace{1cm} %% 
+\end{students}
+
+\begin{key}
+  {\it $(2.9 - 0)/2 = 2.9/2 = 1.45$}
+\end{key}
+
+  \item   How do the effect sizes in \ref{ss8a} and \ref{ss8b} compare?  
+\begin{students}
+ \vspace{1cm} %% 
+\end{students}
+
+\begin{key}
+  {\it Larger effect  size in the latter. }
+\end{key}
+
+
+
+    How do SD and Alternative Mean work together to determine power? 
+\begin{students}
+ \vspace{2cm}
+\end{students}
+
+\begin{key}
+  {\it     Larger effect for same SD means more power, lower SD for same
+    effect means more power.  In general, larger effect and lower
+    SD means more power. }
+\end{key}
+
+
+  \item  Change significance level to 0.05.  What happens to power?
+\begin{students}
+ \vspace{1cm} 
+\end{students}
+
+\begin{key}
+  {\it  .971}
+\end{key}
+
+
+    Change it to 0.10. What is the power? 
+\begin{students}
+ \vspace{1cm}%% 
+\end{students}
+
+\begin{key}
+  {\it .992}
+\end{key}
+
+  \item    In which direction does power change when we decrease the
+    significance level?  
+\begin{students}
+ \vspace{3cm}
+\end{students}
+
+\begin{key}
+  {\it     It would decrease (power and significance level change in the
+    same direction). }
+\end{key}
+
+
+  \item   Suppose that we are planning to do a study of how energy
+    drinks effect RBAN scores similar to the study we read about in
+    Activity 14.  From previous data, we have an estimate of standard
+    deviation of 3.8. We plan to use a significance level of $\alpha =
+    .05$, and want to be able to detect an increase in mean RBAN score
+    of 2 with 90\% power.   How large must our sample size be?
+\begin{students}
+ \vspace{1cm} %%
+\end{students}
+
+\begin{key}
+  {\it  33}
+\end{key}
+
+
+      If we choose $\alpha = .01$, how large a sample is needed?
+\begin{students}
+ \vspace{1cm}
+\end{students}
+\begin{key}
+\ \ \   {\it 50}
+\end{key}
+
+  \item  Now suppose that we are using a memory test used to study
+    sleep deprivation.  Historical data 
+    provides an estimate of SD = 13.  We want to use $\alpha = .05$ and
+    need to detect an decrease in mean score (when people are sleep
+    deprived) of 6 with 80\% power.  
+    How large a sample is needed? 
+\begin{students}
+ \vspace{1cm} %%
+\end{students}
+
+\begin{key}
+  {\it  31}
+\end{key}
+
+
+    If we want to limit the chance of Type II error to 10\% or less,
+    how large a sample size is needed? 
+\begin{students}
+ \vspace{1cm}\\
+\end{students}
+
+\begin{key}
+  {\it  Type II = 1--power so we want more than 90\% power.  Need 43
+      people. }
+\end{key}
+\item Suppose we do another study on energy drinks with alcohol using
+  Control and REDA.  This time we test hand-eye coordination using
+  $H_0:\ \mu_{control} = \mu_{REDA}$ versus alternative  $H_a:\
+  \mu_{control} > \mu_{REDA}$.
+  \begin{enumerate}
+  \item What would be a Type I error in this context? 
+\begin{students}
+ \vspace{1cm}\\
+\end{students}
+
+\begin{key}
+  {\it   To conclude that there is a difference in mean coordination between the
+    two treatments when, in fact, REDA has no effect on coordination scores. }
+\end{key}
+  \item What would be a Type II error in this context? 
+\begin{students}
+ \vspace{1cm}\\
+\end{students}
+
+\begin{key}
+  {\it  To fail to find a difference in mean coordination between the
+    two treatments when, in fact, REDA lowers coordination scores. }
+\end{key}
+  \end{enumerate}
 
 \end{enumerate}
-\item To speed up the process, we use  {\sf Test} option under
-  \fbox{One Quant} at
-  \url{http://shiny.math.montana.edu/jimrc/IntroStatShinyApps/}. 
 
-  \begin{itemize}
-    \item Above the main plot, change the value for the null
-      hypothesis to the one in our null.  (the just barely safe level)
-      The software will shift the data to have this mean.
-   \end{itemize}
-
-    Look at the box on the right labeled {\sf Original Sample}.
-       Does the mean match your answer to \ref{xbar}?  If not, consult
-       with your instructor! 
-\begin{students}
-  \vspace{1cm}
-\end{students}
-
-\begin{key}
-  {\it Look for data entry errors. }
-\end{key}
-
-\item   What is the statistic from the first  resample?
-\begin{students}
-  \vspace{1cm}
-\end{students}
-
-\begin{key}
-  {\it AWV}
-\end{key}
-
-\item Where in the  output did you find it?
-\begin{students}
-  \vspace{1cm}
-\end{students}
-
-\begin{key}
-  {\it Below center tables.}
-\end{key}
-
-
-\item Explain in the context of the problem what the one dot on the
-  main plot represents. 
-\begin{students}
-  \vspace{1cm}
-\end{students}
-
-\begin{key}
-  {\it The (resample) mean arsenic concentration in toe nails of 19
-    New Hampshire residents who use a private well if the true arsenic
-    concentration is 0.15 (not a hazardous level) }
-\end{key}
-\item Generate 5000 randomization samples.  Copy the summary statistics and
-the plot of the randomization distribution below
-\begin{students}
-  \vspace{4cm}
-\end{students}
-
-\begin{key}
-  {\it \includegraphics[width=.5\linewidth]{../plots/arsenicNullDistn.png}}
-\end{key}
-
-
-\item 
- Where is the distribution centered?  Why does that make sense?
-\begin{students}
-  \vspace{1cm}
-\end{students}
-
-\begin{key}
-  {\it Again, centered at 0.15, because this is the null value. }
-\end{key}
-
-Remember why we conducted this simulation: to assess whether the
-observed result (mean of 0.272) would be unlikely to occur by chance
-alone if the ground water in New Hampshire is not hazardous. 
-
-\item Locate the observed result on the randomization distribution.
-  Does it appear to be likely or unlikely to occur under the null
-  hypothesis?  Explain your reasoning.
-\begin{students}
-  \vspace{1cm}
-\end{students}
-
-\begin{key}
-  {\it Pretty fair in the right tail.  Appears unlikely to occur under
-    the null hypothesis. } 
-\end{key}
-
-\item \label{pval13}Just how unlikely is the observed result?  Calculate your
-  p-value using the web app and the appropriate direction and cutoff value.
-\begin{students}
-  \vspace{1cm}
-\end{students}
-
-\begin{key}
-  {\it Right tail p-value = 0.016}
-\end{key}
-
-
- How many  samples had a mean at least as extreme as the
- observed result?  
-\begin{students}
-  \vspace{1cm}
-\end{students}
-
-\begin{key}
-  {\it AWV}
-\end{key}
-
-\item Is the approximate p-value from your simulation analysis (your
-  answer to \ref{pval13}) small enough to provide much evidence against the
-  null hypothesis? If so, how strong is this evidence?  Look back to
-  the guidelines for assessing strength of evidence using p-values
-  given in the ESP activity.
-\begin{students}
-  \vspace{1cm}
-\end{students}
-
-\begin{key}
-  {\it 0.016*3000 = 48}
-\end{key}
-
-
-
-{\bf Step 5: Formulate conclusions.}
-
-
-\item Based on this analysis, what is your conclusion about the
-  residents in New Hampshire who own a private well based on this
-  study?
-\begin{students}
-  \vspace{2cm}
-\end{students}
-
-\begin{key}
-  {\it We have strong evidence that the true mean arsenic level in
-    toenails of NH residents drinking from wells is greater than the
-    hazardous threshold of 0.15 ppm.} 
-\end{key}
-\item Can you extend your results to all of New Hampshire residents?
-  All New Hampshire residents with a private well?  Explain your
-  reasoning.
-\begin{students}
-  \newpage
-\end{students}
-
-\begin{key}
-  {\it Our evidence does not extend to all NH residents drinking from
-    wells because we don't know that this is a representative sample.
-   The data does not include people on municipal water systems, so it
-   certainly does not extend to all NH residents.} 
-\end{key}
-
-\end{enumerate}
 
 \begin{center}
-  {\bf Take Home Messages}\vspace{-.1in}
+  {\bf Take Home Message} \vspace{-.6cm}
 \end{center}
-
 \begin{itemize}
-\item We first reviewed building a CI for a single mean.
-\item You need to know when to discuss means versus proportions.  If
-  the response has two categories, then we deal with proportions.  If
-  the response is quantitative, then we estimate and test means.
-\item The new twist today was to do a simulation for testing $H_0: \mu
-  = \mu_o$ that the mean is some particular value.  We had to modify
-  the data to make $H_0$ true, shifting it from its center at $\xb$ to
-  be centered at $\mu_o$.  Then we resampled it as if for a bootstrap
-  confidence interval, and located the observed statistic ($\xb$) to
-  see how far out in the tails it was (the p--value).
-
+  \item Errors happen.  Use of statistics does not prevent all errors,
+    but it does limit them to a level we can tolerate. We have labels
+    for two types of error.
+  \item The talk about probability of  error is based on the sampling
+    distribution assuming random assignment of treatments or random
+    sampling. It's really a ``best case'' scenario, because there
+    could be other sources of error we have not considered.  For
+    example, we could have not sampled from some part of the
+    population, or we could have errors in our measuring tools.
+  \item If you are designing a study, you might need to consult a
+    statistician to help determine how large a sample size is
+    needed. You'll need to decide what $\alpha$ to use, what the
+    underlying variation is ($\sigma$), and how large a difference you
+    need to detect with a certain level of power.
  \item 
-  Use the remaining space for any questions and your own summary of the
+  Use the remaining space for any questions or your own summary of the
   lesson. 
-
 \end{itemize}
