@@ -38,7 +38,7 @@ $$ \mbox{Women: } \hat{y} = 9.02 + 0.70x \mbox{ \hspace{2in}}
 \item Discuss this alternative with your group.  Perhaps the age of
   the men really doesn't matter, and we'd be better off estimating
   their preference by using the mean ``most attractive age for women''
-  which is $\overline{y} = 20.78$ for all men, just ignoring the men's age.
+  which is $\overline{y} = 20.77$ for all men, just ignoring the men's age.
    Does that seem like a reasonable way to describe the second plot:
    ``men of all ages find 20.8 years to be the most attractive in women''?
   Write down your group's conclusion.
@@ -106,7 +106,8 @@ Consider this line:
 \item  If we  want to test the null hypothesis ``no linear
   relationship between men's age and the age of women they find most
   attractive'', what is the null value of the true slope?  Use $\beta_1$ as the
-  true slope and fill in the hypotheses.  Use a ``right-tailed'' alternative.\\
+  true slope and fill in the hypotheses.  Use a ``right-tailed''
+  alternative because we think ages should go up together.\\
   $H_o:$
 \begin{students}
  \vspace{1cm}      
@@ -121,6 +122,18 @@ Consider this line:
 \end{students}
 \begin{key}
   {\it  $\beta_1 > 0$   }
+\end{key}
+
+\item We need to do a simulation of possible slope values when $H_0$
+  is true. If there really is no connection between the two variables,
+  $x$, and $y$, what kind of a ``shuffle'' could we do? 
+\begin{students}
+ \vspace{1cm}      
+\end{students}
+
+\begin{key}
+  {\it Mix up the pairs in some way. Shuffle all x's and reassign to
+    y's or vice versa or shuffle both.  All come out the same.}
 \end{key}
 
 \item When you select ``Test'' for these data, a ``Shuffled Data''
@@ -334,9 +347,11 @@ from zero?
     had the computer find slopes instead of proportions or means.  You
     can easily click the correlation button to get a test of $H_0:\ \
     \rho = 0$. P--values will agree with the test for slope = 0.
+  \item How did we shuffle the data under $H_0$ to get other possibles
+    slopes or correlations?
+  \item What is plotted for one shuffle?
  \item 
-  Use the remaining space for any questions or your own summary of the
-  lesson. \vspace*{\fill}
+ Questions? How would you summarize the lesson? \vspace*{\fill}
 
 \end{itemize}
 
@@ -350,5 +365,10 @@ from zero?
 \item Fill in the top five boxes in the rightmost column   of
   the Review Table.
 %%\item Watch the ``Types of Errors'' video.
-\item Read the next two pages before your next class.
+\item Instead of a reading for the next class, your assignment is to
+  find an example of a simple linear regression model which is
+  applicable to an area that interests you.  Be ready to present it to
+  your group:  the variables, the estimated coefficients, and the
+  meaning of the slope estimate.  Do they provide any evidence that
+  the slope is not zero?
 \end{itemize}
