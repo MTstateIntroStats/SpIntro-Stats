@@ -39,7 +39,8 @@
    {\Large\bf  Shapes of Data Distributions}
  \end{center}
 
-  Look at these three different data sets:\\
+  Look at these three different data sets. Each histogram is overlaid
+  with a ``curve''. \\
 \hspace*{2.6cm}A  \hspace*{5cm}B  \hspace*{4.5cm}C \\
 \includegraphics[width=.9\linewidth]{../plots/normals.png}
 
@@ -49,7 +50,7 @@ C) Heights (cm) of 14 year old boys in Oxford, England. \vspace{-.1in}
 
 
 \begin{enumerate}
-  \item  In what way are these distributions similar and different?
+  \item  In what ways are the three distributions similar and different?
 \begin{students}
         \vspace{3cm}        
 \end{students}
@@ -65,13 +66,14 @@ C) Heights (cm) of 14 year old boys in Oxford, England. \vspace{-.1in}
   called the ``Normal'' distribution.
 \end{enumerate}
 
-Important fact:\\
+{\bf Important fact:}\\
 {\sf Statistics vary from sample to sample, and the pattern is
   predictable.  For many statistics, the pattern of the sampling
   distribution resembles a normal distribution with a bell-shaped
-  curve. }  Studying the normal distribution will allow us to find
-probabilities for statistical inference which do not require running
-simulations.
+  curve. } \\
+  Studying the normal distribution will allow us to find
+  probabilities for statistical inference which do not require running
+  simulations.
 
  {\bf Normal Distributions all have the same shape.\\
 They differ only in mean ($\mu$) and spread ($\sigma$).}  We write $X
@@ -88,7 +90,7 @@ The  {\bf Standard Normal Distribution} has center $\mu=0$ and spread
 $\sigma = 1$.  We can ``standardize'' any normal distribution to make
 it have center 0 and $\sigma = 1$ by subtracting $\mu$ and dividing by
 $\sigma$. If a random measurement, $X$, has a N$(\mu, \sigma)$
-distribution, then $$Z = (X - \mu)/\sigma$$ has a N(0,1) distribution. 
+distribution, then $$Z = \frac{X - \mu}\sigma$$ has a N(0,1) distribution. 
 We use the standardized versions to say how many standard deviations
 ($\sigma$'s) an observation is from the mean ($\mu$). 
 
@@ -99,7 +101,8 @@ We use the standardized versions to say how many standard deviations
     a score and tell you your ``percentile rank'', the percentage
     of test takers who score at your level or below.  The exam scores have
     an approximately normal distribution.  For example, with ACT, $\mu
-    = 21$ and $\sigma = 5$.
+    = 21$ and $\sigma = 5$. In most cases we don't know these
+    parameters, but for standardized tests they are known.
     \begin{enumerate}
     \item What is the standardized $z = (x-\mu)/\sigma$ score for
       Amber who got 27 on the ACT? 
@@ -111,8 +114,8 @@ We use the standardized versions to say how many standard deviations
 \end{key}
     \item What is Amber's percentile rank?  Select
       \fbox{Normal Distribution} under \fbox{One Categ.} on the 
-      \url{http://shiny.math.montana.edu/jimrc/IntroStatShinyApps/} 
-      app and plug her standardized score  into
+      \url{https://jimrc.shinyapps.io/Sp-IntRoStats}
+      app and plug her {\bf standardized score}  into
       the first line of this web app.  Explain what
       the number means in terms of other  test takers.  
 \begin{students}
@@ -154,7 +157,7 @@ drawing a ``heart'' from a well-shuffled deck of cards is
 
 \begin{minipage}{.80\linewidth}
 {\bf Normal Probabilities} are areas under the normal curve.  Area
-under the  entire curve is 1.   What area is shaded for this normal
+under the  {\bf entire} curve is 1.   What area is shaded for this normal
 distribution? \vspace*{2cm}
 \end{minipage}
 \includegraphics[width=.2\linewidth]{../plots/halfNormal.png}
@@ -215,9 +218,8 @@ or above the 90$^{th}$ percentile.
   \end{enumerate}
 \end{enumerate}
 
-Note: The last question gives us a useful rule of thumb which we call
-the empirical rule.  The middle value (probability of being within
-2 SD's) is usually rounded to 95\%.
+Note: This is called {\bf the empirical rule}.  The probability of being within
+2 SD's is often rounded to 95\%.
 \begin{students}
 
 \end{students}
@@ -227,7 +229,7 @@ the empirical rule.  The middle value (probability of being within
 \end{center}
 
 To standardize a normal distribution,  we need to know its true mean,
-$\mu$, true standard deviation, $\sigma$. Problem: we never know the
+$\mu$, true standard deviation, $\sigma$. Problem: we seldom know the
 true parameter values.  We can work around the unknown
 mean pretty easily, but not knowing $\sigma$ causes a bit of a problem.
 
@@ -245,7 +247,8 @@ In the early 1900's, Mr.~Gossett was working for Guinness Brewery.  He
 discovered that using an estimated instead of ``known'' $\sigma$
 changes the distribution from regular normal to something called a
 $t$-distribution which is more spread out.  Furthermore, there is not
-just one $t$-distribution, but many depending on your sample size.
+just one $t$-distribution, but many. You have to pick the right t
+distribution based on your sample size.
 
 This make sense because as sample size gets big, $s$ becomes a better
 and better estimate of $\sigma$.  Here is a picture of several
@@ -263,13 +266,13 @@ t-distributions compared to a standard normal distribution.
 
 We can standardize like this:
 $$ t = \frac{X - \xb}{s}\mbox{\ \  or go the other way:\ \ } x = \xb
-+ t^* \times s$$
++ t \times s$$
 and use the same web app to compute the 
 probabilities and quantiles for $t$-distributions just as we did with normal
 distributions. The one additional fact needed is that for a one-sample
 mean, we use $n-1$ (sample size minus 1) as the {\bf``degrees of
   freedom''} which define the t distribution needed.  When you select
-\fbox{t} under \fbox{One Quant.} or \fbox{Two Quant}, you'll be able to set
+\fbox{t distribution} under \fbox{One Quant.} or \fbox{Two Quant}, you'll be able to set
 the degrees of freedom.
 
 Example:\\
@@ -331,7 +334,7 @@ inches.
 \item Theoretical distributions are a shortcut method to obtain
   probabilities for p-values and confidence intervals.
 \item Normal and t distribution probabilities are areas under a
-  curve. We can get them from statistical computer packages.
+  curve. We can get them from statistical computing packages.
 \item Both normal and t distributions are symmetric and
   bell--shaped. The t-distributions are more spread out because we
   have to estimate the standard deviation.
@@ -343,14 +346,21 @@ inches.
   t). The standardized score tells us how many standard deviations we
   are from the center.
 \item You need to be able to go either way: find a probability from a
-  Z or t score, or find the percentile from the probability.
-\item Empirical Rule for data with a normal distribution:\\
+  Z or t score, or find the percentile from the
+  probability.
+
+\item Empirical Rule for data with a normal distribution:
   \begin{itemize}
   \item 68\% of the values fall within one SD of the mean.
   \item 95\% of the values fall within 2 SD of the mean, and 
   \item 99.7\% of the data fall within 3 SD of the mean.
   \end{itemize}
+This does not work with t distributions unless you have really large
+degrees of freedom.
+\item Use this space for questions or your own summary.\vfill
 \end{itemize}
+
+
 
 
 %% 5 pages.  Add CLT or LLN?
@@ -362,4 +372,18 @@ inches.
  % dev.copy(png,file="halfNormal.png", height=200,width=240);dev.off()
 
 %% 5 pages.  Add CLT or LLN?
+
+
+
+\begin{center}
+  {\large\bf Assignment}
+\end{center}
+
+\begin{itemize}
+\item 
+\item D2Quiz 8 is the next assignment.  Fill it in online.
+ %%  We strongly encourage you to get help in the Math Learning Center.
+\item Watch the ``Normal Distributions'' and ``t Distributions''  videos.
+\item Read the next two pages before your next class.
+\end{itemize}
 

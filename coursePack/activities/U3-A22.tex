@@ -77,7 +77,7 @@ p-values and confidence intervals.
       
 %% 
   
-We can use spinners and coin flips to simulate the distribution
+We can use spinners, card shuffles,  and coin flips to simulate the distribution
 of a proportion.  From that distribution we use the standard
 deviation of the resampled points to get the standard error of
 $\phat$.  We added two standard errors 
@@ -121,7 +121,7 @@ $$ \widehat{p} \pm z^*\sqrt{\widehat{p}(1-\widehat{p})/n}$$
 
 To build confidence intervals, we use the same $z^*$ values over and
 over again.  Go to the web app
-\url{http://shiny.math.montana.edu/jimrc/IntroStatShinyApps}, select
+\url{https://jimrc.shinyapps.io/Sp-IntRoStats }, select
 \fbox{Normal Distribution} under \fbox{One Categ} and  put
 confidence levels 0.80, 0.90, $\ldots$, 0.99 into the probability box
 (one at a time).  Change \fbox{Lower} to
@@ -242,7 +242,43 @@ in the long run, 99\% of those intervals will contain the true parameter.}
 
    \begin{enumerate}
      \setcounter{enumi}{1}
-   \item In an earlier assignment  you checked to see if a roulette wheel was
+   \item We'll check the assumptions for the survey in \#1.  Assume
+     these adults were selected via random phone number dialing.
+     \begin{enumerate}
+        \item Is population size at least $10n$ ($n = 2142$)? 
+\begin{students}
+        \vspace{.7cm}        
+\end{students}
+\begin{key}
+  {\it  Yes, there are more than 22,000 US adults. }
+\end{key}
+        \item Representative sample?   
+\begin{students}
+        \vspace{.7cm}        
+\end{students}
+
+\begin{key}
+  {\it Yes, the participants were randomly selected.}
+\end{key}
+        \item Independent trials?   
+\begin{students}
+        \vspace{.7cm}        
+\end{students}
+
+\begin{key}
+  {\it Yes, by random selection.}
+\end{key}
+        \item At least 10 successes? at least 10 failures?   
+\begin{students}
+        \vspace{.7cm}        
+\end{students}
+
+\begin{key}
+  {\it  Yes, 1221 successes and $2142-1221 = 921$ failures.}
+\end{key}
+\end{enumerate}
+
+\item In an earlier assignment  you checked to see if a roulette wheel was
      fair.  Were these assumptions met? The
      observer saw 3 ``Greens'' in 30 spins, and the  chance of
      green for a fair wheel is $2/38$. 
@@ -354,7 +390,7 @@ in the long run, 99\% of those intervals will contain the true parameter.}
 \end{key}
        \item Build the interval and interpret its meaning. 
 \begin{students}
-        \newpage
+        \vspace{2in}
 \end{students}
 
 \begin{key}
@@ -430,7 +466,7 @@ $H_a:$
 \end{key}
 
   \item Put the standardized $z$ value into the web app 
-    \url{http://shiny.math.montana.edu/jimrc/IntroStatShinyApps},
+    \url{https://jimrc.shinyapps.io/Sp-IntRoStats}
     \fbox{One Categ} -- \fbox{Normal Distribution} and ask for
     the \fbox{Extremes}.  What part of the plot is shaded?  What is
     the (total) p-value and how strong is this evidence against $H_0$?  
@@ -448,7 +484,7 @@ $H_a:$
   significance, what do you decide to do with $H_0$?  What is your
   conclusion?
 \begin{students}
-    \newpage
+ \vspace{3cm}
 \end{students}
 
 \begin{key} 
@@ -529,10 +565,9 @@ hypothesis test).}
 \end{key}
 
 
-\item What is the strength of evidence (from the web app
-  \url{http://shiny.math.montana.edu/prob}) against   $H_0$?  
+\item What is the strength of evidence (from the web app) against   $H_0$?  
 \begin{students}
-        \newpage
+       \newpage
 \end{students}
 
 \begin{key} 
@@ -568,3 +603,15 @@ hypothesis test).}
 
 
 %% 6 pages
+
+\begin{center}
+  {\large\bf Assignment}
+\end{center}
+
+\begin{itemize}
+\item D2Box 9 is the next assignment.  Turn in a pdf file to the
+  DropBox on D2L.
+ %%  We strongly encourage you to get help in the Math Learning Center.
+%\item Watch the ``Normal Distributions'' and ``t Distributions''  videos.
+\item Read the next two pages before your next class.
+\end{itemize}
