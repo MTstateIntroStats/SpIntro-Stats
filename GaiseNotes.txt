@@ -130,7 +130,7 @@ independence, chi-square goodness-of-fit test, etc.) if you had all the
 raw data and specify the roles of the variable(s) on which you would
 perform the analysis, but do not actually carry out the analysis.
 
-fiber vs cereal cost per oz regression
+fiber vs cereal cost per oz (regression)
 
 which pairs of variables should be plotted as a scatterplot?
 1. Blood pressure and age

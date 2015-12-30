@@ -29,14 +29,14 @@ is:  $H_0:\ p_1 = p_2$.
  \item If $H_0$ is true, the two groups are really the same, and we
    should combine them to get a better estimate of the overall
    proportion of successes. We'll call estimate $\widehat{p}_T$ where
-   the `T'' stands for ``{\bf marginal}'' because it's
+   the ``T'' stands for ``{\bf total}'' or ``{\bf marginal}'' because it's
    based on totals which appear in the outer margin of a table.  We
    find it by combining all successes from both 
    groups, then dividing by the sum of the sample sizes. 
   $$\widehat{p}_T = \frac{x_1 + x_2}{n_1+n_2} = \frac{n_1\widehat{p}_1
     + n_2\widehat{p}_2}{n_1 + n_2}$$ 
   Recall:  we used the same combined estimate when simulating draws
-  from $H_0$ earlier.
+  from $H_0$ earlier in Activity 12.
  \end{itemize}
 
  The {\bf hypothesis testing} formula for standard error of the
@@ -140,14 +140,14 @@ Clothing store: $\widehat{p}_2 = $
  \vspace{1cm}\\
 \end{students}
 \begin{key}
-  $105/200 = 0.525$ \\
+  $104/200 = 0.52$ \\
 \end{key}
     Overall: $\widehat{p}_T = $
 \begin{students}
  \vspace{1cm}\\
 \end{students}
 \begin{key}
-  $259/400 = 0.648$ \\
+  $258/400 = 0.645$ \\
 \end{key}
 
 \item When testing one proportion, we created a $z$ statistic with
@@ -168,8 +168,8 @@ Now our statistic is $\widehat{p}_1 - \widehat{p}_2$.
 \end{students}
 
 \begin{key}
-  $SE(\widehat{p}_1 - \widehat{p}_2 ) = \sqrt{ 0.648\times 0.352
-    (\frac{1}{200} +  \frac{1}{200})} = \sqrt{.002281} = 0.04776$ 
+  $SE(\widehat{p}_1 - \widehat{p}_2 ) = \sqrt{ 0.645\times 0.355
+    (\frac{1}{200} +  \frac{1}{200})} = \sqrt{.002281} = 0.045$ 
 \end{key}
 
 \item Compute our $z$ statistic.
@@ -177,7 +177,7 @@ Now our statistic is $\widehat{p}_1 - \widehat{p}_2$.
  \vspace{1cm}\\
 \end{students}
 \begin{key}
- $z = \frac{ 0.648 - 0.5025}{0.04776} = \frac{0.1455}{0.04776} = 3.047$ \\
+ $z = \frac{ 0.752 - 0.52}{0.04776} = \frac{0.25}{0.045} = 5.1$ \\
 \end{key}  
 \end{itemize}
 \item Use the web app to find the probability.  
@@ -186,9 +186,9 @@ How strong is the evidence against $H_0$?
  \vspace{1cm}\\
 \end{students}
 \begin{key}
-  \\ {\it p-value = $2 \times(0.001) = 0.002$ This is very, very
+  \\ {\it p-value \leq $2 \times(0.00001) = 0.00002$ This is very, very
     strong evidence refuting the null hypothesis that people act just
-    as helpful in the two situations.  In fact, the people close to
+    as helpfully in the two situations.  In fact, the people close to
     the bakery were much more helpful than those by the clothing
     store.  }
 \end{key}
@@ -235,9 +235,8 @@ OK, we are now ready to build a confidence interval.
   \vspace{2cm}\\
 \end{students}
 \begin{key}
-$ SE(\widehat{p}_1 - \widehat{p}_2) = \sqrt{ 0.648\times(1- 0.648)/200
-  + 0.5025\times(1-  0.5025)/200} = \sqrt{0.0011405 + .0012500 } =
-\sqrt{0.002391 } = 0.04889 $
+$ SE(\widehat{p}_1 - \widehat{p}_2) = \sqrt{ 0.752\times(1- 0.752)/200
+  + 0.502\times(1-  0.502)/200} =  0.046 $
 \end{key}
 
 \item In this case, a 90\% confidence interval is needed.  Refer back
@@ -248,8 +247,8 @@ $ SE(\widehat{p}_1 - \widehat{p}_2) = \sqrt{ 0.648\times(1- 0.648)/200
  \vspace{1cm}\\
 \end{students}
 \begin{key}
-ME = $ 1.645 \times 0.04889 = 0.0804 $ 90\% CI =  $0.648 - 0.5025 \pm
-0.0804 = 0.1455 \pm 0.0804 = (0.065, 0.226)$
+ME = $ 1.645 \times 0.046 = 0.076 $ 90\% CI =  $0.752 - 0.502 \pm
+0.076 = 0.25 \pm 0.076 = (0.174, 0.326)$
 \end{key}
 
 \item Interpret the CI in the context of this research question.
@@ -259,7 +258,7 @@ ME = $ 1.645 \times 0.04889 = 0.0804 $ 90\% CI =  $0.648 - 0.5025 \pm
 \end{students}
 \begin{key}
  {\it We are 90\% confident that the true proportion of helpful people
-   near a bakery is 6.5 to 22.6\% higher than near a clothing store.}
+   near a bakery is 17.4 to 32.6\% higher than near a clothing store.}
 \end{key}
 \end{enumerate}
 
@@ -272,15 +271,16 @@ ME = $ 1.645 \times 0.04889 = 0.0804 $ 90\% CI =  $0.648 - 0.5025 \pm
   of doing hypothesis tests or confidence intervals.  The last is
   particular for normal-theory based methods with proportions. 
   \begin{itemize}
-     \item The size of each sample must be less than a tenth the size
-       of its population.
+     % \item The size of each sample must be less than a tenth the size
+     %   of its population.
      \item Each sample must be representative of its population. 
      \item {\bf Independent} responses.  Definition: responses are
        independent if knowing one response does not help us guess the
        value of the other.  Sampling multiple people from the same
-       household gives {\bf dependent} responses.
-     \item To use normality for a confidence interval: at least 10
-       successes and 10 failures in each group.  To use normality for
+       household gives {\bf dependent} responses.  If we have a random
+       sample, we can assume observations are independent.
+     \item To use normality for a confidence interval: at least 5
+       successes and 5 failures in each group.  To use normality for
        hypothesis testing, take the smaller of $n_1$ and $n_2$ times
        the smaller of $\widehat{p}_T$ or ($1-\widehat{p}_T$) and this
        value should be at least 5.\vspace{1in}
@@ -314,7 +314,20 @@ $$ \mbox{estimate} \pm \mbox{multiplier} \times SE(\mbox{estimate})$$
   \widehat{p}_2) = \widehat{p}_1 - \widehat{p}_2 \pm z^* 
 \sqrt{\frac{\widehat{p}_1(1 - \widehat{p}_1)}{n_1} + 
       \frac{\widehat{p}_2(1 - \widehat{p}_2)}{n_2}}$$
+\end{itemize}\vfill
+
+
+
+
+\begin{center}
+  {\large\bf Assignment}
+\end{center}
+
+\begin{itemize}
+\item Fill in the bottom 3 boxes in column 3 of the Review Table. 
+\item D2Box 10 is due April 14.   Turn it in as a pdf file to the
+  DropBox on D2L.
+ %%  We strongly encourage you to get help in the Math Learning Center.
+\item Watch  videos 12 and 13 under Unit 3 Examples.
+\item Read the next two pages before your next class.
 \end{itemize}
-
-
-%% 5 pages
