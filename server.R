@@ -2373,7 +2373,7 @@ output$q1_EstimatePlot2 <- renderPlot({
             if(!is.null(q1Samp$data)){
                 div(
                   uiOutput('q1_sampDemoSampSize'),
-                  uiOutput('q1_SampDemoSample' ),
+                  uiOutput('q1_sampDemoSample' ),
                   br(),
                   div(
                     actionButton("q1_SampDemo_1", "Draw one Sample (and Clear)")
@@ -2396,7 +2396,7 @@ output$q1_EstimatePlot2 <- renderPlot({
   })
   
   ## get samples
-  output$q1_SampDemoSample <- renderUI({
+  output$q1_sampDemoSample <- renderUI({
     if(is.null(q1Samp$samples))
       return()
     if(!is.null(input$q1_Samp_click)){
