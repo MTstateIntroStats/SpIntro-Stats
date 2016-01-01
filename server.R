@@ -1724,11 +1724,6 @@ output$q1_testUI <- renderUI({
   }
 })
   
-# output$q1_SampDistPlot <- renderUI({ 
-#   plotOutput('q1_TestPlot2', click = 'q1_Test_click')
-# })
-
-
 observeEvent( input$null_mu, {
   q1Test$pvalue <- q1Test$moreExtremeCount <- NULL
   q1Test$colors <- rep(blu, length(q1Test$colors))
@@ -2340,44 +2335,154 @@ output$q1_EstimatePlot2 <- renderPlot({
   }
  
   
-  ##  Sampling Demo -----------------------------------------  cat 1
+  ##  Random Sampling Demo -----------------------------------------  cat 1
+  {
+  ## input order:
+  ## text box allows data editing
+  ## [Use Data] after that's clicked, also allow: [Repeat Data Twice]
+    ## show population size, mean word length, SD
+  ## Change sample size -- blanking out previous samples and means
+  ## sample: 1 [Start Over], 10, 100, 1000, 5000
+  ## plot -- clickable to allow ID of various samples.
   
   ## data input
-  {
+  
   
   q1Samp <- reactiveValues(data = NULL, samples = NULL, textIn = NULL, 
-                           colors = NULL,  names = NULL )
+                           colors = NULL,  means = NULL, names = NULL )
   
   ##  Use text box for input -- Paste in any text?
   ## set sample size. Allow population to increase.
   output$q1_SampDataUI <- renderUI({
-    fluidPage(
-      column(6,  div(
-             HTML(paste("<textarea name='q1_SampleText' cols='60' rows='12'>", joke, '</textarea>')),
-             br(),
-             actionButton("q1_useSampleText", "Use These Data")
-            )
+    fluidPage(   
+      column(6,  div( 
+        ##  Could add a choice here for Gettysburg address vs Joke.
+         HTML(paste('<textarea name="q1_SampleText" cols="40" rows="10"> ', joke, ' </textarea>')),
+         br(),
+         div(
+         actionButton("q1_sampUseData", "Use These Data"),
+         if(!is.null(q1Samp$data)){
+               div(
+                 actionButton("q1_sampPopDouble", "Clone (double) the Population"),
+                 h5(paste("Population size: ", nrow(q1Samp$data), "Mean word length: ", round(mean(q1Samp$data[,2]), 2) ))               
+             )
+          } else div()
+          ))
       ),
-       column(4,
-              div(
-                  numericInput('q1_sampSize', label = "Sample Size: ", value = 10, width = 100))
+       column(6,
+            if(!is.null(q1Samp$data)){
+                div(
+                  uiOutput('q1_sampDemoSampSize'),
+                  uiOutput('q1_SampDemoSample' ),
+                  br(),
+                  div(
+                    actionButton("q1_SampDemo_1", "Draw one Sample (and Clear)")
+                  ),
+                  if(length(q1Samp$samples)>1){
+                    div(
+                    fluidRow(
+                      column(4,  h4("More samples: ")),
+                      column(2, actionButton("q1_SampDemo_10", label = "10")),
+                      column(2, actionButton("q1_SampDemo_100", label = "100")),
+                      column(2, actionButton("q1_SampDemo_1000", label = "1000")),
+                      column(2, actionButton("q1_SampDemo_5000", label = "5000"))
+                    ),
+                  plotOutput('q1_sampDemoPlot', click = 'q1_Samp_click', height = '320px')
+                    )}
+                )
+            } 
        )
     )
   })
   
-  ## For 1 sample, Show the words sampled and their lengths.
-  output$q1_SamplingUI <- renderUI({
-    if(is.null(q1Samp$data)){
+  ## get samples
+  output$q1_SampDemoSample <- renderUI({
+    if(is.null(q1Samp$samples))
       return()
+    if(!is.null(input$q1_Samp_click)){
+      ##  We already have shuffled data and want to pick the clicked point
+      ##  Change to data related to a clicked point.
+      closestPoint <- which.min(abs(q1Samp$means - input$q1_Samp_click$x))
+      DF0 <- q1Samp$data[q1Samp$samples[, closestPoint], ]
+    } else if(is.matrix(q1Samp$samples)){
+      DF0 <- q1Samp$data[q1Samp$samples[, length(q1Samp$means)], ]
+    } else{
+      DF0 <- q1Samp$data[ sample(1:nrow(q1Samp$data), as.numeric(input$q1_sampSize)),]
     }
-    renderText(summary(q1Samp$data))
+     div(
+#       tags$label('Sample Size: ',
+#         tags$input(name='q1_sampSize', type='text', value='10', size='10')),
+#       br(),
+      HTML(paste(c("Sample words: ", as.character(DF0[, 1])))),
+      HTML(paste(c("<br>  Lengths:      ", DF0[, 2], " &nbsp; &nbsp; &nbsp;  Mean: ", mean(DF0[,2], na.rm=TRUE)), 
+                 collapse = "   "))
+    )
+  }) 
+  
+  observeEvent(input$q1_sampUseData, {
+    q1Samp$data <- cleanText(input$q1_SampleText)
   })
   
-  observeEvent(input$q1_useSampleText, {
-      q1Samp$data <- cleanText(input$q1_SampleText)
-      ## print(summary(q1Samp$data))
+  observeEvent(input$q1_sampPopDouble,{
+    q1Samp$data <- rbind( q1Samp$data, q1Samp$data)
+    q1Samp$samples <- q1Samp$means <- NULL
+  })
+  
+  observeEvent(input$q1_SampDemo_1, {
+      newSamples <- sample(1:nrow(q1Samp$data), as.numeric(input$q1_sampSize))
+      q1Samp$samples <-  newSamples
+      q1Samp$means <- mean(q1Samp$data[newSamples, 2],na.rm=TRUE) 
   })
 
+  observeEvent(input$q1_SampDemo_10, {
+    newSamples <- sapply(1:10, function(x) sample(1:nrow(q1Samp$data), as.numeric(input$q1_sampSize)))
+    q1Samp$samples <- cbind(q1Samp$samples, newSamples) 
+    q1Samp$means <- c(q1Samp$means, apply(newSamples, 2, function(x) mean(q1Samp$data[x, 2],na.rm=TRUE)) )
+    #q1Samp$colors <- rep(blu, length(q1Samp$mean))
+  })
+  
+  observeEvent(input$q1_SampDemo_100, {
+    newSamples <- sapply(1:100, function(x) sample(1:nrow(q1Samp$data), as.numeric(input$q1_sampSize)))
+    q1Samp$samples <- cbind(q1Samp$samples, newSamples) 
+    q1Samp$means <- c(q1Samp$means, apply(newSamples, 2, function(x) mean(q1Samp$data[x, 2],na.rm=TRUE)) )
+    #q1Samp$colors <- rep(blu, length(q1Samp$mean))
+  })
+
+  observeEvent(input$q1_SampDemo_1000, {
+    newSamples <- sapply(1:1000, function(x) sample(1:nrow(q1Samp$data), as.numeric(input$q1_sampSize)))
+    q1Samp$samples <- cbind(q1Samp$samples, newSamples) 
+    q1Samp$means <- c(q1Samp$means, apply(newSamples, 2, function(x) mean(q1Samp$data[x, 2],na.rm=TRUE)) )
+    #q1Samp$colors <- rep(blu, length(q1Samp$mean))
+  })
+
+  observeEvent(input$q1_SampDemo_5000, {
+    newSamples <- sapply(1:5000, function(x) sample(1:nrow(q1Samp$data), as.numeric(input$q1_sampSize)))
+    q1Samp$samples <- cbind(q1Samp$samples, newSamples) 
+    q1Samp$means <- c(q1Samp$means, apply(newSamples, 2, function(x) mean(q1Samp$data[x, 2],na.rm=TRUE)) )
+    #q1Samp$colors <- rep(blu, length(q1Samp$mean))
+  })
+
+  output$q1_sampDemoPlot <- renderPlot({
+    if(is.null(q1Samp$means) | length(q1Samp$means) < 2){ 
+      return() }
+    parm <- sort(q1Samp$means)
+    ## print(parm)
+    if(length(parm) < 3){
+      y <- rep(0.5,length(parm))
+      radius <- 4
+    } else {
+      y <- newy(parm)
+      nsims <- length(parm)
+      radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
+    }
+    plot(parm, y, ylim = c(0.5, pmax(10,max(y))), ylab = "", cex = radius/2, 
+         pch = 16, col = blu,  
+         xlab = "Mean Word Length", main = "Sampling Distribution")
+    legend("topright", bty = "n", paste(length(parm), "points \n Mean = ", 
+                                        round(mean(parm),3), "\n SE = ", round(sd(parm),3)))
+  }, width = 400)      
+  
+    
   }
   
    
