@@ -2335,7 +2335,7 @@ output$q1_EstimatePlot2 <- renderPlot({
   }
  
   
-  ##  Random Sampling Demo -----------------------------------------  cat 1
+  ##  Random Sampling Demo -----------------------------------------  quant 1
   {
   ## input order:
   ## text box allows data editing
@@ -2360,7 +2360,7 @@ output$q1_EstimatePlot2 <- renderPlot({
          HTML(paste('<textarea name="q1_SampleText" cols="40" rows="10"> ', joke, ' </textarea>')),
          br(),
          div(
-         actionButton("q1_sampUseData", "Use These Data"),
+         actionButton("q1_sampUseData", "Use This Text"),
          if(!is.null(q1Samp$data)){
                div(
                  actionButton("q1_sampPopDouble", "Clone (double) the Population"),
