@@ -2335,7 +2335,7 @@ output$q1_EstimatePlot2 <- renderPlot({
   }
  
   
-  ##  Random Sampling Demo -----------------------------------------  cat 1
+  ##  Random Sampling Demo -----------------------------------------  quant 1
   {
   ## input order:
   ## text box allows data editing
@@ -2372,30 +2372,39 @@ output$q1_EstimatePlot2 <- renderPlot({
        column(6,
             if(!is.null(q1Samp$data)){
                 div(
-                  uiOutput('q1_sampDemoSampSize'),
-                  uiOutput('q1_SampDemoSample' ),
-                  br(),
-                  div(
-                    actionButton("q1_SampDemo_1", "Draw one Sample (and Clear)")
-                  ),
-                  if(length(q1Samp$samples)>1){
-                    div(
-                    fluidRow(
-                      column(4,  h4("More samples: ")),
-                      column(2, actionButton("q1_SampDemo_10", label = "10")),
-                      column(2, actionButton("q1_SampDemo_100", label = "100")),
-                      column(2, actionButton("q1_SampDemo_1000", label = "1000")),
-                      column(2, actionButton("q1_SampDemo_5000", label = "5000"))
-                    ),
-                  plotOutput('q1_sampDemoPlot', click = 'q1_Samp_click', height = '320px')
-                    )}
+                  uiOutput('q1_sampDemoSampSize')
                 )
             } 
        )
     )
   })
   
-  ## get samples
+  output$q1_sampDemoSampSize <- renderUI({
+    if(is.null(q1Samp$data))
+      return()
+    div(
+    tags$label('Sample Size: ',
+              tags$input(name='q1_sampSize', type='text', value='10', size='10')),
+    uiOutput('q1_SampDemoSample' ),
+    br(),
+    div(
+      actionButton("q1_SampDemo_1", "Draw one Sample (and Clear)")
+    ),
+    if(length(q1Samp$samples)>1){
+      div(
+        fluidRow(
+          column(4,  h4("More samples: ")),
+          column(2, actionButton("q1_SampDemo_10", label = "10")),
+          column(2, actionButton("q1_SampDemo_100", label = "100")),
+          column(2, actionButton("q1_SampDemo_1000", label = "1000")),
+          column(2, actionButton("q1_SampDemo_5000", label = "5000"))
+        ),
+        plotOutput('q1_sampDemoPlot', click = 'q1_Samp_click', height = '320px')
+      )}
+    )
+  }) 
+    
+    ## get samples
   output$q1_SampDemoSample <- renderUI({
     if(is.null(q1Samp$samples))
       return()
