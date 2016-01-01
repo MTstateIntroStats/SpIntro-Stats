@@ -1729,6 +1729,7 @@ observeEvent( input$null_mu, {
   q1Test$colors <- rep(blu, length(q1Test$colors))
 })
 
+
 output$q1TestPvalue <- renderUI({
   if(!is.null(q1Test$moreExtremeCount)){
     h4(pvalue2print(q1Test$moreExtremeCount,  q1Test$sampleCount, q1Test$direction, q1Test$cutoff, q1Test$pvalue))
@@ -2392,14 +2393,7 @@ output$q1_EstimatePlot2 <- renderPlot({
             } 
        )
     )
-  })  
-  ## Input sample sizes
-  output$q1_sampDemoSampSize <- renderUI({
-    isolate(
-       tags$label('Sample Size: ', 
-               tags$input(name='q1_sampSize', type='text', value='10', size='10'))
-           )
-})
+  })
   
   ## get samples
   output$q1_SampDemoSample <- renderUI({
