@@ -191,7 +191,7 @@ The four were elated and relieved.
 They studied that night and went in the next day at the time the professor had told them.
 The professor placed them in separate rooms and handed each of them a test booklet, and told them to
 begin.
-They looked at the first problem, worth 5 points. It was something simple about exploratory
+They looked at the first problem, worth five points. It was something simple about exploratory
 data analysis. 'Cool,' they thought at the same time, each one in his separate room. 'This is
 going to be easy.'
 Each finished the problem and then turned the page. On the second page was written:
