@@ -1700,7 +1700,7 @@ output$q1_testUI <- renderUI({
        br(), 
        br(),
        fluidRow(
-           column(5, offset = 1, h4("More (shifted) resamples: ")),
+           column(5, offset = 1, h4("How many more (shifted) resamples?")),
            column(1, actionButton("q1_test_shuffle_1", label = "1")),
            column(1, actionButton("q1_test_shuffle_10", label = "10")),
            column(1, actionButton("q1_test_shuffle_100", label = "100")),
@@ -2363,7 +2363,7 @@ output$q1_EstimatePlot2 <- renderPlot({
          actionButton("q1_sampUseData", "Use This Text"),
          if(!is.null(q1Samp$data)){
                div(
-                 actionButton("q1_sampPopDouble", "Clone (double) the Population"),
+                 actionButton("q1_sampPopDouble", "Clone (double) the Text"),
                  h5(paste("Population size: ", nrow(q1Samp$data), "Mean word length: ", round(mean(q1Samp$data[,2]), 2) ))               
              )
           } else div()
@@ -2410,9 +2410,6 @@ output$q1_EstimatePlot2 <- renderPlot({
       DF0 <- q1Samp$data[ sample(1:nrow(q1Samp$data), as.numeric(input$q1_sampSize)),]
     }
      div(
-#       tags$label('Sample Size: ',
-#         tags$input(name='q1_sampSize', type='text', value='10', size='10')),
-#       br(),
       HTML(paste(c("Sample words: ", as.character(DF0[, 1])))),
       HTML(paste(c("<br>  Lengths:      ", DF0[, 2], " &nbsp; &nbsp; &nbsp;  Mean: ", mean(DF0[,2], na.rm=TRUE)), 
                  collapse = "   "))
@@ -2429,13 +2426,16 @@ output$q1_EstimatePlot2 <- renderPlot({
   })
   
   observeEvent(input$q1_SampDemo_1, {
-      newSamples <- sample(1:nrow(q1Samp$data), as.numeric(input$q1_sampSize))
+      newSamples <- matrix(sample(1:nrow(q1Samp$data), as.numeric(input$q1_sampSize)),ncol=1)
       q1Samp$samples <-  newSamples
       q1Samp$means <- mean(q1Samp$data[newSamples, 2],na.rm=TRUE) 
   })
 
   observeEvent(input$q1_SampDemo_10, {
     newSamples <- sapply(1:10, function(x) sample(1:nrow(q1Samp$data), as.numeric(input$q1_sampSize)))
+    if(!is.null(q1Samp$samples) & nrow(newSamples) != nrow(q1Samp$samples)){
+      q1Samp$samples <-  q1Samp$means <- NULL
+    }
     q1Samp$samples <- cbind(q1Samp$samples, newSamples) 
     q1Samp$means <- c(q1Samp$means, apply(newSamples, 2, function(x) mean(q1Samp$data[x, 2],na.rm=TRUE)) )
     #q1Samp$colors <- rep(blu, length(q1Samp$mean))
@@ -2443,6 +2443,9 @@ output$q1_EstimatePlot2 <- renderPlot({
   
   observeEvent(input$q1_SampDemo_100, {
     newSamples <- sapply(1:100, function(x) sample(1:nrow(q1Samp$data), as.numeric(input$q1_sampSize)))
+    if(!is.null(q1Samp$samples) & nrow(newSamples) != nrow(q1Samp$samples)){
+      q1Samp$samples <-  q1Samp$means <- NULL
+    }
     q1Samp$samples <- cbind(q1Samp$samples, newSamples) 
     q1Samp$means <- c(q1Samp$means, apply(newSamples, 2, function(x) mean(q1Samp$data[x, 2],na.rm=TRUE)) )
     #q1Samp$colors <- rep(blu, length(q1Samp$mean))
@@ -2450,6 +2453,9 @@ output$q1_EstimatePlot2 <- renderPlot({
 
   observeEvent(input$q1_SampDemo_1000, {
     newSamples <- sapply(1:1000, function(x) sample(1:nrow(q1Samp$data), as.numeric(input$q1_sampSize)))
+    if(!is.null(q1Samp$samples) & nrow(newSamples) != nrow(q1Samp$samples)){
+      q1Samp$samples <-  q1Samp$means <- NULL
+    }
     q1Samp$samples <- cbind(q1Samp$samples, newSamples) 
     q1Samp$means <- c(q1Samp$means, apply(newSamples, 2, function(x) mean(q1Samp$data[x, 2],na.rm=TRUE)) )
     #q1Samp$colors <- rep(blu, length(q1Samp$mean))
@@ -2457,6 +2463,9 @@ output$q1_EstimatePlot2 <- renderPlot({
 
   observeEvent(input$q1_SampDemo_5000, {
     newSamples <- sapply(1:5000, function(x) sample(1:nrow(q1Samp$data), as.numeric(input$q1_sampSize)))
+    if(!is.null(q1Samp$samples) & nrow(newSamples) != nrow(q1Samp$samples)){
+      q1Samp$samples <-  q1Samp$means <- NULL
+    }
     q1Samp$samples <- cbind(q1Samp$samples, newSamples) 
     q1Samp$means <- c(q1Samp$means, apply(newSamples, 2, function(x) mean(q1Samp$data[x, 2],na.rm=TRUE)) )
     #q1Samp$colors <- rep(blu, length(q1Samp$mean))
