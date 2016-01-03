@@ -1,7 +1,117 @@
 \def\theTopic{Paired Intro }
 
 \begin{center}
-{\bf {\large Seeing Double}}\\
+{\bf {\large Seeing Double}}\\ 
 \end{center}
 
-\newpage
+One of the assumptions for doing any statistical inference in this
+course is that we have independent observations.  
+We have also seen situations in which researchers obtained two
+measurements on one unit:
+\begin{enumerate}
+  \item  When assessing the effect of energy drinks and alcohol on
+    people, researchers measured each subject before and after they
+    drank the beverage.  The two measurements on the same person are
+    not independent because some people will tend to score high each
+    time and others will tend to score low.
+  \item Texting study ``B'' on page 191 of the last reading used each
+    subject for the ST  condition and for DT condition.  
+    \begin{enumerate}
+    \item Are the two  observations independent?\vspace{1cm}
+    \item If not, what characteristics of the person would affect both
+      observations? \vspace{1cm}
+    \end{enumerate}
+  \item Similarly, study ``C'' on page 192-193 observed drivers on a
+    driving simulator under several conditions (no texting, texting
+    manually, texting with Google Glass).  The same issues with
+    independence occur for this study as well.
+  \end{enumerate}
+
+It might sound like we don't recommend measuring people multiple
+times, but actually, \vspace{.4cm}
+
+{\bf it's a good idea to take multiple measurements on people.}\vspace{.4cm}
+  
+
+If you read the ``Energy Drinks'' study carefully, you'll see that we
+did not analyze the RBANS scores individually, but subtracted post
+score minus pre-score and analyzed ``Change in RBANS''.
+\begin{itemize}
+\item How many ``change in RBANS'' scores did we have for each
+  person?\vspace{.5cm}
+\item Are the ``change in RBANS'' measurement independent?\vspace{.5cm}
+\end{itemize}
+
+{\bf Take differences to get a single difference or change for each
+  subject.} Then we have just one ``change'' per subject, and, as long
+as one subject doesn't influence another, we can assume observations
+are independent.  
+
+
+Simple example:\\
+  In the texting study ``B'' on page 191, each subject was tested
+  under both DT (while texting) and ST (no texting) conditions.  We
+  don't know why the authors specifically stated that they used an
+  ``unpaired'' t-test, because this seems to be a situation where
+  pairing should be used.  
+
+  One should subtract one average reaction time from the other and
+  analyze the differences as a one-sample t-test (or compute a
+  one-sample t-based confidence interval) to make a statement about
+  the mean difference, which can extend our inference to answer
+  questions about the impact of texting while doing another task in a
+  whole population of students.\vspace{.4cm}
+
+The {\bf Paired T test} is really nothing new. 
+\begin{itemize}
+\item Take differences for each subject or unit.
+\item Analyze the differences using one-sample t procedures. Degrees
+  of freedom will be $n-1$, sample size minus one.
+\end{itemize}
+One caution: do be careful in stating results. 
+Talk about the mean change or the mean difference, not the difference
+in means (because we are using one sample methods, there is only one
+mean, but it's the mean of the change scores or differences.)
+
+
+{\bf Blocking}\\
+  One of the principles of experimental design from page 73 is
+  ``blocking'' whch means that we like to compare treatments on units
+  which are as alike as possible.  The paired t-test uses each subject
+  as one block, then condenses two observations per person down to a
+  single difference.
+ 
+{\bf Randomization}, another principle of experimental design, is
+still important.  We wish that the texting study ``B'' had randomly
+assigned  subjects to either ST or DT for their first experience
+ instead of giving them all in the same order.  What lurking
+variable  might change reaction times under the two conditions, but
+could be ``evened out'' by randomly changing the order?\vspace{1cm}
+
+A local company selling diet aides likes to advertise in the newspaper
+showing pictures of someone who lost 75 pounds while using their
+products.  
+\begin{itemize}
+ \item Should a person who would like to lose weight be heavily
+   influenced by stories of one person's weight loss?\vspace{1cm}
+ \item What evidence would be more impressive?\vspace{1cm}
+ \item How would the ideas above be used to demonstrate the
+   effectiveness of a dieting product?\vspace{1cm}
+\end{itemize}
+
+
+
+\begin{center}
+  {\large\bf Important Points}
+\end{center}
+   
+\begin{itemize}
+  \item Know the assumptions for using $z$ and $t$ methods. \vfill
+  \item It is a good idea to collect multiple observations on
+    individuals under different treatment conditions, but before
+    analyzing them, we should reduce them down to a single number per
+    subject.\vfill
+  \item We use one-sample t procedures to analyze differences. DF =
+    $n-1$. \vspace*{1cm}
+\end{itemize}
+
