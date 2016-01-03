@@ -105,7 +105,24 @@ The following exercises are adapted from the CATALST curriculum at
 \begin{key}
  {\it Readers of Consumer Reports with enough time to answer the
    survey.  }      
-\end{key} 
+\end{key}
+  \item  What is the response?  
+\begin{students}
+          \vspace{2cm}
+\end{students}
+\begin{key}
+ {\it People's satisfaction with the restaurant's food and service.  }      
+\end{key}
+
+\item What type of inference do people want when they look at ratings
+  of a store or restaurant?
+\begin{students}
+          \vspace{1cm}
+\end{students}
+\begin{key}
+ {\it We commonly look at ``number of stars'', which is an estimated
+   quality on a 1 to 5 scale.  }      
+\end{key}
 \end{enumerate}
  \item Emotional Support\footnote{Hite, S. (1976). {\it The Hite
        Report: A nationwide survey of female sexuality}. London:
@@ -155,16 +172,23 @@ The following exercises are adapted from the CATALST curriculum at
      would project a dime into the air. Use the data file located on
      D2L.
      \begin{enumerate}
-
      \item  Before opening the data file, which applet should be used
        to create an interval estimate for the difference in elasticity
        (single proportion, single mean, two-sample proportion,
        two-sample mean)?  Explain. 
 \begin{students}
-          \vspace{2cm}
+          \vspace{1.5cm}
 \end{students}
 \begin{key}
  {\it StatKey two-sample means }      
+\end{key}
+\item What distribution would be used to obtain the right multiplier
+  for the CI above?
+\begin{students}
+          \vspace{1cm}
+\end{students}
+\begin{key}
+ {\it $t_{43}$}      
 \end{key}
 
      \item  The observed difference in mean elasticity between the two
@@ -214,7 +238,7 @@ The following exercises are adapted from the CATALST curriculum at
           \vspace{2cm}
 \end{students}
 \begin{key}
- {\it  }      
+ {\it  ( 0.913 , 0.946 )}      
 \end{key} 
 
        \item  Interpret your interval. 
@@ -222,7 +246,8 @@ The following exercises are adapted from the CATALST curriculum at
           \vspace{4cm}
 \end{students}
 \begin{key}
- {\it  }      
+ {\it  We are 95\% confident that the true proportion of girls bornto
+   women who undergo MicroSort is between 91.3 and 94.6\%. }      
 \end{key}
 
        \item Compute a 95\% interval estimate using a theoretical
@@ -233,21 +258,21 @@ The following exercises are adapted from the CATALST curriculum at
           \vspace{.5cm}
 \end{students}
 \begin{key}
- {\it  }      
+ {\it z multiplier  $0.93 \pm 1.96 \sqrt{.93(.07)/945} = 0.93 \pm 0.0163 = (0.914, 0.946)$ }      
 \end{key}
            \item What is the multiplier that should be used? 
 \begin{students}
           \vspace{.5cm}
 \end{students}
 \begin{key}
- {\it  }      
+ {\it  1.96}      
 \end{key}
            \item What is the standard error of the sample proportion?
 \begin{students}
           \vspace{1cm}
 \end{students}
 \begin{key}
- {\it  }      
+ {\it  .0083}      
 \end{key}
            \item What is the margin of error of the interval estimate? \vspace{.5cm}
            \item Give the interval estimate.
@@ -255,9 +280,8 @@ The following exercises are adapted from the CATALST curriculum at
           \vspace{.5cm}
 \end{students}
 \begin{key}
- {\it  }      
-\end{key}
-          
+ {\it  .0163}      
+\end{key}          
            \item Compare the interval estimate using the theoretical
              distribution to the interval estimate using Bootstrap
              method.  Are they similar in center?  Width? 
@@ -265,7 +289,7 @@ The following exercises are adapted from the CATALST curriculum at
           \vspace*{2cm} \newpage
 \end{students}
 \begin{key}
- {\it  }      
+ {\it  Right on!}      
 \end{key}
            \end{enumerate}
 
@@ -288,7 +312,7 @@ The following exercises are adapted from the CATALST curriculum at
           \vspace{2cm}
 \end{students}
 \begin{key}
- {\it StatKey two-sample means }      
+ {\it Use the web app two-sample means }      
 \end{key} 
 
          \item  How many resamples (trials) did you run in your bootstrap
@@ -297,7 +321,7 @@ The following exercises are adapted from the CATALST curriculum at
           \vspace{3cm}
 \end{students}
 \begin{key}
- {\it  }      
+ {\it ( 0.921 , 0.939 ) }      
 \end{key}
 
          \item  What is the difference between sample size and number
@@ -306,7 +330,10 @@ The following exercises are adapted from the CATALST curriculum at
         \vspace{4cm}
 \end{students}
 \begin{key}
- {\it  }      
+ {\it  Sample size is the number of women who use MicroSort -- the
+   size of our data set.  The number of trials is just the number of
+   simulations we run, which is rather arbitrary as long as we have
+   several 1000 runs.}      
 \end{key}
 
          \end{enumerate}
@@ -320,8 +347,7 @@ The following exercises are adapted from the CATALST curriculum at
          on D2L gives the results of a study using cognitive
          behavioral therapy (CBT) and the pre-and post-treatment
          weights of 29 patients, along with the change in weight. 
-         You can get the descriptive statistics you
-           need from the Rossman-Chance web app.   
+         Get the data from D2L and load it into the web app.
          \begin{enumerate}
          \item\label{int1}  Build a 99\% confidence interval for the
            difference in true means.   
@@ -364,7 +390,7 @@ The following exercises are adapted from the CATALST curriculum at
            hypothesis test agree with the results for the confidence
            interval?  Explain. 
 \begin{students}
-          \vspace{4cm}\newpage
+          \vspace{4cm}
 \end{students}
 \begin{key}
  {\it  }      
@@ -386,14 +412,14 @@ The following exercises are adapted from the CATALST curriculum at
           \vspace{2cm}
 \end{students}
 \begin{key}
- {\it  }      
+ {\it  $H_0: p_M = p_W$,   $H_a: p_M \neq p_W$,  }      
 \end{key}
 
          \item  We would like to use a theoretical distribution to
            conduct this  test. 
           \begin{enumerate}
-           \item List the four assumptions for a hypothesis test
-             (Activity 20).  Is  each one met?  
+           \item List the  assumptions for a hypothesis test
+             (Activity 22).  Is  each one met?  
 \begin{students}
           \vspace{3cm}
 \end{students}
@@ -440,7 +466,8 @@ The following exercises are adapted from the CATALST curriculum at
            in the concussion rates between male and female soccer
            players.
            \begin{enumerate}
-           \item  What confidence level should be used? 
+           \item  What confidence level should be used to mach the
+             test just above? 
 \begin{students}
           \vspace{1cm}
 \end{students}
