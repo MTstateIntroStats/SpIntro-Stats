@@ -40,6 +40,7 @@
 \newcommand{\hs}[1]{\hspace{#1in}}
 \newcommand\textstyleInternetlink[1]{\textcolor{blue}{#1}}
 \newcommand{\xb}{\overline{x}}
+\newcommand{\xbar}{\overline{x}}
 \newcommand{\phat}{\widehat{p}}
 
 %\fancyhead[RE]{\textit{ \nouppercase{\leftmark}} }
@@ -59,37 +60,43 @@
 
 \begin{document}
  \begin{titlepage}
- \vspace*{.6in}
+ \vspace*{1in}
  \begin{center}
- {\huge \sf   Stat 216 Course Pack Fall 2015}\\
+ {\huge \sf   Stat 216 Course Pack Spring 2016}\\
 \ \\
 { \LARGE \sf Activities and Notes }\\
   \ \\
   {\large\bf\  } \vspace{.2in}\\
-  {\Large \sf Sections: 1, 4, 5, 7, 8, 9, 10, 12, 13, 15, 16, 17, 19, 22  meeting }\\
-\ \\
-   {\LARGE \sf Monday, Wednesday, and Friday} \\
   \ \\
-  {\large \sf with two Common Hour Exams, and Common Final}\vspace{.8cm}\\
 
-\ \\
-
-\includegraphics[width=.9\linewidth]{../horizonbigideas.jpg}
+\includegraphics[width=.9\linewidth]{../MSU2NWpanorama.jpg}\\
+\hspace*{\fill} {\tiny Photo by Kelly Gorham}\hspace*{.8cm}
 \vspace{1in}
 
 {\Large \sf
+  Dr. Jim Robison-Cox\\
   Department of Mathematical Sciences\\
-  Montana State University} \vspace{1in}\\
- \end{center}
- \vspace*{\fill}
+  Montana State University} \vfill 
+
+{\small
+ License: Creative Commons BY-SA 3.0
+\url{https://creativecommons.org/licenses/by-sa/3.0/legalcode}  
+}
+\end{center}
+
+
  \end{titlepage}
+
 
 %\newpage
 \thispagestyle{empty}
-\include{MWF-calendar}
+%\include{./TR-SpCalendar}
 
+%\include{./MWF-SpCalendar}
 
-\def\theTopic{Intro \& Syllabus }
+ \textheight = 9.25 in
+
+\def\theTopic{Syllabus }
 \def\dayNum{1}
 \def\unitNum{1}
 
@@ -103,131 +110,380 @@
 }
 \setcounter{page}{1}
  \newpage
- \include{U1-D1}  % fraud: 3 pgs
+ \include{./activities/U1-A1}  % pages 1 - 9.  Script:  pgs 7-9
  \newpage
 
 \fancyhead[LE,RO]{
    {\it \theTopic }\\
    {\it Unit \unitNum\   \ Page \thepage }
 }
-  \include{OI-1}
+  \include{./readings/U1-R1}  %% buff  p 11 -- 14
+                              %% Descriptive Stats p 10 - 14  
   \newpage
 \fancyhead[LE,RO]{
    {\it \theTopic }\\
    {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
 }
- \include{U1-D2} %% Descriptives - 7 pgs
+ \include{./activities/U1-A2} %% Descriptives - pgs 15 - 19
  \newpage
 
 \fancyhead[LE,RO]{
    {\it \theTopic }\\
    {\it Unit \unitNum\   \ Page \thepage }
 }
-  \include{OI-2}
+  \include{./readings/U1-R2}   %% p 20- 22
+                               %%  buff: 21 - 22
   \newpage
 
 \fancyhead[LE,RO]{
    {\it \theTopic }\\
    {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
 }
- \include{U1-D3}  %% sampling exercise 7 pgs
+ \include{./activities/U1-A3}  %% sampling exercise  pgs 23 - 29
  \newpage
- \include{U1-D4}  %% helper-hinderer 5 pgs
- \newpage
- \include{U1-D5}  %% ESP  5 pgs
- \newpage
- \include{U1-D6}  %% Rats - CI  5 pgs
- \newpage
- \include{U1-D7}  %%  CI - meaning  2 pgs
- \newpage
- \include{U1-D8}  %% Male idiot 4 pgs 
-  \newpage
- \include{U1-D9}  %% Review 4 pgs
+
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\   \ Page \thepage }
+}
+  \include{./readings/U1-R3}  %% p 31- 32 buff
   \newpage
 
- \def\unitNum{2}
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
+}
+ \include{./activities/U1-A4}  %% helper-hinderer  pgs 33 - 38 
+ \newpage
+
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\   \ Page \thepage } 
+}
+  \include{./readings/U1-R4} %% p 39- 40 buff
+  \newpage
+
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\ 
+   {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
+}
+ \include{./activities/U1-A5}  %% ESP   pgs 41 - 44
+ \newpage
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\   \ Page \thepage }
+}
+  \include{./readings/U1-R5} %% p 45- 46 Buff
+  \newpage
+
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\  Activity \dayNum \ Page \thepage } 
+}
+ \include{./activities/U1-A6}  %% Rats - CI   pgs 47 - 51
+\newpage
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\   \ Page \thepage }
+}
+  \include{./readings/U1-R6} %% p 53- 54 Buff
+  \newpage
+  
+\fancyhead[LE,RO]{ 
+   {\it \theTopic }\\
+   {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
+}
+ \include{./activities/U1-A7}  %%  CI - meaning   pgs 55- 57
+ \newpage
+
+\fancyhead[LE,RO]{ 
+   {\it \theTopic }\\
+   {\it Unit \unitNum\   \ Page \thepage }
+}
+  \include{./readings/U1-R7}  %% p 59-60  buff
+  \newpage
+
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
+}
+ \include{./activities/U1-A8}  %% Male idiot  pgs  61 -- 63
+  \newpage
+
+ \include{./activities/U1-A9}  %% Review  pgs 64 - 68
+
+\newpage
+
+ \def\unitNum{2} 
  \thispagestyle{empty}
  \vspace*{\fill}
  \begin{center}
-   {\huge Unit 2}   %% p 51
+   {\huge Unit 2}   %% p 69 - 70 blue
  \end{center}
  \vspace*{\fill}
  \newpage
- \ \ \ \thispagestyle{empty}
+
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\   \ Page \thepage }
+}
+  \include{./readings/U2-R8}  %% 71-72 buff, p 73 white
+  \newpage
+ 
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
+}
+
+  \include{./activities/U2-A10} %% Music to study by? Experiments pgs 74-80
+  \newpage
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\   \ Page \thepage }
+}
+  \include{./readings/U2-R9}    %% sampling dist'n for xbar pgs 81-82 buff
+  \newpage
+
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
+}
+ \include{./activities/U2-A11} %% book costs bootstrap mean CI   pgs 83-87  
  \newpage
 
-  \include{U2-D10} %% Music to study by? Experiments 7 pgs
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\   \ Page \thepage }
+}
+  \include{./readings/U2-R10}    %% comparative studies  pages 89-90  buff
   \newpage
- \include{U2-D11} %% bootstrap mean CI    5 pgs
+
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
+}
+ \include{./activities/U2-A12}%% Peanut Experiment  pgs 91-96
+ \newpage  
+\fancyhead[LE,RO]{ 
+   {\it \theTopic }\\
+   {\it Unit \unitNum\   \ Page \thepage } 
+}
+  \include{./readings/U2-R11}  %% p 97-98  buff
+  \newpage
+
+\fancyhead[LE,RO]{ 
+   {\it \theTopic }\\
+   {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
+}
+
+ \include{./activities/U2-A13} %%  ` Wrong weight`  pgs 99-103
  \newpage
- \include{U2-D12}%% Peanut Experiment 6 pgs
+
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\   \ Page \thepage }
+}
+  \include{./readings/U2-R12}   %% pages  105-6  buff
+  \newpage
+
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
+}
+
+ \include{./activities/U2-A14}  %% Energy Drinks 6 pgs 107-112
  \newpage
- \include{U2-D13} %% Wrong weight 5 pgs 
+
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\   \ Page \thepage }
+}
+  \include{./readings/U2-R13}   %% pages 113-114  buff
+  \newpage
+
+
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
+}
+
+ \include{./activities/U2-A15}  %% Arsenic test of 1 mean  pgs 115-120
  \newpage
- \include{U2-D14}  %% Energy Drinks 6 pgs
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\   \ Page \thepage }
+}
+  \include{./readings/U2-R14}   %% pages 121-122 buff
+  \newpage
+
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
+}
+
+ \include{./activities/U2-A16}  %% Errors pgs 123-128
  \newpage
- \include{U2-D15}  %% birth weights 6 pgs
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\   \ Page \thepage }
+}
+  \include{./readings/U2-R15}   %%  p 129-130  buff
+  \newpage
+
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
+}
+ \include{./activities/U2-A17}  %% slope corr 5 pgs 131-136  Rossman-CHance
  \newpage
- \include{U2-D16}  %% arsenic 7 pgs
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\   \ Page \thepage }
+}
+  \include{./readings/U2-R16}   %% Test slope pages 137 - 138 buff
+  \newpage
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
+}
+ \include{./activities/U2-A18}  %% test slope:  139-142
+  \newpage
+           %%  no reading U2-R17 -- they find a regression example.
+ \include{./activities/U2-A19}  %% more regression p 143- 145 
  \newpage
- \include{U2-D17}  %% slope corr 5 pgs
- \newpage
- \include{U2-D18}  %% test slope:  4 pgs
- \newpage
- \include{U2-D19}  %% Errors & Power 5 pgs
- \newpage
- \include{U2-D20}  %% review  6 pgs
- \newpage
-% \ \ \ \thispagestyle{empty}
-% \newpage
+ \include{./activities/U2-A20}  %% review   pgs 146 - 151
+
+\newpage
+
 
  \def\unitNum{3}
  \thispagestyle{empty} 
  \vspace*{\fill}
  \begin{center}
-   {\huge Unit 3}
+   {\huge Unit 3}                %% p 153-154  blue
  \end{center}
  \vspace*{\fill}
  \newpage
  \ \ \ \thispagestyle{empty}
- \newpage
- \include{U3-D21}  %% 5 pgs
- \newpage
- \include{U3-D22}  %% 6.5 pgs
+ \newpage 
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\   \ Page \thepage }
+}
+  \include{./readings/U3-R17}   %%  pages 155 - 156  buff
+  \newpage
+
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
+}
+ \include{./activities/U3-A21}  %%  pgs 157-162
  \newpage
 \fancyhead[LE,RO]{
    {\it \theTopic }\\
    {\it Unit \unitNum\   \ Page \thepage }
 }
- \include{U3-Reading1}  %% 3 pages
-  \newpage
+  \include{./readings/U3-R18}   %%  pages 163 - 164 buff
+%  \newpage
+%  \ \ \ \thispagestyle{empty}
+ \newpage 
+
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
+}
+
+ \include{./activities/U3-A22}  %%  pgs 165-171
+ \newpage 
+
+
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\   \ Page \thepage } 
+}
+ \include{./readings/U3-R19}  %%  Baking bread  pages  173-174
+ 
+ \newpage
 \fancyhead[LE,RO]{
    {\it \theTopic }\\
    {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
 }
  \newpage
- \include{U3-D23} %%  5 pgs
+ \include{./activities/U3-A23} %%  Normal -- 2 proportions pgs 175-179 
  \newpage
- \include{U3-D24}  %%  5 pgs 
- \newpage
- \include{U3-D25}   %% 5  pgs
-  \newpage
+
+
 \fancyhead[LE,RO]{
    {\it \theTopic }\\
    {\it Unit \unitNum\   \ Page \thepage }
 }
- \include{U3-Reading2}  %% 3 pages
+  \include{./readings/U3-R20}   %% Galtons Board  p 181 -182 buff
+\newpage  
+
+
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
+}
+ \include{./activities/U3-A24}  %%  t-distn for 1 mean  pgs  183-189
+ \newpage
+
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\   \ Page \thepage }
+}
+  \include{./readings/U3-R21}   %%   t-distn examples & practice 
+                                %%   p 191-194 buff  
+\newpage
+
+
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
+}
+ \include{./activities/U3-A25}   %% more REDs  pg  195 - 200
   \newpage
+
+
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\   \ Page \thepage }
+}
+  \include{./readings/U3-R22}   %%  Intro 2 pairs?  p 201 -202 buff  
+
 \fancyhead[LE,RO]{
    {\it \theTopic }\\
    {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
 }
  \newpage
- \include{U3-D26} %%  4 pgs Concussions 
+ \include{./activities/U3-A26} %% Paired  %%   pgs 203 - 207
  \newpage
- \include{U3-D27}  %% 5  pgs wrapup
+
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\   \ Page \thepage }
+}
+  \include{./readings/U3-R23}   %% Concussions   p 209 - 210 buff &
+                                %%  p 211 white
+
+  \newpage
+\fancyhead[LE,RO]{
+   {\it \theTopic }\\
+   {\it Unit \unitNum\  Activity \dayNum \ Page \thepage }
+} 
+ \include{./activities/U3-A27}  %% Concussions  pgs  212 - 216
  \newpage
- \include{U3-A1} %% Paired  %% 7  pgs
-% \newpage
-% \include{U3-DA2} %% Sample size effects
+ \include{./activities/U3-A28} %%   wrapup  pgs 217 - 224
+\fancyhead{}
+\pagestyle{empty}      %%  224 blank 
+\ \ \ \ 
+\newpage
+\begin{figure}[p]
+    \vspace*{-1in}
+    \makebox[\linewidth]{
+        \includegraphics[angle = 90]{plots/ReviewTable.pdf}  %% p 225 buff
+    }
+\end{figure}
+\newpage
  \end{document}
+
