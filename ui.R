@@ -23,8 +23,19 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
                     theme = shinytheme("spacelab"),
     ## 
     ## use empty tabPanel to avoid printing "tab-pane active"               
-    tabPanel(""), 
-    
+    tabPanel("",
+             h2("Introductory Statistics Simulations"),
+             h5("Choose the type of data to begin:"),
+             HTML("<ul>
+                  <li> One Categorical</li>
+                  <li> One Quantitative</li>
+                  <li> Two Categorical</li>
+                  <li> Two Quantitative or</li>
+                  <li> One Quantitative and One Categorical</li>
+                  </ul>  Load the data, then choose to Test or Estimate.<br>
+                   Demos generally use preloaded data. ")
+    ), 
+  
     ####   One Categorical  -----------------------------------------------------   1 cat
 {
     navbarMenu("One Categ.",  
