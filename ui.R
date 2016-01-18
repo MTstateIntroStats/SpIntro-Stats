@@ -25,15 +25,21 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
     ## use empty tabPanel to avoid printing "tab-pane active"               
     tabPanel("",
              h2("Introductory Statistics Simulations"),
-             h5("Choose the type of data to begin:"),
-             HTML("<ul>
+             HTML("<div>
+                   <div style = 'width: 48%; float: left;'>
+                   h5('First choose the type of data to use:'),
+                  <ul>
                   <li> One Categorical</li>
                   <li> One Quantitative</li>
                   <li> Two Categorical</li>
                   <li> Two Quantitative or</li>
                   <li> One Quantitative and One Categorical</li>
                   </ul>  Load the data, then choose to Test or Estimate.<br>
-                   Demos generally use preloaded data. ")
+                   Demos generally use preloaded data. 
+                  </div>
+                  <div style='width: 40%; float: left'>
+                   <img src = 'gradeSpinner4.png' alt = 'Spinner Wheel' width = '200px'>
+                  </div> </div>")
     ), 
   
     ####   One Categorical  -----------------------------------------------------   1 cat
