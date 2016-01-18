@@ -27,7 +27,7 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
              h2("Introductory Statistics Simulations"),
              HTML("<div>
                    <div style = 'width: 48%; float: left;'>
-                   h5('First choose the type of data to use:'),
+                   First choose the type of data to use:
                   <ul>
                   <li> One Categorical</li>
                   <li> One Quantitative</li>

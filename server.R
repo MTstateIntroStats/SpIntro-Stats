@@ -102,14 +102,21 @@ options(scipen = 3, digits = 5)
                 column(7, 
                     div(
                       fluidRow(
-                        column(9, offset =1, h4("True Proportion (Null hypothesis for p):")),
+                        column(8, offset =1, h4("True Proportion (Null hypothesis for p):")),
                         column(2, tags$div( 
                                  tags$input(id = "null_p", type = "text", class = "form-control", value = "0.5"))
                                )
                         ),
                        plotOutput('cat1Test_Plot2', click = 'cat1_Test_click', height = "300px")  
-                    )
-                )
+                      )
+#                     fluidRow(
+#                       column(11, offset = 1,
+#                              HTML(" Click a point to see its counts and proportions."),
+#                              br()
+#                              )
+#                     )
+                 )
+                
               ), 
               #br(),
               fluidRow(
@@ -126,8 +133,7 @@ options(scipen = 3, digits = 5)
                br(),
                br(),
                fluidRow(
-                 column(8, offset = 4,
-                        h4(" Click on a point to see its counts and proportions."), br(), 
+                 column(8, offset = 2,
                         uiOutput("Cat1TestXtremes"),
                         uiOutput("Cat1TestPvalue")
                  )
@@ -145,7 +151,7 @@ observeEvent( input$null_p, {
 
 output$Cat1TestXtremes <- renderUI({
   fluidRow(
-    column(3,  
+    column(4,  
            h4("Count values equal to or")
     ),
     column(4,
@@ -302,7 +308,8 @@ output$Cat1TestPvalue <- renderUI({
       }
       plot(DF, w, ylab = "", cex = radius/2, pch = 16, 
            col = cat1Test$colors,  ylim=c(.5, pmax(10,max(w))),
-           xlab = expression(hat(p)), main = "Sampling Distribution")
+           xlab = expression(hat(p)), main = "Sampling Distribution",
+           sub = "Click a point to see its counts")
       legend("topright", bty = "n", paste(length(DF), "points \n Mean = ", 
                                          round(mean(DF),3), "\n SE = ", round(sd(DF),3)))
   }, height = 300, width = 500)
@@ -315,22 +322,20 @@ output$cat1_estimateUI <- renderUI({
   if( is.null(cat1_data$counts)){
     h4(" You must first enter data. Choose 'Enter/Describe Data'.")
   } else {
-    tabPanel("Estimate", value="1catEstimate",
-             titlePanel("Estimate a Single Proportion"),       
-             div(
-               fluidRow(
+    tabPanel("Estimate", value="1catEstimate",       
+             fluidRow(
                  column(4, 
-                      h3("Original Data"),
+                      h3("Estimate a Single Proportion"),
+                      h4("Original Data"),
                       tableOutput("cat1_CIPrep"),
-                      
-                      h3("One Resampled Dataset"),
+                      h4("One Resampled Dataset"),
                       tableOutput('cat1Estimate_Table')
-                      
                  ),
                  column(8, 
                       plotOutput('cat1Estimate_Plot2', click = 'cat1_Estimate_click')
-                 )
+                )
              ),
+             #br(),
              fluidRow(
                column(4, offset = 1, h4("How many more resamples?")),
                column(1,
@@ -344,23 +349,18 @@ output$cat1_estimateUI <- renderUI({
              ),
              br(),
              fluidRow(
-               column(5, offset = 3, 
-                     h4("Click on a point to see its count."))
-               ),
-             br(),
-             fluidRow(
-               column(4, offset = 2, 
+               column(4, offset = 1, 
                       h4("Select Confidence Level (%)")
                       ),
-               column(6,
+               column(5,
                  fluidRow(
-                    column(2,  
+                    column(3,  
                       actionButton('cat1_conf80', label = "80")),
-                    column(2,
+                    column(3,
                       actionButton('cat1_conf90', label = "90")),
-                    column(2,
+                    column(3,
                       actionButton('cat1_conf95', label = "95")),
-                    column(2,
+                    column(3,
                       actionButton('cat1_conf99', label = "99"))
                 ))),
                         
@@ -373,7 +373,7 @@ output$cat1_estimateUI <- renderUI({
                 )
                 } else {br()}
             )
-         )
+         
   }
 })
 
@@ -528,10 +528,11 @@ output$cat1Estimate_Plot2 <- renderPlot({
     radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
   }
   plot(DF, w, ylab = "", ylim = c(0.5, pmax(10, max(w))), cex = radius/2, pch = 16, col = cat1Estimate$colors,  
-       xlab = expression(hat(p)), main = "Re-Sampling Distribution")
+       xlab = expression(hat(p)), main = "Re-Sampling Distribution",
+       sub = "Click a point to see its counts")
   legend("topright", bty = "n", paste(length(DF), "points \n Mean = ", 
                                      round(mean(DF),3), "\n SE = ", round(sd(DF),3)))
-}, height = 340, width = 440)
+}, height = 300, width = 490)
 
 }
   
@@ -4621,23 +4622,27 @@ output$c1q1_Summary2 <- renderTable({
                      )
               ),
             fluidRow(
-              column(4, offset = 1, h4("How many more shuffles?")),
+              column(4, offset = 8, HTML("Click a point to see its shuffle."))
+            ),
+            br(),
+            fluidRow(
+              column(4, offset = 3, h4("How many more shuffles?")),
               column(1, actionButton("c1q1_test_shuffle_10", label = "10")),
               column(1, actionButton("c1q1_test_shuffle_100", label = "100")),
               column(1, actionButton("c1q1_test_shuffle_1000", label = "1000")),
               column(1, actionButton("c1q1_test_shuffle_5000", label = "5000"))
             ),
-            fluidRow(
-                column(4, offset = 5, h4("Click a point to see its shuffle."))
-                ),
             br(),
             fluidRow(
+              column(11, offset = 1,
+                     uiOutput("c1q1TestXtremes"))
+            ),
+            fluidRow(
               column(8, offset = 4,
-                     uiOutput("c1q1TestXtremes"),
-                     uiOutput("c1q1TestPvalue")
-              )
+                     uiOutput("c1q1PrintPvalue")
             )
           )
+        )
       }
     })
 
@@ -4656,19 +4661,19 @@ output$c1q1_Summary2 <- renderTable({
       plotOutput('c1q1_TestPlot2', click = 'c1q1_Test_click')
    })
       
-   output$c1q1TestPvalue <- renderUI({
+   output$c1q1PrintPvalue <- renderUI({
       if(!is.null(c1q1Test$moreExtremeCount)){
         h4(pvalue2print(c1q1Test$moreExtremeCount,  c1q1Test$sampleCount, c1q1Test$direction, 
                         c1q1Test$cutoff, c1q1Test$pvalue))
      }
    })
       
-      output$c1q1TestXtremes <- renderUI({
+  output$c1q1TestXtremes <- renderUI({
         fluidRow(
-          column(2,
+          column(3,
                  h4("Count values equal to or ")
           ),
-          column(5,
+          column(4,
                  tags$div(style="width: 200px",
                           tags$select(id='c1q1_testDirection', class="form-control",
                                       tags$option( value = "less", "less"),
@@ -4676,7 +4681,7 @@ output$c1q1_Summary2 <- renderTable({
                                       tags$option( value = "greater", "greater"))
                  )
           ),
-          column(2, h4("than ")),
+          column(1, h4("than ")),
           column(2,
                  tags$div( 
                    tags$input(id = "c1q1_test_cutoff", type = "text", class = "form-control", value = NA))
@@ -4870,13 +4875,13 @@ output$c1q1_Summary2 <- renderTable({
           ),
           column(5,
                 uiOutput('c1q1_ReSampDistPlot')
-          )
+           )
           ),
-          uiOutput('c1q1Shuffles'),
-        br(),
         fluidRow(
-          column(4, offset = 5, h4("Click a point to see its resample."))
-          ),
+          column(4, offset = 8, HTML("&nbsp;&nbsp; Click a point to see its resample."))
+        ),
+        br(),
+        uiOutput('c1q1Shuffles'),
         br(),
         uiOutput('c1q1_CI')          
       )
@@ -4903,32 +4908,32 @@ output$c1q1_dataPlot1 <- renderUI({
 output$c1q1_CI <- renderUI({ 
  div(
    fluidRow(
-  column(3, offset = 3, 
+    column(3, offset = 3, 
          h5("Select Confidence Level (%)")
-  ),
-  column(6,
+    ),
+    column(6,
          fluidRow(
-           column(2,  actionButton('c1q1_conf80', label = "80")),
-           column(2,  actionButton('c1q1_conf90', label = "90")),
-           column(2,  actionButton('c1q1_conf95', label = "95")),
-           column(2,  actionButton('c1q1_conf99', label = "99"))
+           column(3,  actionButton('c1q1_conf80', label = "80")),
+           column(3,  actionButton('c1q1_conf90', label = "90")),
+           column(3,  actionButton('c1q1_conf95', label = "95")),
+           column(3,  actionButton('c1q1_conf99', label = "99"))
          )
-  )
-),
-if(!is.null(c1q1Est$CI)){
-  fluidRow( 
-    column(7, offset = 6,
+    )
+  ),
+  if(!is.null(c1q1Est$CI)){
+   fluidRow( 
+     column(7, offset = 6,
            h4(paste(c1q1Est$confLevel*100, "% Interval Estimate: (", 
                     round(c1q1Est$CI[1],3), ",", 
                     round(c1q1Est$CI[2], 3), ")"))
     ))
-}
-)
+  }
+ )
 })
 
 output$c1q1Shuffles <- renderUI({ 
 fluidRow(
-  column(4, offset = 1, 
+  column(4, offset = 3, 
          h4("How many more shuffles?")),
   column(1, actionButton("c1q1_Est_shuffle_10", label = "10")),
   column(1, actionButton("c1q1_Est_shuffle_100", label = "100")),
