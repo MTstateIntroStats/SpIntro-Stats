@@ -30,7 +30,7 @@ c1Lurk_shuffles <- function(shuffles, m, n, k){
   phat.1 <- y1_new/k
   phat.2 <- y2_new/(m + n - k)
   diff.p <- phat.1 - phat.2
-  cbind( phat.1, phat.2, diff.p, y1_new, y2_new)
+  data.frame( phat1=phat.1, phat2=phat.2, diffp=diff.p, y1=y1_new, y2=y2_new)
 }
 
 ## Function to draw and store difference in proportions for bootstrap

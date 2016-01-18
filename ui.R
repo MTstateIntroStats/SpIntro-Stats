@@ -86,21 +86,17 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
                     ), 
                 
                 fluidRow(
-                    ##  next two need to be action buttons so we can keep using the same sample.
-                    #h5("Choose a confidence level"),
-                    # radioButtons("CIdemo_conf", label="Confidence Level", choices = list('80%', '90%', '95%', '99%'), 
-                    #              selected = '90%', inline = TRUE) 
-                    #),  
                     column(7, #div( ## style="height: 300px",
-                      h4("Sampling Distribution.  Click a point to see CI.", center = TRUE),
-                      plotOutput("CIdemo_Plot1",  click = "CIplot1_click")
-                    )),
-                
-                fluidRow(
-                  column(7, offset=4,
-                     h4("Confidence Intervals  (green ones cover true p)", center =TRUE),
-                     plotOutput("CIdemo_Plot2")
-                   )
+                      div(
+                        HTML("Sampling Distribution.  Click a point to see CI."),# center = TRUE),
+                        plotOutput("CIdemo_Plot1",  click = "CIplot1_click", height = "250px"),
+#                     )),
+#                 
+#                 fluidRow(
+#                   column(7, offset=4,
+                       HTML("Confidence Intervals  (green ones cover true p)"),# center =TRUE),
+                       plotOutput("CIdemo_Plot2")
+                   ))
                 )
          )
          ),

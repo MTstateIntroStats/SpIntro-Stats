@@ -332,7 +332,7 @@ output$cat1_estimateUI <- renderUI({
                       tableOutput('cat1Estimate_Table')
                  ),
                  column(8, 
-                      plotOutput('cat1Estimate_Plot2', click = 'cat1_Estimate_click')
+                      plotOutput('cat1Estimate_Plot2', click = 'cat1_Estimate_click', height = 350)
                 )
              ),
              #br(),
@@ -568,7 +568,8 @@ output$cat1Estimate_Plot2 <- renderPlot({
   
   output$CIdemo_Plot1 <- renderPlot({
     ##displayFn <-  reactive({
-    if(is.null(input$CIdemo_p)) return()  
+    if(is.null(input$CIdemo_p)) 
+      return()  
     phatDF <- CIdemoSims()
     nsims <- as.numeric(input$CIdemo_reps)      
     radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)
@@ -576,9 +577,10 @@ output$cat1Estimate_Plot2 <- renderPlot({
     isolate({
       plot(y ~ phat, data= phatDF, col = rgb(70, 130, 180, 127, max = 255), pch=16, bty="l",
            cex = radius/2, ylab = "", xlab = expression(hat(p)),
-           ylim=c(.5, pmax(10, max(y))))#, main = "Sampling Distribution")
+           ylim=c(.5, pmax(10, max(y))), #main = "Sampling Distribution" ,
+           sub = "Click a point to see its interval estimate")
     })
-  }, height = 275)
+  }, height = 225)
   
   output$CIdemo_Plot2 <- renderPlot({
     ##displayFn <-  reactive({
@@ -623,7 +625,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
    ## data input
   {
   
-  c1Lurk <- reactiveValues(data = NULL, shuffles = NULL, difprop = NULL, 
+  c1Lurk <- reactiveValues(data = NULL, shuffles = NULL, difprop = NULL, closest = 2,
                            colors = NULL,  names = NULL, p1hat = NULL, p2hat = NULL, y1 =NULL,y2 = NULL)
   
   output$c1_LurkDataUI <- renderUI({
@@ -691,12 +693,12 @@ output$cat1Estimate_Plot2 <- renderPlot({
                h5("Randomization 2"),
                tableOutput('c1Lurk_Table2'),
                h5(paste("Difference in proportions: " , 
-                        round( as.numeric(c1Lurk$difprop[2]), 3)))
+                        round( as.numeric(c1Lurk$difprop[c1Lurk$closest]), 3)))
               ),
         column(8, 
-               plotOutput('c1_LurkPlot2')#, click = 'c1_Lurk_click')
+               plotOutput('c1_LurkPlot2', click = 'c1_Lurk_click')
       )
-    ),
+    ), 
     fluidRow(
       column(4, offset = 1,
              h4("How many more randomizations?")
@@ -709,12 +711,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
     )  
   )
 })
-  
-#   output$c1_LurkSampDistPlot <- renderUI({ 
-#     plotOutput('c1_LurkPlot2') #, click = 'c1_Lurk_click')
-#   })
-  
-  
+
   ## -------- 1 cat Lurking tables ------------------
   
 
@@ -737,13 +734,21 @@ output$cat1Estimate_Plot2 <- renderPlot({
   output$c1Lurk_Table2 <- renderTable({
     if(is.null(c1Lurk$data)) 
       return()
-    y1_new <- c1Lurk$y1[2]
-    y2_new <- c1Lurk$y2[2]
-    diff.p <- c1Lurk$difprop[2]
+      if(!is.null(input$c1_Lurk_click)){
+      ##  Pick the clicked shuffle
+      closestPoint <- which.min(abs( c1Lurk$phat1 - c1Lurk$phat2 - input$c1_Lurk_click$x))
+      #cat("Close to number: ", closestPoint, "\n")
+    } else{
+      closestPoint <- 2
+    }
+    c1Lurk$closest <- closestPoint
+    y1_new <- c1Lurk$y1[closestPoint] #* input$c1Lurk_n1
+    y2_new <- c1Lurk$y2[closestPoint] #* input$c1Lurk_n2
+    diff.p <- c1Lurk$difprop[closestPoint]
     # print(c(y1_new, n1, DF[1,1], y2_new, n2, DF[1,2], diff.p))
     table2 <- data.frame(count = as.integer(c(y1_new, y2_new)), 
                          n = with(c1Lurk$data, as.integer(c(m1, m2))),
-                         Prop = c(c1Lurk$phat1[2], c1Lurk$phat2[2]))
+                         Prop = c(c1Lurk$phat1[closestPoint], c1Lurk$phat2[closestPoint]))
     colnames(table2)[1] <- c1Lurk$names[1]
     rownames(table2) <- c("Treatment","Control")
     table2
@@ -754,6 +759,8 @@ output$cat1Estimate_Plot2 <- renderPlot({
     c1Lurk$difprop <- c(c1Lurk$difprop,  DF[,3])
     c1Lurk$phat1 <- c(c1Lurk$phat1,  DF[,1])
     c1Lurk$phat2 <- c(c1Lurk$phat2,  DF[,2])
+    c1Lurk$y1 <- c(c1Lurk$y1,  DF[,4])
+    c1Lurk$y2 <- c(c1Lurk$y2,  DF[,5])
     c1Lurk$colors <- rep(blu, length(c1Lurk$difprop))
   })
   
@@ -762,6 +769,8 @@ output$cat1Estimate_Plot2 <- renderPlot({
     c1Lurk$difprop <- c(c1Lurk$difprop,  DF[,3])
     c1Lurk$phat1 <- c(c1Lurk$phat1,  DF[,1])
     c1Lurk$phat2 <- c(c1Lurk$phat2,  DF[,2])
+    c1Lurk$y1 <- c(c1Lurk$y1,  DF[,4])
+    c1Lurk$y2 <- c(c1Lurk$y2,  DF[,5])
     c1Lurk$colors <- rep(blu, length(c1Lurk$difprop))
   })
   observeEvent(input$c1_Lurk_shuffle_1000, {        
@@ -769,6 +778,8 @@ output$cat1Estimate_Plot2 <- renderPlot({
     c1Lurk$difprop <- c(c1Lurk$difprop,  DF[,3])
     c1Lurk$phat1 <- c(c1Lurk$phat1,  DF[,1])
     c1Lurk$phat2 <- c(c1Lurk$phat2,  DF[,2])
+    c1Lurk$y1 <- c(c1Lurk$y1,  DF[,4])
+    c1Lurk$y2 <- c(c1Lurk$y2,  DF[,5])
     c1Lurk$colors <- rep(blu, length(c1Lurk$difprop))
   })
   observeEvent(input$c1_Lurk_shuffle_5000, {
@@ -776,6 +787,8 @@ output$cat1Estimate_Plot2 <- renderPlot({
     c1Lurk$difprop <- c(c1Lurk$difprop,  DF[,3])
     c1Lurk$phat1 <- c(c1Lurk$phat1,  DF[,1])
     c1Lurk$phat2 <- c(c1Lurk$phat2, DF[,2])
+    c1Lurk$y1 <- c(c1Lurk$y1,  DF[,4])
+    c1Lurk$y2 <- c(c1Lurk$y2,  DF[,5])
     c1Lurk$colors <- rep(blu, length(c1Lurk$difprop))
   })
   
