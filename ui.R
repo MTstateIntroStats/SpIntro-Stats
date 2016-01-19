@@ -145,7 +145,7 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
                                       list(" ", "Pre-Loaded Data","Local CSV File",
                                            "Type/Paste into Text Box"), #"Type/Paste into Data Sheet"), 
                                       selected = " ",
-                                      selectize = FALSE))
+                                      selectize = FALSE, width = "200px"))
                ),
                
                ## Need to use Dynamic UI instead of condition panels
@@ -154,8 +154,8 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
       
                hr(),
                fluidRow(
-                 column(8, 
-                       plotOutput('q1_Plot') ),
+                 column(6, 
+                       plotOutput('q1_Plot', height = "320px") ),
                  column(3, 
                        tableOutput('q1_Summary'))
                )

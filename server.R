@@ -1664,8 +1664,7 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
       theme_bw() + xlab(q1$names)
     grid.arrange(q1_plot1, q1_plot2, heights = c(1,3)/4, ncol=1)
   #})
-}, height=360)
-
+}, height=320, width = 340)
 
   output$q1_Summary <- renderTable({
     if( is.null(q1$data))  
@@ -1694,24 +1693,28 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
 ## --------- 1 quant UI ---------------------------
 
 
-output$q1_testUI <- renderUI({
+output$q1_testUI <- renderUI({ 
   if(is.null(q1$data)){
     h4(" You must first enter data. Choose 'Enter/Describe Data'.")
-  } else{ 
-  fluidPage(
-    h3("Test for a single mean."),
-      fluidRow(
-        column(4, 
-               plotOutput("q1_TestPlot1")
-              ),
-        column(8, 
-               tags$label(HTML("True Mean (Null hypothesis for &mu;):"), 
-                          tags$input(name='null_mu', type='text', value='0', size='10')),
-              ##uiOutput('q1_SampDistPlot')),
+  } else{  
+  fluidPage( 
+    fluidRow( 
+      column(4,  
+             h4("Test for a single mean.")
+      ),
+      column(8, 
+             tags$label(HTML("True Mean (Null hypothesis for &mu;):"),  
+                        tags$input(name='null_mu', type='text', value='0', size='10'))
+      )
+    ),
+    fluidRow( 
+      column(4,  
+             plotOutput("q1_TestPlot1", height = "280px")
+       ),
+      column(8, 
                plotOutput('q1_TestPlot2', click = 'q1_Test_click', height = '360px')
               )
         ),
-       br(), 
        br(),
        fluidRow(
            column(5, offset = 1, h4("How many more (shifted) resamples?")),
@@ -1723,14 +1726,13 @@ output$q1_testUI <- renderUI({
          ),
              
         br(),
+#         fluidRow(
+#            column(5, offset =6, h4("Click on a point to see that resample."))
+#          ),
         fluidRow(
-           column(5, offset =6, h4("Click on a point to see that resample."))
-         ),
-        fluidRow(
-           column(8, offset = 4,
+           column(8, offset = 1,
              uiOutput("q1TestXtremes"),
              uiOutput("q1TestPvalue")
-             #  need some kind of reactive connection to data and the form inputs just above
          )
        )
   )
@@ -1751,16 +1753,17 @@ output$q1TestPvalue <- renderUI({
 })
 
 output$q1TestXtremes <- renderUI({
-  fluidRow(offset = 1,
-    column(3,  
-           h4("Count values equal to or ")
+  fluidRow(
+    column(4, 
+           h4('Count values equal to or ')
     ),
-    column(4,
-           tags$div(style="width: 200px",
-                    tags$select(id='q1_testDirection', class="form-control",
-                                tags$option( value = "less", "less"),
-                                tags$option( value = "more extreme", "more extreme", selected = TRUE),
-                                tags$option( value = "greater", "greater"))
+    column(3,
+           tags$div(style="width: 160px",
+              ##tags$label( "Count values equal to or"),      
+               tags$select( id='q1_testDirection', class="form-control",
+                      tags$option( value = "less", "less"),
+                      tags$option( value = "more extreme", "more extreme", selected = TRUE),
+                      tags$option( value = "greater", "greater"))
            )
     ),
     column(1, h4("than ")),
@@ -1941,7 +1944,8 @@ output$q1_TestPlot2 <- renderPlot({
     }
   plot(x = parm + as.numeric(input$null_mu), y = y, ylim = c(0.5, pmax(10, max(y))), ylab = "", 
        cex = radius/2, pch = 16, col = q1Test$colors,  
-       xlab = expression(bar(x)), main = "Shifted Resampling Distribution")
+       xlab = expression(bar(x)), main = "Shifted Resampling Distribution",
+       sub ="Click a point to see its resample")
   legend("topright", bty = "n", paste(length(parm), "points \n Mean = ", 
                                      round(mean(parm) + as.numeric(input$null_mu),3), "\n SE = ", round(sd(parm),3)))
   
