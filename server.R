@@ -1442,7 +1442,7 @@ output$normalProbPlot1 <- renderPlot({
     text(x= c(-absz - 4, absz + 4)/2 , y= max(yrr)/2 + .02, 
          round(prob * ifelse(cat1_normalProb$findP,1,.5), 3), col = "darkblue")
     place.x <- c(-absz, absz)
-    if(!is.na(abz) & (absz < 1)) place.x <- place.x/absz * .8
+    if(!is.na(absz) & (absz < 1)) place.x <- place.x/absz * .8
     text(place.x, y = text.height, round(c(-absz,absz),3))
   } else if (input$cat1_area == "Center") {   ## fill & label center
     polygon(xrr, yrr, col = grn)
