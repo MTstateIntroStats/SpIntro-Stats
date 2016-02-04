@@ -185,9 +185,8 @@ observeEvent( input$cat1_test_cutoff, {
 
 
 output$Cat1TestPvalue <- renderUI({
-  if(!is.null(cat1Test$moreExtremeCount)){
+  req(cat1Test$moreExtremeCount)
     h4(pvalue2print(cat1Test$moreExtremeCount,  cat1Test$sampleCount, cat1Test$direction, cat1Test$cutoff, cat1Test$pvalue))
-  }
 })
 
     output$cat1OriginalData <- renderTable({ 
@@ -203,7 +202,7 @@ output$Cat1TestPvalue <- renderUI({
     
     output$cat1Test_Table <- renderTable({
       #if(input$cat2_submitButton == 0) return()
-      if(is.null(cat1_data$counts)) return()
+      req(cat1_data$counts)
       
       n1 <- cat1_data$total
       if(is.null(cat1Test$phat)){
@@ -215,7 +214,11 @@ output$Cat1TestPvalue <- renderUI({
         ##  We already have shuffled data and want to pick the clicked point
         ##  Change to data related to a clicked point.
         closestPoint <- which.min(abs( cat1Test$phat - input$cat1_Test_click$x))
-        #cat("Close to number: ", closestPoint, "\n")
+        ##closestPoint <- nearPoints(as.data.frame(cat1Test$test), coordinfo=input$cat1_Test_click,
+                                             #xvar = input$cat1_Test_click$x,
+                                             #yvar = input$cat1_Test_click$y,
+        ##                                     maxpoints=1)[1]
+        ##cat("Close to number: ", closestPoint, "\n")
         phat_new <- cat1Test$phat[closestPoint] 
         y1_new <- round(phat_new * n1)
       } else {
@@ -288,7 +291,8 @@ output$Cat1TestPvalue <- renderUI({
     
     
     output$cat1Test_Plot2 <- renderPlot({
-      if(input$cat1_submitButton == 0 | is.na(input$null_p) | is.null(cat1Test$phat)) return()
+      req(input$null_p, cat1Test$phat)
+      if(input$cat1_submitButton == 0 ) return()
       
       DF <- sort(cat1Test$phat)
       
@@ -306,11 +310,15 @@ output$Cat1TestPvalue <- renderUI({
         nsims <- length(DF)
         radius = pmax(1, 11 - round(log(length(DF))))        
       }
-      plot(DF, w, ylab = "", cex = radius/2, pch = 16, 
+#       qplot(x=DF, y=w, ylab = "", #size = radius/2, shape = 16, 
+#            colour = cat1Test$colors,  ylim=c(.5, pmax(10,max(w))),
+#            xlab = expression(hat(p)), main = "Sampling Distribution",
+#            sub = "Click a point to see its counts") +theme_bw()
+       plot(DF, w, ylab = "", cex = radius/2, pch = 16, 
            col = cat1Test$colors,  ylim=c(.5, pmax(10,max(w))),
            xlab = expression(hat(p)), main = "Sampling Distribution",
            sub = "Click a point to see its counts")
-      legend("topright", bty = "n", paste(length(DF), "points \n Mean = ", 
+       legend("topright", bty = "n", paste(length(DF), "points \n Mean = ", 
                                          round(mean(DF),3), "\n SE = ", round(sd(DF),3)))
   }, height = 300, width = 500)
 
@@ -396,7 +404,7 @@ output$cat1_CIPrep <- renderTable({
 
 output$cat1Estimate_Table <- renderTable({
   #if(input$cat1_submitButton == 0) return()
-  if(is.null(cat1_data$counts)) return()
+  req(cat1_data$counts)
   
   n1 <- cat1_data$total
   ##
@@ -456,7 +464,8 @@ observeEvent(input$cat1_estimate_shuffle_5000, {
 })
 
 observeEvent(input$cat1_conf80,{
-  if(is.null(cat1Estimate$phat) | (nsims <- length(cat1Estimate$phat)) < 10){
+  req(cat1Estimate$phat) 
+  if((nsims <- length(cat1Estimate$phat)) < 10){
     return()
   }
   cat1Estimate$confLevel <- .80
@@ -469,7 +478,8 @@ observeEvent(input$cat1_conf80,{
 })
 
 observeEvent(input$cat1_conf90,{
-  if(is.null(cat1Estimate$phat) | (nsims <- length(cat1Estimate$phat)) < 10){
+  req(cat1Estimate$phat) 
+  if((nsims <- length(cat1Estimate$phat)) < 10){
     return()
   }
   cat1Estimate$confLevel <- .90
@@ -482,7 +492,8 @@ observeEvent(input$cat1_conf90,{
 })
 
 observeEvent(input$cat1_conf95,{
-  if(is.null(cat1Estimate$phat) | (nsims <- length(cat1Estimate$phat)) < 10){
+  req(cat1Estimate$phat)
+  if((nsims <- length(cat1Estimate$phat)) < 10){
     return()
   }
   cat1Estimate$confLevel <- .95
@@ -495,7 +506,8 @@ observeEvent(input$cat1_conf95,{
 })
 
 observeEvent(input$cat1_conf99,{
-  if(is.null(cat1Estimate$phat) | (nsims <- length(cat1Estimate$phat)) < 10){
+  req(cat1Estimate$phat) 
+  if((nsims <- length(cat1Estimate$phat)) < 10){
     return()
   }
   cat1Estimate$confLevel <- .99
@@ -545,7 +557,8 @@ output$cat1Estimate_Plot2 <- renderPlot({
   })
   
   CIdemoSims <- reactive({
-    if(is.null(input$CIdemo_p)) return()
+    req(input$CIdemo_p)
+    
     nsims <- as.numeric(input$CIdemo_reps)      
     radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)
     ## exactRule <- -log( (1-upperconf) * 2)/input$CIdemo_n
@@ -568,8 +581,8 @@ output$cat1Estimate_Plot2 <- renderPlot({
   
   output$CIdemo_Plot1 <- renderPlot({
     ##displayFn <-  reactive({
-    if(is.null(input$CIdemo_p)) 
-      return()  
+    req(input$CIdemo_p)
+
     phatDF <- CIdemoSims()
     nsims <- as.numeric(input$CIdemo_reps)      
     radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)
@@ -584,7 +597,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
   
   output$CIdemo_Plot2 <- renderPlot({
     ##displayFn <-  reactive({
-    if(is.null(input$CIdemo_p) || is.null(input$CIdemo_conf)) return() 
+    req(input$CIdemo_p, input$CIdemo_conf)
     phatDF <- CIdemoSims()  
     isolate({
       upperconf = 1- (1 - as.numeric(substr(input$CIdemo_conf,1,2))/100)/2
@@ -677,8 +690,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
   
 
   output$c1_LurkingUI <- renderUI({
-    if (is.null(c1Lurk$data) | is.null(c1Lurk$names))
-      return()
+    req(c1Lurk$data, c1Lurk$names)
     div(
       fluidRow(
         column(4, 
@@ -716,8 +728,8 @@ output$cat1Estimate_Plot2 <- renderPlot({
   
 
   output$c1Lurk_Table1 <- renderTable({
-    if(is.null(c1Lurk$data)) 
-      return()
+    req(c1Lurk$data)
+
     y1_new <- c1Lurk$y1[1]
     y2_new <- c1Lurk$y2[1]
     diff.p <- c1Lurk$difprop[1]
@@ -732,8 +744,8 @@ output$cat1Estimate_Plot2 <- renderPlot({
   
   
   output$c1Lurk_Table2 <- renderTable({
-    if(is.null(c1Lurk$data)) 
-      return()
+    req(c1Lurk$data)
+
       if(!is.null(input$c1_Lurk_click)){
       ##  Pick the clicked shuffle
       closestPoint <- which.min(abs( c1Lurk$phat1 - c1Lurk$phat2 - input$c1_Lurk_click$x))
@@ -794,8 +806,8 @@ output$cat1Estimate_Plot2 <- renderPlot({
   
   
   output$c1_LurkPlot2 <- renderPlot({
-    if(is.null(c1Lurk$difprop)) 
-      return()
+    req(c1Lurk$difprop)
+
     diffs <- sort(c1Lurk$difprop)
     if(length(diffs) < 4){
       w <- 1 + diffs*0
@@ -1346,25 +1358,18 @@ output$cat1Estimate_Plot2 <- renderPlot({
 cat1_normalProb <- reactiveValues(prob = NULL, z = NULL, findP = NULL)
   
   observeEvent( input$cat1_z_txt, {
-    #if(is.null(input$cat1_z_txt)) 
-    #  return
     cat1_normalProb$z <- as.numeric(input$cat1_z_txt) 
     cat1_normalProb$findP <- TRUE
   })
 
  observeEvent( input$cat1_prob_txt,{
-    #if(is.null(input$cat1_p_txt)) 
-    #  return
     cat1_normalProb$prob <- as.numeric(input$cat1_prob_txt) 
     cat1_normalProb$findP  <- FALSE
   })
 
 output$normalProbPlot1 <- renderPlot({ 
-  #print(cat1_normalProb$prob)
-  #print(cat1_normalProb$z)
-  #print(cat1_normalProb$findP)
-  if(is.null(cat1_normalProb$findP))
-    return()
+  req(cat1_normalProb$findP)
+
   par(mar=c(24,1,1,1)/10)
   z <- absz <- prob <- yrr <- xrr <- NA
   x <- -300:300 / 50
@@ -1482,8 +1487,8 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
   ## renderUI changes to get appropriate inputs.
 
  output$q1_inputUI <- renderUI({
-  if (is.null(input$q1_entry))
-    return()
+  req(input$q1_entry)
+
   switch( input$q1_entry,
           "Pre-Loaded Data" ={ 
             fluidRow(  
@@ -1642,9 +1647,8 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
   ##  Describe and plot data -------------------------------  quant 1
 {
   output$q1_Plot <- renderPlot( {
-    if( is.null(q1$data))  return()
-     #if(input$q1_useLddBtn == 0 && input$q1_useHotBtn == 0)  ## && input$q1_useFileBtn == 0) 
-       #isolate( { 
+    req(q1$data)
+
     DF <- q1$data
     names(DF)[ncol(DF)] <- "x"
     ## make plot
@@ -1667,8 +1671,8 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
 }, height=320, width = 340)
 
   output$q1_Summary <- renderTable({
-    if( is.null(q1$data))  
-      return()
+    req(q1$data)  
+
     #isolate({
       #q1_dataDF <- q1_data()
       ## print(q1_dataDF)
@@ -1747,9 +1751,8 @@ observeEvent( input$null_mu, {
 
 
 output$q1TestPvalue <- renderUI({
-  if(!is.null(q1Test$moreExtremeCount)){
+  req(q1Test$moreExtremeCount)
     h4(pvalue2print(q1Test$moreExtremeCount,  q1Test$sampleCount, q1Test$direction, q1Test$cutoff, q1Test$pvalue))
-  }
 })
 
 output$q1TestXtremes <- renderUI({
@@ -1925,7 +1928,7 @@ observeEvent( input$q1_test_cutoff, {
 
 
 output$q1_TestPlot2 <- renderPlot({
-  if(is.null(q1Test$new.xbars)) return() 
+  req(q1Test$new.xbars)
   
     parm <- as.matrix(q1Test$new.xbars)
     #print(parm)
@@ -2016,7 +2019,7 @@ output$q1_estimateUI <- renderUI({
 # -------- 1 quant estimate plots ------------------
 
 output$q1_EstPlot1 <- renderPlot({
-  if(is.null(q1$data)) return()
+  req(q1$data)
   q1Estimate$observed <- mean(q1$data[,1])
   nn <- nrow(q1$data)
   par(mfrow = c(2,1), mar = c(4,3.5,3,1))
@@ -2136,7 +2139,7 @@ observeEvent(input$q1_conf99,{
 })
 
 output$q1_EstimatePlot2 <- renderPlot({
-  if(is.null(q1Estimate$xbars) ) return() 
+  req(q1Estimate$xbars) 
   parm <- as.matrix(q1Estimate$xbars) 
   #print(parm)
   parm <- sort(parm)
@@ -2208,8 +2211,8 @@ output$q1_EstimatePlot2 <- renderPlot({
   })
   
   output$q1_LurkingUI <- renderUI({
-    if (is.null(q1Lurk$data) | is.null(q1Lurk$shuffles))
-      return()
+    req(q1Lurk$data, q1Lurk$shuffles)
+
      div(
        fluidRow(
           column(4, 
@@ -2248,8 +2251,8 @@ output$q1_EstimatePlot2 <- renderPlot({
   # -------- 1 quant Lurking plots ------------------
   
   output$q1_LurkPlot1 <- renderPlot({
-    if(is.null(q1Lurk$shuffles)) 
-      return()
+    req(q1Lurk$shuffles) 
+
     nLurk <- length(q1Lurk$data)
     ## Original Data
     DF <- cbind( q1Lurk$shuffles[,1:2], q1Lurk$data) 
@@ -2272,8 +2275,8 @@ output$q1_EstimatePlot2 <- renderPlot({
   
   
   output$q1_LurkTable1 <- renderTable({
-    if(is.null(q1Lurk$data))  
-      return()
+    req(q1Lurk$data)  
+
     #print(q1Lurk$data)
     DF <- data.frame(mean = tapply(q1Lurk$data, q1Lurk$shuffles[,1], mean, na.rm = TRUE ),
                      sd = tapply(q1Lurk$data, q1Lurk$shuffles[,1], sd, na.rm = TRUE ),
@@ -2284,8 +2287,8 @@ output$q1_EstimatePlot2 <- renderPlot({
   
   
   output$q1_LurkTable2 <- renderTable({
-    if( is.null(q1Lurk$data))  
-      return()
+    req(q1Lurk$data)
+
     DF <- data.frame(mean = tapply(q1Lurk$data, q1Lurk$shuffles[, 2], mean, na.rm = TRUE ),
                      sd = tapply(q1Lurk$data, q1Lurk$shuffles[, 2], sd, na.rm = TRUE ),
                      n = as.integer(tapply(q1Lurk$data, q1Lurk$shuffles[, 2], length)))
@@ -2326,10 +2329,9 @@ output$q1_EstimatePlot2 <- renderPlot({
   
   
   output$q1_LurkPlot2 <- renderPlot({
-    if(is.null(q1Lurk$diff)) 
-      return() 
-    
-    parm <- sort(q1Lurk$diff)
+    req(q1Lurk$diff) 
+
+        parm <- sort(q1Lurk$diff)
     # print(parm)
     if(length(parm) < 3){
       y <- rep(0.5,length(parm))
@@ -2403,8 +2405,7 @@ output$q1_EstimatePlot2 <- renderPlot({
     )
   })
   observeEvent(input$q1_sampParam, {
-    if(is.null(q1Samp$data))
-      return()
+    req(q1Samp$data)
     q1Samp$samples <-  q1Samp$values <- NULL
     q1Samp$parm <- switch(input$q1_sampParam,
            "Mean " = mean(q1Samp$data[, 2], na.rm=TRUE),
@@ -2418,16 +2419,13 @@ output$q1_EstimatePlot2 <- renderPlot({
   })
   
   output$q1_sampTrueValue <- renderUI({
-    if(is.null(q1Samp$trueValue)){
-      div()
-    } else{
+    req(q1Samp$trueValue)
     h5(paste("True ", input$q1_sampParam, " word length: ", round(q1Samp$trueValue,2)))
-    }
   })
   
   output$q1_sampDemoSampSize <- renderUI({ 
-    if(is.null(q1Samp$data))
-      return()
+    req(q1Samp$data)
+
     div(
     tags$label('Sample Size: ',
               tags$input(name='q1_sampSize', type='text', value='10', size='10'))
@@ -2436,8 +2434,7 @@ output$q1_EstimatePlot2 <- renderPlot({
     })  
   
   output$q1_sampDemoDraws <- renderUI({
-    if(is.null(q1Samp$data))
-      return()
+    req(q1Samp$data)
     div(
     uiOutput('q1_SampDemoSample' ),
     br(),
@@ -2460,8 +2457,8 @@ output$q1_EstimatePlot2 <- renderPlot({
     
   ## get samples
   output$q1_SampDemoSample <- renderUI({
-    if(is.null(q1Samp$samples))
-      return()
+    req(q1Samp$samples)
+
     if(!is.null(input$q1_Samp_click)){
       ##  We already have values plotted and want to pick the clicked point
       ##  Change to data related to a clicked point.
@@ -2586,8 +2583,8 @@ observeEvent( input$q1_prob_txt,{
 #     print(q1_tProb$findP)
 #     print(input$q1_df)
 #     print(input$q1_area)
-    if(is.null(q1_tProb$findP) | is.null(input$q1_df))
-      return()
+    req(q1_tProb$findP, input$q1_df)
+
     if(is.null(q1_tProb$prob) & is.null(q1_tProb$z))
       return()
     df <- as.numeric(input$q1_df)
@@ -2863,12 +2860,11 @@ observeEvent(input$cat2_submitButton, {
 })
 
 output$Cat2TestShuffle <- renderUI({
-  if(!is.null(cat2Test$selected)) {
+  req(cat2Test$selected)
     div(
       tableOutput('cat2Test_Table') , 
       h5(paste("Shuffled difference in proportions: ", round(cat2Test$selected, 3) ))
     )
- }
 }) 
   
 output$Cat2TestXtremes <- renderUI({
@@ -2907,14 +2903,10 @@ observeEvent( input$cat2_test_cutoff, {
 
 
 output$Cat2TestPvalue <- renderUI({
-  if(!is.null(cat2Test$moreExtremeCount)){
+  req(cat2Test$moreExtremeCount)
     h4(pvalue2print(cat2Test$moreExtremeCount,  cat2Test$sampleCount,
                     cat2Test$direction, cat2Test$cutoff, cat2Test$pvalue)
-    
-#     h4(paste(cat2Test$moreExtremeCount, " of ", cat2Test$sampleCount, "values are ",
-#                       cat2Test$direction," than", as.numeric(cat2Test$cutoff),",  p-value =  ", round(cat2Test$pvalue,5))
     )
-  }
 })
 
 ## cat2 test plots --------------------------------------------------
@@ -3001,7 +2993,7 @@ output$Cat2TestPvalue <- renderUI({
   
   output$cat2Test_Table <- renderTable({
     #if(input$cat2_submitButton == 0) return()
-    if(is.null(cat2_data$counts)) return()
+    req(cat2_data$counts) 
     n1 <- sum(cat2_data$counts[1], cat2_data$counts[3])
     n2 <- sum(cat2_data$counts[2], cat2_data$counts[4])
     if(is.null(cat2Test$difprop) ){
@@ -3061,7 +3053,7 @@ output$Cat2TestPvalue <- renderUI({
   
   output$cat2Test_Plot2 <- renderPlot({
     ##if(input$cat2_submitButton == 0) return()
-    if(is.null(cat2Test$difprop)) return()
+    req(cat2Test$difprop)
     DF <- sort(cat2Test$difprop)
     ## print(head(DF))
     if(length(DF) == 1){
@@ -3163,18 +3155,17 @@ output$Cat2TestPvalue <- renderUI({
   
 
   output$Cat2EstimateShuffle <- renderUI({
-    if(!is.null(cat2Estimate$selected)) {
+    req(cat2Estimate$selected)
       div(
         tableOutput('cat2Estimate_Table') , 
         h5(paste("Difference in resampled proportions: ", round(cat2Estimate$selected, 3) ))
       )
-    }
   }) 
   
   
   output$cat2_CIPrep <- renderTable({ 
+    req(cat2_data$counts)
     if(input$cat2_submitButton ==0) return()
-    if(is.null(cat2_data$counts)) return()
     
     y1 = cat2_data$counts[1]
     y2 = cat2_data$counts[2]
@@ -3306,8 +3297,8 @@ output$Cat2TestPvalue <- renderUI({
   })
 
   output$cat2Estimate_Table <- renderTable({
+    req(cat2_data$counts)
     if(input$cat2_submitButton == 0) return()
-    if(is.null(cat2_data$counts)) return()
     
     n1 <- sum(cat2_data$counts[1], cat2_data$counts[3])
     n2 <- sum(cat2_data$counts[2], cat2_data$counts[4])
@@ -3348,8 +3339,7 @@ output$Cat2TestPvalue <- renderUI({
   
   
   output$cat2Estimate_Plot2 <- renderPlot({
-    ## if(input$cat2_submitButton == 0) return()
-    if(is.null(cat2Estimate$difprop)) return()
+    req(cat2Estimate$difprop)
     
     DF <- sort(cat2Estimate$difprop)
     
@@ -3382,15 +3372,11 @@ output$Cat2TestPvalue <- renderUI({
  cat2_normalProb <- reactiveValues(prob = NULL, z = NULL, findP = NULL)
 
  observeEvent( input$cat2_z_txt, {
-  #if(is.null(input$cat2_z_txt)) 
-  #  return
   cat2_normalProb$z <- as.numeric(input$cat2_z_txt) 
   cat2_normalProb$findP <- TRUE
  })
 
  observeEvent( input$cat2_prob_txt,{
-  #if(is.null(input$cat2_p_txt)) 
-  #  return
   cat2_normalProb$prob <- as.numeric(input$cat2_prob_txt) 
   cat2_normalProb$findP  <- FALSE
  })
@@ -3399,8 +3385,7 @@ output$normalProbPlot2 <- renderPlot({
   #print(cat2_normalProb$prob)
   #print(cat2_normalProb$z)
   #print(cat2_normalProb$findP)
-  if(is.null(cat2_normalProb$findP))
-    return()
+  req(cat2_normalProb$findP)
   par(mar=c(24,1,1,1)/10)
   z <- absz <- prob <- yrr <- xrr <- NA
   x <- -300:300 / 50
@@ -3520,8 +3505,8 @@ output$normalProbPlot2 <- renderPlot({
 
  # use  selectInput to grab the 3 types of input
  output$q2_ui <- renderUI({
-  if (is.null(input$q2_entry))
-    return()
+  req(input$q2_entry)
+
   switch( input$q2_entry,
           "Pre-Loaded Data" ={ 
             fluidRow(  
@@ -3680,8 +3665,8 @@ observeEvent(input$q2_useText,{
 
 {
 output$q2_Plot <- renderPlot( {
-  if( is.null(q2$data)) 
-    return()
+  req(q2$data)
+
   #isolate( { 
     ## need to allow user to switch predictor and response
     ## make plot
@@ -3700,9 +3685,7 @@ output$q2_Plot <- renderPlot( {
 }, height=400)
 
 output$q2_Summary <- renderTable({
-  if( is.null(q2$data))  
-    #if(input$q2_useHotBtn == 0 && input$q2_useExistingBtn == 0 && input$q2_useFileBtn == 0) 
-    return()
+  req(q2$data)  
   #isolate({
   fit0 <- lm(y ~ x, data = q2$data)
   q2$intercept <- coef(fit0)[1]
@@ -3725,31 +3708,27 @@ output$q2_Summary <- renderTable({
 })
 
 output$q2_headRegrLine <- renderText({
-  if( is.null(q2$data))  
-    return()
+  req(q2$data)
   "Least Squares line: "
 })
 
 output$q2_SLR_line <- renderText({
-  if( is.null(q2$data))  
-    #if(input$q2_useHotBtn == 0 && input$q2_useExistingBtn == 0 && input$q2_useFileBtn == 0) 
-    return()
+  req(q2$data)  
   beta.hat = round(coef(lm(y ~ x, q2$data)),4)
   paste( q2$names[2], " = ", beta.hat[1], " + ", beta.hat[2], " * ", q2$names[1], sep = "")  
 })
   
 
 observeEvent(  input$q2_swapXwithY,{
-  if(is.null(q2$data))
-    return()
+  req(q2$data)
+
   q2$names <- q2$names[2:1]
   q2$data <- q2$data[, 2:1]
   names(q2$data) <- c("x","y")
   })
 
 output$q2_swap <- renderUI({
-  if (is.null(q2$data))
-    return()
+  (q2$data)
   actionButton('q2_swapXwithY', "Swap Variables (X goes to Y)")
 })
 }
@@ -3815,12 +3794,9 @@ output$q2_SampDistPlot <- renderUI({
 })
 
 output$slopeTestPvalue <- renderUI({
-  if(!is.null(q2Test$moreExtremeCount)){
+  req(q2Test$moreExtremeCount)
     h4(pvalue2print(q2Test$moreExtremeCount,  q2Test$sampleCount, q2Test$direction, 
                     q2Test$cutoff, q2Test$pvalue))
-#    h4(paste(q2Test$moreExtremeCount, " of ", q2Test$sampleCount, "values are ",
- #            q2Test$direction," than", q2Test$cutoff, ",  p-value =  ", round(q2Test$pvalue,5)))
-  }
 })
 
 output$slopeTestXtremes <- renderUI({
@@ -3856,8 +3832,8 @@ output$q2_TestPrep <- renderTable({
 
 
 output$q2_TestPlot1 <- renderPlot({
-  if(is.null(q2$data))
-    return()
+  req(q2$data)
+
   fit0 <- lm( y ~ x, q2$data)
   q2$slope <- coef(fit0)[2]
   q2$qr <- fit0$qr
@@ -4002,8 +3978,8 @@ observeEvent( input$q2_test_cutoff, {
 
 
 output$q2_TestPlot2 <- renderPlot({
-  if(is.null( q2Test$shuffles) )
-    return() 
+  req( q2Test$shuffles) 
+
   if(input$q2_TestParam == "Slope  OR") {
       parm <-  q2Test$slopes
       q2Test$observed <- q2$slope
@@ -4058,14 +4034,14 @@ output$q2_estimateUI <- renderUI({
         )),
       fluidRow(
         column(4, offset = 1, 
-               h4("How many more shuffles?")),
+               h4("How many more resamples?")),
         column(1,  actionButton("q2_resample_10", label = "10")),
         column(1,  actionButton("q2_resample_100", label = "100")),
         column(1,  actionButton("q2_resample_1000", label = "1000")),
         column(1,  actionButton("q2_resample_5000", label = "5000"))
       ),
       fluidRow(
-        column(4, offset = 5, h4("Click on a point to see that shuffle"))
+        column(4, offset = 5, h4("Click on a point to see that resample"))
       ),
       br(),
       fluidRow(
@@ -4082,8 +4058,8 @@ output$q2_estimateUI <- renderUI({
 })
 
 output$q2_showCI <- renderUI({
-  if(is.null(q2Estimate$CI))  {
-    return()}
+  req(q2Estimate$CI)
+
   h4(paste(round(100 * q2Estimate$confLevel), "% Confidence Interval Estimate for ",
            q2Estimate$param,": (", 
            round(q2Estimate$CI[1],3), ",", 
@@ -4132,8 +4108,8 @@ output$q2_EstResampDistn <- renderUI({
   })
   
   output$q2_EstPlot1 <- renderPlot({
-    if(is.null(q2$slope))
-      return()
+    req(q2$slope)
+
     ## change these to look like the "Test" plots with values in subtitle.
     DF0 <- q2$data
     par(mfrow=c(2,1), mar = c(4.1,5.1,3.1,.1) )
@@ -4243,8 +4219,8 @@ observeEvent(input$q2_resample_5000, {
 })
 
 output$q2_EstPlot2 <- renderPlot({
-  if(is.null( q2Estimate$resamples) )
-    return() 
+  req( q2Estimate$resamples) 
+
   #print(input$q2_EstParam)
   if(input$q2_EstParam == "Slope  OR") {
     parm <-  as.numeric(q2Estimate$slopes)
@@ -4358,8 +4334,8 @@ output$c1q1DataIn <- renderText({
 })
 
 output$c1q1_ui <- renderUI({
-  if (is.null(input$c1q1_entry))
-    return()
+  req(input$c1q1_entry)
+
   switch( input$c1q1_entry,
           "Pre-Loaded Data" ={ 
             fluidRow(  
@@ -4555,8 +4531,8 @@ c1q1Est <- reactiveValues(shuffles = NULL,  observed = NULL, diff = NULL, confLe
                           ndx1 = NULL, ndx2 = NULL, CI = NULL, selected = NULL )
 
 output$c1q1_Plot <- renderPlot( {
-  if( is.null(c1q1$data)) 
-    return()
+  req(c1q1$data)
+
   #isolate( { 
   ## make plot
   DF <- c1q1$data
@@ -4580,9 +4556,7 @@ output$c1q1_Plot <- renderPlot( {
 
 
 output$c1q1_Summary1 <- renderTable({
-  if( is.null(c1q1$data))  
-    #if(input$c1q1_useHotBtn == 0 && input$c1q1_useExistingBtn == 0 && input$c1q1_useFileBtn == 0) 
-    return()
+  req(c1q1$data)  
   #isolate({
   c1q1Est$ndx1 <- which(unclass(c1q1$data[,1]) == 1 | c1q1$data[,1] == "A")
   c1q1Est$ndx2 <- which(unclass(c1q1$data[,1]) == 2 | c1q1$data[,1] == "B")
@@ -4607,9 +4581,7 @@ output$c1q1_Summary1 <- renderTable({
 })
 
 output$c1q1_Summary2 <- renderTable({
-  if( is.null(c1q1$data))  
-    #if(input$c1q1_useHotBtn == 0 && input$c1q1_useExistingBtn == 0 && input$c1q1_useFileBtn == 0) 
-    return()
+  req(c1q1$data)  
     val <- round( diff(tapply(c1q1$data[, 2], c1q1$data[, 1], mean, na.rm=TRUE)), 3)
     names(val) <- NULL
     c1q1$diff <- -val
@@ -4679,10 +4651,9 @@ output$c1q1_Summary2 <- renderTable({
    })
       
    output$c1q1PrintPvalue <- renderUI({
-      if(!is.null(c1q1Test$moreExtremeCount)){
+      req(c1q1Test$moreExtremeCount)
         h4(pvalue2print(c1q1Test$moreExtremeCount,  c1q1Test$sampleCount, c1q1Test$direction, 
                         c1q1Test$cutoff, c1q1Test$pvalue))
-     }
    })
       
   output$c1q1TestXtremes <- renderUI({
@@ -4713,7 +4684,7 @@ output$c1q1_Summary2 <- renderTable({
       # -------- 1 cat  1 quant test plots ------------------
       
       output$c1q1_TestPlot1  <- renderPlot({
-        if(is.null(c1q1$data)) return()
+        req(c1q1$data)
         ## Original Data
         DF <- c1q1$data
         names(DF) <- c("group","y")
@@ -4757,7 +4728,7 @@ output$c1q1_Summary2 <- renderTable({
       }, height = 360, width = 320)
       
       output$c1q1_TestTable1 <- renderTable({
-        if(is.null(c1q1$data))  return()
+        req(c1q1$data)
         #print(c1q1$data)
         DF <- data.frame(mean = tapply(c1q1$data[,2], c1q1$data[,1], mean, na.rm = TRUE ),
                     sd = tapply(c1q1$data[,2], c1q1$data[,1], sd, na.rm = TRUE ),
@@ -4767,7 +4738,7 @@ output$c1q1_Summary2 <- renderTable({
       })
 
       output$c1q1_TestTable2  <- renderTable({
-        if( is.null(c1q1$data))  return()
+        req(c1q1$data)
         if(!is.null(input$c1q1_Test_click)){
           closestPt <- which.min(abs( c1q1Test$diff - input$c1q1_Test_click$x))
           #cat("Close to number: ", closestPoint, "\n")
@@ -4849,7 +4820,7 @@ output$c1q1_Summary2 <- renderTable({
       })
       
       output$c1q1_TestPlot2 <- renderPlot({
-        if(is.null(c1q1Test$diff)) return() 
+        req(c1q1Test$diff)
         
         parm <- sort(as.matrix(c1q1Test$diff))
         # print(parm)
@@ -4966,7 +4937,7 @@ output$c1q1_ReSampDistPlot <- renderUI({
   ## why does this redraw when I click a CI?
 
 output$c1q1_EstPlot2 <- renderPlot({
-  if(is.null(c1q1Est$diff)) return() 
+  req(c1q1Est$diff)
   parm <- sort(c1q1Est$diff)
   #print(parm)
   #parm <- sort(parm)
@@ -4990,8 +4961,8 @@ output$c1q1_EstPlot2 <- renderPlot({
 }, width = 400)      
 
 output$c1q1_EstPlot1 <- renderPlot({
-  if(is.null(c1q1$diff))
-     return()
+  req(c1q1$diff)
+
   DF <- c1q1$data
   names(DF) <- c("group","y")
   DF[, 1] <- factor(DF[,1])
@@ -5027,7 +4998,7 @@ output$c1q1_EstPlot1 <- renderPlot({
 }, height = 360)
 
 output$c1q1_EstTable1 <- renderTable({
-  if( is.null(c1q1$data))  return()
+  req(c1q1$data)
   DF <- data.frame(mean = tapply(c1q1$data[,2], c1q1$data[, 1], mean, na.rm = TRUE ),
                    sd = tapply(c1q1$data[,2], c1q1$data[, 1], sd, na.rm = TRUE ),
                    n = as.integer(tapply(c1q1$data[,2], c1q1$data[, 1], length)))
@@ -5037,7 +5008,7 @@ output$c1q1_EstTable1 <- renderTable({
 
 
 output$c1q1_EstTable2 <- renderTable({
-  if( is.null(c1q1$data)  )  return()
+  req(c1q1$data)  
   if(!is.null(input$c1q1_Est_click)){
     closestPt <- which.min(abs( c1q1Est$diff - input$c1q1_Est_click$x))
     #cat("Close to number: ", closestPoint, "\n")
@@ -5095,9 +5066,8 @@ observeEvent(input$c1q1_Est_shuffle_5000, {
 })
 
 observeEvent(input$c1q1_conf80,{
-  if(is.null(c1q1$diff)) {
-    return()
-  }
+  req(c1q1$diff)
+
   nsims <- length(c1q1Est$diff)
   c1q1Est$confLevel <- .80
   c1q1Est$colors <- rep(blu, nsims)
@@ -5109,9 +5079,7 @@ observeEvent(input$c1q1_conf80,{
 
 
 observeEvent(input$c1q1_conf90,{
-  if(is.null(c1q1$diff)) {
-    return()
-  }
+  req(c1q1$diff)
   nsims <- length(c1q1Est$diff)
   c1q1Est$confLevel <- .90
   c1q1Est$colors <- rep(blu, nsims)
@@ -5122,9 +5090,8 @@ observeEvent(input$c1q1_conf90,{
 })
 
 observeEvent(input$c1q1_conf95,{
-  if(is.null(c1q1$diff)) {
-    return()
-  }
+  req(c1q1$diff)
+
   nsims <- length(c1q1Est$diff)
   c1q1Est$confLevel <- .95
   c1q1Est$colors <- rep(blu, nsims)
@@ -5135,9 +5102,7 @@ observeEvent(input$c1q1_conf95,{
 })
 
 observeEvent(input$c1q1_conf99,{
-  if(is.null(c1q1$diff)) {
-    return()
-  }
+  req(c1q1$diff)
   nsims <- length(c1q1Est$diff)
   c1q1Est$confLevel <- .99
   c1q1Est$colors <- rep(blu, nsims)
@@ -5172,8 +5137,8 @@ output$tProbPlot2 <-    renderPlot({
   #     print(c1q1_tProb$findP)
   #     print(input$c1q1_df)
   #     print(input$c1q1_area)
-  if(is.null(c1q1_tProb$findP))
-    return()
+  req(c1q1_tProb$findP)
+
   if(is.null(c1q1_tProb$prob) & is.null(c1q1_tProb$z))
     return()
   
