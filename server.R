@@ -2165,10 +2165,10 @@ output$q1_EstimatePlot2 <- renderPlot({
 }
   ## Bootstrap Demo  ---------------------------------------
 {
-
   output$q1_bootstrap <- renderUI({
     div( id = 'BootDiv',
     h2("Bootstrap Demo"),
+    
     #includeHTML("www/just_HtmlBootDemo.html"),
     #conditionalPanel(  condition = "input.q1.data == null",
       renderUI(expr=  includeHTML("www/BootDemo.html") )

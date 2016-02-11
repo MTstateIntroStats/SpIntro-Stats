@@ -214,3 +214,37 @@ cleanText <- function(atxt){
    }
   data.frame(words, count =nchar(words), hasAnE = grepl("e", words)+0 )
 }
+
+helpPopup <- function(title, content = "Hello World", placement=c('right', 'top', 'left', 'bottom'),
+                      trigger=c('click', 'hover', 'focus', 'manual')) {
+  
+  tagList(
+    singleton(tags$head(tags$script("$(function() { $(\"[data-toggle='popover']\").popover(); })"))),
+    tags$a(href = "#", `data-toggle` = "popover", title = title, `data-content` = content,
+           `data-placement` = match.arg(placement, several.ok=TRUE)[1],
+           `data-trigger` = match.arg(trigger, several.ok=TRUE)[1], 
+               tags$i("Help?")) ## class="glyphicon-question-sign"))
+  )
+}
+
+bootContent <- 'Start with a known "population". In this case our values are textbook
+costs for one semester at MSU in tens of dollars.' 
+#   <ul> 
+#   <li> Click [Sample] and watch values get pulled from the population to the sample below.<BR>
+#   The population then disappears, because in real data collection we never know  it.<BR>
+#   Bootstrap resamples are based on just one sample.
+# </li>  
+#   <li> Click [1 Resample].  You will see a re-sample of size 8 get selected
+# from the original sample <b>with replacement</b>.  Some of the items in the
+# sample get chosen multiple times (giving a darker background), and
+# some not at all (background stays white).  The mean of
+# the resample is shown as a point in the plot. It disappears after a few seconds.
+# Click [slower] or [faster] to vary the speed.
+# </li>  
+#   <li> Once you understand how one resample is picked,  click one
+# of the "Many Resamples" options. Only the resample means are shown.
+# A confidence interval appears on the plot as red boundary
+# lines.  It is computed by the "percentile" method with the given 
+# percentage of means in the middle and equal numbers of points above and below.  
+# </li>  
+#   </ul>'

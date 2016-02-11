@@ -100,3 +100,17 @@ var popData = [
     { "x": 99,"y": 3, "cost": 25}, 
     { "x": 100,"y": 5, "cost": 10}
 ]
+
+ function displayDiv(divID){
+        var divstyle = new String();
+        divstyle = document.getElementById(divID).style.display;
+        if(divstyle.toLowerCase()=="block" || divstyle == "")
+        {
+            document.getElementById(divID).style.display = "none";
+        }
+        else
+        {
+            document.getElementById(divID).style.display = "block";
+        }
+    }
+    
