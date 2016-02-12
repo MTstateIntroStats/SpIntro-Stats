@@ -19,8 +19,11 @@ source("helpers.R")
   ## Load 'spreadsheet' data using:
   ## https://github.com/jrowen/rhandsontable/blob/master/inst/examples/shiny.R
 
-shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
-                    theme = shinytheme("spacelab"),
+shinyUI(tagList(
+  shinyjs::useShinyjs(),
+  navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
+             ##       theme = shinytheme("spacelab"),
+             theme = "bootstrap.css",
     ## 
     ## use empty tabPanel to avoid printing "tab-pane active"               
     tabPanel("",
@@ -47,7 +50,7 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
 {
     navbarMenu("One Categ.",  
        tabPanel("Enter / Describe Data", label="1catDataEntry",       
-                h5(textOutput('cat1DataIn')),
+                h5(textOutput('cat1DataIn')),  ## starts as NULL string
                 ##  Input counts and labels         
                 br(),    
                 fluidRow(
@@ -423,6 +426,7 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
             )
     )    
 }    
+)
 )
 )
 

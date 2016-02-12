@@ -1962,6 +1962,7 @@ output$q1_TestPlot2 <- renderPlot({
  ## --------- 1 quant estimate UI ---------------------------
 
 output$q1_estimateUI <- renderUI({
+  shinyjs::useShinyjs()
   if(is.null(q1$data)){
     h4(" You must first enter data. Choose 'Enter/Describe Data'.")
   } else{ 
@@ -2165,15 +2166,44 @@ output$q1_EstimatePlot2 <- renderPlot({
 }
   ## Bootstrap Demo  ---------------------------------------
 {
+  
+  observeEvent(input$q1BS_toggle, {
+    shinyjs::toggle("bootstrapIntro")
+  })
+  
   output$q1_bootstrap <- renderUI({
     div( id = 'BootDiv',
     h2("Bootstrap Demo"),
-    
-    #includeHTML("www/just_HtmlBootDemo.html"),
-    #conditionalPanel(  condition = "input.q1.data == null",
-      renderUI(expr=  includeHTML("www/BootDemo.html") )
-    #)
-    ##reactiveBoot(outputId = "boot")
+    div(id = "bootstrapIntro",
+        HTML('We start with a known "population". In this case our values are textbook
+         costs  in tens of dollars for one semester.<BR>
+             <ul>
+             <li> Click [Sample] and watch values get pulled from the population
+             to the sample below.<BR>
+             The population then disappears, because in real data collection we
+             never know  it.<BR>
+             Bootstrap resamples are based on just one sample.
+             </li>
+             <li> Click [1 Resample].  You will see a re-sample of size 8 get selected
+             from the original sample <b>with replacement</b>.  Some of the items in the
+             sample get chosen multiple times (giving a darker background), and
+             some not at all (background stays white).  The mean of
+             the resample is shown as a point in the plot. It disappears after a few seconds.
+             Click [slower] or [faster] to vary the speed.
+             </li>
+             <li> Once you understand how one resample is picked,  click one
+             of the "Many Resamples" options. Only the resample means are shown.
+             A confidence interval appears on the plot as red boundary
+             lines.  It is computed by the "percentile" method with the given 
+             percentage of means in the middle and equal numbers of points above and below.  
+             </li>
+             </ul>
+             Note: in real applications, we only get one sample, but for a demo, this is needed to change sample size.<br>
+             Because we are using a "known" population, we can compare the bootstrap mean to the true value: 35.54,<br>
+             and the standard deviations are actually 9.75 for n=4, 6.745 for n = 8, and 4.56 for n = 16.')
+        ),   
+    actionButton("q1BS_toggle", "Hide/Show Description", class="btn btn-primary"),
+    renderUI(expr=  includeHTML("www/BootDemo.html") )
     )
   })
 }  
