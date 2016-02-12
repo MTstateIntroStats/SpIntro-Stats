@@ -43,37 +43,18 @@ shinyUI(tagList(
                   <div style='width: 40%; float: left'>
                    <img src = 'gradeSpinner4.png' alt = 'Spinner Wheel' width = '200px'>
                   </div>
-                  <script src= 'www.costs.js'></script>  </div>")
+                 </div>")
     ), 
   
     ####   One Categorical  -----------------------------------------------------   1 cat
 {
     navbarMenu("One Categ.",  
-       tabPanel("Enter / Describe Data", label="1catDataEntry",       
-                h5(textOutput('cat1DataIn')),  ## starts as NULL string
-                ##  Input counts and labels         
-                br(),    
-                fluidRow(
-                  column(5,  div( label = "cat1Input", height = "300px",
-                                  tags$label('Category 1: ', 
-                                             tags$input(name='cat1_name1', type='text', value='Success', size='10')),
-                                  tags$label('Count: ',
-                                             tags$input(name='cat1_n1', type='text', value='0', size='5')),
-                                  br(),
-                                  tags$label('Category 2: ', 
-                                             tags$input(name='cat1_name2', type='text', value='Failure', size='10')),
-                                  tags$label('Count: ', 
-                                             tags$input(name='cat1_n2', type='text', value='0', size='5')),
-                                  HTML("&nbsp; &nbsp;"),
-                                  actionButton("cat1_submitButton", "Use These Data", inverse = FALSE)
-                                  )),
-                  column(3, plotOutput('cat1_Plot',width="80%")),
-                  column(3, tableOutput("cat1_Summary"))       
-                  )
-                ),
-    tabPanel("Test", value="cat1_Test",
-                uiOutput('cat1_testUI') 
-    ),
+       tabPanel("Enter / Describe Data", label="1catDataEntry",  
+            uiOutput('cat1_InputData')
+       ),
+       tabPanel("Test", value="cat1_Test",
+            uiOutput('cat1_testUI') 
+       ),
     tabPanel("Estimate", value="cat1_Estimate",
              uiOutput('cat1_estimateUI')
     ),

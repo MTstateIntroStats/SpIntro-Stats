@@ -46,8 +46,40 @@ options(scipen = 3, digits = 5)
       cat1_data$counts <- as.numeric(c(input$cat1_n1, input$cat1_n2))
       cat1_data$names <- c(input$cat1_name1, input$cat1_name2)
       cat1_data$total <- sum(as.numeric(c(input$cat1_n1, input$cat1_n2)))
-  }
- )
+  })
+
+  observeEvent(input$cat1_InputToggle, {
+    shinyjs::toggle("cat1Data")
+  })
+  
+  output$cat1_InputData <- renderUI({
+    div(
+    actionButton("cat1_InputToggle", "Input Data", class="btn btn-primary"),
+    div( id ="cat1Data", width = "500px",
+      h5(textOutput('cat1DataIn')),  ## starts as NULL string
+      ##  Input counts and labels         
+      br(),    
+      fluidRow(
+        column(5,  div( label = "cat1Input", height = "300px",
+                    tags$label('Category 1: ', 
+                               tags$input(name='cat1_name1', type='text', value='Success', size='10')),
+                    tags$label('Count: ',
+                               tags$input(name='cat1_n1', type='text', value='0', size='5')),
+                    br(),
+                    tags$label('Category 2: ', 
+                               tags$input(name='cat1_name2', type='text', value='Failure', size='10')),
+                    tags$label('Count: ', 
+                               tags$input(name='cat1_n2', type='text', value='0', size='5')),
+                    HTML("&nbsp; &nbsp;"),
+                    actionButton("cat1_submitButton", "Use These Data", class="btn btn-primary")
+      )),
+      column(3, plotOutput('cat1_Plot',width="80%")),
+      column(3, tableOutput("cat1_Summary"))       
+    )
+    )
+    )
+  })
+  
   
   ## Descriptives:  plot a bar chart of the successes / failures
   
