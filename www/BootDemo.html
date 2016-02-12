@@ -45,9 +45,9 @@ body {
 <!-- Load data on textbook cost  -->
 <script src= "costs.js"> </script>
 <!-- -->
-<div id = 'bootHelp' style = 'display: none;' >
-Start with a known "population". In this case our values are textbook
-         costs for one semester at MSU in tens of dollars.<BR>
+<div id = 'bootHelp' style = 'display: block;' >
+We start with a known "population". In this case our values are textbook
+         costs  in tens of dollars for one semester.<BR>
       <ul>
       <li> Click [Sample] and watch values get pulled from the population
       to the sample below.<BR>
@@ -226,8 +226,8 @@ var svg = d3.select("div#q1_bootstrap.shiny-html-output.shiny-bound-output").app
     .enter().append("line")
     .attr("x1", y(12))
     .attr("x2", width)
-    .attr("y1", y(0))
-    .attr("y2", 28)
+    .attr("y1", y(1))
+    .attr("y2", 27)
     .style("stroke-width",2)
     .style("stroke","white");
 

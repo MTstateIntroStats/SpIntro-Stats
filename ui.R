@@ -39,7 +39,8 @@ shinyUI(navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
                   </div>
                   <div style='width: 40%; float: left'>
                    <img src = 'gradeSpinner4.png' alt = 'Spinner Wheel' width = '200px'>
-                  </div> </div>")
+                  </div>
+                  <script src= 'www.costs.js'></script>  </div>")
     ), 
   
     ####   One Categorical  -----------------------------------------------------   1 cat
