@@ -48,13 +48,31 @@ options(scipen = 3, digits = 5)
       cat1_data$total <- sum(as.numeric(c(input$cat1_n1, input$cat1_n2)))
   })
 
+  observeEvent(input$cat1_EstimateToggle, {
+    shinyjs::toggle("cat1Data")  ##  hide/show data input
+                                 ## should also show/hide Test & Estimate
+  })
   observeEvent(input$cat1_InputToggle, {
-    shinyjs::toggle("cat1Data")
+    shinyjs::toggle("cat1Data")  ##  hide/show data input
+    shinyjs::enable("cat1_EstimateToggle") ## should also show/hide Test & Estimate
+    shinyjs::enable("cat1_TestToggle") ## should also show/hide Test & Estimate
+  })
+  observeEvent(input$cat1_TestToggle, {
+    shinyjs::toggle("cat1Data")  ##  hide/show data input
+    ## should also show/hide Test & Estimate
   })
   
   output$cat1_InputData <- renderUI({
-    div(
-    actionButton("cat1_InputToggle", "Input Data", class="btn btn-primary"),
+    fluidPage(
+      fluidRow(
+        column(3, offset = 1, 
+           actionButton("cat1_EstimateToggle", "Estimate", class="btn btn-primary", disabled=TRUE)),
+        column(3, offset = 1, 
+           actionButton("cat1_InputToggle", "Input Data", class="btn btn-primary")),
+        column(3, offset = 1, 
+           actionButton("cat1_TestToggle", "Test", class="btn btn-primary", disabled = TRUE))
+      ),
+
     div( id ="cat1Data", width = "500px",
       h5(textOutput('cat1DataIn')),  ## starts as NULL string
       ##  Input counts and labels         

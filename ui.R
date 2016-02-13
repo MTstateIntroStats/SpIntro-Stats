@@ -49,15 +49,15 @@ shinyUI(tagList(
     ####   One Categorical  -----------------------------------------------------   1 cat
 {
     navbarMenu("One Categ.",  
-       tabPanel("Enter / Describe Data", label="1catDataEntry",  
+       tabPanel("Test or Estimate", label="1catDataEntry",  
             uiOutput('cat1_InputData')
        ),
-       tabPanel("Test", value="cat1_Test",
-            uiOutput('cat1_testUI') 
-       ),
-    tabPanel("Estimate", value="cat1_Estimate",
-             uiOutput('cat1_estimateUI')
-    ),
+#        tabPanel("Test", value="cat1_Test",
+#             uiOutput('cat1_testUI') 
+#        ),
+#     tabPanel("Estimate", value="cat1_Estimate",
+#              uiOutput('cat1_estimateUI')
+#     ),
    tabPanel("Confidence Interval Demo", value = "cat1_CIdemo",
             titlePanel("Demo to Illustrate the meaning of 'Confidence' in an Interval"),
             fluidRow(
