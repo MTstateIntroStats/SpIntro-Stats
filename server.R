@@ -46,39 +46,51 @@ options(scipen = 3, digits = 5)
       cat1_data$counts <- as.numeric(c(input$cat1_n1, input$cat1_n2))
       cat1_data$names <- c(input$cat1_name1, input$cat1_name2)
       cat1_data$total <- sum(as.numeric(c(input$cat1_n1, input$cat1_n2)))
+      shinyjs::enable("cat1_EstimateToggle") ## enable Estimate
+      shinyjs::enable("cat1_TestToggle")     ## enable Test 
+      shinyjs::disable("cat1_InputToggle")   ## disable Input button
   })
 
-  observeEvent(input$cat1_EstimateToggle, {
-    shinyjs::toggle("cat1Data")  ##  hide/show data input
-                                 ## should also show/hide Test & Estimate
-  })
   observeEvent(input$cat1_InputToggle, {
-    shinyjs::toggle("cat1Data")  ##  hide/show data input
-    shinyjs::enable("cat1_EstimateToggle") ## should also show/hide Test & Estimate
-    shinyjs::enable("cat1_TestToggle") ## should also show/hide Test & Estimate
-  })
-  observeEvent(input$cat1_TestToggle, {
-    shinyjs::toggle("cat1Data")  ##  hide/show data input
-    ## should also show/hide Test & Estimate
+    shinyjs::show("cat1Data")            ##  show data input
+    shinyjs::disable("cat1_EstimateToggle") ##  disable  Estimate btn
+    shinyjs::hide("cat1Estimate")         ## hide Estimate page
+    shinyjs::hide("cat1Test")             ## hide Test page
+    shinyjs::disable("cat1_TestToggle")   ## disable Test btn
   })
   
-  output$cat1_InputData <- renderUI({
+  observeEvent(input$cat1_TestToggle, {
+    shinyjs::hide("cat1Data")             ##  hide data input
+    shinyjs::enable("cat1_InputToggle")   ## disable Input button
+    shinyjs::hide("cat1Estimate")         ## hide Estimate page
+    shinyjs::show("cat1Test")             ## show Test page
+  })
+  
+  observeEvent(input$cat1_EstimateToggle, {
+    shinyjs::hide("cat1Data")             ##  hide data input
+    shinyjs::enable("cat1_InputToggle")   ## disable Input button
+    shinyjs::hide("cat1Test")             ## hide Test page
+    shinyjs::show("cat1Estimate")             ## show Estimate page
+  })
+  
+  output$cat1_triplePlay <- renderUI({
     fluidPage(
       fluidRow(
         column(3, offset = 1, 
-           actionButton("cat1_EstimateToggle", "Estimate", class="btn btn-primary", disabled=TRUE)),
-        column(3, offset = 1, 
            actionButton("cat1_InputToggle", "Input Data", class="btn btn-primary")),
+        column(3, offset = 1, 
+           actionButton("cat1_EstimateToggle", "Estimate", class="btn btn-primary", disabled=TRUE)),
         column(3, offset = 1, 
            actionButton("cat1_TestToggle", "Test", class="btn btn-primary", disabled = TRUE))
       ),
 
     div( id ="cat1Data", width = "500px",
-      h5(textOutput('cat1DataIn')),  ## starts as NULL string
+      ##  h5(textOutput('cat1DataIn')),  ## starts as NULL string
       ##  Input counts and labels         
-      br(),    
+      br(),     
       fluidRow(
-        column(5,  div( label = "cat1Input", height = "300px",
+        column(6, offset = 2,
+               div( label = "cat1Input", height = "300px",
                     tags$label('Category 1: ', 
                                tags$input(name='cat1_name1', type='text', value='Success', size='10')),
                     tags$label('Count: ',
@@ -90,17 +102,126 @@ options(scipen = 3, digits = 5)
                                tags$input(name='cat1_n2', type='text', value='0', size='5')),
                     HTML("&nbsp; &nbsp;"),
                     actionButton("cat1_submitButton", "Use These Data", class="btn btn-primary")
-      )),
-      column(3, plotOutput('cat1_Plot',width="80%")),
-      column(3, tableOutput("cat1_Summary"))       
+          )),
+          ## column(3, plotOutput('cat1_Plot',width="80%")),
+          column(3, tableOutput("cat1_Summary"))       
+       )
+      ),  ## close Input div
+    
+    div( id = "cat1Test", style = "display: none;", 
+         fluidPage(
+           h3("Test a single proportion."),       
+           div(
+             fluidRow(
+               column(4, 
+                      h4("Original Data"),
+                      tableOutput("cat1OriginalData"),
+                      
+                      h4("Sample from Null Hypothesis"),
+                      tableOutput('cat1Test_Table')
+                      
+               ),
+               
+               column(7, 
+                      div(
+                        fluidRow(
+                          column(8, offset =1, h4("True Proportion (Null hypothesis for p):")),
+                          column(2, tags$div( 
+                            tags$input(id = "null_p", type = "text", class = "form-control", value = "0.001", width = "20px"))
+                          )
+                        ),
+                        plotOutput('cat1Test_Plot2', click = 'cat1_Test_click', height = "300px")  
+                      )
+                      #                     fluidRow(
+                      #                       column(11, offset = 1,
+                      #                              HTML(" Click a point to see its counts and proportions."),
+                      #                              br()
+                      #                              )
+                      #                     )
+               )
+               
+             ), 
+             #br(),
+             fluidRow(
+               column(5, offset = 1, h4("How many more samples from the null?")),
+               column(1,
+                      actionButton("cat1_test_shuffle_10", label = "10", class="btn btn-primary")),
+               column(1,
+                      actionButton("cat1_test_shuffle_100", label = "100", class="btn btn-primary")),
+               column(1,
+                      actionButton("cat1_test_shuffle_1000", label = "1000", class="btn btn-primary")),
+               column(1,
+                      actionButton("cat1_test_shuffle_5000", label = "5000", class="btn btn-primary"))
+             ),
+             br(),
+             br(),
+             fluidRow(
+               column(8, offset = 2,
+                      uiOutput("Cat1TestXtremes"),
+                      uiOutput("Cat1TestPvalue")
+               )
+             )
+           )
+         )
+    ), 
+    
+    div( id = "cat1Estimate", style = "display: none;", 
+      fluidRow(
+        column(4, 
+               h4("Estimate a Single Proportion"),
+               h5("Original Data"),
+               tableOutput("cat1_CIPrep"),
+               h5("One Resampled Dataset"),
+               tableOutput('cat1Estimate_Table')
+        ),
+        column(8, 
+               plotOutput('cat1Estimate_Plot2', click = 'cat1_Estimate_click', height = 350)
+        )
+      ),
+      #br(),
+      fluidRow(
+        column(4, offset = 1, h4("How many more resamples?")),
+        column(1,
+               actionButton("cat1_estimate_shuffle_10", label = "10", class="btn btn-primary")),
+        column(1,
+               actionButton("cat1_estimate_shuffle_100", label = "100", class="btn btn-primary")),
+        column(1,
+               actionButton("cat1_estimate_shuffle_1000", label = "1000", class="btn btn-primary")),
+        column(1,
+               actionButton("cat1_estimate_shuffle_5000", label = "5000", class="btn btn-primary"))
+      ),
+      br(),
+      fluidRow(
+        column(4, offset = 1, 
+               h4("Select Confidence Level (%)")
+        ),
+        column(5,
+               fluidRow(
+                 column(3,  
+                        actionButton('cat1_conf80', label = "80", class="btn btn-primary")),
+                 column(3,
+                        actionButton('cat1_conf90', label = "90", class="btn btn-primary")),
+                 column(3,
+                        actionButton('cat1_conf95', label = "95", class="btn btn-primary")),
+                 column(3,
+                        actionButton('cat1_conf99', label = "99", class="btn btn-primary"))
+               ))),
+      
+      if(!is.null(cat1Estimate$CI)){
+        fluidRow(
+          column(8, offset = 4,
+                 h4(paste(round(100 * cat1Estimate$confLevel), "% Confidence Interval Estimate: (", round(cat1Estimate$CI[1],3), ",", 
+                          round(cat1Estimate$CI[2], 3), ")"))
+          )
+        )
+      } else {br()}
     )
-    )
-    )
+    )   ## close Cat1_triplePlay UI
   })
   
   
-  ## Descriptives:  plot a bar chart of the successes / failures
-  
+  ## Descriptives:  plot a bar chart of the successes / failures 
+    ## No longer needed?
   output$cat1_Plot <- renderPlot( {
     if(input$cat1_submitButton ==0) return()
     #isolate( { 
@@ -114,10 +235,10 @@ options(scipen = 3, digits = 5)
      #})
   }, height=120)
 
-  output$cat1DataIn <- renderText({
-  if(input$cat1_submitButton ==0) return()
-    "Data are entered, you may now choose to estimate or test one proportion."
-  })
+#   output$cat1DataIn <- renderText({
+#   if(input$cat1_submitButton ==0) return()
+#     "Data are entered, you may now choose to estimate or test one proportion."
+#   })
 
 
   output$cat1_Summary <- renderTable({
@@ -172,13 +293,13 @@ options(scipen = 3, digits = 5)
               fluidRow(
                 column(5, offset = 1, h4("How many more samples from the null?")),
                 column(1,
-                   actionButton("cat1_test_shuffle_10", label = "10")),
+                   actionButton("cat1_test_shuffle_10", label = "10", class="btn btn-primary")),
                 column(1,
-                   actionButton("cat1_test_shuffle_100", label = "100")),
+                   actionButton("cat1_test_shuffle_100", label = "100", class="btn btn-primary")),
                 column(1,
-                   actionButton("cat1_test_shuffle_1000", label = "1000")),
+                   actionButton("cat1_test_shuffle_1000", label = "1000", class="btn btn-primary")),
                 column(1,
-                   actionButton("cat1_test_shuffle_5000", label = "5000"))
+                   actionButton("cat1_test_shuffle_5000", label = "5000", class="btn btn-primary"))
                ),
                br(),
                br(),
@@ -218,7 +339,7 @@ output$Cat1TestXtremes <- renderUI({
                 tags$input(id = "cat1_test_cutoff", type = "text", class = "form-control", value = NA))
     ),
     column(1,
-           actionButton('cat1_test_countXtremes', "Go")
+           actionButton('cat1_test_countXtremes', "Go", class="btn btn-success")
     )
   )
 })
@@ -397,13 +518,13 @@ output$cat1_estimateUI <- renderUI({
              fluidRow(
                column(4, offset = 1, h4("How many more resamples?")),
                column(1,
-                      actionButton("cat1_estimate_shuffle_10", label = "10")),
+                      actionButton("cat1_estimate_shuffle_10", label = "10", class="btn btn-primary")),
                column(1,
-                      actionButton("cat1_estimate_shuffle_100", label = "100")),
+                      actionButton("cat1_estimate_shuffle_100", label = "100", class="btn btn-primary")),
                column(1,
-                      actionButton("cat1_estimate_shuffle_1000", label = "1000")),
+                      actionButton("cat1_estimate_shuffle_1000", label = "1000", class="btn btn-primary")),
                column(1,
-                      actionButton("cat1_estimate_shuffle_5000", label = "5000"))
+                      actionButton("cat1_estimate_shuffle_5000", label = "5000", class="btn btn-primary"))
              ),
              br(),
              fluidRow(
@@ -413,13 +534,13 @@ output$cat1_estimateUI <- renderUI({
                column(5,
                  fluidRow(
                     column(3,  
-                      actionButton('cat1_conf80', label = "80")),
+                      actionButton('cat1_conf80', label = "80", class="btn btn-primary")),
                     column(3,
-                      actionButton('cat1_conf90', label = "90")),
+                      actionButton('cat1_conf90', label = "90", class="btn btn-primary")),
                     column(3,
-                      actionButton('cat1_conf95', label = "95")),
+                      actionButton('cat1_conf95', label = "95", class="btn btn-primary")),
                     column(3,
-                      actionButton('cat1_conf99', label = "99"))
+                      actionButton('cat1_conf99', label = "99", class="btn btn-primary"))
                 ))),
                         
               if(!is.null(cat1Estimate$CI)){
@@ -514,7 +635,7 @@ observeEvent(input$cat1_estimate_shuffle_5000, {
 })
 
 observeEvent(input$cat1_conf80,{
-  req(cat1Estimate$phat) 
+  req(cat1_data$total) 
   if((nsims <- length(cat1Estimate$phat)) < 10){
     return()
   }
@@ -528,7 +649,7 @@ observeEvent(input$cat1_conf80,{
 })
 
 observeEvent(input$cat1_conf90,{
-  req(cat1Estimate$phat) 
+  req(cat1_data$total) 
   if((nsims <- length(cat1Estimate$phat)) < 10){
     return()
   }
@@ -542,7 +663,7 @@ observeEvent(input$cat1_conf90,{
 })
 
 observeEvent(input$cat1_conf95,{
-  req(cat1Estimate$phat)
+  req(cat1_data$total)
   if((nsims <- length(cat1Estimate$phat)) < 10){
     return()
   }
@@ -556,7 +677,7 @@ observeEvent(input$cat1_conf95,{
 })
 
 observeEvent(input$cat1_conf99,{
-  req(cat1Estimate$phat) 
+  req(cat1_data$total) 
   if((nsims <- length(cat1Estimate$phat)) < 10){
     return()
   }
@@ -718,7 +839,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
       column(3,
              tags$input(name='c1Lurk_m1', type='text', value='0', size='10')
             ),
-      column(2, actionButton("c1Lurk_Go", "Go"))
+      column(2, actionButton("c1Lurk_Go", "Go", class="btn btn-success"))
        
      )
     )
@@ -1825,7 +1946,7 @@ output$q1TestXtremes <- renderUI({
              tags$input(id = "q1_test_cutoff", type = "text", class = "form-control", value = NA))
     ),
     column(1,
-           actionButton("q1_countXtremes","Go")
+           actionButton("q1_countXtremes","Go", class="btn btn-success")
     )
   )
 })
@@ -2965,7 +3086,7 @@ output$Cat2TestXtremes <- renderUI({
              tags$input(id = "cat2_test_cutoff", type = "text", class = "form-control", value = NA))
     ),
     column(1,
-           actionButton('cat2_test_countXtremes', "Go")
+           actionButton('cat2_test_countXtremes', "Go", class="btn btn-success")
     )
     )
 })
@@ -3893,7 +4014,7 @@ output$slopeTestXtremes <- renderUI({
     column(3,           
            tags$div( 
              tags$input(id = "q2_cutoff", type = "text", class = "form-control", value = NA)) ),
-    column(1, actionButton("q2_countXtremes","Go")   )
+    column(1, actionButton("q2_countXtremes","Go", class="btn btn-success")   )
   )
 }) 
 
@@ -4755,7 +4876,7 @@ output$c1q1_Summary2 <- renderTable({
                    tags$input(id = "c1q1_test_cutoff", type = "text", class = "form-control", value = NA))
           ),
           column(1, 
-            actionButton("c1q1_countXtremes","Go")
+            actionButton("c1q1_countXtremes","Go", class="btn btn-success")
           )
         )
       })

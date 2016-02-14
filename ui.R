@@ -50,7 +50,7 @@ shinyUI(tagList(
 {
     navbarMenu("One Categ.",  
        tabPanel("Test or Estimate", label="1catDataEntry",  
-            uiOutput('cat1_InputData')
+            uiOutput('cat1_triplePlay')
        ),
 #        tabPanel("Test", value="cat1_Test",
 #             uiOutput('cat1_testUI') 
