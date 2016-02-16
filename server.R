@@ -207,19 +207,20 @@ options(scipen = 3, digits = 5)
                         actionButton('cat1_conf99', label = "99", class="btn btn-primary"))
                ))),
       
-      if(!is.null(cat1Estimate$CI)){
+      #if(!is.null(cat1Estimate$CI)){
         fluidRow(
-          column(8, offset = 4,
-                 h4(paste(round(100 * cat1Estimate$confLevel), "% Confidence Interval Estimate: (", round(cat1Estimate$CI[1],3), ",", 
-                          round(cat1Estimate$CI[2], 3), ")"))
-          )
+          column(8, offset = 4, printMyCI()
+          ) 
         )
-      } else {br()}
-    )
-    )   ## close Cat1_triplePlay UI
+      #} else {br()}
+     )
+    )    ## close Cat1_triplePlay UI
+  }) 
+  
+  printMyCI <- reactive({
+    h4(paste(round(100 * cat1Estimate$confLevel), "% Confidence Interval Estimate: (")) #, round(cat1Estimate$CI[1],3), ",", 
+    #  round(cat1Estimate$CI[2], 3), ")"))
   })
-  
-  
   ## Descriptives:  plot a bar chart of the successes / failures 
     ## No longer needed?
   output$cat1_Plot <- renderPlot( {
@@ -497,7 +498,7 @@ output$Cat1TestPvalue <- renderUI({
 
    ###  estimate p.hat  -------------------------------------- cat 1
 {
-output$cat1_estimateUI <- renderUI({
+output$cat1_OLDestimateUI <- renderUI({
   if( is.null(cat1_data$counts)){
     h4(" You must first enter data. Choose 'Enter/Describe Data'.")
   } else {
@@ -576,7 +577,6 @@ output$cat1_CIPrep <- renderTable({
 output$cat1Estimate_Table <- renderTable({
   #if(input$cat1_submitButton == 0) return()
   req(cat1_data$counts)
-  
   n1 <- cat1_data$total
   ##
   if(is.null(cat1Estimate$phat)){
@@ -636,16 +636,18 @@ observeEvent(input$cat1_estimate_shuffle_5000, {
 
 observeEvent(input$cat1_conf80,{
   req(cat1_data$total) 
-  if((nsims <- length(cat1Estimate$phat)) < 10){
+  nsims <- length(cat1Estimate$phat)
+  if(nsims < 10){
     return()
   }
   cat1Estimate$confLevel <- .80
   cat1Estimate$colors <- rep(blu, nsims)
   tailCount <- floor(nsims * 0.1)
+  cat("Tail Count: ", tailCount,"\n")     ####
   cat1Estimate$colors[1:tailCount] <- rd
   cat1Estimate$colors[nsims +1 -(1:tailCount)] <- rd
   cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
-  
+  print(summary(cat1Estimate$phat))       ####
 })
 
 observeEvent(input$cat1_conf90,{
@@ -658,7 +660,7 @@ observeEvent(input$cat1_conf90,{
   tailCount <- floor(nsims * 0.05)
   cat1Estimate$colors[1:tailCount] <- rd
   cat1Estimate$colors[nsims +1 -(1:tailCount)] <- rd
-  cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
+  #cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
   
 })
 
@@ -672,7 +674,7 @@ observeEvent(input$cat1_conf95,{
   tailCount <- floor(nsims * 0.025)
   cat1Estimate$colors[1:tailCount] <- rd
   cat1Estimate$colors[nsims +1 -(1:tailCount)] <- rd
-  cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
+  #cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
   
 })
 
@@ -686,7 +688,7 @@ observeEvent(input$cat1_conf99,{
   tailCount <- floor(nsims * 0.005)
   cat1Estimate$colors[1:tailCount] <- rd
   cat1Estimate$colors[nsims +1 -(1:tailCount)] <- rd
-  cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
+  #cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
   
 })
 
@@ -1646,13 +1648,156 @@ output$normalProbPlot1 <- renderPlot({
   q1Estimate <- reactiveValues(shuffles = NULL, xbars = NULL, observed = NULL, 
                                confLevel = NULL, colors = NULL, colors = NULL, CI = NULL)
   
+
+  observeEvent(input$q1_InputToggle, {
+    shinyjs::show("q1Data")            ##  show data input
+    shinyjs::disable("q1_EstimateToggle") ##  disable  Estimate btn
+    shinyjs::hide("q1Estimate")         ## hide Estimate page
+    shinyjs::hide("q1Test")             ## hide Test page
+    shinyjs::disable("q1_TestToggle")   ## disable Test btn
+  })
+  
+  observeEvent(input$q1_TestToggle, {
+    shinyjs::hide("q1Data")             ##  hide data input
+    shinyjs::enable("q1_InputToggle")   ## disable Input button
+    shinyjs::hide("q1Estimate")         ## hide Estimate page
+    shinyjs::show("q1Test")             ## show Test page
+  })
+  
+  observeEvent(input$q1_EstimateToggle, {
+    shinyjs::hide("q1Data")             ##  hide data input
+    shinyjs::enable("q1_InputToggle")   ## disable Input button
+    shinyjs::hide("q1Test")             ## hide Test page
+    shinyjs::show("q1Estimate")             ## show Estimate page
+  })
+  
+  output$q1_triplePlay <- renderUI({
+    fluidPage(
+      fluidRow(
+        column(3, offset = 1, 
+               actionButton("q1_InputToggle", "Input Data", class="btn btn-primary")),
+        column(3, offset = 1, 
+               actionButton("q1_EstimateToggle", "Estimate", class="btn btn-primary", disabled=TRUE)),
+        column(3, offset = 1, 
+               actionButton("q1_TestToggle", "Test", class="btn btn-primary", disabled = TRUE))
+      ),
+      div( id ="q1Data", width = "500px",   
+           fluidRow(  
+                column(6, 
+                       h5("How would you like to input the data?"),
+                       selectInput('q1_entry', ' ', 
+                                    list(" ", "Pre-Loaded Data","Local CSV File",
+                                                        "Type/Paste into Text Box"), #"Type/Paste into Data Sheet"), 
+                                    selected = " ",
+                                   selectize = FALSE, width = "200px"))
+           ),
+           uiOutput("q1_inputUI"),
+           hr(),
+          fluidRow(
+              column(6, 
+                      plotOutput('q1_Plot', height = "320px") ),
+              column(3, 
+                    tableOutput('q1_Summary'))
+          )
+      ),  ## close Input div
+      
+      div( id = "q1Test", style = "display: none;", 
+             fluidPage( 
+               fluidRow( 
+                 column(4,  
+                        h4("Test for a single mean.")
+                 ),
+                 column(8, 
+                        tags$label(HTML("True Mean (Null hypothesis for &mu;):"),  
+                                   tags$input(name='null_mu', type='text', value='0', size='10'))
+                 )
+               ),
+               fluidRow( 
+                 column(4,  
+                        plotOutput("q1_TestPlot1", height = "280px")
+                 ),
+                 column(8, 
+                        plotOutput('q1_TestPlot2', click = 'q1_Test_click', height = '300px')
+                 )
+               ),
+               br(),
+               fluidRow(
+                 column(5, offset = 1, h4("How many more (shifted) resamples?")),
+                 column(1, actionButton("q1_test_shuffle_1", label = "1")),
+                 column(1, actionButton("q1_test_shuffle_10", label = "10")),
+                 column(1, actionButton("q1_test_shuffle_100", label = "100")),
+                 column(1, actionButton("q1_test_shuffle_1000", label = "1000")),
+                 column(1, actionButton("q1_test_shuffle_5000", label = "5000"))
+               ),
+               
+               br(),
+               #         fluidRow(
+               #            column(5, offset =6, h4("Click on a point to see that resample."))
+               #          ),
+               fluidRow(
+                 column(8, offset = 1,
+                        uiOutput("q1TestXtremes"),
+                        uiOutput("q1TestPvalue")
+                 )
+               )
+             )
+      ),                                                  ### close q1-testing div
+      div( id = "q1Estimate", style = "display: none;", 
+             h3("Estimate a single mean."),
+             fluidRow(
+               column(4,
+                      plotOutput("q1_EstPlot1")
+               ),
+               column(8, 
+                      plotOutput('q1_EstimatePlot2', click = 'q1_Estimate_click')
+               )
+             ),             
+             fluidRow(
+               column(4, offset = 2, h4("How many more resamples?")),
+               column(1,
+                      actionButton("q1_resample_10", label = "10")),
+               column(1,
+                      actionButton("q1_resample_100", label = "100")),
+               column(1,
+                      actionButton("q1_resample_1000", label = "1000")),
+               column(1,
+                      actionButton("q1_resample_5000", label = "5000"))
+             ),
+             br(),
+             br(),
+             fluidRow(
+               column(4, offset = 3, 
+                      h4("Select Confidence Level (%)")
+               ),
+               column(5,
+                      fluidRow(
+                        column(2,  
+                               actionButton('q1_conf80', label = "80")),
+                        column(2,
+                               actionButton('q1_conf90', label = "90")),
+                        column(2,
+                               actionButton('q1_conf95', label = "95")),
+                        column(2,
+                               actionButton('q1_conf99', label = "99"))
+                      ))
+             ),
+             if(!is.null(q1Estimate$CI)){
+               fluidRow( 
+                 column(7, offset = 5,
+                        h4(paste(q1Estimate$confLevel*100, "% Interval Estimate: (", round(q1Estimate$CI[1],3), ",", 
+                                 round(q1Estimate$CI[2], 3), ")"))
+                 ))
+             }
+      )     
+    )    ## close q1_triplePlay UI
+  })  
   
 
 ##  Enter data    ----------------------------------------- quant 1
  {
 
-output$quant1DataIn <- renderText({ "How would you like to input the data? " 
-  })
+# output$quant1DataIn <- renderText({ "How would you like to input the data? " 
+#  })
 
  ## user selects an input method.
   ## renderUI changes to get appropriate inputs.
@@ -1698,19 +1843,6 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
               actionButton("q1_useText", "Use These Data")
             )
            },
-#           "Type/Paste into Data Sheet" = {
-#             div(
-#                h4("Edit the values in Column 2.  Column 1 will be ignored.  To paste, use Cntrl-V or Cmd-V(on a mac)"), 
-#             ## take inputs here for number of rows (& columns?)
-#               ## tags$input(name='q1Hot_rows', type='text', value=10, label = 'Number of rows', size='10', height = 20),
-#                ## tags$input(name='q1Hot_cols', type='text', value='0', size='10'),
-#             fluidRow(
-#               column(4, rHandsontableOutput("q1_hot") #, rows = input$q1Hot_rows) 
-#               ),
-#               column(4, actionButton("q1_useHotBtn", "Use These Data"))
-#             )
-#           )
-#         },
         NULL
       )
  })
@@ -1719,7 +1851,7 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
                  
  ##  grab data according to input method
  q1 <- reactiveValues(data = NULL, names = NULL)
-
+ 
  observeEvent(  input$q1_useLddBtn, {
    DF <- eval(parse( text = input$q1_data1))
    q1$data <- DF
@@ -1728,9 +1860,12 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
    q1Test$nsims <- 0
    q1Test$shuffles <-  q1Test$new.xbars <-  q1Test$xbar <- q1Test$colors <- NULL
    q1Estimate$shuffles <- q1Estimate$xbars <- q1Estimate$observed <- q1Estimate$confLevel <- q1Estimate$colors <- NULL
-   output$quant1DataIn <- renderText({
-          "Data are entered, you may now choose to estimate or test one mean"
-   })
+#    output$quant1DataIn <- renderText({
+#           "Data are entered, you may now choose to estimate or test one mean"
+#    })
+   shinyjs::enable("q1_EstimateToggle") ## enable Estimate
+   shinyjs::enable("q1_TestToggle")     ## enable Test 
+   shinyjs::disable("q1_InputToggle")   ## disable Input button
  })
 
  observeEvent(  input$q1_useCSVBtn,{
@@ -1741,9 +1876,12 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
    q1Test$nsims <- 0
    q1Test$shuffles <-  q1Test$new.xbars <-  q1Test$xbar <-  q1Test$colors <- NULL
    q1Estimate$shuffles <- q1Estimate$xbars <- q1Estimate$observed <- q1Estimate$confLevel <- q1Estimate$colors <- NULL
-   output$quant1DataIn <- renderText({
-     "Data are entered, you may now choose to estimate or test one mean"
-   })
+#    output$quant1DataIn <- renderText({
+#      "Data are entered, you may now choose to estimate or test one mean"
+#    })
+   shinyjs::enable("q1_EstimateToggle") ## enable Estimate
+   shinyjs::enable("q1_TestToggle")     ## enable Test 
+   shinyjs::disable("q1_InputToggle")   ## disable Input button
  })
 
 #  observeEvent(input$q1_useHotBtn,{
@@ -1785,9 +1923,12 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
     q1Test$shuffles <-  q1Test$new.xbars <-  q1Test$xbar <-   q1Test$colors <- NULL
     q1Estimate$shuffles <- q1Estimate$xbars <- q1Estimate$observed <- q1Estimate$colors <- NULL
     #print(q1$data)
-    output$quant1DataIn <- renderText({
-      "Data are entered, you may now choose to estimate or test one mean"
-    })
+#     output$quant1DataIn <- renderText({
+#       "Data are entered, you may now choose to estimate or test one mean"
+#     })
+    shinyjs::enable("q1_EstimateToggle") ## enable Estimate
+    shinyjs::enable("q1_TestToggle")     ## enable Test 
+    shinyjs::disable("q1_InputToggle")   ## disable Input button
   })
  
    q1_values = list()

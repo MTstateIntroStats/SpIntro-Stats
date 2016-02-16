@@ -49,9 +49,9 @@ shinyUI(tagList(
     ####   One Categorical  -----------------------------------------------------   1 cat
 {
     navbarMenu("One Categ.",  
-       tabPanel("Test or Estimate", label="1catDataEntry",  
-            uiOutput('cat1_triplePlay')
-       ),
+               tabPanel("Test or Estimate", label="1catDataEntry",  
+                        uiOutput('cat1_triplePlay')
+               ),
 #        tabPanel("Test", value="cat1_Test",
 #             uiOutput('cat1_testUI') 
 #        ),
@@ -118,39 +118,42 @@ shinyUI(tagList(
     ####   One Quantitative  ----------------------------------------------------  1 Quant
 {
     navbarMenu("One Quant.",
-      tabPanel("Enter /Describe Data", value="1quantDataEntry",
-                 ##  preloaded data  - save as data/quant1.RData
-                 ##  read local csv file
-                 ##  open empty table to copy or type in data.
-                 ##
-               ##  Existing data is stored in "data/quant1.RData"
-               h4(textOutput('quant1DataIn')),
-               fluidRow(  
-                 column(6, selectInput('q1_entry', ' ', 
-                                      list(" ", "Pre-Loaded Data","Local CSV File",
-                                           "Type/Paste into Text Box"), #"Type/Paste into Data Sheet"), 
-                                      selected = " ",
-                                      selectize = FALSE, width = "200px"))
+               tabPanel("Test or Estimate", label="1quanttDataEntry",  
+                        uiOutput('q1_triplePlay')
                ),
-               
-               ## Need to use Dynamic UI instead of condition panels
-               
-               uiOutput("q1_inputUI"),
-      
-               hr(),
-               fluidRow(
-                 column(6, 
-                       plotOutput('q1_Plot', height = "320px") ),
-                 column(3, 
-                       tableOutput('q1_Summary'))
-               )
-      ),
-      tabPanel("Test", value="1quantTest",
-           uiOutput('q1_testUI') 
-      ),
-      tabPanel("Estimate", value="1quantEstimate",
-        uiOutput('q1_estimateUI')
-      ),
+#       tabPanel("Enter /Describe Data", value="1quantDataEntry",
+#                  ##  preloaded data  - save as data/quant1.RData
+#                  ##  read local csv file
+#                  ##  open empty table to copy or type in data.
+#                  ##
+#                ##  Existing data is stored in "data/quant1.RData"
+#                h4(textOutput('quant1DataIn')),
+#                fluidRow(  
+#                  column(6, selectInput('q1_entry', ' ', 
+#                                       list(" ", "Pre-Loaded Data","Local CSV File",
+#                                            "Type/Paste into Text Box"), #"Type/Paste into Data Sheet"), 
+#                                       selected = " ",
+#                                       selectize = FALSE, width = "200px"))
+#                ),
+#                
+#                ## Need to use Dynamic UI instead of condition panels
+#                
+#                uiOutput("q1_inputUI"),
+#       
+#                hr(),
+#                fluidRow(
+#                  column(6, 
+#                        plotOutput('q1_Plot', height = "320px") ),
+#                  column(3, 
+#                        tableOutput('q1_Summary'))
+#                )
+#       ),
+#       tabPanel("Test", value="1quantTest",
+#            uiOutput('q1_testUI') 
+#       ),
+#       tabPanel("Estimate", value="1quantEstimate",
+#         uiOutput('q1_estimateUI')
+#       ),
       tabPanel("Bootstrap Demo", value="1quantBoot",
         uiOutput('q1_bootstrap')
         #a(href="http://www.math.montana.edu/~jimrc/randomization/BootDemo.html","Click to see Bootstrap Demo") 
