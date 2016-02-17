@@ -1,0 +1,30 @@
+How Modules work:
+
+  We have a bit of code we want to repeat in several parts of an R SHiny app.
+  
+  Build two functions in  global.R file
+  
+  verbUI <- function(id){
+    ns <- NS(id)
+   ## this holds the parts to repeat using ns("parts2refer2") 
+  }
+  
+  verb <- function(input, output, session, otherArgs, ie, reactive(input$checkbox) ){
+  
+    ## what to do on the server end
+    ## input$parts2refer2  references the pieces in verbUI
+    ## return a list of reactive expressions
+  }
+  
+  In ui.R refer to the module as
+  
+  verbUI("name4thisInstance")  ##  placement: where you want to see the UI appear
+  
+  
+  In server.R use callModule
+  
+  newVerbFunction <- callModule(verb, "name4thisInstance", args)
+  
+  
+  
+   
