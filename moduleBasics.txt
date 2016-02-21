@@ -7,6 +7,7 @@ How Modules work:
   verbUI <- function(id){
     ns <- NS(id)
    ## this holds the parts to repeat using ns("parts2refer2") 
+   ## for example, define a user input here naming in ns("myInput")
   }
   
   verb <- function(input, output, session, otherArgs, ie, reactive(input$checkbox) ){
@@ -24,6 +25,9 @@ How Modules work:
   In server.R use callModule
   
   newVerbFunction <- callModule(verb, "name4thisInstance", args)
+  
+  Now grab the module output with
+  name4thisInstance()
   
   
   

@@ -125,8 +125,9 @@ options(scipen = 3, digits = 5)
                column(7, 
                       div(
                         fluidRow(
-                          column(8, offset =1, h4("True Proportion (Null hypothesis for p):")),
-                          column(2, tags$div( 
+                          column(8, offset =1, 
+                                 HTML("<h5>True Proportion &nbsp;&nbsp;&nbsp;  H<sub>0</sub>: p = </h5>") ),
+                          column(2, tags$div(
                             tags$input(id = "null_p", type = "text", class = "form-control", value = "0.001", width = "20px"))
                           )
                         ),
@@ -254,66 +255,66 @@ options(scipen = 3, digits = 5)
 } 
     ##  Test for single proportion ------------------------------------------------ cat 1
 { 
- output$cat1_testUI <- renderUI({
-   if( is.null(cat1_data$counts)){
-     h4(" You must first enter data. Choose 'Enter/Describe Data'.")
-   } else {
-       fluidPage(
-          h3("Test a single proportion."),       
-            div(
-              fluidRow(
-                column(4, 
-                   h4("Original Data"),
-                   tableOutput("cat1OriginalData"),
-                      
-                   h4("Sample from Null Hypothesis"),
-                   tableOutput('cat1Test_Table')
-                      
-                ),
-                      
-                column(7, 
-                    div(
-                      fluidRow(
-                        column(8, offset =1, h4("True Proportion (Null hypothesis for p):")),
-                        column(2, tags$div( 
-                                 tags$input(id = "null_p", type = "text", class = "form-control", value = "0.001", width = "20px"))
-                               )
-                        ),
-                       plotOutput('cat1Test_Plot2', click = 'cat1_Test_click', height = "300px")  
-                      )
-#                     fluidRow(
-#                       column(11, offset = 1,
-#                              HTML(" Click a point to see its counts and proportions."),
-#                              br()
-#                              )
-#                     )
-                 )
-                
-              ), 
-              #br(),
-              fluidRow(
-                column(5, offset = 1, h4("How many more samples from the null?")),
-                column(1,
-                   actionButton("cat1_test_shuffle_10", label = "10", class="btn btn-primary")),
-                column(1,
-                   actionButton("cat1_test_shuffle_100", label = "100", class="btn btn-primary")),
-                column(1,
-                   actionButton("cat1_test_shuffle_1000", label = "1000", class="btn btn-primary")),
-                column(1,
-                   actionButton("cat1_test_shuffle_5000", label = "5000", class="btn btn-primary"))
-               ),
-               br(),
-               br(),
-               fluidRow(
-                 column(8, offset = 2,
-                        uiOutput("Cat1TestXtremes"),
-                        uiOutput("Cat1TestPvalue")
-                 )
-               )
-        )
-       )
-    }
- })
+#  output$cat1_testUI <- renderUI({
+#    if( is.null(cat1_data$counts)){
+#      h4(" You must first enter data. Choose 'Enter/Describe Data'.")
+#    } else {
+#        fluidPage(
+#           h3("Test a single proportion."),       
+#             div(
+#               fluidRow(
+#                 column(4, 
+#                    h4("Original Data"),
+#                    tableOutput("cat1OriginalData"),
+#                       
+#                    h4("Sample from Null Hypothesis"),
+#                    tableOutput('cat1Test_Table')
+#                       
+#                 ),
+#                       
+#                 column(7, 
+#                     div(
+#                       fluidRow(
+#                         column(8, offset =1, h4("True Proportion (Null hypothesis for p):")),
+#                         column(2, tags$div( 
+#                                  tags$input(id = "null_p", type = "text", class = "form-control", value = "0.001", width = "20px"))
+#                                )
+#                         ),
+#                        plotOutput('cat1Test_Plot2', click = 'cat1_Test_click', height = "300px")  
+#                       )
+# #                     fluidRow(
+# #                       column(11, offset = 1,
+# #                              HTML(" Click a point to see its counts and proportions."),
+# #                              br()
+# #                              )
+# #                     )
+#                  )
+#                 
+#               ), 
+#               #br(),
+#               fluidRow(
+#                 column(5, offset = 1, h4("How many more samples from the null?")),
+#                 column(1,
+#                    actionButton("cat1_test_shuffle_10", label = "10", class="btn btn-primary")),
+#                 column(1,
+#                    actionButton("cat1_test_shuffle_100", label = "100", class="btn btn-primary")),
+#                 column(1,
+#                    actionButton("cat1_test_shuffle_1000", label = "1000", class="btn btn-primary")),
+#                 column(1,
+#                    actionButton("cat1_test_shuffle_5000", label = "5000", class="btn btn-primary"))
+#                ),
+#                br(),
+#                br(),
+#                fluidRow(
+#                  column(8, offset = 2,
+#                         uiOutput("Cat1TestXtremes"),
+#                         uiOutput("Cat1TestPvalue")
+#                  )
+#                )
+#         )
+#        )
+#     }
+#  })
 
 observeEvent( input$null_p, {
   cat1Test$phat <- NULL  
@@ -322,44 +323,47 @@ observeEvent( input$null_p, {
 
 
 output$Cat1TestXtremes <- renderUI({
-  fluidRow(
-    column(4,  
-           h4("Count values equal to or")
-    ),
-    column(4,
-           tags$div(style="width: 200px",
-                    tags$select(id='cat1_testDirection', class="form-control",
-                                tags$option( value = "less", "less"),
-                                tags$option( value = "more extreme", "more extreme", selected = TRUE),
-                                tags$option( value = "greater", "greater"))
-           )),
-    column(1, h4("than ")),
-    column(2,
-#           textInput('cat1_test_cutoff', label = "", value = NA)
-           tags$div( 
-                tags$input(id = "cat1_test_cutoff", type = "text", class = "form-control", value = NA))
-    ),
-    column(1,
-           actionButton('cat1_test_countXtremes', "Go", class="btn btn-success")
-    )
-  )
+  PvalueUI("cat1Pval")
+#   fluidRow(
+#     column(4,  
+#            h4("Count values equal to or")
+#     ),
+#     column(4,
+#            tags$div(style="width: 200px",
+#                     tags$select(id='cat1_testDirection', class="form-control",
+#                                 tags$option( value = "less", "less"),
+#                                 tags$option( value = "more extreme", "more extreme", selected = TRUE),
+#                                 tags$option( value = "greater", "greater"))
+#            )),
+#     column(1, h4("than ")),
+#     column(2,
+# #           textInput('cat1_test_cutoff', label = "", value = NA)
+#            tags$div( 
+#                 tags$input(id = "cat1_test_cutoff", type = "text", class = "form-control", value = NA))
+#     ),
+#     column(1,
+#            actionButton('cat1_test_countXtremes', "Go", class="btn btn-success")
+#     )
+#   )
 })
+   ## error in this line -- says cat1Test$phat should be reactive, but if it is, then it says is a closure
+#cat1Pvalue <- callModule(Pvalue, "cat1Pval", parms = reactive({cat1Test$phat}), reactive({input$null_p}))
 
-observeEvent( input$cat1_testDirection, {
-  cat1Test$pvalue <- cat1Test$moreExtremeCount <- NULL    
-  cat1Test$colors <- rep(blu, length(cat1Test$colors))
-})
+# observeEvent( input$cat1_testDirection, {
+#   cat1Test$pvalue <- cat1Test$moreExtremeCount <- NULL    
+#   cat1Test$colors <- rep(blu, length(cat1Test$colors))
+# })
+# 
+# observeEvent( input$cat1_test_cutoff, {
+#   cat1Test$pvalue <- cat1Test$moreExtremeCount <- NULL    
+#   cat1Test$colors <- rep(blu, length(cat1Test$colors))
+# })
 
-observeEvent( input$cat1_test_cutoff, {
-  cat1Test$pvalue <- cat1Test$moreExtremeCount <- NULL    
-  cat1Test$colors <- rep(blu, length(cat1Test$colors))
-})
 
-
-output$Cat1TestPvalue <- renderUI({
-  req(cat1Test$moreExtremeCount)
-    h4(pvalue2print(cat1Test$moreExtremeCount,  cat1Test$sampleCount, cat1Test$direction, cat1Test$cutoff, cat1Test$pvalue))
-})
+# output$Cat1TestPvalue <- renderUI({
+#   req(cat1Test$moreExtremeCount)
+#     h4(pvalue2print(cat1Test$moreExtremeCount,  cat1Test$sampleCount, cat1Test$direction, cat1Test$cutoff, cat1Test$pvalue))
+# })
 
     output$cat1OriginalData <- renderTable({ 
       if(input$cat1_submitButton ==0) return()
