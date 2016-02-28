@@ -61,26 +61,34 @@ c1q1_estimate_shuffles <- function(shuffles, ndx1, ndx2){
 
  ## finding break points for dot plots
 newy  <- function(simStats){
-  nbreaks <- 0.5*nclass.Sturges(simStats)^2
-  z <- cut(simStats, breaks = nbreaks) 
-  checkBreaks <- (length(simStats) < 3000)
-  ## look at center 30 bins to see if we have lots of variation
+  nsims <- length(simStats)
+  maxStat <- max(simStats)
+  brkPts <- seq(min(simStats)-.00001, maxStat, by= .9*IQR(simStats)/ nsims^(1/2.8))
+  nbreaks <- length(brkPts)
+  brkPts[nbreaks] <- maxStat + .00001
+  z <- cut(simStats, breaks = brkPts)
+  checkBreaks <- (nsims < 3000)
+  ## look at center 30 bins to see if we have too much variation
   ## if so, try more bins
-  oldDifQuant <- 100
-  while(nbreaks > 30 & checkBreaks){
-    zt <- as.numeric(table(z))
-    hipt <- which.max(zt)
-    zt <- zt[pmax(1, hipt -10):pmin(length(zt), hipt+10)]
-    #print(
-    difquant <- diff(quantile(zt,c(.75,1)))/ median(zt) #)
-    if(difquant > .8 & difquant < oldDifQuant){
-      nbreaks <- nbreaks * 1.1
-      z <- cut(simStats, breaks = nbreaks) 
-      oldDifQuant <- difquant
-    } else { break()}
-  }
+  # oldDifQuant <- 100
+  # while(nbreaks > 30 & checkBreaks){
+  #   zt <- as.numeric(table(z))
+  #   hipt <- which.max(zt)
+  #   zt <- zt[pmax(1, hipt -10):pmin(length(zt), hipt+10)]
+  #   difquant <- diff(quantile(zt,c(.75,1)))/ median(zt) #)
+  #   if(difquant > .8 & difquant < oldDifQuant){
+  #     nbreaks <- nbreaks * 1.02
+  #     z <- cut(simStats, breaks = nbreaks) 
+  #     oldDifQuant <- difquant
+  #   } else { break()}
+  # }
+  cutpts <- as.numeric(sapply(levels(z), function(x) strsplit( substr(x,2,20),",")[[1]][1]))
+  x <- rep( cutpts + c(diff(cutpts), 0)/2, table(z))
+  x[nsims] <- maxStat
   w <- unlist(tapply(z, z, function(V) 1:length(V)))
-  w[!is.na(w)]
+  w[nsims] <- 1
+  data.frame(x = x, y = w, rownames = 1:nsims)[!is.na(w), ]
+  ##w[!is.na(w)]
 }
 
   ## control the way p-values are printed  ##  
