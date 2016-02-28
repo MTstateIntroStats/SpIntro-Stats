@@ -247,7 +247,7 @@ shinyUI(tagList(
                         ),
                     fluidRow(
                       column(6, offset = 3,
-                             actionButton("cat2_submitButton", "Use These Data", height = 15)
+                             actionButton("cat2_submitButton", "Use These Data", height = 15, class = "btn btn-primary")
                       )
                     )    
                  ),

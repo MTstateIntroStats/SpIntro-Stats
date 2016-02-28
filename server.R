@@ -655,46 +655,57 @@ output$cat1Estimate_Plot2 <- renderPlot({
    ## data input
   {
   
-  c1Lurk <- reactiveValues(data = NULL, shuffles = NULL, difprop = NULL, closest = 2,
-                           colors = NULL,  names = NULL, p1hat = NULL, p2hat = NULL, y1 =NULL,y2 = NULL)
+  c1Lurk <- reactiveValues(data = NULL, shuffles = NULL, difprop = NULL, closest = 2, 
+                           y1 =NULL,y2 = NULL, 
+                           colors = NULL,  names = NULL, p1hat = NULL, p2hat = NULL)
   
   output$c1_LurkDataUI <- renderUI({
     ## 
   div(    
     fluidRow( 
-      column(3, offset = 1, h5("Lurking Variable: Names:")),
-      column(2, h5("Counts:"))
-    ),
-    fluidRow(
-      column( 3, offset = 1,
-             tags$input(name='c1Lurk_group1', type='text', value='Success', size='10'),
-             br(),
-             tags$input(name='c2Lurk_group2', type='text', value='Failure', size='10')
-       ),
-      column(2,
-            tags$input(name='c1Lurk_n1', type='text', value='0', size='10'),
-            br(),
-            tags$input(name='c1Lurk_n2', type='text', value='0', size='10')
-      )
-    ),
-    br(),
-    fluidRow(
-       column(5,
-              h5("Size of Treament group: (the rest are controls)")
-              ),
-      column(3,
-             tags$input(name='c1Lurk_m1', type='text', value='0', size='10')
-            ),
-      column(2, actionButton("c1Lurk_Go", "Go", class = "btn btn-success"))
-       
-     )
-    )
-  })
+      column(5,   ##  Inputs
+             fluidRow( 
+               column(4,
+                      div( pre(""),
+                           tags$input(name='c1Lurk_name1', type='text', value='A', size='10'),
+                           br(),
+                           tags$input(name='c1Lurk_name2', type='text', value='B', size='10')
+                      )
+               ),
+               column(4,
+                      div( 
+                        tags$input(name='c1Lurk_group1', type='text', value='Control', size='10', height = 20),
+                        br(), 
+                        tags$input(name='c1Lurk_n11', type='text', value='0', size='10'),
+                        br(),
+                        tags$input(name='c1Lurk_n21', type='text', value='0', size='10')
+                      )
+               ),
+               column(4,
+                      div(  
+                        tags$input(name='c1Lurk_group2', type='text', value='Treatment', size='10', height = 20),
+                        br(),
+                        tags$input(name='c1Lurk_n12', type='text', value='0', size='10'),
+                        br(),
+                        tags$input(name='c1Lurk_n22', type='text', value='0', size='10')
+                      )
+               )
+             ),
+             fluidRow(
+               column(6, offset = 3,
+                      actionButton("c1Lurk_Go", "Use These Data", height = 15, class = "btn btn-primary")
+               )
+             )
+     ) 
+    ) 
+  )
+  })   
   
   observeEvent(input$c1Lurk_Go, {
-    c1Lurk$data <- list(n1 = as.numeric(input$c1Lurk_n1) , 
-                        n2 = as.numeric(input$c1Lurk_n2), m1 = as.numeric(input$c1Lurk_m1))
-    c1Lurk$data$m2 <- with(c1Lurk$data, n1 + n2 - m1)
+    c1Lurk$data <- list(n1 = as.numeric(input$c1Lurk_n11) + as.numeric(input$c1Lurk_n12),
+                        n2 = as.numeric(input$c1Lurk_n21) + as.numeric(input$c1Lurk_n22), 
+                        m1 = as.numeric(input$c1Lurk_n11) + as.numeric(input$c1Lurk_n12),
+                        m2 = as.numeric(input$c1Lurk_n21) + as.numeric(input$c1Lurk_n22))
     c1Lurk$names <- c(input$c1Lurk_group1, input$c1Lurk_group2)
     DF <- c1Lurk_shuffles(2, c1Lurk$data$n1 , c1Lurk$data$n2, c1Lurk$data$m1)
     c1Lurk$phat1 <-  DF[, 1]
