@@ -136,7 +136,7 @@ options(scipen = 3, digits = 5)
                       fluidRow(
                         column(8, offset =1, h4("True Proportion (Null hypothesis for p):")),
                         column(2, tags$div( 
-                                 tags$input(id = "null_p", type = "text", class = "form-control", value = "0.001", width = "20px"))
+                                 tags$input(id = "null_p", type = "text", class = "form-control", value = "0.09", width = "20px"))
                                )
                         ),
                        plotOutput('cat1Test_Plot2', click = 'cat1_Test_click', height = "300px")  
