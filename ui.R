@@ -203,13 +203,16 @@ shinyUI(tagList(
                    sliderInput("pwr_alpha", "Significance Level:", 
                                min = 0.01, max = .15, value = .04, step= 0.01)    
                  )),
-                 column(8, plotOutput("powerPlot"))),
-               # Show a table summarizing the values entered
-               fluidRow(column(8, offset = 4, tableOutput("powerValues")))
+                 column(8, div(style="height: 300px",
+                        plotOutput("powerPlot"),
+                    # Show a table summarizing the values entered
+                        tableOutput("powerValues"))
+                )
+            )
       )
     )
-}    ,
-
+  
+},
     ####   Two Categorical  -------------------------------------------------  --  2 cat
 {
   navbarMenu("Two Categ.",

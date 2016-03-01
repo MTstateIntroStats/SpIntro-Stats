@@ -1535,7 +1535,7 @@ output$quant1DataIn <- renderText({ "How would you like to input the data? "
               column(3, checkboxInput('q1_header', 'Row One is column names', TRUE)
               ),
               column(3, radioButtons('q1_sep', 'Separator',
-                                     c(Comma=',', Semicolon=';', Tab='\t'),
+                                     c( Comma=',', Semicolon=';', Tab='\t'),
                                      ',')
               ),
               column(2, radioButtons('q1_quote', 'Quote',
@@ -2709,12 +2709,12 @@ observeEvent( input$q1_prob_txt,{
   {
     sliderValues <- reactive({
       ## Compose data frame
-      data.frame(
+    df <-  data.frame(
         Inputs = c("Sample Size", 
                     "Standard Deviation",
                     "Shift in Mean",
                     "Significance Level (alpha)"),
-        InValue = as.character(c(input$pwr_n, 
+        InValue =  as.character(c(input$pwr_n, 
                                input$pwr_sd,
                                input$pwr_altMean, 
                                input$pwr_alpha )),
@@ -2726,21 +2726,31 @@ observeEvent( input$q1_prob_txt,{
                                               type="one.sample",
                                               alternative="one")$power,3),NA,NA)), 
         stringsAsFactors=FALSE)
+      names(df)[c(2,4)] <- c("  ", "   ")
+      df
     }) 
 
-      output$powerPlot <- renderPlot({
+    output$powerPlot <- renderPlot({
       sd <- input$pwr_sd
-      x <- seq(-8,20,length=200) * sd
+      nn <- input$pwr_n
+      seMean <- sd/sqrt(nn)
+      mu_A <- input$pwr_altMean
+      x <- seq(-5,20,length=200)
+      xmin <- min(x[dt(x/seMean, nn-1) > 1.1e-04])
+      yalt <- dt(x /seMean, nn-1, ncp= mu_A/seMean)
+      xmax <- max(x[yalt > 1.1e-04])
+      ##cat(xmin, xmax)
+      par(mar = c(3.5,1,.1,.1))
       suppressWarnings({
-        plot(x, dt(x/sd, input$pwr_n-1), bty='l', type="l", xlab="",ylab="", xlim = c(-8,20))
-        lines(x, dt((x -input$pwr_altMean)/sd, input$pwr_n-1, ncp=input$pwr_altMean/input$pwr_sd * sqrt(input$pwr_n)))
-        qt1 <- qt(1-input$pwr_alpha, input$pwr_n-1) * sd
-        xrr <- c(qt1, qt1, x[x>=qt1],max(x))
-        yrr <- c(0, dt(c(qt1,  x[x>=qt1])/sd, input$pwr_n -1),0)
+        plot(x, dt(x/seMean, nn-1), bty='l', type="l", xlab="",ylab="", xlim = c(xmin,xmax))
+        lines(x, yalt)
+        qt1 <- qt(1-input$pwr_alpha, nn-1) *seMean
+        xrr <- c(qt1, qt1, x[x >= qt1], xmax)
+        yrr <- c(0, dt(c(qt1,  x[x >= qt1])/seMean, nn -1),0)
         polygon(xrr,yrr, col = rd)
-        xpwr <- c(qt1, x[x>=qt1])
-        ypwr <- c(0, dt((xpwr-input$pwr_altMean)/sd, df=input$pwr_n-1, ncp=input$pwr_altMean/input$pwr_sd *sqrt(input$pwr_n) ), 0 )
-        xpwr <- c(qt1, xpwr, max(x))
+        xpwr <- c(qt1, x[x >= qt1])
+        ypwr <- c(0, dt(xpwr/seMean, df = nn-1, ncp=mu_A/seMean ), 0 )
+        xpwr <- c(qt1, xpwr, xmax)
       })
       abline(h=0)
       abline(v = c(0, qt1))
@@ -2750,7 +2760,7 @@ observeEvent( input$q1_prob_txt,{
       text(weighted.mean(xpwr, w=ypwr^4), weighted.mean(ypwr, w=ypwr^.5),cex=1.5,"Power")
       mtext(side=1,at=0,line=2, expression(H[0]: mu == 0))
       mtext(side=1, at = xpwr[which.max(ypwr)], line=2, expression(H[a]: mu > 0))
-    })
+    }, height = 300)
     
     # Show the values using an HTML table
     output$powerValues <- renderTable({
@@ -3536,7 +3546,7 @@ output$normalProbPlot2 <- renderPlot({
               column(3, checkboxInput('q2_header', 'Row One is column names', TRUE)
               ),
               column(3, radioButtons('q2_sep', 'Separator',
-                                     c(Comma=',', Semicolon=';', Tab='\t'),
+                                     c( Comma=',', Semicolon=';', Tab='\t'),
                                      ',')
               ),
               column(2, radioButtons('q2_quote', 'Quote',
