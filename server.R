@@ -2735,7 +2735,7 @@ observeEvent( input$q1_prob_txt,{
       nn <- input$pwr_n
       seMean <- sd/sqrt(nn)
       mu_A <- input$pwr_altMean
-      x <- seq(-5,20,length=200)
+      x <- seq(-5,20,length=400)
       xmin <- min(x[dt(x/seMean, nn-1) > 1.1e-04])
       yalt <- dt(x /seMean, nn-1, ncp= mu_A/seMean)
       xmax <- max(x[yalt > 1.1e-04])

@@ -203,15 +203,18 @@ shinyUI(tagList(
                    sliderInput("pwr_alpha", "Significance Level:", 
                                min = 0.01, max = .15, value = .04, step= 0.01)    
                  )),
-                 column(8, div(style="height: 300px",
-                        plotOutput("powerPlot"),
-                    # Show a table summarizing the values entered
-                        tableOutput("powerValues"))
+                 column(8, 
+                    div(style="height: 500px",
+                        div( style="width: 400px;  height: 300px",
+                        plotOutput("powerPlot", height = '310px'),
+                          # Show a table summarizing the values entered
+                        tableOutput("powerValues")
+                    )
                 )
             )
+        )
       )
     )
-  
 },
     ####   Two Categorical  -------------------------------------------------  --  2 cat
 {
