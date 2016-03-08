@@ -19,11 +19,11 @@ PvalueUI <- function(id){
   ## this function holds the parts to repeat using ns("parts2refer2") 
   tagList(
      h4("Count values equal to or"),
-     selectInput(inputID = ns("testDirection"), label=" ", 
+     selectInput(inputID = ns('testDirection'), label=" ", 
                  choices= c(less="less",'more extreme' ="more extreme",greater="greater"), 
                  selected = "more extreme",  selectize = TRUE, width = '200px'),
       h4(" than "),
-      textInput(inputId = ns("test_cutoff"), label=" than ", value = NA, width = '50px'),
+      textInput(inputId = ns('test_cutoff'), label=" than ", value = NA, width = '50px'),
       actionButton(ns('test_countXtremes'), "Go", class="btn btn-success")
       )
 }  

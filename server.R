@@ -38,7 +38,8 @@ options(scipen = 3, digits = 5)
   cat1Test <- reactiveValues(phat = NULL, colors = NULL, cutoff = NULL, moreExtremeCount = NULL, 
                              sampleCount = NULL, pvalue = NULL)
   
-  cat1Estimate <- reactiveValues(phat = NULL, observed = NULL, colors = blu, confLevel = NULL, CI = NULL)
+  cat1Estimate <- reactiveValues(phat = NULL, observed = NULL, colors = blu, confLevel = NULL, 
+                                 tailCount = NULL, CI = NULL)
   
   observeEvent(input$cat1_submitButton, {
       cat1Test$phat <- cat1Test$colors <-   cat1Test$sampleCount <- NULL
@@ -85,28 +86,27 @@ options(scipen = 3, digits = 5)
       ),
 
     div( id ="cat1Data", width = "500px",
-      ##  h5(textOutput('cat1DataIn')),  ## starts as NULL string
       ##  Input counts and labels         
       br(),     
       fluidRow(
         column(6, offset = 2,
-               div( label = "cat1Input", height = "300px",
-                    tags$label('Category 1: ', 
-                               tags$input(name='cat1_name1', type='text', value='Success', size='10')),
-                    tags$label('Count: ',
-                               tags$input(name='cat1_n1', type='text', value='0', size='5')),
-                    br(),
-                    tags$label('Category 2: ', 
-                               tags$input(name='cat1_name2', type='text', value='Failure', size='10')),
-                    tags$label('Count: ', 
-                               tags$input(name='cat1_n2', type='text', value='0', size='5')),
-                    HTML("&nbsp; &nbsp;"),
-                    actionButton("cat1_submitButton", "Use These Data", class="btn btn-primary")
+           div( label = "cat1Input", height = "300px",
+                tags$label('Category 1: ', 
+                             tags$input(name='cat1_name1', type='text', value='Success', size='10')),
+                tags$label('Count: ',
+                             tags$input(name='cat1_n1', type='text', value='0', size='5')),
+                br(),
+                tags$label('Category 2: ', 
+                             tags$input(name='cat1_name2', type='text', value='Failure', size='10')),
+                tags$label('Count: ', 
+                             tags$input(name='cat1_n2', type='text', value='0', size='5')),
+                HTML("&nbsp; &nbsp;"),
+                  actionButton("cat1_submitButton", "Use These Data", class="btn btn-primary")
           )),
           ## column(3, plotOutput('cat1_Plot',width="80%")),
           column(3, tableOutput("cat1_Summary"))       
        )
-      ),  ## close Input div
+      ),  ## end Input div
     
     div( id = "cat1Test", style = "display: none;", 
          fluidPage(
@@ -133,18 +133,10 @@ options(scipen = 3, digits = 5)
                         ),
                         plotOutput('cat1Test_Plot2', click = 'cat1_Test_click', height = "300px")  
                       )
-                      #                     fluidRow(
-                      #                       column(11, offset = 1,
-                      #                              HTML(" Click a point to see its counts and proportions."),
-                      #                              br()
-                      #                              )
-                      #                     )
                )
-               
              ), 
-             #br(),
              fluidRow(
-               column(5, offset = 1, h4("How many more samples from the null?")),
+               column(4, offset = 1, h4("More samples from the null?")),
                column(1,
                       actionButton("cat1_test_shuffle_10", label = "10", class="btn btn-primary")),
                column(1,
@@ -164,7 +156,7 @@ options(scipen = 3, digits = 5)
              )
            )
          )
-    ), 
+    ),    ## end of Cat 1 testing
     
     div( id = "cat1Estimate", style = "display: none;", 
       fluidRow(
@@ -179,49 +171,55 @@ options(scipen = 3, digits = 5)
                plotOutput('cat1Estimate_Plot2', click = 'cat1_Estimate_click', height = 350)
         )
       ),
-      #br(),
       fluidRow(
-        column(4, offset = 1, h4("How many more resamples?")),
-        column(1,
-               actionButton("cat1_estimate_shuffle_10", label = "10", class="btn btn-primary")),
-        column(1,
-               actionButton("cat1_estimate_shuffle_100", label = "100", class="btn btn-primary")),
-        column(1,
-               actionButton("cat1_estimate_shuffle_1000", label = "1000", class="btn btn-primary")),
-        column(1,
-               actionButton("cat1_estimate_shuffle_5000", label = "5000", class="btn btn-primary"))
+        column(4, offset = 1, h4("More resamples: ")),
+        column(1, actionButton("cat1_estimate_shuffle_10", label = "10", class="btn btn-primary")),
+        column(1, actionButton("cat1_estimate_shuffle_100", label = "100", class="btn btn-primary")),
+        column(1, actionButton("cat1_estimate_shuffle_1000", label = "1000", class="btn btn-primary")),
+        column(1, actionButton("cat1_estimate_shuffle_5000", label = "5000", class="btn btn-primary"))
       ),
       br(),
       fluidRow(
         column(4, offset = 1, 
-               h4("Select Confidence Level (%)")
+               h4("Confidence Level (%):")
         ),
         column(5,
                fluidRow(
-                 column(3,  
-                        actionButton('cat1_conf80', label = "80", class="btn btn-primary")),
-                 column(3,
-                        actionButton('cat1_conf90', label = "90", class="btn btn-primary")),
-                 column(3,
-                        actionButton('cat1_conf95', label = "95", class="btn btn-primary")),
-                 column(3,
-                        actionButton('cat1_conf99', label = "99", class="btn btn-primary"))
-               ))),
-      
-      #if(!is.null(cat1Estimate$CI)){
-        fluidRow(
-          column(8, offset = 4, printMyCI()
-          ) 
+                 column(3, actionButton('cat1_conf80', label = "80", class="btn btn-primary")),
+                 column(3, actionButton('cat1_conf90', label = "90", class="btn btn-primary")),
+                 column(3, actionButton('cat1_conf95', label = "95", class="btn btn-primary")),
+                 column(3, actionButton('cat1_conf99', label = "99", class="btn btn-primary"))
+               ))
+      ),
+      fluidRow(
+        column(8, offset = 2,
+               uiOutput("Cat1ShowCI")
         )
-      #} else {br()}
-     )
-    )    ## close Cat1_triplePlay UI
+      )
+ 
+    ) 
+    ) ## close Cat1_triplePlay UI
   }) 
-  
-  printMyCI <- reactive({
-    h4(paste(round(100 * cat1Estimate$confLevel), "% Confidence Interval Estimate: (")) #, round(cat1Estimate$CI[1],3), ",", 
-    #  round(cat1Estimate$CI[2], 3), ")"))
+
+  ######
+  output$Cat1ShowCI <- renderText({  
+    if(!is.null(cat1Estimate$tailCount)){
+      fluidRow(
+        column(8, offset = 4, 
+             h4(paste(round(100 * cat1Estimate$confLevel), 
+                      "% Confidence Interval Estimate: (", 
+                      round(sort(cat1Estimate$phat)[cat1Estimate$tailCount],3), ",", 
+                      round(sort(cat1Estimate$phat, decreasing = TRUE)[cat1Estimate$tailCount], 3), ")"))
+      ) )
+    }
   })
+  ######
+  printMyCI <- reactive({
+    req(cat1Estimate$CI)
+    h4(paste(round(100 * cat1Estimate$confLevel), "% Confidence Interval Estimate: (", 
+       round(cat1Estimate$CI[1], 3), ",", 
+       round(cat1Estimate$CI[2], 3), ")"))
+  }) 
   ## Descriptives:  plot a bar chart of the successes / failures 
     ## No longer needed?
   output$cat1_Plot <- renderPlot( {
@@ -323,47 +321,47 @@ observeEvent( input$null_p, {
 
 
 output$Cat1TestXtremes <- renderUI({
-  PvalueUI("cat1Pval")
-#   fluidRow(
-#     column(4,  
-#            h4("Count values equal to or")
-#     ),
-#     column(4,
-#            tags$div(style="width: 200px",
-#                     tags$select(id='cat1_testDirection', class="form-control",
-#                                 tags$option( value = "less", "less"),
-#                                 tags$option( value = "more extreme", "more extreme", selected = TRUE),
-#                                 tags$option( value = "greater", "greater"))
-#            )),
-#     column(1, h4("than ")),
-#     column(2,
-# #           textInput('cat1_test_cutoff', label = "", value = NA)
-#            tags$div( 
-#                 tags$input(id = "cat1_test_cutoff", type = "text", class = "form-control", value = NA))
-#     ),
-#     column(1,
-#            actionButton('cat1_test_countXtremes', "Go", class="btn btn-success")
-#     )
-#   )
+#  PvalueUI("cat1Pval")
+  fluidRow(
+    column(4,
+           h4("Count values equal to or")
+    ),
+    column(4,
+           tags$div(style="width: 200px",
+                    tags$select(id='cat1_testDirection', class="form-control",
+                                tags$option( value = "less", "less"),
+                                tags$option( value = "more extreme", "more extreme", selected = TRUE),
+                                tags$option( value = "greater", "greater"))
+           )),
+    column(1, h4("than ")),
+    column(2,
+    #     textInput('cat1_test_cutoff', label = "", value = NA)
+           tags$div(
+                tags$input(id = "cat1_test_cutoff", type = "text", class = "form-control", value = NA))
+    ),
+    column(1,
+           actionButton('cat1_test_countXtremes', "Go", class="btn btn-success")
+    )
+  )
 })
    ## error in this line -- says cat1Test$phat should be reactive, but if it is, then it says is a closure
 #cat1Pvalue <- callModule(Pvalue, "cat1Pval", parms = reactive({cat1Test$phat}), reactive({input$null_p}))
 
-# observeEvent( input$cat1_testDirection, {
-#   cat1Test$pvalue <- cat1Test$moreExtremeCount <- NULL    
-#   cat1Test$colors <- rep(blu, length(cat1Test$colors))
-# })
-# 
-# observeEvent( input$cat1_test_cutoff, {
-#   cat1Test$pvalue <- cat1Test$moreExtremeCount <- NULL    
-#   cat1Test$colors <- rep(blu, length(cat1Test$colors))
-# })
+observeEvent( input$cat1_testDirection, {
+  cat1Test$pvalue <- cat1Test$moreExtremeCount <- NULL
+  cat1Test$colors <- rep(blu, length(cat1Test$colors))
+})
+
+observeEvent( input$cat1_test_cutoff, {
+  cat1Test$pvalue <- cat1Test$moreExtremeCount <- NULL
+  cat1Test$colors <- rep(blu, length(cat1Test$colors))
+})
 
 
-# output$Cat1TestPvalue <- renderUI({
-#   req(cat1Test$moreExtremeCount)
-#     h4(pvalue2print(cat1Test$moreExtremeCount,  cat1Test$sampleCount, cat1Test$direction, cat1Test$cutoff, cat1Test$pvalue))
-# })
+ output$Cat1TestPvalue <- renderUI({
+   req(cat1Test$moreExtremeCount)
+     h4(pvalue2print(cat1Test$moreExtremeCount,  cat1Test$sampleCount, cat1Test$direction, cat1Test$cutoff, cat1Test$pvalue))
+ })
 
     output$cat1OriginalData <- renderTable({ 
       if(input$cat1_submitButton ==0) return()
@@ -521,7 +519,7 @@ output$cat1_OLDestimateUI <- renderUI({
              ),
              #br(),
              fluidRow(
-               column(4, offset = 1, h4("How many more resamples?")),
+               column(4, offset = 1, h4("More resamples: ")),
                column(1,
                       actionButton("cat1_estimate_shuffle_10", label = "10", class="btn btn-primary")),
                column(1,
@@ -538,21 +536,19 @@ output$cat1_OLDestimateUI <- renderUI({
                       ),
                column(5,
                  fluidRow(
-                    column(3,  
-                      actionButton('cat1_conf80', label = "80", class="btn btn-primary")),
-                    column(3,
-                      actionButton('cat1_conf90', label = "90", class="btn btn-primary")),
-                    column(3,
-                      actionButton('cat1_conf95', label = "95", class="btn btn-primary")),
-                    column(3,
-                      actionButton('cat1_conf99', label = "99", class="btn btn-primary"))
+                    column(3, actionButton('cat1_conf80', label = "80", class="btn btn-primary")),
+                    column(3, actionButton('cat1_conf90', label = "90", class="btn btn-primary")),
+                    column(3, actionButton('cat1_conf95', label = "95", class="btn btn-primary")),
+                    column(3, actionButton('cat1_conf99', label = "99", class="btn btn-primary"))
                 ))),
                         
-              if(!is.null(cat1Estimate$CI)){
+              if(!is.null(cat1Estimate$tailCount)){
                 fluidRow(
                   column(8, offset = 4,
-                          h4(paste(round(100 * cat1Estimate$confLevel), "% Confidence Interval Estimate: (", round(cat1Estimate$CI[1],3), ",", 
-                                   round(cat1Estimate$CI[2], 3), ")"))
+                          h4(paste(round(100 * cat1Estimate$confLevel), 
+                                   "% Confidence Interval Estimate: (", 
+                                   round(sort(cat1Estimate$phat)[cat1Estimate$tailCount],3), ",", 
+                                   round(sort(cat1Estimate$phat, decreasing = TRUE)[cat1Estimate$tailCount], 3), ")"))
                   )
                 )
                 } else {br()}
@@ -640,19 +636,16 @@ observeEvent(input$cat1_estimate_shuffle_5000, {
 
 observeEvent(input$cat1_conf80,{
   req(cat1_data$total) 
-  nsims <- length(cat1Estimate$phat)
-  if(nsims < 10){
+  if((nsims <- length(cat1Estimate$phat)) < 10){
     return()
   }
   cat1Estimate$confLevel <- .80
   cat1Estimate$colors <- rep(blu, nsims)
-  tailCount <- floor(nsims * 0.1)
-  cat("Tail Count: ", tailCount,"\n")     ####
-  cat1Estimate$colors[1:tailCount] <- rd
-  cat1Estimate$colors[nsims +1 -(1:tailCount)] <- rd
-  cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
-  print(summary(cat1Estimate$phat))       ####
-})
+  cat1Estimate$tailCount <- floor(nsims * 0.1)
+  cat1Estimate$colors[1:cat1Estimate$tailCount] <- rd
+  cat1Estimate$colors[nsims +1 -(1:cat1Estimate$tailCount)] <- rd
+  #cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
+}) ## short circuits back to data entry if I set CI here.
 
 observeEvent(input$cat1_conf90,{
   req(cat1_data$total) 
@@ -665,7 +658,6 @@ observeEvent(input$cat1_conf90,{
   cat1Estimate$colors[1:tailCount] <- rd
   cat1Estimate$colors[nsims +1 -(1:tailCount)] <- rd
   #cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
-  
 })
 
 observeEvent(input$cat1_conf95,{
@@ -892,10 +884,10 @@ output$cat1Estimate_Plot2 <- renderPlot({
       column(4, offset = 1,
              h4("How many more randomizations?")
              ),
-      column(1, actionButton("c1_Lurk_shuffle_10", label = "10")),
-      column(1, actionButton("c1_Lurk_shuffle_100", label = "100")),
-      column(1, actionButton("c1_Lurk_shuffle_1000", label = "1000")),
-      column(1, actionButton("c1_Lurk_shuffle_5000", label = "5000"))
+      column(1, actionButton("c1_Lurk_shuffle_10", label = "10", class="btn btn-primary")),
+      column(1, actionButton("c1_Lurk_shuffle_100", label = "100", class="btn btn-primary")),
+      column(1, actionButton("c1_Lurk_shuffle_1000", label = "1000", class="btn btn-primary")),
+      column(1, actionButton("c1_Lurk_shuffle_5000", label = "5000", class="btn btn-primary"))
       
     )  
   )
@@ -1064,7 +1056,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
         )), 
         #mainPanel(
         column(1,
-               actionButton("spin_RunButton", "Run")  
+               actionButton("spin_RunButton", "Run", class="btn btn-success")  
         ),
        column(6,
           includeHTML("www/spin.js"),
@@ -1288,7 +1280,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
                     )
                   )), 
            column(1,
-                  actionButton("mix_RunButton", "Run")  
+                  actionButton("mix_RunButton", "Run", class="btn btn-success")  
            ),
            column(6,
                   includeHTML("www/mix.js"),
@@ -1727,11 +1719,11 @@ output$normalProbPlot1 <- renderPlot({
                br(),
                fluidRow(
                  column(5, offset = 1, h4("How many more (shifted) resamples?")),
-                 column(1, actionButton("q1_test_shuffle_1", label = "1")),
-                 column(1, actionButton("q1_test_shuffle_10", label = "10")),
-                 column(1, actionButton("q1_test_shuffle_100", label = "100")),
-                 column(1, actionButton("q1_test_shuffle_1000", label = "1000")),
-                 column(1, actionButton("q1_test_shuffle_5000", label = "5000"))
+                 column(1, actionButton("q1_test_shuffle_1", label = "1", class="btn btn-primary")),
+                 column(1, actionButton("q1_test_shuffle_10", label = "10", class="btn btn-primary")),
+                 column(1, actionButton("q1_test_shuffle_100", label = "100", class="btn btn-primary")),
+                 column(1, actionButton("q1_test_shuffle_1000", label = "1000", class="btn btn-primary")),
+                 column(1, actionButton("q1_test_shuffle_5000", label = "5000", class="btn btn-primary"))
                ),
                
                br(),
@@ -1759,13 +1751,13 @@ output$normalProbPlot1 <- renderPlot({
              fluidRow(
                column(4, offset = 2, h4("How many more resamples?")),
                column(1,
-                      actionButton("q1_resample_10", label = "10")),
+                      actionButton("q1_resample_10", label = "10", class="btn btn-primary")),
                column(1,
-                      actionButton("q1_resample_100", label = "100")),
+                      actionButton("q1_resample_100", label = "100", class="btn btn-primary")),
                column(1,
-                      actionButton("q1_resample_1000", label = "1000")),
+                      actionButton("q1_resample_1000", label = "1000", class="btn btn-primary")),
                column(1,
-                      actionButton("q1_resample_5000", label = "5000"))
+                      actionButton("q1_resample_5000", label = "5000", class="btn btn-primary"))
              ),
              br(),
              br(),
@@ -1775,14 +1767,10 @@ output$normalProbPlot1 <- renderPlot({
                ),
                column(5,
                       fluidRow(
-                        column(2,  
-                               actionButton('q1_conf80', label = "80")),
-                        column(2,
-                               actionButton('q1_conf90', label = "90")),
-                        column(2,
-                               actionButton('q1_conf95', label = "95")),
-                        column(2,
-                               actionButton('q1_conf99', label = "99"))
+                        column(2, actionButton('q1_conf80', label = "80", class="btn btn-primary")),
+                        column(2, actionButton('q1_conf90', label = "90", class="btn btn-primary")),
+                        column(2, actionButton('q1_conf95', label = "95", class="btn btn-primary")),
+                        column(2, actionButton('q1_conf99', label = "99", class="btn btn-primary"))
                       ))
              ),
              if(!is.null(q1Estimate$CI)){
@@ -1815,7 +1803,7 @@ output$normalProbPlot1 <- renderPlot({
               column(4, selectInput('q1_data1', 'Available Datasets',  
                                     choices = as.list(quant1_contents))
                      ),
-              column(4, actionButton("q1_useLddBtn", "Use These Data") )
+              column(4, actionButton("q1_useLddBtn", "Use These Data", class="btn btn-primary") )
             )
           },
           "Local CSV File" ={
@@ -1826,7 +1814,7 @@ output$normalProbPlot1 <- renderPlot({
                                            'text/comma-separated-values,text/plain', 
                                            '.csv')) ,
                      br(),
-                     actionButton("q1_useCSVBtn", "Use These Data")
+                     actionButton("q1_useCSVBtn", "Use These Data", class="btn btn-primary")
               ),
               column(3, checkboxInput('q1_header', 'Row One is column names', TRUE)
               ),
@@ -1844,7 +1832,7 @@ output$normalProbPlot1 <- renderPlot({
           "Type/Paste into Text Box" = {
             div(
               HTML('<textarea name="q1_text" cols="30" rows="10"></textarea>'),
-              actionButton("q1_useText", "Use These Data")
+              actionButton("q1_useText", "Use These Data", class="btn btn-primary")
             )
            },
         NULL
@@ -2038,11 +2026,11 @@ output$q1_testUI <- renderUI({
        br(),
        fluidRow(
            column(5, offset = 1, h4("How many more (shifted) resamples?")),
-           column(1, actionButton("q1_test_shuffle_1", label = "1")),
-           column(1, actionButton("q1_test_shuffle_10", label = "10")),
-           column(1, actionButton("q1_test_shuffle_100", label = "100")),
-           column(1, actionButton("q1_test_shuffle_1000", label = "1000")),
-           column(1, actionButton("q1_test_shuffle_5000", label = "5000"))
+           column(1, actionButton("q1_test_shuffle_1", label = "1", class="btn btn-primary")),
+           column(1, actionButton("q1_test_shuffle_10", label = "10", class="btn btn-primary")),
+           column(1, actionButton("q1_test_shuffle_100", label = "100", class="btn btn-primary")),
+           column(1, actionButton("q1_test_shuffle_1000", label = "1000", class="btn btn-primary")),
+           column(1, actionButton("q1_test_shuffle_5000", label = "5000", class="btn btn-primary"))
          ),
              
         br(),
@@ -2294,14 +2282,10 @@ output$q1_estimateUI <- renderUI({
        ),             
       fluidRow(
          column(4, offset = 2, h4("How many more resamples?")),
-         column(1,
-                actionButton("q1_resample_10", label = "10")),
-         column(1,
-                actionButton("q1_resample_100", label = "100")),
-         column(1,
-                actionButton("q1_resample_1000", label = "1000")),
-         column(1,
-                actionButton("q1_resample_5000", label = "5000"))
+         column(1, actionButton("q1_resample_10", label = "10", class="btn btn-primary")),
+         column(1, actionButton("q1_resample_100", label = "100", class="btn btn-primary")),
+         column(1, actionButton("q1_resample_1000", label = "1000", class="btn btn-primary")),
+         column(1, actionButton("q1_resample_5000", label = "5000", class="btn btn-primary"))
        ),
       br(),
       br(),
@@ -2311,14 +2295,10 @@ output$q1_estimateUI <- renderUI({
         ),
         column(5,
                fluidRow(
-                 column(2,  
-                        actionButton('q1_conf80', label = "80")),
-                 column(2,
-                        actionButton('q1_conf90', label = "90")),
-                 column(2,
-                        actionButton('q1_conf95', label = "95")),
-                 column(2,
-                        actionButton('q1_conf99', label = "99"))
+                 column(2, actionButton('q1_conf80', label = "80", class="btn btn-primary")),
+                 column(2, actionButton('q1_conf90', label = "90", class="btn btn-primary")),
+                 column(2, actionButton('q1_conf95', label = "95", class="btn btn-primary")),
+                 column(2, actionButton('q1_conf99', label = "99", class="btn btn-primary"))
                ))
         ),
         if(!is.null(q1Estimate$CI)){
@@ -2533,8 +2513,8 @@ output$q1_EstimatePlot2 <- renderPlot({
   output$q1_LurkDataUI <- renderUI({
     ## choice of normal or skewed data
     fluidRow(
-      column(2, actionButton("q1Lurk_IQ", label = "IQ (normal)")),
-      column(2, actionButton("q1Lurk_Salary", label = "Salary (skewed)"))
+      column(2, actionButton("q1Lurk_IQ", label = "IQ (normal)", class="btn btn-primary")),
+      column(2, actionButton("q1Lurk_Salary", label = "Salary (skewed)", class="btn btn-primary"))
     )
   })
   
@@ -2581,10 +2561,10 @@ output$q1_EstimatePlot2 <- renderPlot({
         ),
         fluidRow(
           column(4, offset = 1, h4("How many more randomizations?")),
-          column(1, actionButton("q1_Lurk_shuffle_10", label = "10")),
-          column(1, actionButton("q1_Lurk_shuffle_100", label = "100")),
-          column(1, actionButton("q1_Lurk_shuffle_1000", label = "1000")),
-          column(1, actionButton("q1_Lurk_shuffle_5000", label = "5000"))
+          column(1, actionButton("q1_Lurk_shuffle_10", label = "10", class="btn btn-primary")),
+          column(1, actionButton("q1_Lurk_shuffle_100", label = "100", class="btn btn-primary")),
+          column(1, actionButton("q1_Lurk_shuffle_1000", label = "1000", class="btn btn-primary")),
+          column(1, actionButton("q1_Lurk_shuffle_5000", label = "5000", class="btn btn-primary"))
         )
      )
   })
@@ -2727,10 +2707,10 @@ output$q1_EstimatePlot2 <- renderPlot({
          HTML(paste('<textarea name="q1_SampleText" cols="40" rows="10"> ', joke, ' </textarea>')),
          br(),
          div(
-         actionButton("q1_sampUseData", "Use This Text"),
+         actionButton("q1_sampUseData", "Use This Text", class="btn btn-primary"),
          if(!is.null(q1Samp$data)){
              div(
-                 actionButton("q1_sampPopDouble", "Clone (double) the Text"),
+                 actionButton("q1_sampPopDouble", "Clone (double) the Text", class="btn btn-primary"),
                  h5(paste("Population size: ", nrow(q1Samp$data))),
                  h5("Choose parameter: "), ##, "Mean word length: ", round(mean(q1Samp$data[,2]), 2) )),           
                  radioButtons("q1_sampParam", label = "", list("Mean "," Median ", "Standard Deviation"),
@@ -2785,16 +2765,16 @@ output$q1_EstimatePlot2 <- renderPlot({
     uiOutput('q1_SampDemoSample' ),
     br(),
     div(
-      actionButton("q1_SampDemo_1", "Draw one Sample (and Clear)")
+      actionButton("q1_SampDemo_1", "Draw one Sample (and Clear)", class="btn btn-primary")
     ), 
     if(length(q1Samp$samples)>1){
       div(
         fluidRow(
           column(4,  h4("More samples: ")),
-          column(2, actionButton("q1_SampDemo_10", label = "10")),
-          column(2, actionButton("q1_SampDemo_100", label = "100")),
-          column(2, actionButton("q1_SampDemo_1000", label = "1000")),
-          column(2, actionButton("q1_SampDemo_5000", label = "5000"))
+          column(2, actionButton("q1_SampDemo_10", label = "10", class="btn btn-primary")),
+          column(2, actionButton("q1_SampDemo_100", label = "100", class="btn btn-primary")),
+          column(2, actionButton("q1_SampDemo_1000", label = "1000", class="btn btn-primary")),
+          column(2, actionButton("q1_SampDemo_5000", label = "5000", class="btn btn-primary"))
         ),
         plotOutput('q1_sampDemoPlot', click = 'q1_Samp_click', height = '320px')
       )}
@@ -3186,10 +3166,10 @@ observeEvent(input$cat2_submitButton, {
       #br(),
       fluidRow(
         column(4, offset = 1, h4("How many more shuffles?")),
-        column(1,  actionButton("cat2_test_shuffle_10", label = "10")),
-        column(1,  actionButton("cat2_test_shuffle_100", label = "100")),
-        column(1,  actionButton("cat2_test_shuffle_1000", label = "1000")),
-        column(1,  actionButton("cat2_test_shuffle_5000", label = "5000"))
+        column(1,  actionButton("cat2_test_shuffle_10", label = "10", class="btn btn-primary")),
+        column(1,  actionButton("cat2_test_shuffle_100", label = "100", class="btn btn-primary")),
+        column(1,  actionButton("cat2_test_shuffle_1000", label = "1000", class="btn btn-primary")),
+        column(1,  actionButton("cat2_test_shuffle_5000", label = "5000", class="btn btn-primary"))
       ),
       br(),      br(),
       fluidRow(
@@ -3458,13 +3438,13 @@ output$Cat2TestPvalue <- renderUI({
                 fluidRow(
                    column(4, offset = 1, h4("How many more resamples?")),
                    column(1,
-                            actionButton("cat2_estimate_shuffle_10", label = "10")),
+                            actionButton("cat2_estimate_shuffle_10", label = "10", class="btn btn-primary")),
                    column(1, 
-                          actionButton("cat2_estimate_shuffle_100", label = "100")),
+                          actionButton("cat2_estimate_shuffle_100", label = "100", class="btn btn-primary")),
                    column(1,
-                          actionButton("cat2_estimate_shuffle_1000", label = "1000")),
+                          actionButton("cat2_estimate_shuffle_1000", label = "1000", class="btn btn-primary")),
                    column(1,
-                          actionButton("cat2_estimate_shuffle_5000", label = "5000"))
+                          actionButton("cat2_estimate_shuffle_5000", label = "5000", class="btn btn-primary"))
                    ),
                 br(),
                 br(),
@@ -3475,13 +3455,13 @@ output$Cat2TestPvalue <- renderUI({
                   column(6,
                          fluidRow(
                             column(2,  
-                                   actionButton('cat2_conf80', label = "80")),
+                                   actionButton('cat2_conf80', label = "80", class="btn btn-primary")),
                             column(2,
-                                   actionButton('cat2_conf90', label = "90")),
+                                   actionButton('cat2_conf90', label = "90", class="btn btn-primary")),
                             column(2,
-                                   actionButton('cat2_conf95', label = "95")),
+                                   actionButton('cat2_conf95', label = "95", class="btn btn-primary")),
                             column(2,
-                                   actionButton('cat2_conf99', label = "99"))
+                                   actionButton('cat2_conf99', label = "99", class="btn btn-primary"))
                             )
                          )
                   ),
@@ -3858,7 +3838,7 @@ output$normalProbPlot2 <- renderPlot({
             fluidRow(  
               column(4, selectInput('q2_data1', 'Available Datasets',  choices = as.list(quant2_contents))
               ),
-              column(4, actionButton("q2_useLddBtn", "Use These Data") )
+              column(4, actionButton("q2_useLddBtn", "Use These Data", class="btn btn-success") )
             )
           },
           "Local CSV File" ={
@@ -3869,7 +3849,7 @@ output$normalProbPlot2 <- renderPlot({
                                            'text/comma-separated-values,text/plain', 
                                            '.csv')) ,
                      br(),
-                     actionButton("q2_useCSVBtn", "Use These Data")
+                     actionButton("q2_useCSVBtn", "Use These Data", class="btn btn-primary")
               ),
               column(3, checkboxInput('q2_header', 'Row One is column names', TRUE)
               ),
@@ -3886,7 +3866,7 @@ output$normalProbPlot2 <- renderPlot({
           "Type/Paste into Text Box" = {
             div(
               HTML('<textarea name="q2_text" cols="30" rows="10"></textarea>'),
-              actionButton("q2_useText", "Use These Data")
+              actionButton("q2_useText", "Use These Data", class="btn btn-primary")
             )
           },
           
@@ -3896,7 +3876,7 @@ output$normalProbPlot2 <- renderPlot({
 #               column(4, 
 #                      rHandsontableOutput("q2_hot")) 
 #               ,
-#               column(4, actionButton("q2_useHotBtn", "Use These Data"))
+#               column(4, actionButton("q2_useHotBtn", "Use These Data", class="btn btn-primary"))
 #             )            
 #           }, 
           NULL
@@ -4075,7 +4055,7 @@ observeEvent(  input$q2_swapXwithY,{
 
 output$q2_swap <- renderUI({
   (q2$data)
-  actionButton('q2_swapXwithY', "Swap Variables (X goes to Y)")
+  actionButton('q2_swapXwithY', "Swap Variables (X goes to Y)", class="btn btn-primary")
 })
 }
 
@@ -4111,10 +4091,10 @@ output$q2_testUI <- renderUI({
       fluidRow(
         column(4, offset = 1, 
                h4("How many more shuffles?")),
-        column(1,       actionButton("q2_shuffle_10", label = "10")),
-        column(1,       actionButton("q2_shuffle_100", label = "100")),
-        column(1,       actionButton("q2_shuffle_1000", label = "1000")),
-        column(1,       actionButton("q2_shuffle_5000", label = "5000"))
+        column(1,       actionButton("q2_shuffle_10", label = "10", class="btn btn-primary")),
+        column(1,       actionButton("q2_shuffle_100", label = "100", class="btn btn-primary")),
+        column(1,       actionButton("q2_shuffle_1000", label = "1000", class="btn btn-primary")),
+        column(1,       actionButton("q2_shuffle_5000", label = "5000", class="btn btn-primary"))
       ),
       br(),
       fluidRow(
@@ -4381,10 +4361,10 @@ output$q2_estimateUI <- renderUI({
       fluidRow(
         column(4, offset = 1, 
                h4("How many more resamples?")),
-        column(1,  actionButton("q2_resample_10", label = "10")),
-        column(1,  actionButton("q2_resample_100", label = "100")),
-        column(1,  actionButton("q2_resample_1000", label = "1000")),
-        column(1,  actionButton("q2_resample_5000", label = "5000"))
+        column(1,  actionButton("q2_resample_10", label = "10", class="btn btn-primary")),
+        column(1,  actionButton("q2_resample_100", label = "100", class="btn btn-primary")),
+        column(1,  actionButton("q2_resample_1000", label = "1000", class="btn btn-primary")),
+        column(1,  actionButton("q2_resample_5000", label = "5000", class="btn btn-primary"))
       ),
       fluidRow(
         column(4, offset = 5, h4("Click on a point to see that resample"))
@@ -4419,10 +4399,10 @@ output$q2_getEstParam <- renderUI({
 
 output$q2_confLevels <- renderUI({        
   fluidRow(
-  column(2,  actionButton('q2_conf80', label = "80")),
-  column(2,  actionButton('q2_conf90', label = "90")),
-  column(2,  actionButton('q2_conf95', label = "95")),
-  column(2,  actionButton('q2_conf99', label = "99"))
+  column(2,  actionButton('q2_conf80', label = "80", class="btn btn-primary")),
+  column(2,  actionButton('q2_conf90', label = "90", class="btn btn-primary")),
+  column(2,  actionButton('q2_conf95', label = "95", class="btn btn-primary")),
+  column(2,  actionButton('q2_conf99', label = "99", class="btn btn-primary"))
 )
 })
 
@@ -4687,7 +4667,7 @@ output$c1q1_ui <- renderUI({
             fluidRow(  
               column(4, selectInput('c1q1_data1', 'Available Datasets',  choices = as.list(c1q1_contents))
               ),
-              column(4, actionButton("c1q1_useLddBtn", "Use These Data") )
+              column(4, actionButton("c1q1_useLddBtn", "Use These Data", class="btn btn-primary") )
             )                           
           },
           "Local CSV File" ={
@@ -4698,7 +4678,7 @@ output$c1q1_ui <- renderUI({
                                            'text/comma-separated-values,text/plain', 
                                            '.csv')) ,
                      br(),
-                     actionButton("c1q1_useCSVBtn", "Use These Data")
+                     actionButton("c1q1_useCSVBtn", "Use These Data", class="btn btn-primary")
               ),
               column(3, checkboxInput('c1q1_header', 'Row One is column names', TRUE)
               ),
@@ -4718,7 +4698,7 @@ output$c1q1_ui <- renderUI({
           "Type/Paste into Text Box" = {
             fluidRow(  
               column(4, HTML('<textarea name="c1q1_text" cols="30" rows="10"></textarea>'),
-                     actionButton("c1q1_useText", "Use These Data")
+                     actionButton("c1q1_useText", "Use These Data", class="btn btn-primary")
               ),
               column(3, checkboxInput('c1q1_header2', 'Row One is column names', TRUE)
               ),
@@ -4741,7 +4721,7 @@ output$c1q1_ui <- renderUI({
 #               ## allow user to change names of the columns:
 #               # column(4,
 #               #       )
-#               column(4, actionButton("c1q1_useHotBtn", "Use These Data"))
+#               column(4, actionButton("c1q1_useHotBtn", "Use These Data", class="btn btn-primary"))
 #             )
 #             
 #           }, 
@@ -4962,10 +4942,10 @@ output$c1q1_Summary2 <- renderTable({
             br(),
             fluidRow(
               column(4, offset = 3, h4("How many more shuffles?")),
-              column(1, actionButton("c1q1_test_shuffle_10", label = "10")),
-              column(1, actionButton("c1q1_test_shuffle_100", label = "100")),
-              column(1, actionButton("c1q1_test_shuffle_1000", label = "1000")),
-              column(1, actionButton("c1q1_test_shuffle_5000", label = "5000"))
+              column(1, actionButton("c1q1_test_shuffle_10", label = "10", class="btn btn-primary")),
+              column(1, actionButton("c1q1_test_shuffle_100", label = "100", class="btn btn-primary")),
+              column(1, actionButton("c1q1_test_shuffle_1000", label = "1000", class="btn btn-primary")),
+              column(1, actionButton("c1q1_test_shuffle_5000", label = "5000", class="btn btn-primary"))
             ),
             br(),
             fluidRow(
@@ -5247,10 +5227,10 @@ output$c1q1_CI <- renderUI({
     ),
     column(6,
          fluidRow(
-           column(3,  actionButton('c1q1_conf80', label = "80")),
-           column(3,  actionButton('c1q1_conf90', label = "90")),
-           column(3,  actionButton('c1q1_conf95', label = "95")),
-           column(3,  actionButton('c1q1_conf99', label = "99"))
+           column(3,  actionButton('c1q1_conf80', label = "80", class="btn btn-primary")),
+           column(3,  actionButton('c1q1_conf90', label = "90", class="btn btn-primary")),
+           column(3,  actionButton('c1q1_conf95', label = "95", class="btn btn-primary")),
+           column(3,  actionButton('c1q1_conf99', label = "99", class="btn btn-primary"))
          )
     )
   ),
@@ -5269,10 +5249,10 @@ output$c1q1Shuffles <- renderUI({
 fluidRow(
   column(4, offset = 3, 
          h4("How many more shuffles?")),
-  column(1, actionButton("c1q1_Est_shuffle_10", label = "10")),
-  column(1, actionButton("c1q1_Est_shuffle_100", label = "100")),
-  column(1, actionButton("c1q1_Est_shuffle_1000", label = "1000")),
-  column(1, actionButton("c1q1_Est_shuffle_5000", label = "5000"))
+  column(1, actionButton("c1q1_Est_shuffle_10", label = "10", class="btn btn-primary")),
+  column(1, actionButton("c1q1_Est_shuffle_100", label = "100", class="btn btn-primary")),
+  column(1, actionButton("c1q1_Est_shuffle_1000", label = "1000", class="btn btn-primary")),
+  column(1, actionButton("c1q1_Est_shuffle_5000", label = "5000", class="btn btn-primary"))
 )
 })
 

@@ -7,7 +7,6 @@ library(ggplot2)
 #library(knitr)
 source("helpers.R")
 
-# 
 # load("data/quant1.RData")
 # load("data/quant2.RData")
 # load("data/cat1quant1/.RData")
@@ -16,16 +15,12 @@ source("helpers.R")
     ## load Data  and
     ## describe, test, or estimate
 
-  ## Load 'spreadsheet' data using:
-  ## https://github.com/jrowen/rhandsontable/blob/master/inst/examples/shiny.R
-
 shinyUI(tagList(
   shinyjs::useShinyjs(),
   navbarPage("Sp-IntRo Stats", id="top-nav", collapsible=TRUE,
              ##       theme = shinytheme("spacelab"),
              theme = "bootstrap.css",
     ## 
-    ## use empty tabPanel to avoid printing "tab-pane active"               
     tabPanel("",
              h2("Introductory Statistics Simulations"),
              HTML("<div>
@@ -49,18 +44,12 @@ shinyUI(tagList(
     ####   One Categorical  -----------------------------------------------------   1 cat
 {
     navbarMenu("One Categ.",  
-               tabPanel("Test or Estimate", label="1catDataEntry",  
+            tabPanel("Test or Estimate", label="1catDataEntry",  
                         uiOutput('cat1_triplePlay')
                ),
-#        tabPanel("Test", value="cat1_Test",
-#             uiOutput('cat1_testUI') 
-#        ),
-#     tabPanel("Estimate", value="cat1_Estimate",
-#              uiOutput('cat1_estimateUI')
-#     ),
-   tabPanel("Confidence Interval Demo", value = "cat1_CIdemo",
-            titlePanel("Demo to Illustrate the meaning of 'Confidence' in an Interval"),
-            fluidRow(
+           tabPanel("Confidence Interval Demo", value = "cat1_CIdemo",
+              titlePanel("Demo to Illustrate the meaning of 'Confidence' in an Interval"),
+               fluidRow(
                   column(4, 
                          sliderInput("CIdemo_n", "Sample Size (number of spins)", min = 21, max = 100, value = 50),
                          uiOutput("inputTrueP"),
