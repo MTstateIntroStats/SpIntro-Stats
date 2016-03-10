@@ -43,7 +43,8 @@ options(scipen = 3, digits = 5)
   
   observeEvent(input$cat1_submitButton, {
       cat1Test$phat <- cat1Test$colors <-   cat1Test$sampleCount <- NULL
-      cat1Estimate$phat <- cat1Estimate$observed <- cat1Estimate$colors <- NULL
+      cat1Estimate$phat <-  cat1Estimate$observed <- cat1Estimate$colors <- NULL
+      cat1Estimate$CI <- cat1Estimate$tailCount <- cat1Test$pvalue <- NULL
       cat1_data$counts <- as.numeric(c(input$cat1_n1, input$cat1_n2))
       cat1_data$names <- c(input$cat1_name1, input$cat1_name2)
       cat1_data$total <- sum(as.numeric(c(input$cat1_n1, input$cat1_n2)))
@@ -128,7 +129,7 @@ options(scipen = 3, digits = 5)
                           column(8, offset =1, 
                                  HTML("<h5>True Proportion &nbsp;&nbsp;&nbsp;  H<sub>0</sub>: p = </h5>") ),
                           column(2, tags$div(
-                            tags$input(id = "null_p", type = "text", class = "form-control", value = "0.001", width = "20px"))
+                            tags$input(id = "null_p", type = "text", class = "form-control", value = "0.1", width = "20px"))
                           )
                         ),
                         plotOutput('cat1Test_Plot2', click = 'cat1_Test_click', height = "300px")  
@@ -191,35 +192,36 @@ options(scipen = 3, digits = 5)
                  column(3, actionButton('cat1_conf99', label = "99", class="btn btn-primary"))
                ))
       ),
-      fluidRow(
-        column(8, offset = 2,
+      #fluidRow(
+      #  column(8, offset = 2,
                uiOutput("Cat1ShowCI")
-        )
-      )
+       # )
+      #)
  
     ) 
     ) ## close Cat1_triplePlay UI
   }) 
 
   ######
-  output$Cat1ShowCI <- renderText({  
-    if(!is.null(cat1Estimate$tailCount)){
+  output$Cat1ShowCI <- renderUI({
+    if(!is.null(cat1Estimate$CI)){
       fluidRow(
         column(8, offset = 4, 
-             h4(paste(round(100 * cat1Estimate$confLevel), 
-                      "% Confidence Interval Estimate: (", 
-                      round(sort(cat1Estimate$phat)[cat1Estimate$tailCount],3), ",", 
-                      round(sort(cat1Estimate$phat, decreasing = TRUE)[cat1Estimate$tailCount], 3), ")"))
-      ) )
-    }
+               printMyCI())
+      ) 
+    } else{ br()}
   })
+ 
+ 
   ######
   printMyCI <- reactive({
     req(cat1Estimate$CI)
-    h4(paste(round(100 * cat1Estimate$confLevel), "% Confidence Interval Estimate: (", 
-       round(cat1Estimate$CI[1], 3), ",", 
-       round(cat1Estimate$CI[2], 3), ")"))
+    #cat(cat1Estimate$CI)
+     h4(paste(round(100 * cat1Estimate$confLevel), "% Confidence Interval Estimate: (", 
+        round(cat1Estimate$CI[1], 3), ",", 
+        round(cat1Estimate$CI[2], 3), ")"))
   }) 
+  
   ## Descriptives:  plot a bar chart of the successes / failures 
     ## No longer needed?
   output$cat1_Plot <- renderPlot( {
@@ -500,63 +502,6 @@ observeEvent( input$cat1_test_cutoff, {
 
    ###  estimate p.hat  -------------------------------------- cat 1
 {
-output$cat1_OLDestimateUI <- renderUI({
-  if( is.null(cat1_data$counts)){
-    h4(" You must first enter data. Choose 'Enter/Describe Data'.")
-  } else {
-    tabPanel("Estimate", value="1catEstimate",       
-             fluidRow(
-                 column(4, 
-                      h3("Estimate a Single Proportion"),
-                      h4("Original Data"),
-                      tableOutput("cat1_CIPrep"),
-                      h4("One Resampled Dataset"),
-                      tableOutput('cat1Estimate_Table')
-                 ),
-                 column(8, 
-                      plotOutput('cat1Estimate_Plot2', click = 'cat1_Estimate_click', height = 350)
-                )
-             ),
-             #br(),
-             fluidRow(
-               column(4, offset = 1, h4("More resamples: ")),
-               column(1,
-                      actionButton("cat1_estimate_shuffle_10", label = "10", class="btn btn-primary")),
-               column(1,
-                      actionButton("cat1_estimate_shuffle_100", label = "100", class="btn btn-primary")),
-               column(1,
-                      actionButton("cat1_estimate_shuffle_1000", label = "1000", class="btn btn-primary")),
-               column(1,
-                      actionButton("cat1_estimate_shuffle_5000", label = "5000", class="btn btn-primary"))
-             ),
-             br(),
-             fluidRow(
-               column(4, offset = 1, 
-                      h4("Select Confidence Level (%)")
-                      ),
-               column(5,
-                 fluidRow(
-                    column(3, actionButton('cat1_conf80', label = "80", class="btn btn-primary")),
-                    column(3, actionButton('cat1_conf90', label = "90", class="btn btn-primary")),
-                    column(3, actionButton('cat1_conf95', label = "95", class="btn btn-primary")),
-                    column(3, actionButton('cat1_conf99', label = "99", class="btn btn-primary"))
-                ))),
-                        
-              if(!is.null(cat1Estimate$tailCount)){
-                fluidRow(
-                  column(8, offset = 4,
-                          h4(paste(round(100 * cat1Estimate$confLevel), 
-                                   "% Confidence Interval Estimate: (", 
-                                   round(sort(cat1Estimate$phat)[cat1Estimate$tailCount],3), ",", 
-                                   round(sort(cat1Estimate$phat, decreasing = TRUE)[cat1Estimate$tailCount], 3), ")"))
-                  )
-                )
-                } else {br()}
-            )
-         
-  }
-})
-
 
 output$cat1_CIPrep <- renderTable({ 
   if(input$cat1_submitButton ==0) return()
@@ -641,10 +586,11 @@ observeEvent(input$cat1_conf80,{
   }
   cat1Estimate$confLevel <- .80
   cat1Estimate$colors <- rep(blu, nsims)
-  cat1Estimate$tailCount <- floor(nsims * 0.1)
-  cat1Estimate$colors[1:cat1Estimate$tailCount] <- rd
-  cat1Estimate$colors[nsims +1 -(1:cat1Estimate$tailCount)] <- rd
-  #cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
+  tailCount <- floor(nsims * 0.1)
+  cat1Estimate$colors[1:tailCount] <- rd
+  cat1Estimate$colors[nsims +1 -(1:tailCount)] <- rd
+  cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
+  #print(cat1Estimate$CI)
 }) ## short circuits back to data entry if I set CI here.
 
 observeEvent(input$cat1_conf90,{
@@ -657,7 +603,7 @@ observeEvent(input$cat1_conf90,{
   tailCount <- floor(nsims * 0.05)
   cat1Estimate$colors[1:tailCount] <- rd
   cat1Estimate$colors[nsims +1 -(1:tailCount)] <- rd
-  #cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
+  cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
 })
 
 observeEvent(input$cat1_conf95,{
@@ -670,7 +616,7 @@ observeEvent(input$cat1_conf95,{
   tailCount <- floor(nsims * 0.025)
   cat1Estimate$colors[1:tailCount] <- rd
   cat1Estimate$colors[nsims +1 -(1:tailCount)] <- rd
-  #cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
+  cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
   
 })
 
@@ -684,8 +630,7 @@ observeEvent(input$cat1_conf99,{
   tailCount <- floor(nsims * 0.005)
   cat1Estimate$colors[1:tailCount] <- rd
   cat1Estimate$colors[nsims +1 -(1:tailCount)] <- rd
-  #cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
-  
+  cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
 })
 
 
@@ -1773,18 +1718,20 @@ output$normalProbPlot1 <- renderPlot({
                         column(2, actionButton('q1_conf99', label = "99", class="btn btn-primary"))
                       ))
              ),
-             if(!is.null(q1Estimate$CI)){
-               fluidRow( 
-                 column(7, offset = 5,
-                        h4(paste(q1Estimate$confLevel*100, "% Interval Estimate: (", round(q1Estimate$CI[1],3), ",", 
-                                 round(q1Estimate$CI[2], 3), ")"))
-                 ))
-             }
+           uiOutput("Q1ShowCI")
       )     
     )    ## close q1_triplePlay UI
   })  
   
-
+output$Q1ShowCI <- renderUI({
+  if(!is.null(q1Estimate$CI)){
+    fluidRow( 
+      column(7, offset = 5,
+             h4(paste(q1Estimate$confLevel*100, "% Interval Estimate: (", round(q1Estimate$CI[1],3), ",", 
+                      round(q1Estimate$CI[2], 3), ")"))
+      ))
+  }
+})
 ##  Enter data    ----------------------------------------- quant 1
  {
 
