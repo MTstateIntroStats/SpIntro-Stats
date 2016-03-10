@@ -45,7 +45,7 @@ shinyUI(tagList(
 {
     navbarMenu("One Categ.",  
             tabPanel("Test or Estimate", label="1catDataEntry",  
-                        uiOutput('cat1_triplePlay')
+                        uiOutput('cat1_Input_Test_Est')
                ),
            tabPanel("Confidence Interval Demo", value = "cat1_CIdemo",
               titlePanel("Demo to Illustrate the meaning of 'Confidence' in an Interval"),
@@ -107,42 +107,9 @@ shinyUI(tagList(
     ####   One Quantitative  ----------------------------------------------------  1 Quant
 {
     navbarMenu("One Quant.",
-               tabPanel("Test or Estimate", label="1quanttDataEntry",  
-                        uiOutput('q1_triplePlay')
+               tabPanel("Test or Estimate", label="1quantDataEntry",  
+                        uiOutput('q1_Input_Test_Est')
                ),
-#       tabPanel("Enter /Describe Data", value="1quantDataEntry",
-#                  ##  preloaded data  - save as data/quant1.RData
-#                  ##  read local csv file
-#                  ##  open empty table to copy or type in data.
-#                  ##
-#                ##  Existing data is stored in "data/quant1.RData"
-#                h4(textOutput('quant1DataIn')),
-#                fluidRow(  
-#                  column(6, selectInput('q1_entry', ' ', 
-#                                       list(" ", "Pre-Loaded Data","Local CSV File",
-#                                            "Type/Paste into Text Box"), #"Type/Paste into Data Sheet"), 
-#                                       selected = " ",
-#                                       selectize = FALSE, width = "200px"))
-#                ),
-#                
-#                ## Need to use Dynamic UI instead of condition panels
-#                
-#                uiOutput("q1_inputUI"),
-#       
-#                hr(),
-#                fluidRow(
-#                  column(6, 
-#                        plotOutput('q1_Plot', height = "320px") ),
-#                  column(3, 
-#                        tableOutput('q1_Summary'))
-#                )
-#       ),
-#       tabPanel("Test", value="1quantTest",
-#            uiOutput('q1_testUI') 
-#       ),
-#       tabPanel("Estimate", value="1quantEstimate",
-#         uiOutput('q1_estimateUI')
-#       ),
       tabPanel("Bootstrap Demo", value="1quantBoot",
         uiOutput('q1_bootstrap')
         #a(href="http://www.math.montana.edu/~jimrc/randomization/BootDemo.html","Click to see Bootstrap Demo") 
@@ -205,57 +172,8 @@ shinyUI(tagList(
     ####   Two Categorical  -------------------------------------------------  --  2 cat
 {
   navbarMenu("Two Categ.",
-      tabPanel("Enter /Describe Data", value="2catDataEntry",
-               h5(textOutput('cat2DataIn')),
-               br(),
-               fluidRow( 
-                 column(5,   ##  Inputs
-                        fluidRow( 
-                          column(4,
-                               div( pre(""),
-                                   tags$input(name='cat2_name1', type='text', value='Success', size='10'),
-                                   br(),
-                                   tags$input(name='cat2_name2', type='text', value='Failure', size='10')
-                               )
-                           ),
-                          column(4,
-                                 div( 
-                                   tags$input(name='cat2_grp1', type='text', value='Group1', size='10', height = 20),
-                                   br(), 
-                                   tags$input(name='cat2_n11', type='text', value='0', size='10'),
-                                   br(),
-                                   tags$input(name='cat2_n21', type='text', value='0', size='10')
-                                 )
-                          ),
-                          column(4,
-                                 div(  
-                                   tags$input(name='cat2_grp2', type='text', value='Group2', size='10', height = 20),
-                                   br(),
-                                   tags$input(name='cat2_n12', type='text', value='0', size='10'),
-                                   br(),
-                                   tags$input(name='cat2_n22', type='text', value='0', size='10')
-                                 )
-                          )
-                        ),
-                    fluidRow(
-                      column(6, offset = 3,
-                             actionButton("cat2_submitButton", "Use These Data", height = 15)
-                      )
-                    )    
-                 ),
-                 column(4,  plotOutput('cat2Plot', width="90%")),         
-                 column(3, tableOutput("cat2Summary"))       
-                 )
-      ),
-      
-
-      tabPanel("Test", value="2catTest",
-               uiOutput('cat2_testUI')),
-
-      tabPanel("Estimate", value="2catEstimate",
-               uiOutput('cat2_estimateUI')
-      ),
-               
+      tabPanel("Test or Estimate", value="2catDataEntry",
+               uiOutput('cat2_Input_Test_Est')),
       tabPanel("Normal Distribution", value="2catNormal",
                titlePanel("Normal Probabilities"),
                column(4, inputPanel(
