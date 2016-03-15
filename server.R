@@ -522,7 +522,7 @@ observeEvent(input$cat1_conf80,{
   cat1Estimate$colors[nsims +1 -(1:tailCount)] <- rd
   cat1Estimate$CI <- sort(cat1Estimate$phat)[c(tailCount, nsims + 1 - tailCount)]
   #print(cat1Estimate$CI)
-}) ## short circuits back to data entry if I set CI here.
+}) 
 
 observeEvent(input$cat1_conf90,{
   req(cat1_data$total) 
@@ -3783,17 +3783,163 @@ output$Cat2ShowCI <- renderUI({
   }
   
   ## 2 Quantitative -----------------------------------------------------------  2 quant
-  
+   {
+     q2Test <- reactiveValues( shuffles = NULL, slopes = NULL, corr = NULL, observed = NULL,
+                             colors = blu, moreExtremeCount = NULL, direction = NULL, cutoff = NULL, 
+                             sampleCount = NULL, pvalue = NULL)
+   
+   
+   q2Estimate <- reactiveValues( resamples = NULL,   slopes = NULL,  corr =  NULL,
+                                 observed = NULL,    confLevel = NULL, colors = blu,
+                                 CI = NULL, param = NULL)
+   observeEvent(input$q2_InputToggle, {
+     shinyjs::show("q2Data")            ##  show data input
+     shinyjs::disable("q2_EstimateToggle") ##  disable  Estimate btn
+     shinyjs::hide("q2Estimate")         ## hide Estimate page
+     shinyjs::hide("q2Test")             ## hide Test page
+     shinyjs::disable("q2_TestToggle")   ## disable Test btn
+   })
+   
+   observeEvent(input$q2_TestToggle, {
+     shinyjs::hide("q2Data")             ##  hide data input
+     shinyjs::enable("q2_InputToggle")   ## disable Input button
+     shinyjs::hide("q2Estimate")         ## hide Estimate page
+     shinyjs::show("q2Test")             ## show Test page
+   })
+   
+   observeEvent(input$q2_EstimateToggle, {
+     shinyjs::hide("q2Data")             ##  hide data input
+     shinyjs::enable("q2_InputToggle")   ## disable Input button
+     shinyjs::hide("q2Test")             ## hide Test page
+     shinyjs::show("q2Estimate")             ## show Estimate page
+   })
+   
+   output$q2_Input_Test_Est <- renderUI({
+     fluidPage(
+       fluidRow(
+         column(3, offset = 1, 
+                actionButton("q2_InputToggle", "Input Data", class="btn btn-primary")),
+         column(3, offset = 1, 
+                actionButton("q2_EstimateToggle", "Estimate", class="btn btn-primary", disabled=TRUE)),
+         column(3, offset = 1, 
+                actionButton("q2_TestToggle", "Test", class="btn btn-primary", disabled = TRUE))
+       ),
+       div( id ="q2Data", width = "500px",   
+            fluidRow(  
+              column(6, 
+                     h5("How would you like to input the data?"),
+                     selectInput('q2_entry', ' ', 
+                                 list(" ", "Pre-Loaded Data","Local CSV File",
+                                      "Type/Paste into Text Box"), #"Type/Paste into Data Sheet"), 
+                                 selected = " ",
+                                 selectize = FALSE, width = "200px"))
+            ),
+            uiOutput("q2_inputUI"),
+            hr(),
+            fluidRow(
+              column(6, 
+                     plotOutput('q2_Plot', height = "320px") ),
+              column(3, 
+                     tableOutput('q2_Summary'))
+            )
+       ),  ## close Input div
+       
+       div( id = "q2Test", style = "display: none;", 
+            fluidPage( 
+              fluidRow( 
+                column(4,  
+                       h4("Test for a single mean.")
+                ),
+                column(8, 
+                       tags$label(HTML("True Mean (Null hypothesis for &mu;):"),  
+                                  tags$input(name='null_mu', type='text', value='0', size='10'))
+                )
+              ),
+              fluidRow( 
+                column(4,  
+                       plotOutput("q2_TestPlot1", height = "280px")
+                ),
+                column(8, 
+                       plotOutput('q2_TestPlot2', click = 'q2_Test_click', height = '300px')
+                )
+              ),
+              br(),
+              fluidRow(
+                column(5, offset = 1, h4("How many more (shifted) resamples?")),
+                column(1, actionButton("q2_test_shuffle_1", label = "1", class="btn btn-primary")),
+                column(1, actionButton("q2_test_shuffle_10", label = "10", class="btn btn-primary")),
+                column(1, actionButton("q2_test_shuffle_100", label = "100", class="btn btn-primary")),
+                column(1, actionButton("q2_test_shuffle_1000", label = "1000", class="btn btn-primary")),
+                column(1, actionButton("q2_test_shuffle_5000", label = "5000", class="btn btn-primary"))
+              ),
+              
+              br(),
+              #         fluidRow(
+              #            column(5, offset =6, h4("Click on a point to see that resample."))
+              #          ),
+              fluidRow(
+                column(8, offset = 1,
+                       uiOutput("q2TestXtremes"),
+                       uiOutput("q2TestPvalue")
+                )
+              )
+            )
+       ),                                                  ### close q2-testing div
+       div( id = "q2Estimate", style = "display: none;", 
+            fluidPage(
+              h3("Estimate a single mean."),
+              fluidRow(
+                column(4,
+                       plotOutput("q2_EstPlot1")
+                ),
+                column(8, 
+                       plotOutput('q2_EstimatePlot2', click = 'q2_Estimate_click')
+                )
+              ),             
+              fluidRow(
+                column(4, offset = 2, h4("How many more resamples?")),
+                column(1,
+                       actionButton("q2_resample_10", label = "10", class="btn btn-primary")),
+                column(1,
+                       actionButton("q2_resample_100", label = "100", class="btn btn-primary")),
+                column(1,
+                       actionButton("q2_resample_1000", label = "1000", class="btn btn-primary")),
+                column(1,
+                       actionButton("q2_resample_5000", label = "5000", class="btn btn-primary"))
+              ),
+              br(),
+              br(),
+              fluidRow(
+                column(4, offset = 3, 
+                       h4("Select Confidence Level (%)")
+                ),
+                column(5,
+                       fluidRow(
+                         column(2, actionButton('q2_conf80', label = "80", class="btn btn-primary")),
+                         column(2, actionButton('q2_conf90', label = "90", class="btn btn-primary")),
+                         column(2, actionButton('q2_conf95', label = "95", class="btn btn-primary")),
+                         column(2, actionButton('q2_conf99', label = "99", class="btn btn-primary"))
+                       ))
+              ),
+              uiOutput("q2ShowCI")
+            ) )    
+     )    ## close q2_Input_Test_Est UI
+   })  
+   
+   output$q2ShowCI <- renderUI({
+     if(!is.null(q2Estimate$CI)){
+       fluidRow( 
+         column(7, offset = 5,
+                h4(paste(q2Estimate$confLevel*100, "% Interval Estimate: (", round(q2Estimate$CI[1],3), ",", 
+                         round(q2Estimate$CI[2], 3), ")"))
+         ))
+     }
+   })
+   
+ }  
+   
   ###  Data Entry ------------------------------------------------------------  q2
   {
-    q2Test <- reactiveValues( shuffles = NULL, slopes = NULL, corr = NULL, observed = NULL,
-                              colors = blu, moreExtremeCount = NULL, direction = NULL, cutoff = NULL, 
-                              sampleCount = NULL, pvalue = NULL)
-    
-    
-    q2Estimate <- reactiveValues( resamples = NULL,   slopes = NULL,  corr =  NULL,
-                                  observed = NULL,    confLevel = NULL, colors = blu,
-                                  CI = NULL, param = NULL)
     
     ##  grab data according to input method
     q2 <- reactiveValues(data = NULL, names = NULL, intercept = NULL, slope = NULL, 
@@ -3804,7 +3950,7 @@ output$Cat2ShowCI <- renderUI({
     })
     
     # use  selectInput to grab the 3 types of input
-    output$q2_ui <- renderUI({
+    output$q2_inputUI <- renderUI({
       req(input$q2_entry)
       
       switch( input$q2_entry,
@@ -3870,9 +4016,14 @@ output$Cat2ShowCI <- renderUI({
       q2$names <- names(DF) 
       q2$data <- data.frame(DF)
       names(q2$data) <- c("x","y")
-      output$quant2DataIn <- renderText({
-        "Data are entered, you may now choose to estimate or test the true slope or correlation"
-      })
+      # output$quant2DataIn <- renderText({
+      #   "Data are entered, you may now choose to estimate or test the true slope or correlation"
+      # })
+      
+      shinyjs::enable("q2_EstimateToggle") ## enable Estimate
+      shinyjs::enable("q2_TestToggle")     ## enable Test 
+      shinyjs::disable("q2_InputToggle")   ## disable Input button
+      
     })
     
     observeEvent(  input$q2_useCSVBtn,{
@@ -3888,30 +4039,17 @@ output$Cat2ShowCI <- renderUI({
       q2$names <- names(DF)
       q2$data <- data.frame(DF)
       names(q2$data) <- c("x","y")
-      output$quant2DataIn <- renderText({
-        "Data are entered, you may now choose to estimate or test the true slope or correlation"
-      })
+      # output$quant2DataIn <- renderText({
+      #   "Data are entered, you may now choose to estimate or test the true slope or correlation"
+      # })
+      shinyjs::enable("q2_EstimateToggle") ## enable Estimate
+      shinyjs::enable("q2_TestToggle")     ## enable Test 
+      shinyjs::disable("q2_InputToggle")   ## disable Input button
       
     })
     
-    # observeEvent(  input$q2_useHotBtn,{
-    #   ##  Wipe out any old data  
-    #   q2Test$shuffles <- q2Test$slopes <- q2Test$corr <- q2Test$observed <- 
-    #     q2Test$colors <- q2Test$moreExtremeCount <- q2Test$pvalue <- NULL
-    #   q2Estimate$resamples <- q2Estimate$slopes <- q2Estimate$corr <- q2Estimate$observed <-
-    #     q2Estimate$CI <- q2Estimate$colors <- NULL
-    #   
-    #   DF <- data.frame(q2_values[["hot"]])
-    #   # print(DF)
-    #   q2$names <- names(DF) 
-    #   q2$data <- data.frame(DF)
-    #   names(q2$data) <- c("x","y")
-    #   output$quant2DataIn <- renderText({
-    #     "Data are entered, you may now choose to estimate or test the true slope or correlation"
-    #   })
-    # })
-    
-    q2_values = list()
+
+    #q2_values = list()
     
     observeEvent(input$q2_useText,{
       if(nchar(input$q2_text) < 1){
@@ -3938,27 +4076,14 @@ output$Cat2ShowCI <- renderUI({
       names(q2$data) <- c("x","y")
       q2Test$shuffles <-  q2Test$new.xbars <-  q2Test$xbar <-   q2Test$colors <- NULL
       q2Estimate$shuffles <- q2Estimate$xbars <- q2Estimate$observed <- q2Estimate$colors <- NULL
-      output$quant2DataIn <- renderText({
-        "Data are entered, you may now choose to estimate or test slope"
-      })
+      # output$quant2DataIn <- renderText({
+      #   "Data are entered, you may now choose to estimate or test slope"
+      # })
+      shinyjs::enable("q2_EstimateToggle") ## enable Estimate
+      shinyjs::enable("q2_TestToggle")     ## enable Test 
+      shinyjs::disable("q2_InputToggle")   ## disable Input button
     })
     
-    #q2_setHot = function(x) q2_values[["hot"]] <<- x
-    
-    # output$q2_hot = renderRHandsontable({
-    #   if (!is.null(input$q2_hot)) {
-    #     q2_DF = hot_to_r(input$q2_hot)
-    #     q2_setHot(q2_DF)
-    #     rhandsontable(q2_DF) %>%
-    #       hot_table(highlightCol = TRUE, highlightRow = TRUE)
-    #   } else {
-    #     ## seems that HOT needs at least 2 columns, so column 1 is just row numbers.
-    #     q2_DF = read.csv("data/dummyData.csv", stringsAsFactors = FALSE, head = TRUE)
-    #     q2_setHot(q2_DF)    
-    #     rhandsontable(q2_DF, height = 230) %>%
-    #       hot_table(highlightCol = TRUE, highlightRow = TRUE)
-    #   }
-    # })
   }
   
   ###  Data Summary ----------------------------------------------------------  q2
@@ -4628,14 +4753,136 @@ output$Cat2ShowCI <- renderUI({
   ## 1 categorical & 1 quantitative   ---------------------------------------  1 cat 1 quant
   
   ###  Data entry ------------------------------------------------------------ 1c1q
+
   {
-    output$c1q1DataIn <- renderText({
-      "How do you want to input the data?"
+    c1q1Test <- reactiveValues(shuffles = NULL,  observed = NULL, diff = NULL,  colors = NULL, 
+                               moreExtremeCount = NULL, pvalue = NULL, direction = NULL, cutoff = NULL,
+                               sampleCount = NULL, selected = NULL)
+    
+    c1q1Est <- reactiveValues(shuffles = NULL,  observed = NULL, diff = NULL, confLevel = NULL, colors = NULL, 
+                              ndx1 = NULL, ndx2 = NULL, CI = NULL, selected = NULL )
+ 
+    observeEvent(input$c1q1_InputToggle, {
+      shinyjs::show("c1q1Data")            ##  show data input
+      shinyjs::disable("c1q1_EstimateToggle") ##  disable  Estimate btn
+      shinyjs::hide("c1q1Estimate")         ## hide Estimate page
+      shinyjs::disable("c1q1_TestToggle")   ## disable Test btn
+      shinyjs::hide("c1q1Test")             ## hide Test page
     })
     
-    output$c1q1_ui <- renderUI({
+    observeEvent(input$c1q1_TestToggle, {
+      shinyjs::hide("c1q1Data")             ##  hide data input
+      shinyjs::enable("c1q1_InputToggle")   ## disable Input button
+      shinyjs::hide("c1q1Estimate")         ## hide Estimate page
+      shinyjs::show("c1q1Test")             ## show Test page
+    })
+    
+    observeEvent(input$c1q1_EstimateToggle, {
+      shinyjs::hide("c1q1Data")             ##  hide data input
+      shinyjs::enable("c1q1_InputToggle")   ## disable Input button
+      shinyjs::hide("c1q1Test")             ## hide Test page
+      shinyjs::show("c1q1Estimate")             ## show Estimate page
+    })
+    
+    output$c1q1_Input_Test_Est <- renderUI({
+      fluidPage(
+        fluidRow(
+          column(3, offset = 1, 
+                 actionButton("c1q1_InputToggle", "Input Data", class="btn btn-primary")),
+          column(3, offset = 1, 
+                 actionButton("c1q1_EstimateToggle", "Estimate", class="btn btn-primary", disabled=TRUE)),
+          column(3, offset = 1, 
+                 actionButton("c1q1_TestToggle", "Test", class="btn btn-primary", disabled = TRUE))
+        ),
+        div( id ="c1q1Data", width = "500px",   
+             fluidRow(  
+               column(6, 
+                      h5("How would you like to input the data?"),
+                      selectInput('c1q1_entry', ' ', 
+                                  list(" ", "Pre-Loaded Data","Local CSV File",
+                                       "Type/Paste into Text Box"), #"Type/Paste into Data Sheet"), 
+                                  selected = " ",
+                                  selectize = FALSE, width = "200px"))
+             ),
+             uiOutput("c1q1_inputUI"),
+             hr(),
+             fluidRow(
+               column(6, 
+                      plotOutput('c1q1_Plot', height = "320px") ),
+               column(3, 
+                      tableOutput('c1q1_Summary'))
+             )
+        ),  ## close Input div
+        
+        div( id = "c1q1Test", style = "display: none;", 
+           fluidRow(
+               column(4, h3("Test: 'Are Two Means Equal?'")),
+               column(4, offset = 2,
+                      h3(HTML("Null hypothesis: &mu;<sub>1</sub> = &mu;<sub>2</sub>")))
+           ),
+           fluidRow(
+             column(4, 
+                      plotOutput("c1q1_TestPlot1")
+               ),
+             column(3, br(), br(),
+                     uiOutput("c1q1_TestTables")
+               ),
+             column(5, 
+                     uiOutput('c1q1_SampDistPlot')
+               )
+             ),
+           fluidRow(
+             column(4, offset = 3, h4("More shuffles?")),
+             column(1, actionButton("c1q1_test_shuffle_10", label = "10", class="btn btn-primary")),
+             column(1, actionButton("c1q1_test_shuffle_100", label = "100", class="btn btn-primary")),
+             column(1, actionButton("c1q1_test_shuffle_1000", label = "1000", class="btn btn-primary")),
+             column(1, actionButton("c1q1_test_shuffle_5000", label = "5000", class="btn btn-primary"))
+           ),
+           br(),
+           fluidRow(
+             column(11, offset = 1,
+                    uiOutput("c1q1TestXtremes"))
+           ),
+           fluidRow(
+             column(8, offset = 4,
+                    uiOutput("c1q1PrintPvalue") )
+         )               
+        ),                            ### close c1q1-testing div
+        div( id = "c1q1Estimate", style = "display: none;", ###
+             h3("Estimate the difference between two means."),
+             fluidRow(
+               column(4, 
+                      uiOutput("c1q1_dataPlot1")
+               ),
+               column(3,
+                      uiOutput('c1q1_EstTables')
+               ),
+               column(5,
+                      uiOutput('c1q1_ReSampDistPlot')
+               )
+             ),
+             uiOutput('c1q1Shuffles'),
+             br(),
+             uiOutput('c1q1ShowCI')          
+        )             
+      )    ## close c1q1_Input_Test_Est UI
+    })  
+    
+    output$c1q1ShowCI <- renderUI({
+      if(!is.null(c1q1Est$CI)){
+        fluidRow( 
+          column(7, offset = 5,
+                 h4(paste(c1q1Est$confLevel*100, "% Interval Estimate: (", round(c1q1Est$CI[1],3), ",", 
+                          round(c1q1Est$CI[2], 3), ")"))
+          ))
+      }
+    })
+ 
+    ###  Inputs -------------------------------- c1q1
+     
+    output$c1q1_inputUI <- renderUI({
       req(input$c1q1_entry)
-      
+    
       switch( input$c1q1_entry,
               "Pre-Loaded Data" ={ 
                 fluidRow(  
@@ -4705,9 +4952,13 @@ output$Cat2ShowCI <- renderUI({
       c1q1$data <- data.frame(DF)
       c1q1Test$shuffles <- c1q1Test$diff <- NULL
       c1q1Est$shuffles <- c1q1Est$diff <- NULL
-      output$c1q1DataIn <- renderText({
-        "Data are entered, you may now choose to estimate or test the true difference in means"
-      })
+      # output$c1q1DataIn <- renderText({
+      #   "Data are entered, you may now choose to estimate or test the true difference in means"
+      # })
+      shinyjs::enable("c1q1_EstimateToggle") ## enable Estimate
+      shinyjs::enable("c1q1_TestToggle")     ## enable Test 
+      shinyjs::disable("c1q1_InputToggle")   ## disable Input button
+      
     })
     
     observeEvent(  input$c1q1_useCSVBtn,{
@@ -4725,9 +4976,12 @@ output$Cat2ShowCI <- renderUI({
       c1q1$data <- data.frame(DF)
       c1q1Test$shuffles <- c1q1Test$diff <- NULL
       c1q1Est$shuffles <- c1q1Est$diff <- NULL
-      output$c1q1DataIn <- renderText({
-        "Data are entered, you may now choose to estimate or test the true difference in means"
-      })
+      # output$c1q1DataIn <- renderText({
+      #   "Data are entered, you may now choose to estimate or test the true difference in means"
+      # })
+      shinyjs::enable("c1q1_EstimateToggle") ## enable Estimate
+      shinyjs::enable("c1q1_TestToggle")     ## enable Test 
+      shinyjs::disable("c1q1_InputToggle")   ## disable Input button
     })
     
     observeEvent(input$c1q1_useText,{
@@ -4745,24 +4999,15 @@ output$Cat2ShowCI <- renderUI({
       c1q1$data <- data.frame(DF)
       c1q1Test$shuffles <- c1q1Test$diff <- NULL
       c1q1Est$shuffles <- c1q1Est$diff <- NULL
-      output$c1q1DataIn <- renderText({
-        "Data are entered, you may now choose to estimate or test the true difference in means"
-      })
+      shinyjs::enable("c1q1_EstimateToggle") ## enable Estimate
+      shinyjs::enable("c1q1_TestToggle")     ## enable Test 
+      shinyjs::disable("c1q1_InputToggle")   ## disable Input button
 
     })
     
-
-    c1q1_values = list()
   }
   ##  Describe and summarize ------------------------------------------------- 1c1q
   {
-    c1q1Test <- reactiveValues(shuffles = NULL,  observed = NULL, diff = NULL,  colors = NULL, 
-                               moreExtremeCount = NULL, pvalue = NULL, direction = NULL, cutoff = NULL,
-                               sampleCount = NULL, selected = NULL)
-    
-    c1q1Est <- reactiveValues(shuffles = NULL,  observed = NULL, diff = NULL, confLevel = NULL, colors = NULL, 
-                              ndx1 = NULL, ndx2 = NULL, CI = NULL, selected = NULL )
-    
     output$c1q1_Plot <- renderPlot( {
       req(c1q1$data)
       
@@ -4825,57 +5070,14 @@ output$Cat2ShowCI <- renderUI({
   ##  test equality of two means   -------------------------------------------- 1c1q
   {
     
-    output$c1q1_testUI <- renderUI({
-      if(is.null(c1q1$data)){
-        h4(" You must first enter data. Choose 'Enter/Describe Data'.")
-      } else{ 
-        fluidPage(
-          h3("Test: 'Are Two Means Equal?'"),
-          fluidRow(
-            column(4, 
-                   plotOutput("c1q1_TestPlot1")
-            ),
-            column(3,
-                   uiOutput("c1q1_TestTables")
-            ),
-            column(5, 
-                   h4(HTML("Null hypothesis: &mu;<sub>1</sub> = &mu;<sub>2</sub>")),
-                   uiOutput('c1q1_SampDistPlot')
-            )
-          ),
-          fluidRow(
-            column(4, offset = 8, HTML("Click a point to see its shuffle."))
-          ),
-          br(),
-          fluidRow(
-            column(4, offset = 3, h4("How many more shuffles?")),
-            column(1, actionButton("c1q1_test_shuffle_10", label = "10", class="btn btn-primary")),
-            column(1, actionButton("c1q1_test_shuffle_100", label = "100", class="btn btn-primary")),
-            column(1, actionButton("c1q1_test_shuffle_1000", label = "1000", class="btn btn-primary")),
-            column(1, actionButton("c1q1_test_shuffle_5000", label = "5000", class="btn btn-primary"))
-          ),
-          br(),
-          fluidRow(
-            column(11, offset = 1,
-                   uiOutput("c1q1TestXtremes"))
-          ),
-          fluidRow(
-            column(8, offset = 4,
-                   uiOutput("c1q1PrintPvalue")
-            )
-          )
-        )
-      }
-    })
-    
     output$c1q1_TestTables <- renderUI({
       div(
         tableOutput("c1q1_TestTable1"),
-        h5(paste("Original Difference in means = ", 
+        h5(paste("Original difference: ", 
                  round(-diff(tapply(c1q1$data[, 2], c1q1$data[, 1], mean, na.rm=TRUE)), 3))),
         br(),
         tableOutput("c1q1_TestTable2"),
-        h5(paste("Shuffled difference in means = ", round(as.numeric(c1q1Test$selected),3)))
+        h5(paste("Shuffled difference: ", round(as.numeric(c1q1Test$selected),3)))
       )  
     })
     
@@ -5020,7 +5222,6 @@ output$Cat2ShowCI <- renderUI({
       newShuffles <- sapply(1:5000, function(x) sample(c1q1$data[,1]) )
       c1q1Test$shuffles <- cbind(c1q1Test$shuffles, newShuffles)
       c1q1Test$diff <- c(c1q1Test$diff, apply(newShuffles, 2, function(x) -diff(tapply(c1q1$data[, 2], x, mean, na.rm=TRUE))))
-      #print(c1q1Test$diff)
       c1q1Test$colors <- rep(blu, length(c1q1Test$diff))
     })
     
@@ -5071,17 +5272,18 @@ output$Cat2ShowCI <- renderUI({
         radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
       }
       plot(parm, y, ylim = c(0.5, pmax(10, max(y))), ylab = "", cex = radius/2, pch = 16, col = c1q1Test$colors,  
-           xlab = expression(bar(x)[1] - bar(x)[2]), main = "Sampling Distribution")
+           xlab = expression(bar(x)[1] - bar(x)[2]), main = "Sampling Distribution",
+           sub = "Click a point to see its shuffle.")
       legend("topright", bty = "n", paste(length(parm), "points \n Mean = ", 
                                           round(mean(parm),3), "\n SE = ", round(sd(parm),3)))
-    }, width = 400)      
+    }, height = 340, width = 400)      
     
   }  
   
   
   ##  estimate difference between two means  ----------------------------------- 1c1q
   {
-    output$c1q1_estimateUI <- renderUI({
+    output$OLDc1q1_estimateUI <- renderUI({
       if( is.null(c1q1$data)){
         h4(" You must first enter data. Choose 'Enter/Describe Data'.")
       } else {
@@ -5098,10 +5300,6 @@ output$Cat2ShowCI <- renderUI({
                    uiOutput('c1q1_ReSampDistPlot')
             )
           ),
-          fluidRow(
-            column(4, offset = 8, HTML("&nbsp;&nbsp; Click a point to see its resample."))
-          ),
-          br(),
           uiOutput('c1q1Shuffles'),
           br(),
           uiOutput('c1q1_CI')          
@@ -5124,6 +5322,42 @@ output$Cat2ShowCI <- renderUI({
     output$c1q1_dataPlot1 <- renderUI({ 
       plotOutput('c1q1_EstPlot1')
     })
+    output$c1q1_EstPlot1 <- renderPlot({
+      req(c1q1$data)
+      
+      DF <- c1q1$data
+      names(DF) <- c("group","y")
+      DF[, 1] <- factor(DF[,1])
+      #print(summary(DF))
+      
+      plot1 <- qplot(y=y, x=group, data = DF, geom="boxplot", main = "Original Data") +
+        theme_bw() + xlab("") +  coord_flip() + ylab(c1q1$names[2])
+      
+      ## Plot One resample 
+      if(!is.null(input$c1q1_Est_click)){
+        closestPt <- which.min(abs( c1q1Est$diff - input$c1q1_Est_click$x))
+        #cat("Close to number: ", closestPoint, "\n")
+      } else if (!is.null(c1q1Est$shuffles)){
+        closestPt <- ncol(c1q1Est$shuffles)
+      } else {
+        closestPt <- 1
+        n1 <- length(c1q1Est$ndx1)
+        n2 <- length(c1q1Est$ndx2)
+        c1q1Est$shuffles <- c1q1_estimate_shuffles(1, c1q1Est$ndx1, c1q1Est$ndx2)
+        c1q1Est$diff <- -with(DF[c1q1Est$shuffles[, 1] , ], diff(tapply(y, group, mean)))
+        c1q1Est$colors <- blu
+      }
+      #print(c1q1Est$shuffles)
+      DF2 <- c1q1$data[c1q1Est$shuffles[, closestPt], ] 
+      names(DF2) <- names(DF)
+      DF2 <- DF2[order(DF2$y), ]
+      ### stores samples as columns
+      
+      plot3 <- qplot(y=y, x=group, data = DF2, geom="boxplot", main = "Resampled Data") +
+        theme_bw() + xlab("") +  coord_flip() + ylab(c1q1$names[2])
+      
+      grid.arrange(plot1, plot3, heights = c( 3,3)/6, ncol=1)
+    }, height = 360)
     
     
     output$c1q1_CI <- renderUI({ 
@@ -5167,10 +5401,9 @@ output$Cat2ShowCI <- renderUI({
       plotOutput('c1q1_EstPlot2', click = 'c1q1_Est_click')
     })
     
-    ## why does this redraw when I click a CI?
     
     output$c1q1_EstPlot2 <- renderPlot({
-      req(c1q1Est$diff)
+      req(c1q1Est$data)
       parm <- sort(c1q1Est$diff)
       #print(parm)
       #parm <- sort(parm)
@@ -5193,42 +5426,6 @@ output$Cat2ShowCI <- renderUI({
                                           round(mean(parm),3), "\n SE = ", round(sd(parm),3)))
     }, width = 400)      
     
-    output$c1q1_EstPlot1 <- renderPlot({
-      req(c1q1$diff)
-      
-      DF <- c1q1$data
-      names(DF) <- c("group","y")
-      DF[, 1] <- factor(DF[,1])
-      #print(summary(DF))
-      
-      plot1 <- qplot(y=y, x=group, data = DF, geom="boxplot", main = "Original Data") +
-        theme_bw() + xlab("") +  coord_flip() + ylab(c1q1$names[2])
-      
-      ## Plot One resample 
-      if(!is.null(input$c1q1_Est_click)){
-        closestPt <- which.min(abs( c1q1Est$diff - input$c1q1_Est_click$x))
-        #cat("Close to number: ", closestPoint, "\n")
-      } else if (!is.null(c1q1Est$shuffles)){
-        closestPt <- ncol(c1q1Est$shuffles)
-      } else {
-        closestPt <- 1
-        n1 <- length(c1q1Est$ndx1)
-        n2 <- length(c1q1Est$ndx2)
-        c1q1Est$shuffles <- c1q1_estimate_shuffles(1, c1q1Est$ndx1, c1q1Est$ndx2)
-        c1q1Est$diff <- -with(DF[c1q1Est$shuffles[, 1] , ], diff(tapply(y, group, mean)))
-        c1q1Est$colors <- blu
-      }
-      #print(c1q1Est$shuffles)
-      DF2 <- c1q1$data[c1q1Est$shuffles[, closestPt], ] 
-      names(DF2) <- names(DF)
-      DF2 <- DF2[order(DF2$y), ]
-      ### stores samples as columns
-      
-      plot3 <- qplot(y=y, x=group, data = DF2, geom="boxplot", main = "Resampled Data") +
-        theme_bw() + xlab("") +  coord_flip() + ylab(c1q1$names[2])
-      
-      grid.arrange(plot1, plot3, heights = c( 3,3)/6, ncol=1)
-    }, height = 360)
     
     output$c1q1_EstTable1 <- renderTable({
       req(c1q1$data)

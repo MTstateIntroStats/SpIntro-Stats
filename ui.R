@@ -198,46 +198,49 @@ shinyUI(tagList(
     ####   Two Quantitative ------------------------------------------------- -- 2 Quant 
 {
  navbarMenu("Two Quant.",
-               tabPanel("Enter /Describe Data", value="2quantDataEntry",
-               ##  preloaded data  - save as data/quant1.RData
-               ##  read local csv file
-               ##  open empty table to copy or type in data.
-               ##
-               ##  Existing data is stored in "data/quant2.RData"
-               h4(textOutput('quant2DataIn')),
-               fluidRow(  
-                 
-                 column(6, selectInput('q2_entry', '', 
-                                       list(" ", "Pre-Loaded Data","Local CSV File",
-                                            "Type/Paste into Text Box"), 
-                                       selected = " ",
-                                       selectize = FALSE))
-               ),
-                            
-               uiOutput("q2_ui"),
-               
-               hr(),
-               fluidRow(
-                 column(6, 
-                        plotOutput('q2_Plot') ),
-                 column(5, 
-                        tableOutput('q2_Summary'))
-               ),
-               fluidRow( 
-                 column(4, uiOutput("q2_swap"))
-               ), 
-               fluidRow(
-                 column(2, offset = 3, textOutput('q2_headRegrLine')),
-                 column(7, textOutput('q2_SLR_line'))
-               )
-        ),      
-      tabPanel("Test", value="2quantTest",
-               uiOutput('q2_testUI')
-      ),
-      
-      tabPanel("Estimate Slope/Correlation", value="2quantEstimate",
-               uiOutput('q2_estimateUI') 
-       ), 
+            tabPanel("Test or Estimate", label="2quantDataEntry",  
+                     uiOutput('q2_Input_Test_Est')
+            ),
+      #       tabPanel("Enter /Describe Data", value="2quantDataEntry",
+      #          ##  preloaded data  - save as data/quant1.RData
+      #          ##  read local csv file
+      #          ##  open empty table to copy or type in data.
+      #          ##
+      #          ##  Existing data is stored in "data/quant2.RData"
+      #          h4(textOutput('quant2DataIn')),
+      #          fluidRow(  
+      #            
+      #            column(6, selectInput('q2_entry', '', 
+      #                                  list(" ", "Pre-Loaded Data","Local CSV File",
+      #                                       "Type/Paste into Text Box"), 
+      #                                  selected = " ",
+      #                                  selectize = FALSE))
+      #          ),
+      #                       
+      #          uiOutput("q2_ui"),
+      #          
+      #          hr(),
+      #          fluidRow(
+      #            column(6, 
+      #                   plotOutput('q2_Plot') ),
+      #            column(5, 
+      #                   tableOutput('q2_Summary'))
+      #          ),
+      #          fluidRow( 
+      #            column(4, uiOutput("q2_swap"))
+      #          ), 
+      #          fluidRow(
+      #            column(2, offset = 3, textOutput('q2_headRegrLine')),
+      #            column(7, textOutput('q2_SLR_line'))
+      #          )
+      #   ),      
+      # tabPanel("Test", value="2quantTest",
+      #          uiOutput('q2_testUI')
+      # ),
+      # 
+      # tabPanel("Estimate Slope/Correlation", value="2quantEstimate",
+      #          uiOutput('q2_estimateUI') 
+      #  ), 
       tabPanel("Least Squares Demo", value = "2quantSLRDemo",
                uiOutput('q2_leastSquaresDemoUI')
       )
@@ -246,38 +249,41 @@ shinyUI(tagList(
   ####   1 categorical & 1 quantitative  -----------------------------------
 {
   navbarMenu("One of Each",
-               
-      tabPanel("Enter /Describe Data", value="1cat1quantDataEntry",
-       h4(textOutput('c1q1DataIn')),
-        fluidRow(  
-            column(6, selectInput('c1q1_entry', ' ', 
-                                list(" ", "Pre-Loaded Data","Local CSV File",
-                                     "Type/Paste into Text Box"), 
-                                selected = " ",
-                                selectize = FALSE))
-        ),
-        
-        uiOutput("c1q1_ui")
-        ,
-        hr(),
-        fluidRow(
-          column(5, 
-                 plotOutput('c1q1_Plot') ),
-          column(4, 
-                 tableOutput('c1q1_Summary1'),
-                 br(),
-                 tableOutput('c1q1_Summary2'))
-        )
-        
-      ),
-      
-      tabPanel("Test", value="1cat1quantTest",
-               uiOutput('c1q1_testUI')
-      ),
-      
-      tabPanel("Estimate", value="1cat1quantEstimate",
-               uiOutput('c1q1_estimateUI')
-      ),
+             tabPanel("Test or Estimate", label="1cat1quantDataEntry",  
+                      uiOutput('c1q1_Input_Test_Est')
+             ),
+             
+      # tabPanel("Enter /Describe Data", value="1cat1quantDataEntry",
+      #  h4(textOutput('c1q1DataIn')),
+      #   fluidRow(  
+      #       column(6, selectInput('c1q1_entry', ' ', 
+      #                           list(" ", "Pre-Loaded Data","Local CSV File",
+      #                                "Type/Paste into Text Box"), 
+      #                           selected = " ",
+      #                           selectize = FALSE))
+      #   ),
+      #   
+      #   uiOutput("c1q1_ui")
+      #   ,
+      #   hr(),
+      #   fluidRow(
+      #     column(5, 
+      #            plotOutput('c1q1_Plot') ),
+      #     column(4, 
+      #            tableOutput('c1q1_Summary1'),
+      #            br(),
+      #            tableOutput('c1q1_Summary2'))
+      #   )
+      #   
+      # ),
+      # 
+      # tabPanel("Test", value="1cat1quantTest",
+      #          uiOutput('c1q1_testUI')
+      # ),
+      # 
+      # tabPanel("Estimate", value="1cat1quantEstimate",
+      #          uiOutput('c1q1_estimateUI')
+      # ),
       
       
       tabPanel("t Distribution", value="1cat1quantT",
