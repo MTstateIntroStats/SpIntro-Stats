@@ -53,7 +53,7 @@ cat2_estimate_shuffles <- function(shuffles, y1, y2, n1, n2){
 
 c1q1_estimate_shuffles <- function(shuffles, ndx1, ndx2){
   ## create a matrix of shuffled index values.
-  ##  top n1 rows are a resamle from group 1,
+  ##  top n1 rows are a resample from group 1,
   ##  btm n2 rows, same from group 2
   rbind( matrix(sample(ndx1, length(ndx1) * shuffles, replace = TRUE), ncol = shuffles), 
          matrix(sample(ndx2, length(ndx2) * shuffles, replace = TRUE), ncol = shuffles))
@@ -61,7 +61,7 @@ c1q1_estimate_shuffles <- function(shuffles, ndx1, ndx2){
 
  ## finding break points for dot plots
 newy  <- function(simStats){
-  nbreaks <- 0.5*nclass.Sturges(simStats)^2
+  nbreaks <- 0.5 * nclass.Sturges(simStats)^2
   z <- cut(simStats, breaks = nbreaks) 
   checkBreaks <- (length(simStats) < 3000)
   ## look at center 30 bins to see if we have lots of variation
