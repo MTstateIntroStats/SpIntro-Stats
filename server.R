@@ -4161,7 +4161,7 @@ output$Cat2ShowCI <- renderUI({
   ###   TESTING slope / correlation = 0 ---------------------------------------  q2
   {
     
-    ## q2 test UI -------------------------------------
+  ## q2 test UI -------------------------------------
     output$q2_testUI <- renderUI({
       if( is.null(q2$data)){
         h4(" You must first enter data. Choose 'Enter/Describe Data'.")
@@ -4750,17 +4750,17 @@ output$Cat2ShowCI <- renderUI({
     
   }  
   
-  ## 1 categorical & 1 quantitative   ---------------------------------------  1 cat 1 quant
+  ## 1 categorical & 1 quantitative 
   
-  ###  Data entry ------------------------------------------------------------ 1c1q
+  #  1c1q Data entry  ##########
 
   {
     c1q1Test <- reactiveValues(shuffles = NULL,  observed = NULL, diff = NULL,  colors = NULL, 
                                moreExtremeCount = NULL, pvalue = NULL, direction = NULL, cutoff = NULL,
                                sampleCount = NULL, selected = NULL)
     
-    c1q1Est <- reactiveValues(shuffles = NULL,  observed = NULL, diff = NULL, confLevel = NULL, colors = NULL, 
-                              ndx1 = NULL, ndx2 = NULL, CI = NULL, selected = NULL )
+    c1q1Est <- reactiveValues(shuffles = NULL,  observed = NULL, diff = NULL, confLevel = NULL, 
+                              colors = NULL, ndx1 = NULL, ndx2 = NULL, CI = NULL, selected = NULL )
  
     observeEvent(input$c1q1_InputToggle, {
       shinyjs::show("c1q1Data")            ##  show data input
@@ -4783,6 +4783,8 @@ output$Cat2ShowCI <- renderUI({
       shinyjs::hide("c1q1Test")             ## hide Test page
       shinyjs::show("c1q1Estimate")             ## show Estimate page
     })
+    
+    ##  1c1q  input test estimate #####################
     
     output$c1q1_Input_Test_Est <- renderUI({
       fluidPage(
@@ -4847,22 +4849,29 @@ output$Cat2ShowCI <- renderUI({
              column(8, offset = 4,
                     uiOutput("c1q1PrintPvalue") )
          )               
-        ),                            ### close c1q1-testing div
+        ),          ### close c1q1-testing div
+        
         div( id = "c1q1Estimate", style = "display: none;", ###
              h3("Estimate the difference between two means."),
              fluidRow(
-               column(4, 
-                      uiOutput("c1q1_dataPlot1")
-               ),
-               column(3,
-                      uiOutput('c1q1_EstTables')
+               column(4, uiOutput("c1q1_dataPlot1")     ),
+               column(3, uiOutput('c1q1_EstTables')     ),
+               column(5, uiOutput('c1q1_ReSampDistPlot') )
+             ),
+             uiOutput('c1q1Resamples'),
+             br(),
+             fluidRow(
+               column(4, offset = 1, 
+                      h4("Confidence Level (%):")
                ),
                column(5,
-                      uiOutput('c1q1_ReSampDistPlot')
-               )
+                      fluidRow(
+                        column(3, actionButton('cat1_conf80', label = "80", class="btn btn-primary")),
+                        column(3, actionButton('cat1_conf90', label = "90", class="btn btn-primary")),
+                        column(3, actionButton('cat1_conf95', label = "95", class="btn btn-primary")),
+                        column(3, actionButton('cat1_conf99', label = "99", class="btn btn-primary"))
+                      ))
              ),
-             uiOutput('c1q1Shuffles'),
-             br(),
              uiOutput('c1q1ShowCI')          
         )             
       )    ## close c1q1_Input_Test_Est UI
@@ -4878,7 +4887,7 @@ output$Cat2ShowCI <- renderUI({
       }
     })
  
-    ###  Inputs -------------------------------- c1q1
+    ### c1q1 Inputs #####################################################
      
     output$c1q1_inputUI <- renderUI({
       req(input$c1q1_entry)
@@ -5006,12 +5015,10 @@ output$Cat2ShowCI <- renderUI({
     })
     
   }
-  ##  Describe and summarize ------------------------------------------------- 1c1q
+  #  c1q1  Describe and summarize #############################
   {
     output$c1q1_Plot <- renderPlot( {
       req(c1q1$data)
-      
-      #isolate( { 
       ## make plot
       DF <- c1q1$data
       names(DF) <- c("group","y")
@@ -5020,30 +5027,23 @@ output$Cat2ShowCI <- renderUI({
       c1q1_plot1 <- qplot(y=y, x=group, data = DF, geom="boxplot") +
         theme_bw() + xlab("") +  coord_flip() + ylab(c1q1$names[2]) 
       DF <- DF[order(DF$y), ]
-      #nbreaks <- min(c(length(unique(DF$y)), floor(.5*nclass.Sturges(DF$y)^2)))
-      #z <- cut(DF$y, breaks =  nbreaks )
       w <- unlist(tapply(DF$y, DF$group, newy))
-      ##w <- newy(DF$y)  #w[!is.na(w)]  
       myBlue <- rgb(0, 100/256, 224/256, alpha = .8)  
       c1q1_plot2 <- qplot(data= DF, x=y, y=w , colour = I(myBlue), size = I(4), ylim = 
                             c(.5, pmax(10, max(w)))) + facet_wrap( ~group) + 
-        theme_bw() + ylab("Count") + xlab( c1q1$names[2])
+                         theme_bw() + ylab("Count") + xlab( c1q1$names[2])
       grid.arrange(c1q1_plot1, c1q1_plot2, heights = c(2,  5)/7, ncol=1)
-      #})
     }, height=400)
     
-    
-    output$c1q1_Summary1 <- renderTable({
+    output$c1q1_Summary <- renderTable({
       req(c1q1$data)  
-      #isolate({
-      c1q1Est$ndx1 <- which(unclass(c1q1$data[,1]) == 1 | c1q1$data[,1] == "A")
-      c1q1Est$ndx2 <- which(unclass(c1q1$data[,1]) == 2 | c1q1$data[,1] == "B")
-      
       tempDF <- c1q1$data
       names(tempDF) <- c("group","y")
       tempDF$group <- factor(tempDF$group)
+      c1q1Est$ndx1 <- which(tempDF$group == levels(tempDF$group)[1])
+      c1q1Est$ndx2 <- which(tempDF$group == levels(tempDF$group)[2])
       #print(tempDF)
-      DF <- with(tempDF,
+      DataMatrix <- with(tempDF,
                  rbind(mean   = tapply(y, group, mean, na.rm = TRUE ),
                        sd     = tapply(y, group, sd, na.rm = TRUE),
                        min    = tapply(y, group, min),
@@ -5053,8 +5053,8 @@ output$Cat2ShowCI <- renderUI({
                        max    = tapply(y, group, max),
                        n = tapply(y, group, length)
                  ))
-      colnames(DF) <- levels(tempDF$group)
-      DF
+      colnames(DataMatrix) <- levels(tempDF$group)
+      DataMatrix
       #})
     })
     
@@ -5067,7 +5067,7 @@ output$Cat2ShowCI <- renderUI({
     })
   }
   
-  ##  test equality of two means   -------------------------------------------- 1c1q
+  # c1q1 test equality of two means   ##########################
   {
     
     output$c1q1_TestTables <- renderUI({
@@ -5116,7 +5116,7 @@ output$Cat2ShowCI <- renderUI({
     })
     
     
-    # -------- 1 cat  1 quant test plots ------------------
+    #  1 cat  1 quant test plots ------------------
     
     output$c1q1_TestPlot1  <- renderPlot({
       req(c1q1$data)
@@ -5148,9 +5148,6 @@ output$Cat2ShowCI <- renderUI({
         ## use latests shuffle
         DF$group2 <- c1q1Test$shuffles[, ncol(c1q1Test$shuffles)]
       }
-      #print(DF)
-      #  plot2 <- qplot(y=y, x=group2, data = DF, geom="boxplot", main = "Shuffled Sample") +
-      #    theme_bw() + xlab("") +  coord_flip() + ylab(c1q1$names[2])
       boxplot( y ~ group2, data = DF, horizontal = TRUE,  main = "Shuffled Sample", las =1)
       
       
@@ -5164,7 +5161,6 @@ output$Cat2ShowCI <- renderUI({
     
     output$c1q1_TestTable1 <- renderTable({
       req(c1q1$data)
-      #print(c1q1$data)
       DF <- data.frame(mean = tapply(c1q1$data[,2], c1q1$data[,1], mean, na.rm = TRUE ),
                        sd = tapply(c1q1$data[,2], c1q1$data[,1], sd, na.rm = TRUE ),
                        n = as.integer(tapply(c1q1$data[,2], c1q1$data[,1], length)))
@@ -5281,8 +5277,8 @@ output$Cat2ShowCI <- renderUI({
   }  
   
   
-  ##  estimate difference between two means  ----------------------------------- 1c1q
-  {
+  ## c1q1 estimate difference between two means  ###############
+   {
     output$OLDc1q1_estimateUI <- renderUI({
       if( is.null(c1q1$data)){
         h4(" You must first enter data. Choose 'Enter/Describe Data'.")
@@ -5300,7 +5296,7 @@ output$Cat2ShowCI <- renderUI({
                    uiOutput('c1q1_ReSampDistPlot')
             )
           ),
-          uiOutput('c1q1Shuffles'),
+          uiOutput('c1q1Resamples'),
           br(),
           uiOutput('c1q1_CI')          
         )
@@ -5322,29 +5318,28 @@ output$Cat2ShowCI <- renderUI({
     output$c1q1_dataPlot1 <- renderUI({ 
       plotOutput('c1q1_EstPlot1')
     })
+    
     output$c1q1_EstPlot1 <- renderPlot({
-      req(c1q1$data)
-      
+      req(c1q1$data, c1q1$ndx1)
       DF <- c1q1$data
       names(DF) <- c("group","y")
       DF[, 1] <- factor(DF[,1])
       #print(summary(DF))
-      
       plot1 <- qplot(y=y, x=group, data = DF, geom="boxplot", main = "Original Data") +
         theme_bw() + xlab("") +  coord_flip() + ylab(c1q1$names[2])
-      
       ## Plot One resample 
       if(!is.null(input$c1q1_Est_click)){
+        ##  We already have resampled data and want to pick the clicked point
         closestPt <- which.min(abs( c1q1Est$diff - input$c1q1_Est_click$x))
         #cat("Close to number: ", closestPoint, "\n")
       } else if (!is.null(c1q1Est$shuffles)){
         closestPt <- ncol(c1q1Est$shuffles)
       } else {
         closestPt <- 1
-        n1 <- length(c1q1Est$ndx1)
-        n2 <- length(c1q1Est$ndx2)
-        c1q1Est$shuffles <- c1q1_estimate_shuffles(1, c1q1Est$ndx1, c1q1Est$ndx2)
-        c1q1Est$diff <- -with(DF[c1q1Est$shuffles[, 1] , ], diff(tapply(y, group, mean)))
+        # n1 <- which(DF$group == levels(DF$group)[1])
+        # n2 <- which(DF$group == levels(DF$group)[2])
+        c1q1Est$shuffles <- c1q1_estimate_shuffles(1, c1q1$ndx1, c1q1$ndx2)
+        c1q1Est$diff <- -with(DF[c1q1Est$shuffles[, closestPt] , ], diff(tapply(y, group, mean)))
         c1q1Est$colors <- blu
       }
       #print(c1q1Est$shuffles)
@@ -5386,14 +5381,14 @@ output$Cat2ShowCI <- renderUI({
       )
     })
     
-    output$c1q1Shuffles <- renderUI({ 
+    output$c1q1Resamples <- renderUI({ 
       fluidRow(
         column(4, offset = 3, 
-               h4("How many more shuffles?")),
-        column(1, actionButton("c1q1_Est_shuffle_10", label = "10", class="btn btn-primary")),
-        column(1, actionButton("c1q1_Est_shuffle_100", label = "100", class="btn btn-primary")),
-        column(1, actionButton("c1q1_Est_shuffle_1000", label = "1000", class="btn btn-primary")),
-        column(1, actionButton("c1q1_Est_shuffle_5000", label = "5000", class="btn btn-primary"))
+               h4("More Resamples?")),
+        column(1, actionButton("c1q1_Est_resample_10", label = "10", class="btn btn-primary")),
+        column(1, actionButton("c1q1_Est_resample_100", label = "100", class="btn btn-primary")),
+        column(1, actionButton("c1q1_Est_resample_1000", label = "1000", class="btn btn-primary")),
+        column(1, actionButton("c1q1_Est_resample_5000", label = "5000", class="btn btn-primary"))
       )
     })
     
@@ -5401,22 +5396,14 @@ output$Cat2ShowCI <- renderUI({
       plotOutput('c1q1_EstPlot2', click = 'c1q1_Est_click')
     })
     
-    
     output$c1q1_EstPlot2 <- renderPlot({
-      req(c1q1Est$data)
+      req(c1q1Est$diff)
       parm <- sort(c1q1Est$diff)
-      #print(parm)
-      #parm <- sort(parm)
       if(length(parm) == 1){
         y <- .5
         radius <- 4
       } else {
-        #     nbreaks <- nclass.Sturges(parm)^2
-        #     z <- cut(parm, breaks = nbreaks)
-        #     y <- unlist(tapply(z, z, function(V) 1:length(V)))
-        y <- newy(parm) #[!is.na(y)]
-        #print(y)
-        #print(max(w))
+        y <- newy(parm) 
         nsims <- length(parm)
         radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
       }
@@ -5426,24 +5413,35 @@ output$Cat2ShowCI <- renderUI({
                                           round(mean(parm),3), "\n SE = ", round(sd(parm),3)))
     }, width = 400)      
     
-    
     output$c1q1_EstTable1 <- renderTable({
       req(c1q1$data)
-      DF <- data.frame(mean = tapply(c1q1$data[,2], c1q1$data[, 1], mean, na.rm = TRUE ),
-                       sd = tapply(c1q1$data[,2], c1q1$data[, 1], sd, na.rm = TRUE ),
-                       n = as.integer(tapply(c1q1$data[,2], c1q1$data[, 1], length)))
+      DF <- data.frame(mean = tapply(c1q1$data[,2], c1q1$data[,1], mean, na.rm = TRUE ),
+                       sd = tapply(c1q1$data[,2], c1q1$data[,1], sd, na.rm = TRUE ),
+                       n = as.integer(tapply(c1q1$data[,2], c1q1$data[,1], length)))
       rownames(DF) <- levels(c1q1$data[,1])
       DF[nrow(DF):1, ]
     })
     
-    
     output$c1q1_EstTable2 <- renderTable({
       req(c1q1$data)  
+      DF <- c1q1$data
+      names(DF) <- c("group","y")
+      DF$group <- factor(DF$group)
+      if(is.null(c1q1$ndx1)){
+        c1q1$ndx1 <- which(c1q1$data[,1] == levels(c1q1$data[,1])[1])
+        c1q1$ndx2 <- which(c1q1$data[,1] == levels(c1q1$data[,1])[2])
+      }
       if(!is.null(input$c1q1_Est_click)){
+        ##  We already have resampled data and want to pick the clicked point
         closestPt <- which.min(abs( c1q1Est$diff - input$c1q1_Est_click$x))
         #cat("Close to number: ", closestPoint, "\n")
-      } else {
+      } else if (!is.null(c1q1Est$shuffles)){
         closestPt <- ncol(c1q1Est$shuffles)
+      } else {
+        closestPt <- 1
+        c1q1Est$shuffles <- c1q1_estimate_shuffles(1,  c1q1$ndx1, c1q1$ndx2)
+        c1q1Est$diff <- -with(DF[c1q1Est$shuffles[, 1] , ], diff(tapply(y, group, mean)))
+        c1q1Est$colors <- blu
       }
       resamp1 <- c1q1$data[c1q1Est$shuffles[, closestPt], ]
       names(resamp1) <- c("group","y")
@@ -5457,7 +5455,7 @@ output$Cat2ShowCI <- renderUI({
       DF[nrow(DF):1, ]
     })
     
-    observeEvent(input$c1q1_Est_shuffle_10, {
+    observeEvent(input$c1q1_Est_resample_10, {
       c1q1Est$CI <- NULL
       c1q1Est$selected <- NA
       newShuffles <- c1q1_estimate_shuffles(10, c1q1Est$ndx1, c1q1Est$ndx2)
@@ -5467,7 +5465,7 @@ output$Cat2ShowCI <- renderUI({
       c1q1Est$colors <- rep(blu, length(c1q1Est$diff))
     })
     
-    observeEvent(input$c1q1_Est_shuffle_100, {
+    observeEvent(input$c1q1_Est_resample_100, {
       c1q1Est$CI <- NULL
       c1q1Est$selected <- NA
       newShuffles <- c1q1_estimate_shuffles(100, c1q1Est$ndx1, c1q1Est$ndx2)
@@ -5476,7 +5474,7 @@ output$Cat2ShowCI <- renderUI({
       #print(c1q1Est$diff)
       c1q1Est$colors <- rep(blu, length(c1q1Est$diff))
     })
-    observeEvent(input$c1q1_Est_shuffle_1000, {        
+    observeEvent(input$c1q1_Est_resample_1000, {        
       c1q1Est$CI <- NULL
       c1q1Est$selected <- NA
       newShuffles <- c1q1_estimate_shuffles(1000, c1q1Est$ndx1, c1q1Est$ndx2)
@@ -5485,7 +5483,7 @@ output$Cat2ShowCI <- renderUI({
       #print(c1q1Est$diff)
       c1q1Est$colors <- rep(blu, length(c1q1Est$diff))
     })
-    observeEvent(input$c1q1_Est_shuffle_5000, {
+    observeEvent(input$c1q1_Est_resample_5000, {
       c1q1Est$CI <- NULL
       c1q1Est$selected <- NA
       newShuffles <- c1q1_estimate_shuffles(5000, c1q1Est$ndx1, c1q1Est$ndx2)
