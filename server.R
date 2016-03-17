@@ -4872,6 +4872,8 @@ output$Cat2ShowCI <- renderUI({
                         column(3, actionButton('c1q1_conf99', label = "99", class="btn btn-primary"))
                       ))
              ),
+             uiOutput('c1q1Shuffles'),
+             br(),
              uiOutput('c1q1ShowCI')          
         )             
       )    ## close c1q1_Input_Test_Est UI
@@ -5157,7 +5159,7 @@ output$Cat2ShowCI <- renderUI({
       #                     theme_bw() + xlab(c1q1$names[2]) + ylab("Count") + facet_wrap( ~ group2)
       #plot1
       #         grid.arrange(plot1, plot2, heights = c(3, 3)/6, ncol=1)
-    }, height = 330, width = 320)
+    }, height = 360, width = 320)
     
     output$c1q1_TestTable1 <- renderTable({
       req(c1q1$data)
@@ -5297,17 +5299,19 @@ output$Cat2ShowCI <- renderUI({
     })
     
     output$c1q1_EstPlot1 <- renderPlot({
-      req(c1q1$data, c1q1$ndx1)
+      req(c1q1$data)
+      
       DF <- c1q1$data
       names(DF) <- c("group","y")
       DF[, 1] <- factor(DF[,1])
       #print(summary(DF))
+      
       plot1 <- qplot(y=y, x=group, data = DF, geom="boxplot", main = "Original Data") +
         theme_bw() + xlab("") +  coord_flip() + ylab(c1q1$names[2])
+      
       ## Plot One resample 
       if(!is.null(input$c1q1_Est_click)){
-        ##  We already have resampled data and want to pick the clicked point
-        closestPt <- which.min(abs( c1q1Est$diff - input$c1q1_Est_click$x))
+              closestPt <- which.min(abs( c1q1Est$diff - input$c1q1_Est_click$x))
         #cat("Close to number: ", closestPoint, "\n")
       } else if (!is.null(c1q1Est$shuffles)){
         closestPt <- ncol(c1q1Est$shuffles)
