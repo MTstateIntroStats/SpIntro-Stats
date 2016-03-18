@@ -1586,10 +1586,10 @@ output$normalProbPlot1 <- renderPlot({
                ),
                fluidRow( 
                  column(4,  
-                        plotOutput("q1_TestPlot1", height = "280px")
+                        plotOutput("q1_TestPlot1", height = "360px")
                  ),
                  column(8, 
-                        plotOutput('q1_TestPlot2', click = 'q1_Test_click', height = '300px')
+                        plotOutput('q1_TestPlot2', click = 'q1_Test_click', height = '360px')
                  )
                ),
                br(),
@@ -1842,7 +1842,6 @@ output$Q1ShowCI <- renderUI({
     # Plot stacked x values. 
     x <- sort(q1$data[,1])
     ## print(x)
-    #z <- cut(x, breaks = nclass.Sturges(x) ^2 )
     w <- newy(x)  #unlist(tapply(x, z, function(x) 1:length(x)))
     tempDF <- data.frame(x, w=w[!is.na(w)])
     myBlue <- rgb(0, 100/256, 224/256, alpha = .8)  
@@ -1895,7 +1894,7 @@ output$q1_testUI <- renderUI({
     ),
     fluidRow( 
       column(4,  
-             plotOutput("q1_TestPlot1", height = "280px")
+             plotOutput("q1_TestPlot1", height = "360px")
        ),
       column(8, 
                plotOutput('q1_TestPlot2', click = 'q1_Test_click', height = '360px')
@@ -1976,8 +1975,7 @@ output$q1_TestPlot1 <- renderPlot({
   par(mfrow = c(2,1), mar = c(4,3.5,3,1))
   ## Plot Original Data
   x <- sort(q1$data[,1])
-  #z <- cut(x, breaks = nclass.Sturges(x) ^2 )
-  w <- newy(x) #unlist(tapply(x, z, function(x) 1:length(x)))
+  w <- newy(x) 
   tempDF <- data.frame(x=x, w=w[!is.na(w)])
   plot(w ~ x, data = tempDF, col = blu, pch = 16, main = "Original Data", xlab = q1$names, ylab = "Count")
   legend("topleft", bty = "n", paste(" n = ",nn,"\n Mean = ", round(mean(x),3), "\n SD = ", round(sd(x),3)))
@@ -2004,8 +2002,7 @@ output$q1_TestPlot1 <- renderPlot({
   if(is.null(DF0)){
     return()
   }
-  z0 <- cut(DF0, breaks = nclass.Sturges(DF0) ^2 )
-  w0 <- unlist(tapply(DF0, z0, function(DF0) 1:length(DF0)))
+  w0 <- newy(DF0)
   tempDF0 <- data.frame(DF0 = DF0 + nullMean, w0=w0[!is.na(w0)])
   plot(w0 ~ DF0, data = tempDF0, col = blu, pch = 16, main = "One Shifted Resample", xlab = q1$names, ylab = "Count")
   legend("topleft", bty = "n", paste(" n = ",nn,"\n Mean = ", round(mean(DF0)+ nullMean,3), "\n SD = ", round(sd(DF0),3)))
@@ -2119,9 +2116,6 @@ output$q1_TestPlot2 <- renderPlot({
       y <- .5
       radius <- 4
     } else {
-#       nbreaks <- nclass.Sturges(parm)^2
-#       z <- cut(parm, breaks = nbreaks)
-#       y <- unlist(tapply(z, z, function(V) 1:length(V)))
       y <- newy(parm) #[!is.na(y)]
       #print(y)
       nsims <- length(parm)
@@ -2201,8 +2195,6 @@ output$q1_EstPlot1 <- renderPlot({
   
   ## Plot Original Data
   x <- sort(q1$data[,1])
-  #z <- cut(x, breaks = nclass.Sturges(x) ^2 )
-  #w <- unlist(tapply(x, z, function(x) 1:length(x)))
   w <- newy(x) # w[!is.na(w)]
   #par(mar = c(2,2,2,1))
   plot(x=x, y=w, col = blu, pch = 16, main = "Original Data", xlab = q1$names, ylab = "Count")
@@ -2225,13 +2217,10 @@ output$q1_EstPlot1 <- renderPlot({
   } else  {
     return()
   }
-  #z <- cut(DF0, breaks = nclass.Sturges(DF0) ^2 )
-  #w <- unlist(tapply(DF0, z, function(DF0) 1:length(DF0)))
   w <- newy(DF0) #w[!is.na(w)]
-  #par(mar = c(2,2,2,1))
   plot(x=DF0, y=w, col = blu, pch = 16, main = "Resampled Data", xlab = q1$names, ylab = "Count")
   legend("topleft", bty = "n", paste(" n = ", nn, "\n Mean = ", round(mean(DF0),3), "\n SD = ", round(sd(DF0),3)))
-},  height = 400, width = 300)
+},  height = 360, width = 300)
 
 observeEvent(input$q1_resample_10, {
   newShuffles <- sapply(1:10, function(x) sample(q1$data[,1], length(q1$data[,1]), replace = TRUE))
