@@ -3782,9 +3782,9 @@ output$Cat2ShowCI <- renderUI({
     }, height=300)
   }
   
-  ## 2 Quantitative -----------------------------------------------------------  2 quant
+  ## 2 Quantitative ---######
    {
-     q2Test <- reactiveValues( shuffles = NULL, slopes = NULL, corr = NULL, observed = NULL,
+    q2Test <- reactiveValues( shuffles = NULL, slopes = NULL, corr = NULL, observed = NULL,
                              colors = blu, moreExtremeCount = NULL, direction = NULL, cutoff = NULL, 
                              sampleCount = NULL, pvalue = NULL)
    
@@ -3814,7 +3814,9 @@ output$Cat2ShowCI <- renderUI({
      shinyjs::show("q2Estimate")             ## show Estimate page
    })
    
-   output$q2_Input_Test_Est <- renderUI({
+   ## q2 input test estimate #########################
+ 
+     output$q2_Input_Test_Est <- renderUI({
      fluidPage(
        fluidRow(
          column(3, offset = 1, 
@@ -3838,103 +3840,86 @@ output$Cat2ShowCI <- renderUI({
             hr(),
             fluidRow(
               column(6, 
-                     plotOutput('q2_Plot', height = "320px") ),
+                     plotOutput('q2_Plot', height = "320px")),
               column(3, 
-                     tableOutput('q2_Summary'))
+                     tableOutput('q2_Summary'),
+                     uiOutput('q2_swap'))
             )
        ),  ## close Input div
        
        div( id = "q2Test", style = "display: none;", 
-            fluidPage( 
-              fluidRow( 
-                column(4,  
-                       h4("Test for a single mean.")
-                ),
-                column(8, 
-                       tags$label(HTML("True Mean (Null hypothesis for &mu;):"),  
-                                  tags$input(name='null_mu', type='text', value='0', size='10'))
-                )
-              ),
-              fluidRow( 
-                column(4,  
-                       plotOutput("q2_TestPlot1", height = "280px")
-                ),
-                column(8, 
-                       plotOutput('q2_TestPlot2', click = 'q2_Test_click', height = '300px')
-                )
-              ),
-              br(),
-              fluidRow(
-                column(5, offset = 1, h4("How many more (shifted) resamples?")),
-                column(1, actionButton("q2_test_shuffle_1", label = "1", class="btn btn-primary")),
-                column(1, actionButton("q2_test_shuffle_10", label = "10", class="btn btn-primary")),
-                column(1, actionButton("q2_test_shuffle_100", label = "100", class="btn btn-primary")),
-                column(1, actionButton("q2_test_shuffle_1000", label = "1000", class="btn btn-primary")),
-                column(1, actionButton("q2_test_shuffle_5000", label = "5000", class="btn btn-primary"))
-              ),
-              
-              br(),
-              #         fluidRow(
-              #            column(5, offset =6, h4("Click on a point to see that resample."))
-              #          ),
-              fluidRow(
-                column(8, offset = 1,
-                       uiOutput("q2TestXtremes"),
-                       uiOutput("q2TestPvalue")
-                )
-              )
-            )
-       ),                                                  ### close q2-testing div
+          fluidRow(
+            column(2, offset =2, h4('Test either')),
+            column(3, 
+                   radioButtons("q2_TestParam", label = "", list("Slope  OR"," Correlation"),
+                                      "Slope  OR", inline = TRUE)
+            ),
+            column(3,  h4('is zero'))
+          ),
+          fluidRow(
+              ## for 1 shuffle, show equal size plots of original and reshuffled x,y data
+              ##  for more shuffles, make original data and click --> shuffle plots smaller, large plot of 
+              ##  sampling distribution for slope / correlation.
+              column(5,    plotOutput('q2_TestPlot1')   ),
+              column(6,    uiOutput('q2_SampDistPlot')  )
+          ),
+          fluidRow(
+              column(4, offset = 1,  h4("How many more shuffles?")),
+              column(1,       actionButton("q2_shuffle_10", label = "10", class="btn btn-primary")),
+              column(1,       actionButton("q2_shuffle_100", label = "100", class="btn btn-primary")),
+              column(1,       actionButton("q2_shuffle_1000", label = "1000", class="btn btn-primary")),
+              column(1,       actionButton("q2_shuffle_5000", label = "5000", class="btn btn-primary"))
+          ),
+          br(),
+          fluidRow(
+             column(10, offset = 2,  uiOutput("slopeTestXtremes")   )
+          ),
+          fluidRow(
+            column(8, offset = 4,    uiOutput("slopeTestPvalue")    )
+          )
+       ),                          ### close q2-testing div
+                                   ###  q2-estimating div
        div( id = "q2Estimate", style = "display: none;", 
-            fluidPage(
-              h3("Estimate a single mean."),
-              fluidRow(
-                column(4,
-                       plotOutput("q2_EstPlot1")
-                ),
-                column(8, 
-                       plotOutput('q2_EstimatePlot2', click = 'q2_Estimate_click')
-                )
-              ),             
-              fluidRow(
-                column(4, offset = 2, h4("How many more resamples?")),
-                column(1,
-                       actionButton("q2_resample_10", label = "10", class="btn btn-primary")),
-                column(1,
-                       actionButton("q2_resample_100", label = "100", class="btn btn-primary")),
-                column(1,
-                       actionButton("q2_resample_1000", label = "1000", class="btn btn-primary")),
-                column(1,
-                       actionButton("q2_resample_5000", label = "5000", class="btn btn-primary"))
-              ),
-              br(),
-              br(),
-              fluidRow(
-                column(4, offset = 3, 
-                       h4("Select Confidence Level (%)")
-                ),
-                column(5,
-                       fluidRow(
-                         column(2, actionButton('q2_conf80', label = "80", class="btn btn-primary")),
-                         column(2, actionButton('q2_conf90', label = "90", class="btn btn-primary")),
-                         column(2, actionButton('q2_conf95', label = "95", class="btn btn-primary")),
-                         column(2, actionButton('q2_conf99', label = "99", class="btn btn-primary"))
-                       ))
-              ),
-              uiOutput("q2ShowCI")
-            ) )    
-     )    ## close q2_Input_Test_Est UI
+          fluidRow(
+              column(3,       h3("Estimate either")        ),
+              column(4, uiOutput('q2_getEstParam') )
+          ),
+          fluidRow(
+              ##  show plots of original data  and one of resampled x,y data
+              ##  by default, show latest resample. Allow user to click on a point to see the data which have that slope
+               column(5,  plotOutput('q2_EstPlot1') ),
+               column(6,  uiOutput('q2_EstResampDistn'))
+         ),
+         fluidRow(
+                column(4, offset = 1,  h4("More resamples?")),
+                column(1, actionButton("q2_resample_10", label = "10", class="btn btn-primary")),
+                column(1, actionButton("q2_resample_100", label = "100", class="btn btn-primary")),
+                column(1, actionButton("q2_resample_1000", label = "1000", class="btn btn-primary")),
+                column(1, actionButton("q2_resample_5000", label = "5000", class="btn btn-primary"))
+          ),
+          # fluidRow(
+          #       column(4, offset = 5, h4("Click on a point to see that resample"))
+          #     ),
+          # br(),
+          fluidRow(
+            column(4, offset = 2, h4("Select Confidence Level (%)") ),
+            column(6, uiOutput('q2_confLevels') )
+          ),
+          fluidRow(
+            column(8, offset = 4, uiOutput('q2_showCI') )
+          )
+        )
+    )  ## close q2_Input_Test_Est UI
    })  
    
-   output$q2ShowCI <- renderUI({
-     if(!is.null(q2Estimate$CI)){
-       fluidRow( 
-         column(7, offset = 5,
-                h4(paste(q2Estimate$confLevel*100, "% Interval Estimate: (", round(q2Estimate$CI[1],3), ",", 
-                         round(q2Estimate$CI[2], 3), ")"))
-         ))
-     }
-   })
+   output$q2_showCI <- renderUI({
+     req(q2Estimate$CI)
+     
+     h4(paste(round(100 * q2Estimate$confLevel), "% Confidence Interval Estimate for ",
+              q2Estimate$param,": (", 
+              round(q2Estimate$CI[1],3), ",", 
+              round(q2Estimate$CI[2], 3), ")"))
+   }) 
    
  }  
    
@@ -4086,7 +4071,7 @@ output$Cat2ShowCI <- renderUI({
     
   }
   
-  ###  Data Summary ----------------------------------------------------------  q2
+  ### q2 Data Summary ##############################################
   
   {
     output$q2_Plot <- renderPlot( {
@@ -4143,17 +4128,15 @@ output$Cat2ShowCI <- renderUI({
       paste( q2$names[2], " = ", beta.hat[1], " + ", beta.hat[2], " * ", q2$names[1], sep = "")  
     })
     
-    
     observeEvent(  input$q2_swapXwithY,{
       req(q2$data)
-      
       q2$names <- q2$names[2:1]
       q2$data <- q2$data[, 2:1]
       names(q2$data) <- c("x","y")
     })
     
     output$q2_swap <- renderUI({
-      (q2$data)
+      req(q2$data)
       actionButton('q2_swapXwithY', "Swap Variables (X goes to Y)", class="btn btn-primary")
     })
   }
@@ -4161,8 +4144,8 @@ output$Cat2ShowCI <- renderUI({
   ###   TESTING slope / correlation = 0 ---------------------------------------  q2
   {
     
-  ## q2 test UI -------------------------------------
-    output$q2_testUI <- renderUI({
+  ## q2 test UI #############################################
+    output$q2_OLDtestUI <- renderUI({
       if( is.null(q2$data)){
         h4(" You must first enter data. Choose 'Enter/Describe Data'.")
       } else {
@@ -4434,11 +4417,11 @@ output$Cat2ShowCI <- renderUI({
     
     
   }
-  ###  Estimate slope / correlation with CI ----------------------------------- q2 
-  ##  
+  ### q2 Estimate slope / correlation with CI ######################
+
   {
     
-    output$q2_estimateUI <- renderUI({
+    output$q2_OLDestimateUI <- renderUI({
       if( is.null(q2$data)){
         h4(" You must first enter data. Choose 'Enter/Describe Data'.")
       } else {
@@ -4481,15 +4464,6 @@ output$Cat2ShowCI <- renderUI({
         )
       }
     })
-    
-    output$q2_showCI <- renderUI({
-      req(q2Estimate$CI)
-      
-      h4(paste(round(100 * q2Estimate$confLevel), "% Confidence Interval Estimate for ",
-               q2Estimate$param,": (", 
-               round(q2Estimate$CI[1],3), ",", 
-               round(q2Estimate$CI[2], 3), ")"))
-    }) 
     
     output$q2_getEstParam <- renderUI({
       radioButtons('q2_EstParam', label = "", list("Slope  OR","Correlation"), 
