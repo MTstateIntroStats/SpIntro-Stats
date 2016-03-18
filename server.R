@@ -1511,7 +1511,7 @@ output$normalProbPlot1 <- renderPlot({
 }, height=300)
 }
   
-  ## 1 Quantitative -----------------------------------------------------------  
+  ## 1 Quantitative -#############################################
 {  
   q1Test <- reactiveValues(shuffles = NULL, new.xbars = NULL, xbar = NULL, nsims = 0,
                            colors = NULL, moreExtremeCount = NULL, pvalue = NULL, direction = NULL, 
@@ -3849,34 +3849,33 @@ output$Cat2ShowCI <- renderUI({
        
        div( id = "q2Test", style = "display: none;", 
           fluidRow(
-            column(2, offset =2, h4('Test either')),
-            column(3, 
-                   radioButtons("q2_TestParam", label = "", list("Slope  OR"," Correlation"),
-                                      "Slope  OR", inline = TRUE)
-            ),
-            column(3,  h4('is zero'))
+            column(2, offset =2, h3('Test for')),
+            column(3, div(style = 'size: 24px',
+                   radioButtons("q2_TestParam", label = " ",list("Slope = 0","or Correlation = 0"),
+                                      "Slope = 0", inline = TRUE))
+            )
           ),
           fluidRow(
               ## for 1 shuffle, show equal size plots of original and reshuffled x,y data
               ##  for more shuffles, make original data and click --> shuffle plots smaller, large plot of 
               ##  sampling distribution for slope / correlation.
-              column(5,    plotOutput('q2_TestPlot1')   ),
-              column(6,    uiOutput('q2_SampDistPlot')  )
+              column(7,    plotOutput('q2_TestPlot1', height = "300px"),
+                           uiOutput("slopeTestPvalue")    ),
+              column(5,    uiOutput('q2_SampDistPlot') )
           ),
           fluidRow(
-              column(4, offset = 1,  h4("How many more shuffles?")),
+              column(4, offset = 3,  h4("More shuffles: ")),
               column(1,       actionButton("q2_shuffle_10", label = "10", class="btn btn-primary")),
               column(1,       actionButton("q2_shuffle_100", label = "100", class="btn btn-primary")),
               column(1,       actionButton("q2_shuffle_1000", label = "1000", class="btn btn-primary")),
               column(1,       actionButton("q2_shuffle_5000", label = "5000", class="btn btn-primary"))
           ),
-          br(),
+          # br(),
           fluidRow(
-             column(10, offset = 2,  uiOutput("slopeTestXtremes")   )
-          ),
-          fluidRow(
-            column(8, offset = 4,    uiOutput("slopeTestPvalue")    )
-          )
+            column(10, offset = 2,  uiOutput("slopeTestXtremes")   )   
+            )#,
+          # fluidRow(
+          # )
        ),                          ### close q2-testing div
                                    ###  q2-estimating div
        div( id = "q2Estimate", style = "display: none;", 
@@ -3887,8 +3886,9 @@ output$Cat2ShowCI <- renderUI({
           fluidRow(
               ##  show plots of original data  and one of resampled x,y data
               ##  by default, show latest resample. Allow user to click on a point to see the data which have that slope
-               column(5,  plotOutput('q2_EstPlot1') ),
-               column(6,  uiOutput('q2_EstResampDistn'))
+               column(7,  plotOutput('q2_EstPlot1', height = "300px"),
+                          uiOutput('q2_showCI')),
+               column(5,  uiOutput('q2_EstResampDistn'))
          ),
          fluidRow(
                 column(4, offset = 1,  h4("More resamples?")),
@@ -3904,10 +3904,9 @@ output$Cat2ShowCI <- renderUI({
           fluidRow(
             column(4, offset = 2, h4("Select Confidence Level (%)") ),
             column(6, uiOutput('q2_confLevels') )
-          ),
-          fluidRow(
-            column(8, offset = 4, uiOutput('q2_showCI') )
-          )
+          )#,
+          #fluidRow(
+          #)
         )
     )  ## close q2_Input_Test_Est UI
    })  
@@ -4145,58 +4144,7 @@ output$Cat2ShowCI <- renderUI({
   {
     
   ## q2 test UI #############################################
-    output$q2_OLDtestUI <- renderUI({
-      if( is.null(q2$data)){
-        h4(" You must first enter data. Choose 'Enter/Describe Data'.")
-      } else {
-        fluidPage(
-          fluidRow(
-            column(2, offset =2,
-                   h4('Test either')),
-            column(3, 
-                   radioButtons("q2_TestParam", label = "", list("Slope  OR"," Correlation"),
-                                "Slope  OR", inline = TRUE)
-            ),
-            column(3,  h4('is zero'))
-          ),
-          fluidRow(
-            ## for 1 shuffle, show equal size plots of original and reshuffled x,y data
-            ##  for more shuffles, make original data and click --> shuffle plots smaller, large plot of 
-            ##  sampling distribution for slope / correlation.
-            column(5, 
-                   plotOutput('q2_TestPlot1')
-            ),
-            column(6,
-                   uiOutput('q2_SampDistPlot')
-            )
-          ),
-          fluidRow(
-            column(4, offset = 1, 
-                   h4("How many more shuffles?")),
-            column(1,       actionButton("q2_shuffle_10", label = "10", class="btn btn-primary")),
-            column(1,       actionButton("q2_shuffle_100", label = "100", class="btn btn-primary")),
-            column(1,       actionButton("q2_shuffle_1000", label = "1000", class="btn btn-primary")),
-            column(1,       actionButton("q2_shuffle_5000", label = "5000", class="btn btn-primary"))
-          ),
-          br(),
-          fluidRow(
-            column(5, offset = 4,  h4("Click on a point to see that shuffle"))
-          ),
-          fluidRow(
-            column(10, offset = 2, 
-                   uiOutput("slopeTestXtremes")
-            )
-          ),
-          fluidRow(
-            column(8, offset = 4, 
-                   uiOutput("slopeTestPvalue")
-            )
-          )
-        )
-      }
-    })
-    
-    
+
     output$q2_SampDistPlot <- renderUI({ 
       plotOutput('q2_TestPlot2', click = 'q2Test_click')
     })
@@ -4209,7 +4157,7 @@ output$Cat2ShowCI <- renderUI({
     
     output$slopeTestXtremes <- renderUI({
       fluidRow(
-        column(3, 
+        column(4, 
                h4("Count values equal to or")  ),
         column(3,
                tags$div(style="width: 200px",
@@ -4241,18 +4189,17 @@ output$Cat2ShowCI <- renderUI({
     
     output$q2_TestPlot1 <- renderPlot({
       req(q2$data)
-      
       fit0 <- lm( y ~ x, q2$data)
       q2$slope <- coef(fit0)[2]
       q2$qr <- fit0$qr
       q2$corr <- cor(q2$data[,1], q2$data[,2])
-      par(mfrow=c(2,1), mar = c(2.4,2,4,2))
+      par(mfrow=c(1,2), mar = c(3.1,5.1,3.1,.1))
       DF0 <- q2$data
       plot(y ~ x, data=DF0, xlab = q2$names[1], ylab = q2$names[2], col = blu, pch = 16,
            main = "Original Data")
       #lmfit0 <- lm(y ~ x, DF0)
       if(!is.null(input$q2Test_click) ){
-        closestPnt <- ifelse( input$q2_TestParam == "Slope  OR", 
+        closestPnt <- ifelse( input$q2_TestParam == "Slope = 0", 
                               which.min(abs( q2Test$slopes - input$q2Test_click$x)),
                               which.min(abs( q2Test$corr - input$q2Test_click$x)))
         hiLiteShuffle <- q2Test$shuffles[, closestPnt]
@@ -4298,7 +4245,7 @@ output$Cat2ShowCI <- renderUI({
       rhat1 <- round(q2Test$corr[closestPnt], 3)
       mtext(side = 3, at = min(DF0$x)*2/3 + max(DF0$x)/3, bquote(hat(beta)[1] == .(beta1hat) ) )
       mtext(side = 3, line=.4, at = min(DF0$x)/3 + max(DF0$x)*2/3, bquote(r == .(rhat1)))
-    }, height = 400, width = 300)
+    }, height = 280, width = 600)
     
     observeEvent(input$q2_TestParam, {
       q2Test$moreExtremeCount <- NULL
@@ -4351,7 +4298,7 @@ output$Cat2ShowCI <- renderUI({
     })
     
     observeEvent(input$q2_countXtremes, {
-      if(input$q2_TestParam == "Slope  OR") {
+      if(input$q2_TestParam == "Slope = 0") {
         parm <-  q2Test$slopes
       } else { 
         parm <- q2Test$corr
@@ -4388,7 +4335,7 @@ output$Cat2ShowCI <- renderUI({
     output$q2_TestPlot2 <- renderPlot({
       req( q2Test$shuffles) 
       
-      if(input$q2_TestParam == "Slope  OR") {
+      if(input$q2_TestParam == "Slope = 0") {
         parm <-  q2Test$slopes
         q2Test$observed <- q2$slope
       } else { 
@@ -4410,61 +4357,18 @@ output$Cat2ShowCI <- renderUI({
         radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
       }
       plot(parm, y, ylab = "", cex = radius/2, pch = 16, col = q2Test$colors,   ylim=c(.45, pmax(10,max(y))),
-           xlab = ifelse(input$q2_TestParam == "Slope  OR", "Slope", "Correlation"), main = "Sampling Distribution")
+           xlab = ifelse(input$q2_TestParam == "Slope = 0", "Slope", "Correlation"), main = "Sampling Distribution",
+           sub = "Click a point to see its shuffled values.")
       legend("topright", bty = "n", paste(length(parm), "points \n Mean = ", 
                                           round(mean(parm),3), "\n SE = ", round(sd(parm),3)))
-    }, height = 400, width = 400)
+      
+    }, height = 360, width = 400)
     
     
   }
   ### q2 Estimate slope / correlation with CI ######################
 
   {
-    
-    output$q2_OLDestimateUI <- renderUI({
-      if( is.null(q2$data)){
-        h4(" You must first enter data. Choose 'Enter/Describe Data'.")
-      } else {
-        fluidPage(   
-          fluidRow(
-            column(3,       h3("Estimate either")        ),
-            column(4, uiOutput('q2_getEstParam') )
-          ),
-          fluidRow(
-            ##  show plots of original data  and one of resampled x,y data
-            ##  by default,show latest resample. Allow user to click on a point to see the data which have that slope
-            
-            column(5, 
-                   plotOutput('q2_EstPlot1')
-            ),
-            column(6,
-                   uiOutput('q2_EstResampDistn')
-            )),
-          fluidRow(
-            column(4, offset = 1, 
-                   h4("How many more resamples?")),
-            column(1,  actionButton("q2_resample_10", label = "10", class="btn btn-primary")),
-            column(1,  actionButton("q2_resample_100", label = "100", class="btn btn-primary")),
-            column(1,  actionButton("q2_resample_1000", label = "1000", class="btn btn-primary")),
-            column(1,  actionButton("q2_resample_5000", label = "5000", class="btn btn-primary"))
-          ),
-          fluidRow(
-            column(4, offset = 5, h4("Click on a point to see that resample"))
-          ),
-          br(),
-          fluidRow(
-            column(4, offset = 2, h4("Select Confidence Level (%)")
-            ),
-            column(6, uiOutput('q2_confLevels')
-            )
-          ),
-          fluidRow(
-            column(8, offset = 4, uiOutput('q2_showCI') )
-          )
-        )
-      }
-    })
-    
     output$q2_getEstParam <- renderUI({
       radioButtons('q2_EstParam', label = "", list("Slope  OR","Correlation"), 
                    "Slope  OR", inline = TRUE)
@@ -4508,10 +4412,8 @@ output$Cat2ShowCI <- renderUI({
     
     output$q2_EstPlot1 <- renderPlot({
       req(q2$slope)
-      
-      ## change these to look like the "Test" plots with values in subtitle.
       DF0 <- q2$data
-      par(mfrow=c(2,1), mar = c(4.1,5.1,3.1,.1) )
+      par(mfrow=c(1, 2), mar = c(4.1,5.1,3.1,.1) )
       plot(y ~ x, data=DF0, xlab = q2$names[1], ylab = q2$names[2], col = blu, pch = 16,
            main = "Original Data")
       mtext(side = 3, line = .0, at = min(DF0$x)*4/5 + max(DF0$x)/5, bquote(hat(beta)[1] == .(round(q2$slope,3))))
@@ -4564,7 +4466,7 @@ output$Cat2ShowCI <- renderUI({
       repeats <- 1:3
       legend(corner,cex = .8, legend = as.character(repeats), title = "Repeats", pt.cex = repeats/2, pch = 16, col = "green", bty = "n")
       #grid.arrange(plotOrig, plotNew, heights = c(4,  4)/8, ncol=1)
-    }, height = 400, width = 300)
+    }, height = 300, width = 600)
     
     observeEvent(input$q2_resample_10, {
       q2Estimate$CI <- NULL
@@ -4640,7 +4542,8 @@ output$Cat2ShowCI <- renderUI({
         radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
       }
       plot(parm, yy, ylab = "", cex = radius/2, pch = 16, col = q2Estimate$colors, ylim=c(.5, pmax(10,max(yy))),  
-           xlab = ifelse(input$q2_EstParam == "Slope  OR", "Slope", "Correlation"), main = "RE-Sampling Distribution")
+           xlab = ifelse(input$q2_EstParam == "Slope  OR", "Slope", "Correlation"), main = "RE-Sampling Distribution",
+           sub = "Click a point to see its resampled values.")
       corner <- ifelse(q2$corr >= 0, "topleft", "topright")
       legend(corner, bty = "n", paste(length(parm), "points \n Mean = ", 
                                       round(mean(parm),3), "\n SE = ", round(sd(parm),3)))
