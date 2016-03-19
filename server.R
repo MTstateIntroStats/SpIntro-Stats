@@ -205,8 +205,10 @@ options(scipen = 3, digits = 5)
     if(!is.null(cat1Estimate$CI)){
       fluidRow(
         column(8, offset = 4, 
-               printMyCI())
-      ) 
+          h4(paste(cat1Estimate$confLevel*100, "% Interval Estimate: (", 
+                        round(cat1Estimate$CI[1],3), ",", 
+                        round(cat1Estimate$CI[2], 3), ")"))
+      ))   
     } else{ br()}
   })
    
@@ -1391,9 +1393,8 @@ output$cat1Estimate_Plot2 <- renderPlot({
    })
  } 
    
-  ## Normal probability computations  ----------------------- cat 1
+  ## cat1  Normal probability computations  #######
 {
-  ##  Set storage for reactive values
 
 cat1_normalProb <- reactiveValues(prob = NULL, z = NULL, findP = NULL)
   
@@ -1408,8 +1409,8 @@ cat1_normalProb <- reactiveValues(prob = NULL, z = NULL, findP = NULL)
   })
 
 output$normalProbPlot1 <- renderPlot({ 
-  req(cat1_normalProb$findP)
-
+  if(is.null(cat1_normalProb$findP))
+     return()
   par(mar=c(24,1,1,1)/10)
   z <- absz <- prob <- yrr <- xrr <- NA
   x <- -300:300 / 50
@@ -1990,24 +1991,6 @@ output$q1_TestPlot1 <- renderPlot({
 
 },  height = 360, width = 300)
 
-# output$q1_TestPrep2 <- renderTable({
-#   if( is.null(q1$data))  return()
-#   DF <- rbind(mean = mean(q1$data[, 1], na.rm = TRUE ),
-#               sd = sd(q1$data[, 1], na.rm = TRUE),
-#               n = length(q1$data[,1]))
-#   colnames(DF) <- q1$names
-#   DF
-# })
-# 
-# output$q1_TestTable1 <- renderTable({
-#   if( is.null(q1$data))  return()
-#   DF <- rbind(mean = mean(q1Test$shuffles[,1], na.rm = TRUE ),
-#               sd = sd(q1Test$shuffles[,1], na.rm = TRUE),
-#               length = length(q1Test$shuffles[,1]))
-#   colnames(DF) <- q1$names
-#   DF
-# })
-
 observeEvent(input$q1_test_shuffle_10, {
   q1Test$moreExtremeCount <- NULL
   newShuffles <- sapply(1:10, function(x) sample(q1$data[,1] - q1Test$xbar, length(q1$data[,1]), replace = TRUE))
@@ -2095,6 +2078,7 @@ output$q1_TestPlot2 <- renderPlot({
     parm <- sort(parm)
     if(length(parm) == 1){
       y <- .5
+      nsims <- 1
       radius <- 4
     } else {
       y <- newy(parm) #[!is.na(y)]
@@ -2291,7 +2275,7 @@ output$q1_EstimatePlot2 <- renderPlot({
     w <- data.frame(x= parm, y= 1)
     radius <- 4
   } else {
-    w <- newy(parm)  #[!is.na(y)]
+    w <- data.frame(x = parm, y = newy(parm))
     radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
   }
   plot(x = w$x, y = w$y, ylim = c(0.5, pmax(10, max(w$y))), ylab = "", cex = radius/2, 
@@ -2741,8 +2725,8 @@ observeEvent( input$q1_prob_txt,{
 
 
   output$tProbPlot1 <-    renderPlot({ 
-    req(q1_tProb$findP, input$q1_df)
-
+    # if(is.null(q1_tProb$findP) & is.null(input$q1_df))
+    #   return()
     if(is.null(q1_tProb$prob) & is.null(q1_tProb$z))
       return()
     df <- as.numeric(input$q1_df)
@@ -2908,11 +2892,10 @@ observeEvent( input$q1_prob_txt,{
   
   }  
   
-  ## 2 Categorical ------------------------------------------------------------- 2 cat
+  ## Cat2  ########################################
 
-  ## Data Entry --------------------------------------------------------  cat 2
 {
-cat2_data <- reactiveValues(counts = NULL, names = NULL, groups = NULL)
+cat2_data <- reactiveValues(counts = NULL, names = NULL, groups = NULL, props = NULL)
 
 cat2Test <- reactiveValues(difprop = NULL, phat1 = NULL, phat2 = NULL, observed = NULL, colors = NULL,
                            cutoff = NULL, direction = NULL, moreExtremeCount = NULL, pvalue = NULL, 
@@ -2928,16 +2911,16 @@ observeEvent(input$cat2_submitButton, {
     cat2_data$counts <- as.numeric(c(input$cat2_n11, input$cat2_n12, input$cat2_n21, input$cat2_n22))
     cat2_data$names <- rep(c(input$cat2_name1, input$cat2_name2), 2)
     cat2_data$groups <- rep(c(input$cat2_grp1, input$cat2_grp2), each = 2)
-  shinyjs::enable("cat2_EstimateToggle") ## enable Estimate
-  shinyjs::enable("cat2_TestToggle")     ## enable Test 
-  shinyjs::disable("cat2_InputToggle")   ## disable Input button
+    shinyjs::enable("cat2_EstimateToggle") ## enable Estimate
+    shinyjs::enable("cat2_TestToggle")     ## enable Test 
+    shinyjs::disable("cat2_InputToggle")   ## disable Input button
 })
 
 observeEvent(input$cat2_InputToggle, {
   shinyjs::show("cat2Data")            ##  show data input
-  shinyjs::disable("cat2_EstimateToggle") ##  disable  Estimate btn
   shinyjs::hide("cat2Estimate")         ## hide Estimate page
   shinyjs::hide("cat2Test")             ## hide Test page
+  shinyjs::disable("cat2_EstimateToggle") ##  disable  Estimate btn
   shinyjs::disable("cat2_TestToggle")   ## disable Test btn
 })
 
@@ -2965,136 +2948,114 @@ output$cat2_Input_Test_Est <- renderUI({
       column(3, offset = 1, 
              actionButton("cat2_TestToggle", "Test", class="btn btn-primary", disabled = TRUE))
     ),
-    div( id ="cat2Data", width = "500px",
-         ##  Input counts and labels
-         fluidRow(
-           column(10,
-              div( label = "cat2Input", height = "300px",
-                fluidRow(
-                    column(7,   ##  Inputs
-                       fluidRow(
-                         column(4,
-                         div( HTML("&nbsp;<br>"),
-                           tags$input(name='cat2_name1', type='text', value='Success', size='10'),
-                           br(),
-                           tags$input(name='cat2_name2', type='text', value='Failure', size='10')
-                           )
-                         ),
-                        column(4,
-                          div(
-                           tags$input(name='cat2_grp1', type='text', value='Group1', size='10', height = 20),
-                            br(),
-                           tags$input(name='cat2_n11', type='text', value='0', size='10'),
-                            br(),
-                           tags$input(name='cat2_n21', type='text', value='0', size='10')
+   div( id = "cat2Data", height = "300px",
+      br(),
+      div(label = "cat2Input",  
+       fluidRow(
+           column(6,   ##  Inputs
+                  fluidRow(
+                      column(4,
+                           div( HTML("&nbsp;<br>"),
+                                tags$input(name='cat2_name1', type='text', value='Success', size='10'),
+                                br(),
+                                tags$input(name='cat2_name2', type='text', value='Failure', size='10')
+                             )
+                          ),
+                      column(4,
+                             div(
+                                tags$input(name='cat2_grp1', type='text', value='Group1', size='10', height = 20),
+                                 br(),
+                                tags$input(name='cat2_n11', type='text', value='0', size='10'),
+                                 br(),
+                                tags$input(name='cat2_n21', type='text', value='0', size='10')
+                              )
+                           ),
+                       column(4,
+                            div(
+                                tags$input(name='cat2_grp2', type='text', value='Group2', size='10', height = 20),
+                                 br(),
+                                tags$input(name='cat2_n12', type='text', value='0', size='10'),
+                                 br(),
+                                tags$input(name='cat2_n22', type='text', value='0', size='10')
+                              )
                           )
-                         ),
-                        column(4,
-                         div(
-                           tags$input(name='cat2_grp2', type='text', value='Group2', size='10', height = 20),
-                           br(),
-                           tags$input(name='cat2_n12', type='text', value='0', size='10'),
-                           br(),
-                           tags$input(name='cat2_n22', type='text', value='0', size='10')
-                         )
-                     )
-                   ),
-                   # fluidRow(
-                   #     column(6, offset = 3,
-                  actionButton("cat2_submitButton", "Use These Data", height = 15, class ='btn btn-primary')
-                  #     )
-                  # )
-                ),
-                column(3,  plotOutput('cat2Plot')),# width="90%")),
-                column(2, tableOutput("cat2Summary"))
+                        ),
+                     actionButton("cat2_submitButton", "Use These Data", height = 15, class ='btn btn-primary')
+                 ),
+                 column(3,  plotOutput('cat2Plot')),# width="90%")),
+                 column(2, tableOutput("cat2Summary"))
             )
         )
-    ),  ## end Input div
-    
-    div( id = "cat2Test", #style = "display: none;", 
-         fluidPage(
-           h3("Test: 'Are two proportions equal?'"),
-           fluidRow(
-             column(4, 
-                    h4("Original Data"),
-                    tableOutput("cat2OriginalData"),
-                    # h5(paste("Original difference in proportions: ", 
-                    #      round(-diff(prop.table(as.table(matrix(cat2_data$counts, 2, 2)), 1))[1], 3)
-                    # )),
-                    br(),
-                    h4("Shuffled Sample"),
-                    uiOutput("Cat2TestShuffle")      
-             ),
-             column(8, 
-                    h4(HTML("&nbsp;&nbsp;&nbsp;&nbsp; Null hypothesis: p<sub>1</sub> = p<sub>2</sub>")),                     
-                    plotOutput('cat2Test_Plot2', click = 'cat2_Test_click')
-                    
-             )
-           ),
-           fluidRow(
-             column(4, offset = 1, h4("How many more shuffles?")),
-             column(1,  actionButton("cat2_test_shuffle_10", label = "10", class="btn btn-primary")),
-             column(1,  actionButton("cat2_test_shuffle_100", label = "100", class="btn btn-primary")),
-             column(1,  actionButton("cat2_test_shuffle_1000", label = "1000", class="btn btn-primary")),
-             column(1,  actionButton("cat2_test_shuffle_5000", label = "5000", class="btn btn-primary"))
-           ),
-           br(),  
-           fluidRow(
-             column(8, offset = 4,
-                    uiOutput("Cat2TestXtremes")    )
-           ),
-           fluidRow(
-             column(8, offset = 4, 
-                    uiOutput("Cat2TestPvalue")    )
-           )
-         )
-        ),  ## end of Cat 2 testing
-    
-    div( id = "cat2Estimate", #style = "display: none;", 
-         fluidPage(
-           fluidRow(
+      ),   ## end Input div
+           
+        div( id = "cat2Test", style = "display: none;", 
+          h3("Test: 'Are two proportions equal?'"),
+          fluidRow(
             column(4, 
-                 h4("Original Data"),
-                 tableOutput("cat2_CIPrep"),
-                 hr(),
-                 h4("One Resampled Dataset"),
-                 uiOutput("Cat2EstimateShuffle")   
-             ),
-            column(8, 
-                 plotOutput('cat2Estimate_Plot2', click = 'cat2_Estimate_click')
-            )
-        ),
-        br(),
-        br(),
-        fluidRow(
-            column(4, offset = 1, h4("How many more resamples?")),
-            column(1, actionButton("cat2_estimate_shuffle_10", label = "10", class="btn btn-primary")),
-            column(1, actionButton("cat2_estimate_shuffle_100", label = "100", class="btn btn-primary")),
-            column(1, actionButton("cat2_estimate_shuffle_1000", label = "1000", class="btn btn-primary")),
-            column(1, actionButton("cat2_estimate_shuffle_5000", label = "5000", class="btn btn-primary"))
-        ),
-        br(),
-        br(),
-        fluidRow(
-            column(3, offset = 2, 
-                 h4("Select Confidence Level (%)")
+                   h4("Original Data"),
+                   uiOutput("cat2_TestPrep"),    
+                   br(),
+                   h4("Shuffled Sample"),
+                   uiOutput("Cat2TestShuffle")      
             ),
-            column(6,
-                 fluidRow(
-                   column(2, actionButton('cat2_conf80', label = "80", class="btn btn-primary")),
-                   column(2, actionButton('cat2_conf90', label = "90", class="btn btn-primary")),
-                   column(2, actionButton('cat2_conf95', label = "95", class="btn btn-primary")),
-                   column(2, actionButton('cat2_conf99', label = "99", class="btn btn-primary"))
-                 )
+            column(8, 
+               h4(HTML("&nbsp;&nbsp;&nbsp;&nbsp; Null hypothesis: p<sub>1</sub> = p<sub>2</sub>")),                     
+               plotOutput('cat2Test_Plot2', click = 'cat2_Test_click')
+            )
+          ),
+          fluidRow(
+            column(4, offset = 1, h4("More shuffles: ")),
+            column(1,  actionButton("cat2_test_shuffle_10", label = "10", class="btn btn-primary")),
+            column(1,  actionButton("cat2_test_shuffle_100", label = "100", class="btn btn-primary")),
+            column(1,  actionButton("cat2_test_shuffle_1000", label = "1000", class="btn btn-primary")),
+            column(1,  actionButton("cat2_test_shuffle_5000", label = "5000", class="btn btn-primary"))
+          ),
+          br(),  
+          fluidRow(
+              column(8, offset = 4,       uiOutput("Cat2TestXtremes")    )
+          ),
+          fluidRow(
+                  column(8, offset = 4,    uiOutput("Cat2TestPvalue")    )
           )
-        )
-      ),
-    uiOutput("Cat2ShowCI")
-    )
-    ##  end of Estimate div
-   ) 
-  ) )## close Cat2_Input_Test_Est UI
+       ),  ## end of Cat 2 testing
+           
+        div( id = "cat2Estimate", style = "display: none;", 
+           fluidRow(
+                column(4, 
+                        h4("Original Data"),
+                        uiOutput("cat2_CIPrep"),    
+                        h4("One Resampled Dataset"),
+                        uiOutput("Cat2EstimateShuffle")   
+                ),
+                column(8, 
+                        plotOutput('cat2Estimate_Plot2', click = 'cat2_Estimate_click')
+                )
+              ),
+              br(),
+              br(),
+              fluidRow(
+                  column(4, offset = 1, h4("More resamples: ")),
+                  column(1, actionButton("cat2_estimate_shuffle_10", label = "10", class="btn btn-primary")),
+                  column(1, actionButton("cat2_estimate_shuffle_100", label = "100", class="btn btn-primary")),
+                  column(1, actionButton("cat2_estimate_shuffle_1000", label = "1000", class="btn btn-primary")),
+                  column(1, actionButton("cat2_estimate_shuffle_5000", label = "5000", class="btn btn-primary"))
+              ),
+              br(),
+              fluidRow(
+                  column(3, offset = 2,  h4("Select Confidence Level (%)")),
+                  column(6, fluidRow(
+                             column(2, actionButton('cat2_conf80', label = "80", class="btn btn-primary")),
+                             column(2, actionButton('cat2_conf90', label = "90", class="btn btn-primary")),
+                             column(2, actionButton('cat2_conf95', label = "95", class="btn btn-primary")),
+                             column(2, actionButton('cat2_conf99', label = "99", class="btn btn-primary"))
+                           )
+                  )
+              ),
+              uiOutput("Cat2ShowCI")
+         )                             ##  end of Estimate div
+    ) ## close Cat2_Input_Test_Est UI
 })
+
 
 output$Cat2ShowCI <- renderUI({
   req(cat2Estimate$CI)
@@ -3107,11 +3068,11 @@ output$Cat2ShowCI <- renderUI({
   })
 }
 
-  ## Summary of data --------------------------------------------------- cat 2
+  ## cat2 Summary ###################################
 
 {
   output$cat2Summary <- renderTable({ 
-  if(input$cat2_submitButton == 0) return()
+  req(input$cat2_submitButton ) 
   #isolate({
     #cat2_dataDF <- cat2_data()
     #print(cat2_data$counts)
@@ -3132,11 +3093,11 @@ output$Cat2ShowCI <- renderUI({
       counts <- as.table( matrix(cat2_data$counts, 2, 2))
       colnames(counts) <- cat2_data$names[1:2]
       rownames(counts) <- cat2_data$groups[c(1,3)]
-      props <- t(prop.table(counts, 1))
+      cat2_data$props <- t(prop.table(counts, 1))
       #print(props)
       ## make plot
       par(mar=c(24, 40, 10, 35)/10)
-      barplot(props, ylab = "Proportion", main = "")
+      barplot(cat2_data$props, ylab = "Proportion", main = "")
     #})
   }, height=180)
 
@@ -3144,9 +3105,7 @@ output$Cat2ShowCI <- renderUI({
 }
 
 
-###  cat2 --  test equality of proportions  -------------------------- cat 2
-
-## cat2 test UI ---------------------------------------------
+## cat2 test ###########
 
 {
   
@@ -3204,34 +3163,33 @@ output$Cat2ShowCI <- renderUI({
   ## cat2 test plots --------------------------------------------------
   
   
-  output$cat2OriginalData <- renderTable({ 
-    if(input$cat2_submitButton ==0) return()
-    
-    y1 = cat2_data$counts[1]
-    y2 = cat2_data$counts[2]
-    n1 <- sum(cat2_data$counts[1], cat2_data$counts[3])
-    n2 <- sum(cat2_data$counts[2], cat2_data$counts[4])
-    
-    if(is.null(cat2Test$difprop) ){
-      DF <- cat2_test_shuffles(1, cat2_data$counts[1], cat2_data$counts[2], n1, n2)
-      cat2Test$selected <- as.numeric(DF[1,3])
-      cat2Test$difprop <- DF[1,3]
-      cat2Test$phat1 <- DF[1,1]
-      cat2Test$phat2 <- DF[1,2]
-      cat2Test$colors <- blu
-    }    
-    
-    p1 <- round(y1/n1,3)
-    p2 = round(y2/n2,3)
-    # print(c(y1, n1, y2, n2, p1, p2))
-    counts <- data.frame(count = as.integer(c(y1, y2)), 
-                         "n" = as.integer(c(n1, n2)),
-                         Proportion = c(p1, p2))
-    colnames(counts)[1] <- cat2_data$names[1]
-    rownames(counts) <- cat2_data$groups[c(1,3)]
-    counts
-  }, digits = c(0,0,0,3))
-  
+  # output$cat2OriginalData <- renderUI({ 
+  #   req(cat2_data$counts)
+  #   y1 = cat2_data$counts[1]
+  #   y2 = cat2_data$counts[2]
+  #   n1 <- sum(cat2_data$counts[1], cat2_data$counts[3])
+  #   n2 <- sum(cat2_data$counts[2], cat2_data$counts[4])
+  #   
+  #   if(is.null(cat2Test$difprop) ){
+  #     DF <- cat2_test_shuffles(1, cat2_data$counts[1], cat2_data$counts[2], n1, n2)
+  #     cat2Test$selected <- as.numeric(DF[1,3])
+  #     cat2Test$difprop <- DF[1,3]
+  #     cat2Test$phat1 <- DF[1,1]
+  #     cat2Test$phat2 <- DF[1,2]
+  #     cat2Test$colors <- blu
+  #   }    
+  #   
+  #   p1 <- round(y1/n1,3)
+  #   p2 = round(y2/n2,3)
+  #   # print(c(y1, n1, y2, n2, p1, p2))
+  #   counts <- data.frame(count = as.integer(c(y1, y2)), 
+  #                        "n" = as.integer(c(n1, n2)),
+  #                        Proportion = c(p1, p2))
+  #   colnames(counts)[1] <- cat2_data$names[1]
+  #   rownames(counts) <- cat2_data$groups[c(1,3)]
+  #   counts
+  # }, digits = c(0,0,0,3))
+  # 
   observeEvent(input$cat2_test_shuffle_10, {
     cat2Test$moreExtremeCount <-  NULL
     cat2Test$selected <-  NA
@@ -3310,8 +3268,13 @@ output$Cat2ShowCI <- renderUI({
       #cat2Test$colors[closestPoint] <- grn
       
       ## cat(c(n1, n2, props, y1_new, y2_new), "\n")
-    } else {
-      return()
+    } else {  ## show the last sample
+      closestPoint <- length( cat2Test$difprop)
+      y1_new <- as.integer(n1 * cat2Test$phat1[closestPoint])
+      y2_new <- as.integer(n2 * cat2Test$phat2[closestPoint])
+      props <- c(cat2Test$phat1[closestPoint], cat2Test$phat2[closestPoint] )
+      cat2Test$selected <-  -diff(props)
+      cat2Test$colors <- rep( blu, length(cat2Test$difprop))
     }
     # print(c(y1_new, n1, DF[1,1], y2_new, n2, DF[1,2], diff.p))
     count2 <- data.frame(count = as.integer(c(y1_new, y2_new)), 
@@ -3332,7 +3295,7 @@ output$Cat2ShowCI <- renderUI({
     if(nsims > 1 & !is.na(input$cat2_testDirection)){
       redValues <-  switch(input$cat2_testDirection,
                            "less" = which(x <= threshold + 1.0e-10),
-                           "greater" = which(x >= threshold - 1.0e-10),
+                         "greater" = which(x >= threshold - 1.0e-10),
                            "more extreme" = c(which(x <= -abs(threshold) + 1.0e-10 ), 
                                               which(x >= abs(threshold) -1.0e-10 ) )  )
       cat2Test$colors[redValues] <- rd       
@@ -3345,7 +3308,20 @@ output$Cat2ShowCI <- renderUI({
   
   output$cat2Test_Plot2 <- renderPlot({
     ##if(input$cat2_submitButton == 0) return()
-    req(cat2Test$difprop)
+    req(cat2_data$counts)
+    n1 <- sum(cat2_data$counts[1], cat2_data$counts[3])
+    n2 <- sum(cat2_data$counts[2], cat2_data$counts[4])
+    if(is.null(cat2Test$difprop) ){
+      DF <- cat2_test_shuffles(1, cat2_data$counts[1], cat2_data$counts[2], n1, n2)
+      cat2Test$selected <- as.numeric(DF[1,3])
+      cat2Test$difprop <- DF[1,3]
+      cat2Test$phat1 <- DF[1,1]
+      cat2Test$phat2 <- DF[1,2]
+      cat2Test$colors <- blu
+      props <- DF[1, 1:2]
+      y1_new <- as.integer(n1 * DF[1,1])
+      y2_new <- as.integer(n2 * DF[1,2])
+    }
     parm <- sort(cat2Test$difprop)
     nsims <- length(parm)
     ## print(head(DF))
@@ -3354,7 +3330,7 @@ output$Cat2ShowCI <- renderUI({
       radius = 4
       } 
     else {
-      w <- newy(parm) 
+      w <- data.frame(x=parm, y = newy(parm) )
       radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
     }
     plot(w$x, w$y, ylab = "", ylim = c(0.5, pmax(10, max(w$y))), cex = radius/2, 
@@ -3371,16 +3347,35 @@ output$Cat2ShowCI <- renderUI({
 {
  
   output$Cat2EstimateShuffle <- renderUI({
-    req(cat2Estimate$selected)
+    #req(cat2Estimate$selected)
     div(
       tableOutput('cat2Estimate_Table') , 
       h5(paste("Difference in resampled proportions: ", round(cat2Estimate$selected, 3) ))
     )
   }) 
   
-  
-  output$cat2_CIPrep <- renderTable({ 
+  output$cat2_CIPrep <- renderUI({
     req(cat2_data$counts)
+    div(
+      tableOutput('cat2_CI_table') , 
+      h5(paste("Original difference in proportions: ", 
+               round(cat2_data$counts[1]/(cat2_data$counts[1]+cat2_data$counts[3]) - 
+                 cat2_data$counts[2]/(cat2_data$counts[2]+cat2_data$counts[4]), 3) ))
+    )
+  }) 
+  
+  output$cat2_TestPrep <- renderUI({
+    req(cat2_data$counts)
+    div(
+      tableOutput('cat2_Test_table') , 
+      h5(paste("Original difference in proportions: ", 
+               round(cat2_data$counts[1]/(cat2_data$counts[1]+cat2_data$counts[3]) - 
+                       cat2_data$counts[2]/(cat2_data$counts[2]+cat2_data$counts[4]), 3) ))
+    )
+  }) 
+  
+  output$cat2_CI_table <- renderTable({ 
+    req(cat2_data$counts)                   ## show original
     if(input$cat2_submitButton ==0) return()
     
     y1 = cat2_data$counts[1]
@@ -3407,7 +3402,33 @@ output$Cat2ShowCI <- renderUI({
     
   }, digits = c(0,0,0,3))
   
-  
+  output$cat2_Test_table <- renderTable({ 
+    req(cat2_data$counts)
+    if(input$cat2_submitButton ==0) return()
+    
+    y1 = cat2_data$counts[1]
+    y2 = cat2_data$counts[2]
+    n1 <- sum(cat2_data$counts[1], cat2_data$counts[3])
+    n2 <- sum(cat2_data$counts[2], cat2_data$counts[4])
+    p1 <- round(y1/n1,3)
+    p2 = round(y2/n2,3)
+    
+    if(is.null(cat2Estimate$difprop)  ){
+      DF <- cat2_estimate_shuffles(1, y1, y2, n1, n2)
+      cat2Estimate$selected <- as.numeric(DF[1,3])
+      cat2Estimate$difprop <- DF[1,3]
+      cat2Estimate$phat1 <- DF[1,1]
+      cat2Estimate$phat2 <- DF[1,2]
+      cat2Estimate$colors <- blu
+    }
+    
+    #print(c(y1, n1, y2, n2, p1, p2))
+    counts <- as.table(matrix(as.numeric(c(y1, y2, n1, n2, p1, p2)), 2, 3))
+    colnames(counts) <- c(cat2_data$names[1], "n", "Proportion")
+    rownames(counts) <- cat2_data$groups[c(1,3)]
+    counts 
+    
+  }, digits = c(0,0,0,3))
   observeEvent(input$cat2_estimate_shuffle_10, {
     cat2Estimate$CI <- NULL
     cat2Estimate$selected <- NA
@@ -3514,13 +3535,11 @@ output$Cat2ShowCI <- renderUI({
   
   output$cat2Estimate_Table <- renderTable({
     req(cat2_data$counts)
-    if(input$cat2_submitButton == 0) return()
-    
     n1 <- sum(cat2_data$counts[1], cat2_data$counts[3])
     n2 <- sum(cat2_data$counts[2], cat2_data$counts[4])
     
     if(is.null(cat2Estimate$difprop)  ){
-      DF <- cat2_test_shuffles(1, cat2_data$counts[1], cat2_data$counts[2], n1, n2)
+      DF <- cat2_estimate_shuffles(1, cat2_data$counts[1], cat2_data$counts[2], n1, n2)
       cat2Estimate$selected <- as.numeric(DF[1,3])
       cat2Estimate$difprop <- DF[1,3]
       cat2Estimate$phat1 <- DF[1,1]
@@ -3541,8 +3560,14 @@ output$Cat2ShowCI <- renderUI({
       #cat2Estimate$colors[closestPoint] <- grn
       
       ## cat(c(n1, n2, props, y1_new, y2_new), "\n")
-    } else {
-      return()
+    } else { ## use latest sample
+      closestPoint <- length( cat2Estimate$difprop)
+      y1_new <- as.integer(n1 * cat2Estimate$phat1[closestPoint])
+      y2_new <- as.integer(n2 * cat2Estimate$phat2[closestPoint])
+      props <- c(cat2Estimate$phat1[closestPoint], cat2Estimate$phat2[closestPoint] )
+      cat2Estimate$selected <-  -diff(props)
+      cat2Estimate$colors <- rep( blu, length(cat2Estimate$difprop))
+      
     }
     count2 <- as.table(matrix(as.numeric(c(y1_new, y2_new, n1, n2, props)), 2, 3))
     colnames(count2) <- c(cat2_data$names[1], "n", "Proportion")
@@ -3552,8 +3577,21 @@ output$Cat2ShowCI <- renderUI({
   
   
   output$cat2Estimate_Plot2 <- renderPlot({
-    req(cat2Estimate$difprop)
+    req(cat2_data$counts)
+    n1 <- sum(cat2_data$counts[1], cat2_data$counts[3])
+    n2 <- sum(cat2_data$counts[2], cat2_data$counts[4])
     
+    if(is.null(cat2Estimate$difprop)  ){
+      DF <- cat2_estimate_shuffles(1, cat2_data$counts[1], cat2_data$counts[2], n1, n2)
+      cat2Estimate$selected <- as.numeric(DF[1,3])
+      cat2Estimate$difprop <- DF[1,3]
+      cat2Estimate$phat1 <- DF[1,1]
+      cat2Estimate$phat2 <- DF[1,2]
+      cat2Estimate$colors <- blu
+      props <- DF[1, 1:2]
+      y1_new <- as.integer(n1 * DF[1,1])
+      y2_new <- as.integer(n2 * DF[1,2])
+    }
     parm <- sort(cat2Estimate$difprop)
     nsims <- length(parm)
     
@@ -3562,16 +3600,16 @@ output$Cat2ShowCI <- renderUI({
       radius = 4
     } 
     else {
-      w <- newy(parm) 
+      w <- data.frame(x=parm, y = newy(parm)) 
       radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
-    }
+    } 
     plot(w$x, w$y, ylab = "", ylim = c(0.5, pmax(10, max(w$y))), cex = radius/2, 
          pch = 16, col = cat2Estimate$colors,  
          xlab = expression(hat(p)[1] - hat(p)[2]), main = "Resampling Distribution",
          sub = "Click a point to see its resample.")
     legend("topright", bty = "n", paste(nsims, "points \n Mean = ", 
                                        round(mean(parm),3), "\n SE = ", round(sd(parm),3)))
-    }, height = 450, width = 600)
+    },  height = 380, width = 500)
 
   }
 
@@ -3590,10 +3628,8 @@ output$Cat2ShowCI <- renderUI({
  })
 
 output$normalProbPlot2 <- renderPlot({ 
-  #print(cat2_normalProb$prob)
-  #print(cat2_normalProb$z)
-  #print(cat2_normalProb$findP)
-  req(cat2_normalProb$findP)
+  if(is.null(cat2_normalProb$findP))
+     return()
   par(mar=c(24,1,1,1)/10)
   z <- absz <- prob <- yrr <- xrr <- NA
   x <- -300:300 / 50
@@ -4238,7 +4274,7 @@ output$normalProbPlot2 <- renderPlot({
     
     
     output$q2_TestPlot2 <- renderPlot({
-      req( q2Test$shuffles) 
+      req( q2Test$data) 
       
       if(input$q2_TestParam == "Slope = 0") {
         parm <-  q2Test$slopes
@@ -5092,8 +5128,10 @@ output$normalProbPlot2 <- renderPlot({
         closestPt <- ncol(c1q1Est$shuffles)
       } else {
         closestPt <- 1
-        # n1 <- which(DF$group == levels(DF$group)[1])
-        # n2 <- which(DF$group == levels(DF$group)[2])
+        if(is.null(c1q1$ndx1)){
+          c1q1$ndx1 <- which(c1q1$data[,1] == levels(c1q1$data[,1])[1])
+          c1q1$ndx2 <- which(c1q1$data[,1] == levels(c1q1$data[,1])[2])
+        }
         c1q1Est$shuffles <- c1q1_estimate_shuffles(1, c1q1$ndx1, c1q1$ndx2)
         c1q1Est$diff <- -with(DF[c1q1Est$shuffles[, closestPt] , ], diff(tapply(y, group, mean)))
         c1q1Est$colors <- blu
@@ -5311,12 +5349,9 @@ output$normalProbPlot2 <- renderPlot({
     
     
     output$tProbPlot2 <-    renderPlot({ 
-      #     print(c1q1_tProb$prob)
-      #     print(c1q1_tProb$z)
-      #     print(c1q1_tProb$findP)
-      #     print(input$c1q1_df)
-      #     print(input$c1q1_area)
-      req(c1q1_tProb$findP)
+      # if(is.null(c1q1_tProb$findP))
+      #   return()
+      # #req(c1q1_tProb$findP)
       
       if(is.null(c1q1_tProb$prob) & is.null(c1q1_tProb$z))
         return()
