@@ -3785,6 +3785,7 @@ output$normalProbPlot2 <- renderPlot({
                      plotOutput('q2_Plot', height = "320px")),
               column(3, 
                      tableOutput('q2_Summary'),
+                     uiOutput('q2_SLR_line'),
                      uiOutput('q2_swap'))
             )
        ),  ## close Input div
