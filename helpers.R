@@ -87,6 +87,8 @@ newy  <- function(simStats){
 
 pvalue2print <- function(extremes, nreps, direction, cutoff, pvalue){
   if(extremes > 0){
+    if(extremes > nreps) 
+      extremes <- nreps
     paste(extremes," of ",nreps," values are ",direction," than ", cutoff,
           ". P-value = ", round(pvalue,5))
   } else {
