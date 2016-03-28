@@ -86,7 +86,9 @@ newy  <- function(simStats){
   ## control the way p-values are printed  ##  
 
 pvalue2print <- function(extremes, nreps, direction, cutoff, pvalue){
-  if(extremes > 0){
+  if(is.na(as.numeric(cutoff))){
+    "Not able to interpret your input as a number."
+  } else if(extremes > 0){
     if(extremes > nreps) 
       extremes <- nreps
     paste(extremes," of ",nreps," values are ",direction," than ", cutoff,
