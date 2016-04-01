@@ -2693,7 +2693,7 @@ output$q1_EstimatePlot2 <- renderPlot({
       w <- data.frame(x=parm, y=.5)
       radius <- 4
     } else {
-      w <- newy(parm)
+      w <- data.frame( x=parm, y = newy(parm))
       radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
     }
     plot(w$x, w$y, ylim = c(0.5, pmax(10,max(w$y))), ylab = "", cex = radius/2, 
