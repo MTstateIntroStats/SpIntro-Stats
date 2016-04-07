@@ -1489,17 +1489,20 @@ output$normalProbPlot1 <- renderPlot({
          round(prob * ifelse(cat1_normalProb$findP,1,.5), 3), col = "darkblue")
     place.x <- c(-absz, absz)
     if(!is.na(absz) & (absz < 1)) place.x <- place.x/absz * .8
-    text(place.x, y = text.height, round(c(-absz,absz),3))
-  } else if (input$cat1_area == "Center") {   ## fill & label center
+    #text(place.x, y = text.height, round(c(-absz,absz),3)) #  
+    mtext(at = c(-absz, absz), side = 1, line = .5, round(c(-absz,absz),3))  #  
+  } else if (input$cat1_area == "Center") {   ## fill & label center 
     polygon(xrr, yrr, col = grn)
     text(x=0, y= text.height, round(prob,3))
     segments(x0= -z, y0 = 0, x1 = -z, y1 = text.height*.9)
     place.x <- c(-absz, absz)
-    if(absz < 1) place.x <- place.x/absz * .8
-    text(place.x, y=text.height, round(c(-absz,absz),3))
+    if(absz < .1) place.x <- place.x/absz * .8
+    ##text( place.x, y = text.height, round(c(-absz, absz), 3))
+    mtext(side = 1, line = .5, at = place.x, round(c(-absz,absz),3))# y=text.height,
   } else {          ## show tails
     polygon(xrr, yrr, col = rd)
-    text( z, y = text.height, round(z, 3))
+    mtext(side = 1, line = .5, at = z, round(z, 3))## y = text.height,
+    #text( z, y = text.height, round(z, 3))
     text(x= sign(z) * (absz+4) / 2 , y= max(yrr) / 2 + 0.02, 
          round(prob,3), col = "darkblue")
   }
@@ -2810,17 +2813,19 @@ observeEvent( input$q1_prob_txt,{
          round(prob * ifelse(q1_tProb$findP,1,.5), 3), col = "darkblue")
     place.x <- c(-absz, absz)
     if(absz < 1) place.x <- place.x/absz * .8
-    text(place.x, y = text.height, round(c(-absz,absz),3))
+    mtext(at= place.x, side = 1, line = .5, round(c(-absz,absz),3))
+    
   } else if (input$q1_area == "Center") {   ## fill & label center
     polygon(xrr, yrr, col = grn)
     text(x=0, y= text.height, round(prob,3))
     segments(x0= -z, y0 = 0, x1 = -z, y1 = text.height*.9)
     place.x <- c(-absz, absz)
-    if(absz < 1) place.x <- place.x/absz * .8
-    text(place.x, y=text.height, round(c(-absz,absz),3))
+    if(absz < .1) place.x <- place.x/absz * .8
+    mtext(at=place.x, side=1, line = .5, round(c(-absz,absz),3))
+    
   } else {          ## show tails
     polygon(xrr, yrr, col = rd)
-    text( z, y = text.height, round(z, 3))
+    mtext( at=z, side=1, line = .5, round(z, 3))
     text(x= sign(z) * (absz+4) / 2 , y= max(yrr) / 2 + 0.02, 
          round(prob,3), col = "darkblue")
   }
@@ -3708,17 +3713,17 @@ output$normalProbPlot2 <- renderPlot({
          round(prob * ifelse(cat2_normalProb$findP,1,.5), 3), col = "darkblue")
     place.x <- c(-absz, absz)
     if(absz < 1) place.x <- place.x/absz * .8
-    text(place.x, y = text.height, round(c(-absz,absz),3))
+    mtext(at=place.x, line = .5, side = 1, round(c(-absz,absz),3))
   } else if (input$cat2_area == "Center") {   ## fill & label center
     polygon(xrr, yrr, col = grn)
     text(x=0, y= text.height, round(prob,3))
     segments(x0= -z, y0 = 0, x1 = -z, y1 = text.height*.9)
     place.x <- c(-absz, absz)
-    if(absz < 1) place.x <- place.x/absz * .8
-    text(place.x, y=text.height, round(c(-absz,absz),3))
+    if(absz < .2) place.x <- place.x/absz * .9
+    mtext(at=place.x,  line = .5, side = 1, round(c(-absz,absz),3))
   } else {          ## show tails
     polygon(xrr, yrr, col = rd)
-    text( z, y = text.height, round(z, 3))
+    mtext(at= z, line = .5, side = 1, round(z, 3))
     text(x= sign(z) * (absz+4) / 2 , y= max(yrr) / 2 + 0.02, 
          round(prob,3), col = "darkblue")
   }
