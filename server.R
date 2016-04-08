@@ -1399,13 +1399,15 @@ output$cat1Estimate_Plot2 <- renderPlot({
 cat1_normalProb <- reactiveValues(prob = NULL, z = NULL, findP = NULL)
   
   observeEvent( input$cat1_z_txt, {
+    req(input$cat1_z_txt)
     cat1_normalProb$z <- as.numeric(input$cat1_z_txt) 
-    cat1_normalProb$findP <- TRUE
+    cat1_normalProb$findP <- if(is.na(cat1_normalProb$z)| is.na(cat1_normalProb$z)) {NULL} else{ TRUE}
   })
 
  observeEvent( input$cat1_prob_txt,{
+   req(input$cat1_prob_txt)
     cat1_normalProb$prob <- as.numeric(input$cat1_prob_txt) 
-    cat1_normalProb$findP  <- FALSE
+    cat1_normalProb$findP <- if(is.na(cat1_normalProb$prob)| is.na(cat1_normalProb$prob)) {NULL} else{ FALSE}
   })
 
 output$normalProbPlot1 <- renderPlot({ 
@@ -1489,17 +1491,20 @@ output$normalProbPlot1 <- renderPlot({
          round(prob * ifelse(cat1_normalProb$findP,1,.5), 3), col = "darkblue")
     place.x <- c(-absz, absz)
     if(!is.na(absz) & (absz < 1)) place.x <- place.x/absz * .8
-    text(place.x, y = text.height, round(c(-absz,absz),3))
-  } else if (input$cat1_area == "Center") {   ## fill & label center
+    #text(place.x, y = text.height, round(c(-absz,absz),3)) #  
+    mtext(at = c(-absz, absz), side = 1, line = .5, round(c(-absz,absz),3))  #  
+  } else if (input$cat1_area == "Center") {   ## fill & label center 
     polygon(xrr, yrr, col = grn)
     text(x=0, y= text.height, round(prob,3))
     segments(x0= -z, y0 = 0, x1 = -z, y1 = text.height*.9)
     place.x <- c(-absz, absz)
-    if(absz < 1) place.x <- place.x/absz * .8
-    text(place.x, y=text.height, round(c(-absz,absz),3))
+    if(absz < .1) place.x <- place.x/absz * .8
+    ##text( place.x, y = text.height, round(c(-absz, absz), 3))
+    mtext(side = 1, line = .5, at = place.x, round(c(-absz,absz),3))# y=text.height,
   } else {          ## show tails
     polygon(xrr, yrr, col = rd)
-    text( z, y = text.height, round(z, 3))
+    mtext(side = 1, line = .5, at = z, round(z, 3))## y = text.height,
+    #text( z, y = text.height, round(z, 3))
     text(x= sign(z) * (absz+4) / 2 , y= max(yrr) / 2 + 0.02, 
          round(prob,3), col = "darkblue")
   }
@@ -2714,19 +2719,21 @@ output$q1_EstimatePlot2 <- renderPlot({
 q1_tProb <- reactiveValues(prob = NULL, z = NULL, findP = NULL)
 
 observeEvent( input$q1_z_txt, {
+  req(input$q1_z_txt)
   q1_tProb$z <- as.numeric(input$q1_z_txt) 
-  q1_tProb$findP <- TRUE
+  q1_tProb$findP <- if (is.null(q1_tProb$z) | is.na(q1_tProb$z)) {NULL} else{ TRUE}
 })
 
 observeEvent( input$q1_prob_txt,{
+  req(input$q1_prob_txt)
   q1_tProb$prob <- as.numeric(input$q1_prob_txt) 
-  q1_tProb$findP  <- FALSE
+  q1_tProb$findP <- if(is.null(q1_tProb$prob) | is.na(q1_tProb$prob)){ NULL} else {FALSE}
 })
 
 
   output$tProbPlot1 <-    renderPlot({ 
-    # if(is.null(q1_tProb$findP) & is.null(input$q1_df))
-    #   return()
+    if(is.null(q1_tProb$findP)) return() 
+    req(input$q1_df)
     if(is.null(q1_tProb$prob) & is.null(q1_tProb$z))
       return()
     df <- as.numeric(input$q1_df)
@@ -2735,7 +2742,7 @@ observeEvent( input$q1_prob_txt,{
     z <- absz <- prob <- yrr <- xrr <- NA
     x <- -300:300 / 50
     
-     if(!q1_tProb$findP & !is.na(q1_tProb$prob)){
+     if(!is.null(q1_tProb$findP) & !q1_tProb$findP & !is.na(q1_tProb$prob)){
       ## given prob, find z
       prob <- q1_tProb$prob
       #cat("finding z for p = ", prob, "\n")
@@ -2810,17 +2817,19 @@ observeEvent( input$q1_prob_txt,{
          round(prob * ifelse(q1_tProb$findP,1,.5), 3), col = "darkblue")
     place.x <- c(-absz, absz)
     if(absz < 1) place.x <- place.x/absz * .8
-    text(place.x, y = text.height, round(c(-absz,absz),3))
+    mtext(at= place.x, side = 1, line = .5, round(c(-absz,absz),3))
+    
   } else if (input$q1_area == "Center") {   ## fill & label center
     polygon(xrr, yrr, col = grn)
     text(x=0, y= text.height, round(prob,3))
     segments(x0= -z, y0 = 0, x1 = -z, y1 = text.height*.9)
     place.x <- c(-absz, absz)
-    if(absz < 1) place.x <- place.x/absz * .8
-    text(place.x, y=text.height, round(c(-absz,absz),3))
+    if(absz < .1) place.x <- place.x/absz * .8
+    mtext(at=place.x, side=1, line = .5, round(c(-absz,absz),3))
+    
   } else {          ## show tails
     polygon(xrr, yrr, col = rd)
-    text( z, y = text.height, round(z, 3))
+    mtext( at=z, side=1, line = .5, round(z, 3))
     text(x= sign(z) * (absz+4) / 2 , y= max(yrr) / 2 + 0.02, 
          round(prob,3), col = "darkblue")
   }
@@ -3618,13 +3627,15 @@ output$Cat2ShowCI <- renderUI({
  cat2_normalProb <- reactiveValues(prob = NULL, z = NULL, findP = NULL)
 
  observeEvent( input$cat2_z_txt, {
+   req(input$cat2_z_txt)
   cat2_normalProb$z <- as.numeric(input$cat2_z_txt) 
-  cat2_normalProb$findP <- TRUE
+  cat2_normalProb$findP <- if(is.na(cat2_normalProb$z) | is.na(cat2_normalProb$z)) {NULL} else{ TRUE}
  })
 
  observeEvent( input$cat2_prob_txt,{
+   req(input$cat2_prob_txt)
   cat2_normalProb$prob <- as.numeric(input$cat2_prob_txt) 
-  cat2_normalProb$findP  <- FALSE
+  cat2_normalProb$findP <- if(is.na(cat2_normalProb$prob)| is.na(cat2_normalProb$prob)) {NULL} else{ FALSE}
  })
 
 output$normalProbPlot2 <- renderPlot({ 
@@ -3708,17 +3719,17 @@ output$normalProbPlot2 <- renderPlot({
          round(prob * ifelse(cat2_normalProb$findP,1,.5), 3), col = "darkblue")
     place.x <- c(-absz, absz)
     if(absz < 1) place.x <- place.x/absz * .8
-    text(place.x, y = text.height, round(c(-absz,absz),3))
+    mtext(at=place.x, line = .5, side = 1, round(c(-absz,absz),3))
   } else if (input$cat2_area == "Center") {   ## fill & label center
     polygon(xrr, yrr, col = grn)
     text(x=0, y= text.height, round(prob,3))
     segments(x0= -z, y0 = 0, x1 = -z, y1 = text.height*.9)
     place.x <- c(-absz, absz)
-    if(absz < 1) place.x <- place.x/absz * .8
-    text(place.x, y=text.height, round(c(-absz,absz),3))
+    if(absz < .2) place.x <- place.x/absz * .9
+    mtext(at=place.x,  line = .5, side = 1, round(c(-absz,absz),3))
   } else {          ## show tails
     polygon(xrr, yrr, col = rd)
-    text( z, y = text.height, round(z, 3))
+    mtext(at= z, line = .5, side = 1, round(z, 3))
     text(x= sign(z) * (absz+4) / 2 , y= max(yrr) / 2 + 0.02, 
          round(prob,3), col = "darkblue")
   }
