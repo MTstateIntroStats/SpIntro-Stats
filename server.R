@@ -2743,7 +2743,7 @@ observeEvent( input$q1_prob_txt,{
     x <- -300:300 / 50
     
      if(!is.null(q1_tProb$findP) & !q1_tProb$findP & !is.na(q1_tProb$prob)){
-      ## given prob, find z
+      ## given prob, find z no real change
       prob <- q1_tProb$prob
       #cat("finding z for p = ", prob, "\n")
       if(input$q1_area == "Lower"){ ##  left tail
