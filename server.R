@@ -2340,7 +2340,7 @@ output$q1_EstimatePlot2 <- renderPlot({
   {
   
   q1Lurk <- reactiveValues(data = NULL, shuffles = NULL, diff = NULL, 
-                           colors = NULL,  name = NULL)
+                           colors = NULL,  name = NULL, closest = 2)
   
   output$q1_LurkDataUI <- renderUI({
     ## choice of normal or skewed data
@@ -2385,8 +2385,8 @@ output$q1_EstimatePlot2 <- renderPlot({
                  br(),
                  br(),
                 tableOutput("q1_LurkTable2"),
-                 h5(paste("Difference in means for 2nd randomization = ", 
-                          round(-diff(tapply(q1Lurk$data, q1Lurk$shuffles[, 2], mean, na.rm=TRUE)), 3)))    
+                 h5(paste("Another randomization = ", 
+                          round(-diff(tapply(q1Lurk$data, q1Lurk$shuffles[, q1Lurk$closest], mean, na.rm=TRUE)), 3)))    
           ),
           column(5, 
                 uiOutput('q1_LurkSampDistPlot'))
@@ -2402,7 +2402,7 @@ output$q1_EstimatePlot2 <- renderPlot({
   })
   
   output$q1_LurkSampDistPlot <- renderUI({ 
-    plotOutput('q1_LurkPlot2') #, click = 'q1_Lurk_click')
+    plotOutput('q1_LurkPlot2', click = 'q1_Lurk_click')
   })
   
 
@@ -2413,24 +2413,30 @@ output$q1_EstimatePlot2 <- renderPlot({
 
     nLurk <- length(q1Lurk$data)
     ## Original Data
-    DF <- cbind( q1Lurk$shuffles[,1:2], q1Lurk$data) 
-    names(DF) <- c("group", "group2", "y")
-    DF$group <- factor(DF$group)
-    #print(summary(DF))
+    DF <- cbind( q1Lurk$shuffles[,1:2], q1Lurk$data)
+    ## if click
+    if(!is.null(input$q1_Lurk_click)){
+      ##  Pick the clicked shuffle
+      closestPoint <- which.min(abs( q1Lurk$diff - input$q1_Lurk_click$x))
+      #cat("Close to number: ", closestPoint, "\n")
+    } else{
+      closestPoint <- 2
+    }
+    q1Lurk$closest <- closestPoint
+    DF[,2] <- q1Lurk$shuffles[, closestPoint]
     
-    plot1 <- qplot(y=y, x=group, data = DF, geom="boxplot", main = "Randomization 1") +
+    names(DF) <- c("group1", "group2", "y")
+    DF$group <- factor(DF$group1)
+    
+    plot1 <- qplot(y=y, x=group1, data = DF, geom="boxplot", main = "Randomization 1") +
       theme_bw() + xlab("") +  coord_flip() + ylab(q1Lurk$name)
     
     ## Plot One Shuffle 
-    #q1Lurk$diff <- -diff(tapply(DF$y, DF$group, mean))
-    #
-    ### stores samples as columns
-  plot2 <- qplot(y=y, x=group2, data = DF, geom="boxplot", main = "Randomization 2", 
-   #ylim = c(.5, pmax(10, max(DF$y))) 
-   ) + theme_bw() + xlab("") + coord_flip() + ylab(q1Lurk$name)
+      ### stores samples as columns  
+  plot2 <- qplot(y=y, x=group2, data = DF, geom="boxplot", main = "Randomization 2") +  #ylim = c(.5, pmax(10, max(DF$y))) 
+    theme_bw() + xlab("") + coord_flip() + ylab(q1Lurk$name)
   grid.arrange(plot1, plot2, heights = c(3, 3)/6, ncol=1)
   }, height = 360, width = 320)
-  
   
   output$q1_LurkTable1 <- renderTable({
     req(q1Lurk$data)  
@@ -2446,10 +2452,17 @@ output$q1_EstimatePlot2 <- renderPlot({
   
   output$q1_LurkTable2 <- renderTable({
     req(q1Lurk$data)
-
-    DF <- data.frame(mean = tapply(q1Lurk$data, q1Lurk$shuffles[, 2], mean, na.rm = TRUE ),
-                     sd = tapply(q1Lurk$data, q1Lurk$shuffles[, 2], sd, na.rm = TRUE ),
-                     n = as.integer(tapply(q1Lurk$data, q1Lurk$shuffles[, 2], length)))
+     if(!is.null(input$q1_Lurk_click)){
+       ##  Pick the clicked shuffle
+       closestPoint <- which.min(abs( q1Lurk$diff - input$q1_Lurk_click$x))
+       #cat("Close to number: ", closestPoint, "\n")
+     } else{
+       closestPoint <- 2
+     }
+    q1Lurk$closest <- closestPoint
+    DF <- data.frame(mean = tapply(q1Lurk$data, q1Lurk$shuffles[, closestPoint], mean, na.rm = TRUE ),
+                     sd = tapply(q1Lurk$data, q1Lurk$shuffles[, closestPoint], sd, na.rm = TRUE ),
+                     n = as.integer(tapply(q1Lurk$data, q1Lurk$shuffles[, closestPoint], length)))
     rownames(DF) <- levels(q1Lurk$shuffles[,1])
     DF
   })
