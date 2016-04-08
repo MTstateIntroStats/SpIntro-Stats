@@ -861,7 +861,7 @@ output$cat1Estimate_Plot2 <- renderPlot({
       radius <- 6 + diffs*0
     } 
     else {
-      w <- newy(diffs)
+      w <- data.frame(x=diffs, y=newy(diffs))
       radius <- 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
     }
     plot(w$x, w$y, ylab = "", ylim = c(0.5, pmax(10, max(w$y))), cex = radius/2, pch = 16, 
@@ -2495,7 +2495,7 @@ output$q1_EstimatePlot2 <- renderPlot({
       w <- data.frame( x = parm, y = 0.5 ) 
       radius <- 6
     } else {
-      w <- newy(parm)
+      w <- data.frame(x = parm, y=newy(parm))
       radius = 2 + (nsims < 5000) + (nsims < 1000) + (nsims < 500) + (nsims < 100)         
     }
     plot(w$x, w$y, ylim = c(0.5, pmax(10,max(w$y))), ylab = "", cex = radius/2, pch = 16, col = q1Lurk$colors,  
