@@ -24,11 +24,12 @@ cat2_test_shuffles <- function(shuffles, y1, y2, n1, n2){
   return(data)
 }
 
-c1Lurk_shuffles <- function(shuffles, m, n, k){
-  y1_new <- rhyper(as.numeric(shuffles), m, n, k)
-  y2_new <- m  - y1_new
-  phat.1 <- y1_new/k
-  phat.2 <- y2_new/(m + n - k)
+c1Lurk_shuffles <- function(shuffles, n1, n2, m1){
+  bigN <- n1 + n2
+  y1_new <- rhyper(as.numeric(shuffles), m=n1, n=n2, k=m1) # repeats, white balls, black balls, # draws
+  y2_new <- m1 - y1_new                        
+  phat.1 <- y1_new/n1
+  phat.2 <- y2_new/n2
   diff.p <- phat.1 - phat.2
   data.frame( phat1=phat.1, phat2=phat.2, diffp=diff.p, y1=y1_new, y2=y2_new)
 }

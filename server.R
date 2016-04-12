@@ -720,18 +720,18 @@ output$cat1Estimate_Plot2 <- renderPlot({
   })   
   
   observeEvent(input$c1Lurk_Go, {
-    c1Lurk$data <- list(n1 = as.numeric(input$c1Lurk_n11) + as.numeric(input$c1Lurk_n12),
-                        n2 = as.numeric(input$c1Lurk_n21) + as.numeric(input$c1Lurk_n22), 
-                        m1 = as.numeric(input$c1Lurk_n11) + as.numeric(input$c1Lurk_n12),
-                        m2 = as.numeric(input$c1Lurk_n21) + as.numeric(input$c1Lurk_n22))
-    c1Lurk$names <- c(input$c1Lurk_group1, input$c1Lurk_group2)
-    DF <- c1Lurk_shuffles(2, c1Lurk$data$n1 , c1Lurk$data$n2, c1Lurk$data$m1)
-    c1Lurk$phat1 <-  DF[, 1]
-    c1Lurk$phat2 <-  DF[, 2]
-    c1Lurk$difprop <- DF[, 3]
-    c1Lurk$y1 <-  DF[, 4]
-    c1Lurk$y2 <-  DF[, 5]
-    c1Lurk$colors <- blu
+    c1Lurk$data <- list(n1 = as.numeric(input$c1Lurk_n11) + as.numeric(input$c1Lurk_n21), # number of controls
+                        n2 = as.numeric(input$c1Lurk_n12) + as.numeric(input$c1Lurk_n22), # number trt
+                        m1 = as.numeric(input$c1Lurk_n11) + as.numeric(input$c1Lurk_n12), # A's
+                        m2 = as.numeric(input$c1Lurk_n21) + as.numeric(input$c1Lurk_n22)) # B's
+    c1Lurk$names <- c(input$c1Lurk_group1, input$c1Lurk_group2,input$c1Lurk_name1, input$c1Lurk_name2)
+    DF <- c1Lurk_shuffles(2, c1Lurk$data$n1 , c1Lurk$data$n2, c1Lurk$data$m1)  # draw m1 from trt + control
+    c1Lurk$phat1 <-  DF[, 1] 
+    c1Lurk$phat2 <-  DF[, 2] 
+    c1Lurk$difprop <- DF[, 3] 
+    c1Lurk$y1 <-  DF[, 4]     
+    c1Lurk$y2 <-  DF[, 5]     
+    c1Lurk$colors <- blu 
   })
   
 
@@ -776,15 +776,15 @@ output$cat1Estimate_Plot2 <- renderPlot({
   output$c1Lurk_Table1 <- renderTable({
     req(c1Lurk$data)
 
-    y1_new <- c1Lurk$y1[1]
-    y2_new <- c1Lurk$y2[1]
-    diff.p <- c1Lurk$difprop[1]
+    y1_new <- c1Lurk$y1[1]   ## control A's
+    y2_new <- c1Lurk$y2[1]   ## treatment A's
+    diff.p <- c1Lurk$difprop[1]  
     # print(c(y1_new, n1, DF[1,1], y2_new, n2, DF[1,2], diff.p))
     table1 <- data.frame(count = as.integer(c(y1_new, y2_new)), 
-                         n = with(c1Lurk$data, as.integer(c(m1, m2))),
+                         n = with(c1Lurk$data, as.integer(c(n1, n2))),
                          Prop = c(c1Lurk$phat1[1], c1Lurk$phat2[1]))
-    colnames(table1)[1] <- c1Lurk$names[1]
-    rownames(table1) <- c("Treatment","Control")
+    colnames(table1)[1] <- c1Lurk$names[3]
+    rownames(table1) <- c1Lurk$names[1:2]
     table1
   }, digits = c(0,0,0,3))
   
@@ -805,10 +805,10 @@ output$cat1Estimate_Plot2 <- renderPlot({
     diff.p <- c1Lurk$difprop[closestPoint]
     # print(c(y1_new, n1, DF[1,1], y2_new, n2, DF[1,2], diff.p))
     table2 <- data.frame(count = as.integer(c(y1_new, y2_new)), 
-                         n = with(c1Lurk$data, as.integer(c(m1, m2))),
+                         n = with(c1Lurk$data, as.integer(c(n1, n2))),
                          Prop = c(c1Lurk$phat1[closestPoint], c1Lurk$phat2[closestPoint]))
-    colnames(table2)[1] <- c1Lurk$names[1]
-    rownames(table2) <- c("Treatment","Control")
+    colnames(table2)[1] <- c1Lurk$names[3]
+    rownames(table2) <- c1Lurk$names[1:2]
     table2
   }, digits = c(0,0,0,3))
   
@@ -2934,7 +2934,7 @@ observeEvent(input$cat2_submitButton, {
     cat2_data$names <- rep(c(input$cat2_name1, input$cat2_name2), 2)
     cat2_data$groups <- rep(c(input$cat2_grp1, input$cat2_grp2), each = 2)
     shinyjs::enable("cat2_EstimateToggle") ## enable Estimate
-    shinyjs::enable("cat2_TestToggle")     ## enable Test 
+    shinyjs::enable("cat2_TestToggle")     ## enable Test y1
     shinyjs::disable("cat2_InputToggle")   ## disable Input button
 })
 
