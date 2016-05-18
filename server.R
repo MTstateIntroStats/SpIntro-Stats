@@ -2934,7 +2934,7 @@ observeEvent(input$cat2_submitButton, {
     cat2_data$names <- rep(c(input$cat2_name1, input$cat2_name2), 2)
     cat2_data$groups <- rep(c(input$cat2_grp1, input$cat2_grp2), each = 2)
     shinyjs::enable("cat2_EstimateToggle") ## enable Estimate
-    shinyjs::enable("cat2_TestToggle")     ## enable Test y1
+    shinyjs::enable("cat2_TestToggle")     ## enable Test 
     shinyjs::disable("cat2_InputToggle")   ## disable Input button
 })
 
