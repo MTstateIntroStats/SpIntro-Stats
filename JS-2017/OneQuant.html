@@ -1,0 +1,62 @@
+
+    navbarMenu("One Quant.",
+               tabPanel("Test or Estimate", label="1quantDataEntry",  
+                        uiOutput('q1_Input_Test_Est')
+               ),
+      tabPanel("Bootstrap Demo", value="1quantBoot",
+        uiOutput('q1_bootstrap')
+        #a(href="http://www.math.montana.edu/~jimrc/randomization/BootDemo.html","Click to see Bootstrap Demo") 
+      ),
+      tabPanel("Lurking Demo", value="1quantLurk",
+               h3("What does Randomization do to a LURKing Variable?"),
+               h4("Choose a data type for this demo, random data will be generated."),
+               uiOutput('q1_LurkDataUI'),
+               uiOutput('q1_LurkingUI')        
+      ),
+      tabPanel("Sampling Demo", value="1quantSample",
+               h3("Random Sampling Demo"),
+               ##h4("Choose Sample sizes"),
+               uiOutput('q1_SampDataUI'),
+               uiOutput('q1_SamplingUI')        
+      ),
+      tabPanel("t Distribution",  value="1quantT",
+               titlePanel("t Probabilities"),
+               column(4, inputPanel(
+                 #helpText("Either enter  "),
+                 textInput('q1_z_txt', label='Standardized Value: ', value=" "),
+                 #helpText("Or "),
+                 textInput('q1_prob_txt', 'or  Probability: ', " "),
+                 selectInput("q1_area", "To go into which area? ", 
+                             c("Lower","Upper","Extremes","Center"), NA),
+                 numericInput("q1_df", "t degrees of freedom?", 10 )
+               )),   
+               ##  dist'n shows 'normal' by default, but conditional box for t df appears.
+               column(8,
+                      plotOutput('tProbPlot1')
+               )  #,
+               #  h6("t distribution")
+      ),
+      tabPanel("Power", value = "Power",
+               ## ui.r from power app
+               #  Application title
+               titlePanel("Power Demo"),
+               # Sidebar with sliders that demonstrate various available options
+               fluidRow(
+                 column(4, inputPanel(
+                   sliderInput("pwr_n", "SampleSize:", 
+                               min=4, max=50, value=10),
+                   # std deviation
+                   sliderInput("pwr_sd", "Standard Deviation:",   
+                               min = 0.4, max = 13.0, value = 1.0, step= 0.2),
+                   # 
+                   sliderInput("pwr_altMean", "Alternative Mean:",
+                               min = 0, max = 8, value = 2, step=.1),
+                   # alpha level
+                   sliderInput("pwr_alpha", "Significance Level:", 
+                               min = 0.01, max = .15, value = .04, step= 0.01)    
+                 )),
+                 column(8, plotOutput("powerPlot"))),
+               # Show a table summarizing the values entered
+               fluidRow(column(8, offset = 4, tableOutput("powerValues")))
+      )
+    )

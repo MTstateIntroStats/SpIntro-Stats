@@ -1,0 +1,62 @@
+{
+    navbarMenu("One Categ.",  
+            tabPanel("Test or Estimate", label="1catDataEntry",  
+                        uiOutput('cat1_Input_Test_Est')
+               ),
+           tabPanel("Confidence Interval Demo", value = "cat1_CIdemo",
+              titlePanel("Demo to Illustrate the meaning of 'Confidence' in an Interval"),
+               fluidRow(
+                  column(4, 
+                         sliderInput("CIdemo_n", "Sample Size (number of spins)", min = 21, max = 100, value = 50),
+                         uiOutput("inputTrueP"),
+                    radioButtons("CIdemo_reps", label="Number of simulations", choices = list('10', '100', '1000','10000'), selected = '100', inline = TRUE),
+                    ## h5("Choose a confidence level"),
+                     radioButtons("CIdemo_conf", label="Choose a Confidence Level", choices = list('80%', '90%', '95%', '99%'), 
+                                  selected = '90%', inline = TRUE) 
+                    ), 
+                
+                fluidRow(
+                    column(7, #div( ## style="height: 300px",
+                      div(
+                        HTML("Sampling Distribution.  Click a point to see CI."),# center = TRUE),
+                        plotOutput("CIdemo_Plot1",  click = "CIplot1_click", height = "250px"),
+#                     )),
+#                 
+#                 fluidRow(
+#                   column(7, offset=4,
+                       HTML("Confidence Intervals  (green ones cover true p)"),# center =TRUE),
+                       plotOutput("CIdemo_Plot2")
+                   ))
+                )
+         )
+         ),
+         tabPanel("Lurking Demo", value="1catLurk",
+            h3("What does Randomization do to a LURKing Variable?"),
+            h4("Choose Sample sizes"),
+            uiOutput('c1_LurkDataUI'),
+            uiOutput('c1_LurkingUI')        
+          ),
+        tabPanel("Spinner", value = "cat1_spin",
+            uiOutput('c1_spinnerUI')
+        ),
+        tabPanel("Mixer", value = "cat1_mix",
+            uiOutput('c1_mixerUI')
+        ),
+        tabPanel("Normal Distribution" , value="cat1_Normal",
+                 titlePanel("Normal Probabilities"),
+                 column(3, inputPanel(
+                   #helpText("Either enter  "),
+                   textInput('cat1_z_txt', label='Standardized Value: ', value=" "),
+                   #helpText("Or "),
+                   textInput('cat1_prob_txt', 'or  Probability: ', " "),
+                   selectInput("cat1_area", "Which area? ", 
+                               c("Lower","Upper","Extremes","Center"), NA)
+                   ##selectInput("cat1_dist", "Distribution: ",c("Normal"), "Normal")
+                 )),   
+                 column(9,
+                        plotOutput('normalProbPlot1')
+                 )  #,
+                 #h6("Normal Approx")
+       )
+    )
+}   ,

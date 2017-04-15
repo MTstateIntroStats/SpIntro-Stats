@@ -1,0 +1,23 @@
+  navbarMenu("Two Categ.",
+      tabPanel("Test or Estimate", value="2catDataEntry",
+               uiOutput('cat2_Input_Test_Est')),
+      tabPanel("Normal Distribution", value="2catNormal",
+               titlePanel("Normal Probabilities"),
+               column(4, inputPanel(
+                 #helpText("Either enter  "),
+                 textInput('cat2_z_txt', label='Standardized Value: ', value=" "),
+                 #helpText("Or "),
+                 textInput('cat2_prob_txt', 'or  Probability: ', " "),
+                 selectInput("cat2_area", "To go into which area? ", 
+                             c("Lower","Upper","Extremes","Center"), NA)#,
+                 #selectInput("cat2_dist", "Distribution: ",c("Normal"), "Normal"),
+                 #conditionalPanel( 
+                #   condition = "input.prb_dist =='t'", 
+                #   numericInput("cat2_df", "t degrees of freedom?", 10 ))
+               )),   
+               column(8,
+                      plotOutput('normalProbPlot2')
+               )  #,
+            ##  h6("Normal Approx")
+      )
+    )

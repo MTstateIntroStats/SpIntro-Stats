@@ -1,0 +1,9 @@
+ navbarMenu("Two Quant.",
+            tabPanel("Test or Estimate", label="2quantDataEntry",  
+                     uiOutput('q2_Input_Test_Est')
+            ),
+     
+      tabPanel("Least Squares Demo", value = "2quantSLRDemo",
+               uiOutput('q2_leastSquaresDemoUI')
+      )
+    )
