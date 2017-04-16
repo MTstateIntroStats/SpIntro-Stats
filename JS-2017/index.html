@@ -47,28 +47,8 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
 <!-- Load data on textbook cost  -->
 <script src= "../www/costs.js"> </script>
 
-<script>
-function myFunction() {
-    var x = document.getElementById("Demo");
-    if (x.className.indexOf("w3-show") == -1) {
-        x.className += " w3-show";
-    } else { 
-        x.className = x.className.replace(" w3-show", "");
-    }
-}
-</script>
-
-<div class="w3-cell-row">
-<div class="w3-container w3-cell">
-<h1>
-	SpIntro Stats
-</h1>
-</div>
-<div class="w3-container w3-cell">
-     <img src = "../www/gradeSpinner4.png" alt = "Spinner_Wheel" width = "80px">
-</div>
-</div>
-
+              <!--  Nav bar for large screens -->
+<!--               
  <div class="w3-bar w3-indigo w3-card-2 w3-left-align w3-large w3-mobile">
   <button class="w3-bar-item w3-button  w3-white w3-hover-white w3-mobile" >
   	             Variable Type:</button>
@@ -91,74 +71,143 @@ function myFunction() {
                  onclick="openVble('Info')">
                	About</button>
 </div>
-
-<div id="OneCat" class="w3-container vType" style="display:none">
-  <span onclick="this.parentElement.style.display='none'"
-  class="w3-button w3-large w3-display-bottomright">Back</span>
-  <div class="w3-display-container w3-white" style="height:300px;">
-  	<div class="w3-bar w3-light-blue w3-card-2 w3-left-align w3-large w3-mobile w3-display-topmiddle">
-  		<button class="w3-bar-item w3-button w3-hover-white w3-mobile" onclick="choosePage('TestEstC1')">
-  			Test/Estimate</button>
-      	<button class="w3-bar-item w3-button w3-hover-white w3-mobile" onclick="choosePage('CIDemoC1')">
-      		CI Demo</button>
-      	<button class="w3-bar-item w3-button w3-hover-white w3-mobile" onclick="choosePage('LurkingDemoC1')">
-      		Lurking Variable Demo</button>
-      	<button class="w3-bar-item w3-button w3-hover-white w3-mobile" onclick="choosePage('Spinner')">			
-      	    Spinner</button>
-      	<button class="w3-bar-item w3-button w3-hover-white w3-mobile" onclick="choosePage('Mixer')">
-      		Mixer</button>
-      	<button class="w3-bar-item w3-button w3-hover-white w3-mobile" onclick="choosePage('Ztable')">			
-    		Normal Probabilities </button>
+-->
+     <!--  -------------------------------------
+     		Sidebar Menu Navigator
+     		------------------------------------->
+  
+<div class="w3-sidebar w3-bar-block w3-card-2 w3-animate-left" style="display:none" id="mySidebar">
+  <button class="w3-bar-item w3-button w3-large"
+  onclick="w3_close()">Close &times;</button>
+  <div class="w3-bar-item w3-button  w3-blue w3-hover-blue w3-mobile"  >
+  	             Variable Type: 
+   </div>
+   
+   <!--             One Categorical  --------------->
+  	 <button class="w3-button  w3-hover-white w3-mobile" onclick="actionsFunc('cat1Actions')">
+				1 Cat  <i class="fa fa-caret-down"></i> </button>
+   		<div id="cat1Actions" class="w3-dropdown-content w3-hide w3-light-blue w3-card-4">
+  	  		<button class="w3-button w3-hover-white w3-mobile" onclick="choosePage('TestEstC1')">
+  				Test/Estimate</button>
+      		<button class="w3-button w3-hover-white w3-mobile" onclick="choosePage('CIDemoC1')">
+      			CI Demo</button>
+      		<button class="w3-button w3-hover-white w3-mobile" onclick="choosePage('LurkingDemoC1')">
+      			Lurking Demo</button>
+      		<button class="w3-button w3-hover-white w3-mobile" onclick="choosePage('Spinner')">			
+      	    	Spinner</button>
+      		<button class="w3-button w3-hover-white w3-mobile" onclick="choosePage('Mixer')">
+      			Mixer</button>
+      		<button class="w3-button w3-hover-white w3-mobile" onclick="choosePage('Ztable')">			
+    			Normal Prob's </button>
     	</div>
-   </div>
-   </div>
-
-<div id="Spinner" class="w3-container Page" style="display:block">
-  <div class = w3-container>
- 	<script src="spin.js" charset="utf-8"></script>
-  </div>            
-</div>
-
-<div id="OneQuant" class="w3-container vType" style="display:none">
-  <span onclick="this.parentElement.style.display='none'"
-  class="w3-button w3-large w3-display-bottomright">Back</span>
-  <div class="w3-display-container w3-white" style="height:300px;">
-  	<div class="w3-bar w3-light-blue w3-card-2 w3-left-align w3-large w3-mobile w3-display-topmiddle">
-  		<button class="w3-bar-item w3-button w3-hover-white w3-mobile" onclick="choosePage('TestEstQ1')">
-  			Test/Estimate</button>
-      	<button class="w3-bar-item w3-button w3-hover-white w3-mobile" onclick="choosePage('BootDemo')">
-      		Bootstrap Demo</button>
-      	<button class="w3-bar-item w3-button w3-hover-white w3-mobile" onclick="choosePage('SamplingDemo')">			
-      	    Sampling Demo</button>
-      	<button class="w3-bar-item w3-button w3-hover-white w3-mobile" onclick="choosePage('LurkingDemoQ1')">
-      		Lurking Demo</button>
-      	<button class="w3-bar-item w3-button w3-hover-white w3-mobile" onclick="choosePage('Power')">
-      		Power</button>
-      	<button class="w3-bar-item w3-button w3-hover-white w3-mobile" onclick="choosePage('Ttable')">			
-    		T Probabilities </button>
+    
+   <!--             One Quantitative  --------------->
+  	 <button class="w3-button  w3-hover-white w3-mobile"onclick="actionsFunc('quant1Actions')">
+				1 Quant  <i class="fa fa-caret-down"></i> </button>
+   		<div id="quant1Actions" class="w3-dropdown-content w3-hide w3-light-blue w3-card-4">
+  			<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('TestEstQ1')">
+  				Test/Estimate</button>
+      		<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('BootDemo')">
+      			Bootstrap Demo</button>
+      		<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('SamplingDemo')">			
+      	    	Sampling Demo</button>
+      		<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('LurkingDemoQ1')">
+      			Lurking Demo</button>
+      		<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('Power')">
+      			Power</button>
+      		<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('Ttable')">			
+    			T Prob's </button>
     	</div>
-   </div>
-   </div> 
+    	
+   <!--             Two Categorical  --------------->
+  	 <button class="w3-button  w3-hover-white w3-mobile" onclick="actionsFunc('cat2Actions')">
+				2 Cat  <i class="fa fa-caret-down"></i> </button>
+   		<div id="cat2Actions" class="w3-dropdown-content w3-hide w3-light-blue w3-card-4">
+  	  		<button class="w3-button w3-hover-white w3-mobile" onclick="choosePage('TestEstC2')">
+  				Test/Estimate</button>
+      		<button class="w3-button w3-hover-white w3-mobile" onclick="choosePage('Ztable2')">			
+    			Normal Prob's </button>
+    	</div>
+    	
+   <!--             Two Quantitative  --------------->
+  	 <button class="w3-button  w3-hover-white w3-mobile"onclick="actionsFunc('quant2Actions')">
+				2 Quant  <i class="fa fa-caret-down"></i> </button>
+   		<div id="quant2Actions" class="w3-dropdown-content w3-hide w3-light-blue w3-card-4">
+  			<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('TestEstQ2')">
+  				Test/Estimate</button>
+  		    <button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('RegressionDemo')">
+  		  		Regression Demo</button>
+      		<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('Ttable')">			
+    			T Prob's </button>
+    	</div>
+    	
+   <!--             One Categorical AND One Quantitative  --------------->
+  	 <button class="w3-button  w3-hover-white w3-mobile"onclick="actionsFunc('c1q1Actions')">
+				1 of each  <i class="fa fa-caret-down"></i> </button>
+   		<div id="c1q1Actions" class="w3-dropdown-content w3-hide w3-light-blue w3-card-4">
+ 		<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('TestEstC1Q1')">
+  			Test/Estimate</button>
+      	<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('Ttable3')">			
+    		T Prob's </button>
+    		</div>
+   
+       	
+   <!--             More Info Button  --------------->
+
+  	<button class="w3-bar-item w3-button w3-light-blue w3-hover-light-blue w3-mobile"
+                 onclick="openVble('Info')">
+               	About</button>
 </div>
 
-<div id="TwoCat" class="w3-container vType" style="display:none">
-  <span onclick="this.parentElement.style.display='none'"
-  class="w3-button w3-large w3-display-bottomright">Back</span>
-  <h2>Two Categorical</h2>
-  <p>Two way table, Mosaic plot</p>
+
+			 <!--   *********************************************
+									Main Page
+					*********************************************
+			  -->
+
+ <!--    Header  -->
+ 
+ <div zclass="w3-main" id="main">
+<div class="w3-cell-row w3-indigo">
+  <button class="w3-button w3-cell w3-indigo w3-large" onclick="w3_open(); closePages()">&#9776;</button>
+  <div class="w3-container  w3-cell ">
+    <h1>
+	  SpIntro Stats
+    </h1>
+  </div>
+  <div class="w3-container w3-cell">
+     <img src = "../www/gradeSpinner4.png" alt = "Spinner_Wheel" width = "80px">
+  </div>
 </div>
-<div id="TwoQuant" class="w3-container vType" style="display:none">
-  <span onclick="this.parentElement.style.display='none'"
-  class="w3-button w3-large w3-display-bottomright">Back</span>
-  <h2>Two Quantitative</h2>
-  <p>Scatterplot.</p>
+
 </div>
-<div id="Cat1Quant1" class="w3-container vType" style="display:none">
-  <span onclick="this.parentElement.style.display='none'"
-  class="w3-button w3-large w3-display-bottomright">Back</span>
-  <h2>One of Each</h2>
-  <p>Shape/color plot.</p>
-</div>
+
+<script>
+function w3_open() {
+  document.getElementById("main").style.marginLeft = "25%";
+  document.getElementById("mySidebar").style.width = "25%";
+  document.getElementById("mySidebar").style.display = "block";
+  document.getElementById("openNav").style.display = 'none';
+}
+function w3_close() {
+  document.getElementById("main").style.marginLeft = "0%";
+  document.getElementById("mySidebar").style.display = "none";
+  document.getElementById("openNav").style.display = "inline-block";
+}
+
+function actionsFunc(actns) {
+    var x = document.getElementById(actns);
+    if (x.className.indexOf("w3-show") == -1) {
+        x.className += " w3-show";
+        x.previousElementSibling.className += " w3-blue";
+    } else { 
+        x.className = x.className.replace(" w3-show", "");
+        x.previousElementSibling.className = 
+        x.previousElementSibling.className.replace(" w3-blue", "");
+    }
+}
+</script>
+
 
 <div id="Info" class="w3-container vType" style="display:none">
   <span onclick="this.parentElement.style.display='none'"
@@ -178,6 +227,8 @@ function myFunction() {
     and our code is available as a  <a href='https://github.com/MTstateIntroStats/SpIntro-Stats'> github repository </a>
     </p>      
 </div>
+
+
 <script>
 function openVble(vbleName) {
     var i;
@@ -190,6 +241,7 @@ function openVble(vbleName) {
        y[i].style.display = "none";  
     }
     document.getElementById(vbleName).style.display = "block";  
+    w3_close();
 }
 function choosePage(page) {
     var i;
@@ -198,29 +250,142 @@ function choosePage(page) {
        x[i].style.display = "none";  
     }
     document.getElementById(page).style.display = "block";  
+    w3_close();
 }
+function closePages() {
+    var i;
+    var x = document.getElementsByClassName("Page");
+    for (i = 0; i < x.length; i++) {
+       x[i].style.display = "none";  
+    }
+}
+
 </script>
 
-    <!-- Navbar on small screens -->
-<!--
-	  <div id="navDemo" class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium w3-large">
-    <a href="#" class="w3-bar-item w3-button w3-padding-large">One Cat</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding-large">One Quant</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding-large">Two Cat</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding-large">Two Quant</a>
-    <a href="#" class="w3-bar-item w3-button w3-padding-large">One of Each</a>
+
+   <!-- ------- **************************************************
+   	---------------------- One Categorical Actions  -----------------
+   	*****************************************************************
+   	*      
+   	1) Test or Estimate:   -->
+ 
+<div id="TestEstC1" class="w3-container Page" style="display:none">
+  <div class = w3-container>
+  	<h3>Estimate true p or Test for a particular value</h3>
   </div>
 </div>
--->
 
-<div id="BootDemo" class="w3-container Page" style="display:none">
+   <!-- -------  One Categorical Actions     
+   	2) CI Demo with known p:   -->
+
+<div id="CIDemoC1" class="w3-container Page" style="display:none">
+  <div class = w3-container>
+	<h3>Demo to Illustrate the meaning of 'Confidence' in an Interval</h3>
+  <div class = w3-container>
+  	<form class="w3-cell w3-card">
+   		<h4>Confidence Level</h4>
+  		<div class="w3-bar">
+   		<input class="w3-radio" type="radio" name="CIdemo_conf" value="80%" onClick = "confidence = .80; drawCI(BootCount);">
+     		<label>80%</label>
+   		<input class="w3-radio" type="radio" name="CIdemo_conf" value="90%" onClick = "confidence = .90; drawCI(BootCount);">
+   		  <label>90%</label>
+   		<input class="w3-radio" type="radio" name="CIdemo_conf" value="95%" onClick = "confidence = .95; drawCI(BootCount);" checked="checked">
+     		<label>95%</label>
+   		<input class="w3-radio" type="radio" name="CIdemo_conf" value="99%" onClick = "confidence = .99; drawCI(BootCount);">
+     		<label>99%</label>
+    	</div>
+	</form>
+	<div class = "w3-btn w3-cell">      </div>
+	<form class="w3-cell w3-card">
+   		<h4>Sample Size: (number of spins)</h4>
+   		<div class="w3-bar">
+      	20<input id = "slide_CI_n" type="range" name="CIdemo_n" min = "20" max = "100" step = "5" value = "50" 
+      	  onchange = "updateCIdemo_n(this.value);" /> 100
+    	</div>
+   	</form>
+	<div class = "w3-btn w3-cell">      </div>
+	<form class="w3-cell w3-card">
+   		<h4>True Proportion Successes:</h4>
+   		<div class="w3-bar">
+      	0<input id = "slide_CI_p" type="range" name="CIdemo_p" min = "0" max = "1" step = ".05" value = ".5" 
+      	  onchange = "updateCIdemo_p(this.value);" /> 1
+    	</div>
+   	</form>
+ </div>
+</div>  
+</div>
+
+   <!-- -------  One Categorical Actions     
+   	3) Lurking Demo   -->
+ 
+<div id="LurkingDemoC1" class="w3-container Page" style="display:none">
+	  <h3>Demo of the effects of a categorical lurking variable on proportion estimates</h3>
+
+</div>
+
+
+   <!-- -------  One Categorical Actions     
+   	4) Spinner   -->
+ 
+<div id="Spinner" class="w3-container Page" style="display:none">
+	  <h3>Random sampling using a game board like spinner</h3>
+    <span onclick="openVble('OneCat')" class="w3-button w3-large w3-display-bottomright">Back</span>
+  <div class = w3-container>
+ 	<script src="spin.js" charset="utf-8"></script>
+  </div>            
+</div>
+
+
+   <!-- -------  One Categorical Actions     
+   	5) Mixer:   -->
+ 
+<div id="Mixer" class="w3-container Page" style="display:none">
+	  <h3>Randomly picking balls from a box.</h3>
+    <span onclick="openVble('OneCat')" class="w3-button w3-large w3-display-bottomright">Back</span>
+
+</div>
+
+
+   <!-- -------  One Categorical Actions     
+   	6) Z Table:   -->
+  <div id="Ztable" class="w3-container Page" style="display:none">
+  <div class = w3-container>
+  	<h3>Compute probabilities or cutoffs. </h3>
+  </div>
+      <span onclick="openVble('OneCat')" class="w3-button w3-large w3-display-bottomright">Back</span>
+
+  </div>   
+
+
+
+
+  
+  		
+   <!-- ************************************************************
+   	    -------  One Quantitative Actions  --------------------------
+   	    ************************************************************    
+   	1) Test or Estimate a single Mean -->
+
+  <div id="TestEstQ1" class="w3-container Page" style="display:none">
+  <div class = w3-container>
+  	<h3>Estimate one mean or Test for a particular value</h3>
+  </div>
+      <span onclick="openVble('OneQuant')" class="w3-button w3-large w3-display-bottomright">Back</span>
+
+  </div>   
+  
+  
+  <!-- -------  One Quantitative Actions    
+   	2) Bootstrap Demo -->
+  
+  <div id="BootDemo" class="w3-container Page" style="display:none">
   <div class = w3-container>
   	<form class="w3-cell w3-card">
    		<h4>Confidence Level</h4>
   		<div class="w3-bar">
    		<input class="w3-radio" type="radio" name="conf" value="80%" onClick = "confidence = .80; drawCI(BootCount);">
      		<label>80%</label>
-   		<input class="w3-radio" type="radio" name="conf" value="90%" onClick = "confidence = .90; drawCI(BootCount);">
+   		<input class="w3-radio" type="radio" name="conf" value="90%" onClick = "confidence = .90; drawCI(BootCount);" checked="checked">
    		  <label>90%</label>
    		<input class="w3-radio" type="radio" name="conf" value="95%" onClick = "confidence = .95; drawCI(BootCount);">
      		<label>95%</label>
@@ -246,11 +411,141 @@ function choosePage(page) {
     </form> 
   </div>
   <script  src="boot.js" charset="utf-8">  </script>
-  <span onclick="this.parentElement.style.display='none'"
-  class="w3-button w3-large w3-display-bottomright">Back</span>
+  <span onclick="openVble('OneQuant')" class="w3-button w3-large w3-display-bottomright">Back</span>
  </div>
 </div>  
- 
+
+   <!-- -------  One Quantitative Actions    
+   	3) Sampling Demo -->
+
+  <div id="SamplingDemo" class="w3-container Page" style="display:none">
+  <div class = w3-container>
+  	<h3>Demo of sampling</h3>
+      <span onclick="openVble('OneQuant')" class="w3-button w3-large w3-display-bottomright">Back</span>
+  </div>
+  </div>
+      		
+    <!-- -------  One Quantitative Actions    
+   	4) Lurking Demo for quantitative variables -->
+
+  <div id="LurkingDemoQ1" class="w3-container Page" style="display:none">
+  <div class = w3-container>
+  	<h3>Demo of a quantitative lurking variable</h3>
+      <span onclick="openVble('OneQuant')" class="w3-button w3-large w3-display-bottomright">Back</span>
+  </div>
+  </div>
+     		
+     <!-- -------  One Quantitative Actions    
+   	5) Power of testing a single mean -->
+
+  <div id="Power" class="w3-container Page" style="display:none">
+  <div class = w3-container>
+  	<h3>How large a sample size is needed?</h3>
+      <span onclick="openVble('OneQuant')" class="w3-button w3-large w3-display-bottomright">Back</span>
+  </div>
+  </div>
+    		
+    <!-- -------  One Quantitative Actions    
+   	6) T probabilities -->
+
+  <div id="Ttable" class="w3-container Page" style="display:none">
+  <div class = w3-container>
+  	<h3>Find probabilities or cutoffs for a t distribution</h3>
+  	
+      <span onclick="openVble('OneQuant')" class="w3-button w3-large w3-display-bottomright">Back</span>
+  </div>
+  </div>
+   		
+  		
+   <!-- -------************************************************************
+   	    -------  Two Categorical Actions  ----------------------------------
+   	    ******************************************************************* 
+   	       
+   	1) Test or Estimate Difference between two Proportions -->
+
+  <div id="TestEstC2" class="w3-container Page" style="display:none">
+  <div class = w3-container>
+  	<h3>Estimate a difference in proportions or Test for a particular value</h3>
+  </div>
+      <span onclick="openVble('TwoCat')" class="w3-button w3-large w3-display-bottomright">Back</span>
+
+  </div>   
+
+ <!-- -------  Two Categorical Actions    
+   	2) Z Table -->
+
+  <div id="Ztable2" class="w3-container Page" style="display:none">
+  <div class = w3-container>
+  	<h3>Compute probabilities or cutoffs. </h3>
+  </div>
+      <span onclick="openVble('TwoCat')" class="w3-button w3-large w3-display-bottomright">Back</span>
+
+  </div>   
+   
+
+ <!-- ************************************************************
+   	    -------  Two Quantitative Actions ------------------------
+   	    ************************************************************
+   	        
+   	1) Test or Estimate correlation or slope  -->
+
+  <div id="TestEstQ2" class="w3-container Page" style="display:none">
+  <div class = w3-container>
+  	<h3>Estimate slope and correlation. Also test for specific values. </h3>
+  </div>
+      <span onclick="openVble('TwoQuant')" class="w3-button w3-large w3-display-bottomright">Back</span>
+
+  </div>   
+
+ <!-- -------  Two Quantitative Actions    
+   	2) Demo of least squares regression  -->
+
+  <div id="RegressionDemo" class="w3-container Page" style="display:none">
+  <div class = w3-container>
+  	<h3>Demo: How Least Squares Regression coefficients are special </h3>
+  </div>
+      <span onclick="openVble('TwoQuant')" class="w3-button w3-large w3-display-bottomright">Back</span>
+
+  </div>   
+
+ <!-- -------  Two Quantitative Actions    
+   	3) T table   -->
+
+  <div id="Ttable2" class="w3-container Page" style="display:none">
+  <div class = w3-container>
+  	<h3>Compute probabilities or cutoffs. </h3>
+  </div>
+      <span onclick="openVble('TwoQuant')" class="w3-button w3-large w3-display-bottomright">Back</span>
+
+  </div>   
+
+
+ <!-- ************************************************************
+   	    -------  One Categorical, One Quantitative Actions -------
+   	   ************************************************************
+   	        
+   	1) Test/ Estimate   -->
+
+  <div id="TestEstC1Q1" class="w3-container Page" style="display:none">
+  <div class = w3-container>
+  	<h3>Estimate the difference between two means or test for a particular value. </h3>
+  </div>
+      <span onclick="openVble('Cat1Quant1')" class="w3-button w3-large w3-display-bottomright">Back</span>
+
+  </div>   
+
+ <!-- -------  One Categorical, One Quantitative Actions    
+   	2) T table   -->
+
+  <div id="Ttable3" class="w3-container Page" style="display:none">
+  <div class = w3-container>
+  	<h3>Compute probabilities or cutoffs. </h3>
+  </div>
+      <span onclick="openVble('Cat1Quant1')" class="w3-button w3-large w3-display-bottomright">Back</span>
+
+  </div>   
+
+
 </body>
 </html>   
 
