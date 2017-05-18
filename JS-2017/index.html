@@ -1,725 +1,115 @@
-<!DOCTYPE html>
-<title>SpIntro-Stat</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="w3.css">
-<!--
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<style>
-body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
-.w3-bar,h1,button {font-family: "Montserrat", sans-serif}
-.fa-anchor,.fa-coffee {font-size:200px}
-</style>
--->
+var changed,
+	i,
+	margin = {top: 30, right: 20, bottom: 30, left: 50},
+    width = 540 - margin.left - margin.right,
+    height = 320 - margin.top - margin.bottom,
+    z = jStat.seq(-3.2,3.2, 303);
 
-<head>
-<title> SpIntro Stats </title>
-</head>
-
-<style>
-
-.area {
-  fill: steelblue;
-  fill-opacity: 0.3;
-}
-
-.circle {
-  fill: blue;
-  fill-opacity: 0.3;
-}
-
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #005;
-  shape-rendering: crispEdges;
-}
-
-.overlay {
-  fill: none;
-  pointer-events: all;
-}
-
-
-</style>
-<!-- Load D3  -->
-<script src="d3.v3.min.js" charset="utf-8"></script>
-<!-- Load data on textbook cost  -->
-<script src= "costs.js"> </script>
-<script src= "norms.js"> </script>
-<!-- Load jStat  -->
-<script src="jstat.js" charset="utf-8"></script>
-<script src="papaparse.js" charset="utf-8"></script>
-<script src="helpers.js" charset="utf-8"></script > 
-
-
-              <!--  Nav bar for large screens -->
-<!--               
- <div class="w3-bar w3-indigo w3-card-2 w3-left-align w3-large w3-mobile">
-  <button class="w3-bar-item w3-button  w3-white w3-hover-white w3-mobile" >
-  	             Variable Type:</button>
-  <button class="w3-bar-item w3-button  w3-hover-white w3-mobile" 
-                 onclick="openVble('OneCat')">
-				One Categorical  </button>
-  <button class="w3-bar-item w3-button  w3-hover-white w3-mobile" 
-                 onclick="openVble('OneQuant')">	
-                 One Quantitative  </button>
-  <button class="w3-bar-item w3-button w3-hover-white w3-mobile" 
-                 onclick="openVble('TwoCat')">
-                 Two Categorical</button>
-  <button class="w3-bar-item w3-button w3-hover-white w3-mobile" 
-                 onclick="openVble('TwoQuant')">
-                 Two Quantitative</button>
-  <button class="w3-bar-item w3-button w3-hover-white w3-mobile" 
-                 onclick="openVble('Cat1Quant1')">
-                 One of Each</button>
-  <button class="w3-bar-item w3-button w3-blue w3-hover-white w3-mobile"
-                 onclick="openVble('Info')">
-               	About</button>
-</div>
--->
-     <!--  -------------------------------------
-     		Sidebar Menu Navigator
-     		------------------------------------->
-  
-<div class="w3-sidebar w3-bar-block w3-card-2 w3-animate-left" style="display:none" id="mySidebar">
-  <button class="w3-bar-item w3-button w3-large"
-  onclick="w3_close()">Close &times;</button>
-  <div class="w3-bar-item w3-button  w3-blue w3-hover-blue w3-mobile"  >
-  	             Variable Type: 
-   </div>
    
-   <!--             One Categorical  --------------->
-  	 <button class="w3-button  w3-hover-white w3-mobile" onclick="actionsFunc('cat1Actions')">
-				1 Cat  <i class="fa fa-caret-down"></i> </button>
-   		<div id="cat1Actions" class="w3-dropdown-content w3-hide w3-light-blue w3-card-4">
-  	  		<button class="w3-button w3-hover-white w3-mobile" onclick="choosePage('TestEstC1')">
-  				Test/Estimate</button>
-      		<button class="w3-button w3-hover-white w3-mobile" onclick="choosePage('CIDemoC1')">
-      			CI Demo</button>
-      		<button class="w3-button w3-hover-white w3-mobile" onclick="choosePage('LurkingDemoC1')">
-      			Lurking Demo</button>
-      		<button class="w3-button w3-hover-white w3-mobile" onclick="choosePage('Spinner')">			
-      	    	Spinner</button>
-      		<button class="w3-button w3-hover-white w3-mobile" onclick="choosePage('Mixer')">
-      			Mixer</button>
-      		<button class="w3-button w3-hover-white w3-mobile" onclick="choosePage('Ztable')">			
-    			Normal Prob's </button>
-    	</div>
+var x = d3.scale.linear().range([0, width]),
+	y = d3.scale.linear().range([height, 0]);
+
+    x.domain(d3.extent(z));
+    y.domain([0, jStat.normal.pdf(0, 0, 1)]);
+
+var xAxis = d3.svg.axis().scale(x)
+    .orient("bottom").ticks(5);
+
+//var yAxis = d3.svg.axis().scale(y)
+//    .orient("left").ticks(5);
+
+var pdfline = d3.svg.line()
+    .x(function(d) { return x(d); })
+    .y(function(d) { return y(jStat.normal.pdf(d, 0, 1)); });
     
-   <!--             One Quantitative  --------------->
-  	 <button class="w3-button  w3-hover-white w3-mobile"onclick="actionsFunc('quant1Actions')">
-				1 Quant  <i class="fa fa-caret-down"></i> </button>
-   		<div id="quant1Actions" class="w3-dropdown-content w3-hide w3-light-blue w3-card-4">
-  			<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('TestEstQ1')">
-  				Test/Estimate</button>
-      		<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('BootDemo')">
-      			Bootstrap Demo</button>
-      		<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('SamplingDemo')">			
-      	    	Sampling Demo</button>
-      		<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('LurkingDemoQ1')">
-      			Lurking Demo</button>
-      		<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('Power')">
-      			Power</button>
-      		<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('Ttable')">			
-    			T Prob's </button>
-    	</div>
-    	
-   <!--             Two Categorical  --------------->
-  	 <button class="w3-button  w3-hover-white w3-mobile" onclick="actionsFunc('cat2Actions')">
-				2 Cat  <i class="fa fa-caret-down"></i> </button>
-   		<div id="cat2Actions" class="w3-dropdown-content w3-hide w3-light-blue w3-card-4">
-  	  		<button class="w3-button w3-hover-white w3-mobile" onclick="choosePage('TestEstC2')">
-  				Test/Estimate</button>
-      		<button class="w3-button w3-hover-white w3-mobile" onclick="choosePage('Ztable2')">			
-    			Normal Prob's </button>
-    	</div>
-    	
-   <!--             Two Quantitative  --------------->
-  	 <button class="w3-button  w3-hover-white w3-mobile"onclick="actionsFunc('quant2Actions')">
-				2 Quant  <i class="fa fa-caret-down"></i> </button>
-   		<div id="quant2Actions" class="w3-dropdown-content w3-hide w3-light-blue w3-card-4">
-  			<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('TestEstQ2')">
-  				Test/Estimate</button>
-  		    <button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('RegressionDemo')">
-  		  		Regression Demo</button>
-      		<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('Ttable')">			
-    			T Prob's </button>
-    	</div>
-    	
-   <!--             One Categorical AND One Quantitative  --------------->
-  	 <button class="w3-button  w3-hover-white w3-mobile"onclick="actionsFunc('c1q1Actions')">
-				1 of each  <i class="fa fa-caret-down"></i> </button>
-   		<div id="c1q1Actions" class="w3-dropdown-content w3-hide w3-light-blue w3-card-4">
- 		<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('TestEstC1Q1')">
-  			Test/Estimate</button>
-      	<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('Ttable3')">			
-    		T Prob's </button>
-    		</div>
-   
-       	
-   <!--             More Info Button  --------------->
+var Zsvg = d3.select("#zPlotGoesHere")
+     .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+        .attr("transform", 
+              "translate(" + margin.left + "," + margin.top + ")");
 
-  	<button class="w3-bar-item w3-button w3-light-blue w3-hover-light-blue w3-mobile"
-                 onclick="openVble('Info')">
-               	About</button>
-</div>
+var pdfLine = Zsvg.append("path")
+                            .attr("d", pdfline(z))
+                            .attr("stroke", "blue")
+                            .attr("stroke-width", 2)
+                            .attr("fill", "none");
+
+//var pathAttributes = pdfLine
+//                       .attr("x", function(d) {return d;})
+//                       .attr("y", function(d) {return jStat.normal.pdf(d, 0, 1);})
+//                      .style("fill", "green");
 
 
-			 <!--   *********************************************
-									Main Page
-					*********************************************
-			  -->
-
- <!--    Header  -->
- 
- <div zclass="w3-main" id="main">
-<div class="w3-cell-row w3-indigo">
-  <button class="w3-button w3-cell w3-indigo w3-large" onclick="w3_open(); closePages()">&#9776;</button>
-  <div class="w3-container  w3-cell ">
-    <h1>
-	  SpIntro Stats
-    </h1>
-  </div>
-  <div class="w3-container w3-cell">
-     <img src = "../www/gradeSpinner4.png" alt = "Spinner_Wheel" width = "80px">
-  </div>
-</div>
-
-</div>
-
-<script>
-function w3_open() {
-  document.getElementById("main").style.marginLeft = "25%";
-  document.getElementById("mySidebar").style.width = "25%";
-  document.getElementById("mySidebar").style.display = "block";
-  //document.getElementById("openNav").style.display = 'none';
-}
-function w3_close() {
-  document.getElementById("main").style.marginLeft = "0%";
-  document.getElementById("mySidebar").style.display = "none";
-  //document.getElementById("openNav").style.display = "inline-block";
-}
-
-function actionsFunc(actns) {
-    var x = document.getElementById(actns);
-    if (x.className.indexOf("w3-show") == -1) {
-        x.className += " w3-show";
-        x.previousElementSibling.className += " w3-blue";
-    } else { 
-        x.className = x.className.replace(" w3-show", "");
-        x.previousElementSibling.className = 
-        x.previousElementSibling.className.replace(" w3-blue", "");
-    }
-}
-</script>
-
-
-<div id="Info" class="w3-container vType" style="display:none">
-  <span onclick="this.parentElement.style.display='none'"
-  class="w3-button w3-large w3-display-bottomright">Back</span>
-<h3>What Is SpIntro Stats?
-</h3>
-<p>
-    SpIntro Stats is an open project to provide a set of simulation web apps for introductory statistics.
-    'Spin' in the title refers to the methods we begin with: spinners, card shuffles, mixing balls in contrast to the classical emphasis on probability axioms.
-    Tests are based on permutation/randomization distributions and confidence intervals are derived via bootstrapping.
-     <br>
-    This software is intended to demonstrate the concepts underlying statistical analysis.
-    It is not, in itself, a statistical analysis package.
-    We hope users find it useful, but no explicit or implicit warrantee is made for accuracy of results. 
-    <br>
-    For our discussion group see <a href='https://groups.google.com/forum/#!forum/spintro-stats'> the spintro-stats </a> google group
-    and our code is available as a  <a href='https://github.com/MTstateIntroStats/SpIntro-Stats'> github repository </a>
-    </p>      
-</div>
-
-
-<script>
-function openVble(vbleName) {
-    var i;
-    var x = document.getElementsByClassName("vType");
-    for (i = 0; i < x.length; i++) {
-       x[i].style.display = "none";  
-    }
-    var y = document.getElementsByClassName("Page");
-    for (i = 0; i < y.length; i++) {
-       y[i].style.display = "none";  
-    }
-    document.getElementById(vbleName).style.display = "block";  
-    w3_close();
-}
-function choosePage(page) {
-    var i;
-    var x = document.getElementsByClassName("Page");
-    for (i = 0; i < x.length; i++) {
-       x[i].style.display = "none";  
-    }
-    document.getElementById(page).style.display = "block";  
-    w3_close();
-}
-function closePages() {
-    var i;
-    var x = document.getElementsByClassName("Page");
-    for (i = 0; i < x.length; i++) {
-       x[i].style.display = "none";  
-    }
-}
-
-</script>
-
-
-   <!-- ------- **************************************************
-   	---------------------- One Categorical Actions  -----------------
-   	*****************************************************************
-   	*      
-   	1) Test or Estimate:   -->
- 
-<div id="TestEstC1" class="w3-container Page" style="display:none">
-  <div class = w3-container>
-  	<h3>Estimate true p or Test for a particular value</h3>
-  </div>
-</div>
-
-   <!-- -------  One Categorical Actions     
-   	2) CI Demo with known p:   -->
-
-<div id="CIDemoC1" class="w3-container Page" style="display:none">
-  <div class = w3-container>
-	<h3>Demo to Illustrate the meaning of 'Confidence' in an Interval</h3>
-  <div class = w3-container>
-  	<form class="w3-cell w3-card w3-padding-small">
-   		<h4>Confidence Level</h4>
-  		<div class="w3-bar">
-   		<input class="w3-radio" type="radio" name="CIdemo_conf" value="80%" 
-   		onClick = "confidence = .80; drawCI(BootCount);">
-     		<label>80%</label>
-   		<input class="w3-radio" type="radio" name="CIdemo_conf" value="90%" 
-   		onClick = "confidence = .90; drawCI(BootCount);">
-   		  <label>90%</label>
-   		  <br>
-   		<input class="w3-radio" type="radio" name="CIdemo_conf" value="95%" 
-   		onClick = "confidence = .95; drawCI(BootCount);" checked="checked">
-     		<label>95%</label>
-   		<input class="w3-radio" type="radio" name="CIdemo_conf" value="99%" 
-   		onClick = "confidence = .99; drawCI(BootCount);">
-     		<label>99%</label>
-    	</div>
-	</form>
-	<div class = "w3-btn w3-cell ">      </div>
-	<form class="w3-cell w3-card w3-padding-small" oninput = "nn.value=parseInt(CIdemo_n.value)" >
-   		Sample Size: (number of spins)
-   		<div class="w3-bar">
-      	20<input id = "slide_CI_n" type="range" name="CIdemo_n" min = "20" max = "100" step = "5" value = "50" 
-      	  onchange = "updateCIdemo_n(this.value);" /> 100<br>
-      	   n = <output name="nn" for="CIdemo_n"> </output>
-    	</div>
-   	</form>
-	<div class = "w3-btn w3-cell">      </div>
-	<form class="w3-cell w3-card w3-padding-small" oninput = "pp.value=CIdemo_p.value">
-   		<h4>True Proportion Successes:</h4>
-   		<div class="w3-bar">
-      	0<input id = "slide_CI_p" type="range" name="CIdemo_p" min = "0" max = "1" step = ".05" value = ".5" 
-      	  onchange = "updateCIdemo_p(this.value);" /> 1 <br>
-      	   p = <output name="pp" for="CIdemo_p"> </output>
-    	</div>
-   	</form>
- </div>
-</div>  
-</div>
-
-   <!-- -------  One Categorical Actions     
-   	3) Lurking Demo   -->
- 
-<div id="LurkingDemoC1" class="w3-container Page" style="display:none">
-	  <h3>Demo of the effects of a categorical lurking variable on proportion estimates</h3>
-
-</div>
-
-
-   <!-- -------  One Categorical Actions     
-   	4) Spinner  
-   	 -->
- <script src="spin.js" charset="utf-8"></script>
-
- <div id="Spinner" class="w3-container Page" style="display:none">
-	  <h3>Random sampling using a 'game board' spinner</h3>
-	 <p>Type as many labels (separated with commas or tabs) in the first box 
-	 as percentages or probabilities in the second. </p>
-	 
- 	<div class = "w3-cell-row w3-mobile" >
- 	<div class = "w3-container w3-cell w3-mobile w3-margin-left" style="width:25%; float:left;">
-  	<div class = "w3-form  w3-mobile" id ="SpinForm">		
-  		<input class = "w3-input w3-border w3-mobile" type = "text" name="spin_categories" 
-  		    id = "spinCats" placeholder="Labels"  style="display:block"</input>
-  		<input class = "w3-input w3-border w3-mobile" type = "text" name="spin_probs" 
-  		    id = "spinPs" placeholder="Weights" action="drawDonut();" style="display:block"</input><br>  		    
-  		<!--
-		<input class="w3-input w3-border w3-mobile" type="text" name = "spin_nCat" 
-		      id = "spinNCat" placeholder="Number of categories" action = "drawDonut();"> </input>
-  		<input class = "w3-select w3-border w3-mobile" type = "text" 
-  			action = "spinner();" id = "spinStopper" name="spin_stopRule" > </input> 
-			<option value="" disabled selected>Stop after ...</option>
-  			<option value="Fixed number">Fixed number of spins</option>
-  			<option value="One of first">One of first type</option>
-  			<option value="One of each">One of each type</option>
-	   	</select>  
-       <div class = "w3-button"  id = "getSpinStop" style = "display:none width:35%" >
-       	    <input class="w3-input w3-border w3-cell w3-mobile" type="text" name = "spin_nStop" 
-		              id = "spinNStop" placeholder="Last Spin:"> </input> 	
-		  -->
-       </div>
-    </div>
-  <!--           If "fixed number" use a popup card to input the number of spins.--> 	 
-   <div class = "w3-container w3-cell" style = "width: 600px; height:410px;" = "spinSVGgoesHere">  
-     
-   </div>  
- </div>
-
-    <span onclick="openVble('OneCat')" class="w3-button w3-large w3-display-bottomright">Back</span>
-  <div class = w3-container>
-  </div>            
-</div>
-
-
-   <!-- -------  One Categorical Actions     
-   	5) Mixer:   -->
- <div id="Mixer" class="w3-container Page" style="display:none">
-	  <h3>Random sampling using by drawing balls from a box</h3>
-	 Pick the number of categories, then enter that many labels (separated with commas or spaces) 
-	 and the same number of percentages or probabilities for each. Spinner starts when you select or 
-	 change the stopping rule.
- 	<div class = "w3-cell-row">
-  	<div class = "w3-form w3-cell-row w3-card" style="width:25%" id ="MixForm">
-		<input class="w3-input w3-border w3-cell w3-mobile" type="text" name = "mix_nCat" 
-		              placeholder="Number of categories"> </input> 		
-  		<input class = "w3-input w3-border w3-cell w3-mobile" type = "text" name="mix_categories" 
-  		  placeholder="Labels" </input><br>
-  		<input class = "w3-input w3-border w3-cell w3-mobile" type = "text" name="mix_probs" 
-  		  placeholder="Numbers of Balls" </input><br>
-  		<select class = "w3-select w3-card w3-border w3-mobile"  name="mix_Replace" > 
-  			<option value="" disabled selected>Replace balls?</option>
-  			<option value="1">Yes</option>
-  			<option value="0">No</option>
-	   	</select>  
-  		<select class = "w3-select w3-card w3-border w3-mobile" onclick="spinner()" name="mix_stopRule" > 
-  			<option value="" disabled selected>Stop after ...</option>
-  			<option value="Fixed Number">Fixed number of spins</option>
-  			<option value="One in First Cat">One spin in 1st category</option>
-  			<option value="One of Each">One of each type</option>
-	   	</select>
-    </div>
-  <!--           If "fixed number" try a card to input the number of spins. -->
-   
-    <svg class = "w3-cell" id="mixSVG" width = 400 height = 300 ></svg>
-	</div>
- 
-    <span onclick="openVble('Mixer')" class="w3-button w3-large w3-display-bottomright">Back</span>
-
-</div>
-
-
-   <!-- -------  One Categorical Actions     
-   	6) Z Table:   -->
-  <div id="Ztable" class="w3-container Page" style="display:none">
   
-  	<h3>Compute cutoffs or probabilities. &nbsp;  &nbsp;  &nbsp;  &nbsp; 
-  		  	  <button onclick="document.getElementById('ZinfoModal').style.display='block'" 
-  		  	  class="w3-button w3-blue w3-medium w3-round-xlarge">
-  	  	Click for more information</button> </h3>
+    Zsvg.append("g")			// Add the X Axis
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
 
-        <div id="ZinfoModal" class="w3-modal">
-    		<div class="w3-modal-content">
-      			<div class="w3-container">
-        			<span onclick="document.getElementById('ZinfoModal').style.display='none'" class="w3-button w3-display-topright">&times;</span>
-        			<p>Input a probability between 0 and 1 to get back a cutoff Z score.</p>
-        			<p>Input a Z score (positive or negative) to get back a probability (area under the curve).</p>
-      			</div>
-    		</div>
-  		</div>
+    //svg.append("g")			// Add the Y Axis
+    //    .attr("class", "y axis")
+    //    .call(yAxis);
 
-     
-  	<div class = "w3-form w3-cell-row w3-mobile" id ="Z1inputs"> 
-		<input class="w3-input w3-cell w3-border w3-mobile w3-margin-left w3-padding-large" style="width:25%; float:left;"
-		        type="text" name = "p" placeholder="Probability" > </input> 	
-  		<input class = "w3-input  w3-cell w3-border w3-mobile w3-padding-large" style="width:25%;" 
-  		        type = "text" name="z" placeholder="Standardized Value" </input>
-	   	<input class = "w3-btn w3-cell w3-green w3-round-xlarge w3-padding-large" type ="button" 
-	   	             id = "Z1go" onclick="computeZ('Z1probs')" 
-	   	        value = "Go"> </input>
-  	</div>	
-        <select class="w3-select w3-card w3-border w3-mobile" name="area">
-  			<option value="" disabled selected>Which area?</option>
-  			<option value="L">Lower</option>
-  			<option value="U">Upper</option>
-  			<option value="E">Extremes</option>
-  			<option value="C">Center</option>
-	   	</select>
-   <div class = "w3-container w3-mobile" id = "zPlotGoesHere" >
-    </div>
-<script type="text/javascript" src = "norms.js">
-  </script>
-<script type="text/javascript" src = "zplot.js">
-  </script>
-      <span onclick="openVble('Ztable')" class="w3-button w3-large w3-display-bottomright">Back</span>
-  </div>   
-  		
+ 
+  // need to convert to using d3 to draw the polyline instead of the saved svg.
+ 
+function computeZ(myForm) {
+	var ZprobDiv = document.getElementById(myForm);
+	var z = 0 + ZprobDiv.z,
+	    p = 0 + ZprobDiv.p;
+	if ( typeof z == undefined) {
+		z = computeZcrit(p, ZprobDiv.area);
+		ZprobDiv.p = undefined;
+	} else {
+		p = computeNormalProb(z, ZprobDiv.area);
+		ZprobDiv.z = null;
+	}
+}
 
-   <!-- ************************************************************
-   	    -------  One Quantitative Actions  --------------------------
-   	    ************************************************************    
-   	1) Test or Estimate a single Mean -->
+ 
+function computeZcrit(p, area) {
+	var z1,
+	    z2;
+	z1 = jStat.normal.inv(p, 0, 1);
+	if (area == "L")
+		return z1;
+	if (area == "U")
+		return -z1;
+	z2 = jStat.normal.inv(p / 2, 0, 1);
+	if (area == "E")
+		return [z2, -z2];
+	z2 = jStat.normal.inv((1 - p) / 2, 0, 1);
+	return [z2, -z2];
+};
 
-  <div id="TestEstQ1" class="w3-container Page" style="display:none">
-  <div class = w3-container>
-  	<h3>Estimate one mean or Test for a particular value</h3>
-  </div>
-      <span onclick="openVble('TestEstQ1')" class="w3-button w3-large w3-display-bottomright">Back</span>
+function computeNormalProb(z1, area) {
+	var p;
+	p = jStat.normal.cdf(z1, 0, 1);
+	if (area == "L") {
+		return p;
+	}
+	if (area == "U") {
+		return 1 - p;
+	}
+	p = jStat.normal.cdf(Math.abs(z1), 0, 1) - jStat.normal.cdf(-Math.abs(z1), 0, 1);
+	if (area == "C") {
+		return p;
+	}
+	return 1 - p;
+}
 
-  </div>   
-  
-  
-  <!-- -------  One Quantitative Actions    
-   	2) Bootstrap Demo -->
-  
-  <div id="BootDemo" class="w3-container Page" style="display:none">
-  <div class = w3-container>
-  	<form class="w3-cell w3-card">
-   		<h4>Confidence Level</h4>
-  		<div class="w3-bar">
-   		<input class="w3-radio" type="radio" name="conf" value="80%" onClick = "confidence = .80; drawCI(BootCount);">
-     		<label>80%</label>
-   		<input class="w3-radio" type="radio" name="conf" value="90%" onClick = "confidence = .90; drawCI(BootCount);" checked="checked">
-   		  <label>90%</label>
-   		<input class="w3-radio" type="radio" name="conf" value="95%" onClick = "confidence = .95; drawCI(BootCount);">
-     		<label>95%</label>
-   		<input class="w3-radio" type="radio" name="conf" value="99%" onClick = "confidence = .99; drawCI(BootCount);">
-     		<label>99%</label>
-    	</div>
-	</form>
-	<div class = "w3-btn w3-cell">      </div>
-	<form class="w3-cell w3-card">
-   		<h4>Sample Size:</h4>
-   		<div class="w3-bar">
-      	<input class="w3-radio" value = 4 type="radio" name="nnn" onClick = "sampSize = 4; newSample();" />
-        	<label>4</label>
-      	<input class="w3-radio" value = 8 type="radio" name="nnn" onClick = "sampSize = 8; newSample();" checked="checked" />
-        	<label >8</label>
-      	<input class="w3-radio" value = 16 type="radio" name="nnn" onClick = "sampSize = 16; newSample();"  />
-        	<label >16</label>
-    	</div>
-   	</form>
-	<div class = "w3-btn w3-cell">      </div>
-    <form class = "w3-cell" name="restart">
-    <input name="restartButton" type="w3.btn" value="Get New Sample "  onClick="newSample()" >
-    </form> 
-  </div>
-  <script  src="boot.js" charset="utf-8">  </script>
-  <span onclick="openVble('BootDemo')" class="w3-button w3-large w3-display-bottomright">Back</span>
- </div>
-</div>  
+function showLower(z, p) {
+	// use filter to subset the data to values data.z < z
+}
 
-   <!-- -------  One Quantitative Actions    
-   	3) Sampling Demo -->
+function showUpper(z, p) {
+	// use filter to subset the data to values data.z > z
+}
 
-  <div id="SamplingDemo" class="w3-container Page" style="display:none">
-  <div class = w3-container>
-  	<h3>Demo of sampling</h3>
-      <span onclick="openVble('SamplingDemo')" class="w3-button w3-large w3-display-bottomright">Back</span>
-  </div>
-  </div>
-      		
-    <!-- -------  One Quantitative Actions    
-   	4) Lurking Demo for quantitative variables -->
-
-  <div id="LurkingDemoQ1" class="w3-container Page" style="display:none">
-  <div class = w3-container>
-  	<h3>Demo of a quantitative lurking variable</h3>
-      <span onclick="openVble('LurkingDemoQ1')" class="w3-button w3-large w3-display-bottomright">Back</span>
-  </div>
-  </div>
-     		
-     <!-- -------  One Quantitative Actions    
-   	5) Power of testing a single mean -->
-
-  <div id="Power" class="w3-container Page" style="display:none">
-  <div class = w3-container>
-  	<h3>How large a sample size is needed?</h3>
-      <span onclick="openVble('Power')" class="w3-button w3-large w3-display-bottomright">Back</span>
-  </div>
-  </div>
-    		
-    <!-- -------  One Quantitative Actions    
-   	6) T probabilities -->
-
-  <div id="Ttable" class="w3-container Page" style="display:none">
-  <div class = w3-container>
-  	<h3>Find probabilities or cutoffs for a t distribution</h3>
-  	<div class = "w3-form" width = "w3-quarter">
-		<input class="w3-input w3-border" type="text" name = "q1_p_txt" placeholder="Probability" 
-			onchange="var z = document.write(computeZcrit('q1_p_txt', 'q1_area');)">  		
-  		<Input class = "w3-input w3-border" type = "text" name="q1_t_txt" placeholder="Standardized Value"> </Input><br>
-  		<Input class = "w3-input w3-border" type = "text" name="q1_tdf_txt" placeholder="DF"> </Input><br>
-        <select class="w3-select" name="q1_area">
-  			<option value="" disabled selected>Which area?</option>
-  			<option value="L">Lower</option>
-  			<option value="U">Upper</option>
-  			<option value="E">Extremes</option>
-  			<option value="C">Center</option>
-	   	</select>
-  </div>
-  <script>
-    computeTcrit = function(prob, df, area){
-    	var t1 = jStat.studentt.inv( prob, df);
-    	if(area == "L") return (t1);
-    	if (area == "U") return (-t1);
-    	var t2 = jStat.studentt.inv( prob/2, df);
-    	if (area == "E") return ([t2, -t2]);
-    	var t3 = jStat.studentt.inv((1-prob)/2, df );
-    	return([t3, -t3]);
-    };
-
-  </script>
-
-  	
-      <span onclick="openVble('Ttable')" class="w3-button w3-large w3-display-bottomright">Back</span>
-  </div>
-  </div>
-   		
-  		
-   <!-- -------************************************************************
-   	    -------  Two Categorical Actions  ----------------------------------
-   	    ******************************************************************* 
-   	       
-   	1) Test or Estimate Difference between two Proportions -->
-
-  <div id="TestEstC2" class="w3-container Page" style="display:none">
-  <div class = w3-container>
-  	<h3>Estimate a difference in proportions or Test for a particular value</h3>
-  </div>
-      <span onclick="openVble('TestEstC2')" class="w3-button w3-large w3-display-bottomright">Back</span>
-
-  </div>   
-
- <!-- -------  Two Categorical Actions    
-   	2) Z Table -->
-
-  <div id="Ztable2" class="w3-container Page" style="display:none">
-  <div class = w3-container>
-  	<h3>Compute probabilities or cutoffs. </h3>
-  </div>
-   	<div class = "w3-form" width = "w3-quarter">
-		<input class="w3-input w3-border" type="text" name = "cat2_p_txt" placeholder="Probability" 
-			onchange="var z = document.write(computeZcrit('cat2_p_txt', 'cat2_area');)">  		
-  		<Input class = "w3-input w3-border" type = "text" name="cat2_z_txt" placeholder="Standardized Value"> 
-  			</Input><br>
-        <select class="w3-select" name="cat2_area">
-  			<option value="" disabled selected>Which area?</option>
-  			<option value="L">Lower</option>
-  			<option value="U">Upper</option>
-  			<option value="E">Extremes</option>
-  			<option value="C">Center</option>
-	   	</select>
-  </div>
-
-      <span onclick="openVble('Ztable2')" class="w3-button w3-large w3-display-bottomright">Back</span>
-
-  </div>   
-   
-
- <!-- ************************************************************
-   	    -------  Two Quantitative Actions ------------------------
-   	    ************************************************************
-   	        
-   	1) Test or Estimate correlation or slope  -->
-
-  <div id="TestEstQ2" class="w3-container Page" style="display:none">
-  <div class = w3-container>
-  	<h3>Estimate slope and correlation. Also test for specific values. </h3>
-  </div>
-      <span onclick="openVble('TestEstQ2')" class="w3-button w3-large w3-display-bottomright">Back</span>
-
-  </div>   
-
- <!-- -------  Two Quantitative Actions    
-   	2) Demo of least squares regression  -->
-
-  <div id="RegressionDemo" class="w3-container Page" style="display:none">
-  <div class = w3-container>
-  	<h3>Demo: How Least Squares Regression coefficients are special </h3>
-  </div>
-      <span onclick="openVble('RegressionDemo')" class="w3-button w3-large w3-display-bottomright">Back</span>
-
-  </div>   
-
- <!-- -------  Two Quantitative Actions    
-   	3) T table   -->
-
-  <div id="Ttable2" class="w3-container Page" style="display:none">
-  <div class = w3-container>
-  	<h3>Compute probabilities or cutoffs. </h3>
-  	<div class = "w3-form" width = "w3-quarter">
-		<input class="w3-input w3-border" type="text" name = "q2_p_txt" placeholder="Probability" 
-			onchange="var z = document.write(computeZcrit('q2_p_txt', 'q2_area');)">  		
-  		<Input class = "w3-input w3-border" type = "text" name="q2_t_txt" placeholder="Standardized Value"> </Input><br>
-  		<Input class = "w3-input w3-border" type = "text" name="q2_tdf_txt" placeholder="DF"> </Input><br>
-        <select class="w3-select" name="q2_area">
-  			<option value="" disabled selected>Which area?</option>
-  			<option value="L">Lower</option>
-  			<option value="U">Upper</option>
-  			<option value="E">Extremes</option>
-  			<option value="C">Center</option>
-	   	</select>
-  </div>
-  </div>
-      <span onclick="openVble('TwoQuant')" class="w3-button w3-large w3-display-bottomright">  spinData./span>
-
-  </div>   
-
-
- <!-- ************************************************************
-   	    -------  One Categorical, One Quantitative Actions -------
-   	   ************************************************************
-   	        
-   	1) Test/ Estimate   -->
-
-  <div id="TestEstC1Q1" class="w3-container Page" style="display:none">
-  <div class = w3-container>
-  	<h3>Estimate the difference between two means or test for a particular value. </h3>
-  </div>
-      <span onclick="openVble('TestEstC1Q1')" class="w3-button w3-large w3-display-bottomright">Back</span>
-
-  </div>   
-
- <!-- -------  One Categorical, One Quantitative Actions    
-   	2) T table   -->
-
-  <div id="Ttable3" class="w3-container Page" style="display:none">
-  <div class = w3-container>
-  	<h3>Compute probabilities or cutoffs. </h3>
-  	<div class = "w3-form" width = "w3-quarter">
-		<input class="w3-input w3-border" type="text" name = "c1q1_p_txt" placeholder="Probability" 
-			onchange="var z = document.write(computeZcrit('c1q1_p_txt', 'c1q1_area');)">  		
-  		<Input class = "w3-input w3-border" type = "text" name="c1q1_t_txt" placeholder="Standardized Value"> </Input><br>
-  		<Input class = "w3-input w3-border" type = "text" name="c1q1_tdf_txt" placeholder="DF"> </Input><br>
-        <select class="w3-select" name="c1q1_area">
-  			<option value="" disabled selected>Which area?</option>
-  			<option value="L">Lower</option>
-  			<option value="U">Upper</option>
-  			<option value="E">Extremes</option>
-  			<option value="C">Center</option>
-	   	</select>
-  </div>
-  </div>
-      <span onclick="openVble('Ttable3')" class="w3-button w3-large w3-display-bottomright">Back</span>
-
-  </div>   
-
-
-</body>
-</html>   
-
-
+function showMiddle(z, p) {
+	// use filter to subset the data to values -z < data.z < z
+}
+       // extremes uses both lower and upper.
 
