@@ -2,17 +2,20 @@
   CI = [],
   CIline = [],
   CItext = [],
-  confidence = .95,
+  confidence = 0.95,
   cumsum = 0,
+  k,
   lowerCount = 0,
   lowerBd = 0,
   minx=50, 
+  margin = {top: 20, right: 20, bottom: 60, left: 30},
   maxx = 0,
   meansArray = [],
   meanDots = [],
   meanSpots = [],
   oneSample = [],
   overlap = 2,
+  ndx,
   popCost = [],
   popSize = 100,
   Rbox = [],
@@ -41,13 +44,13 @@
              resampTime =  resampTime * multiplier;
 	   };
  
-var margin = {top: 20, right: 20, bottom: 60, left: 30};
+
 var width = 640 - margin.left - margin.right,   //20 to 590
     height = 440 - margin.top - margin.bottom;
 var  yht = height* 0.75 - margin.top;          // 250 
 
      //need range of x's to determine x plot axis
- for(var ndx = 0; ndx< popSize; ndx++){
+ for( ndx = 0; ndx< popSize; ndx++){
     popCost[ndx] = popData[ndx].cost;
     if (popCost[ndx] < minx) minx = popCost[ndx];
     if (popCost[ndx] > maxx) maxx = popCost[ndx];
@@ -57,14 +60,14 @@ var  yht = height* 0.75 - margin.top;          // 250
   
 // set up storage for resampled Means with (x,y) coords 
     meansArray[0] = { "x": 20, "y":0};
-for(var i = 1; i < 100 ; i++){
-    meansArray[i] = { "x": 35, "y":0};
+for(ndx = 1; ndx < 100 ; ndx++){
+    meansArray[ndx] = { "x": 35, "y":0};
  }
  
  //document.write(document.getElementByID(Page));
  
 //if( document.getElementsByClassName("Page")[0] == "BootDemo"){
-var svg = d3.select("#BootDemo").append("svg")             // 640w x 440h
+var Bootsvg = d3.select("#BootDemo").append("svg")             // 640w x 440h
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
@@ -78,17 +81,15 @@ var svg = d3.select("#BootDemo").append("svg")             // 640w x 440h
     .range([height* 0.75, margin.top])
     .domain([0, 12.5]);
 
-  
-
- var xAxis = d3.svg.axis()
+  var xAxis = d3.svg.axis()
     .scale(x)
     .orient("bottom");
 
- var yAxis = d3.svg.axis()
+  var yAxis = d3.svg.axis()
     .scale(y)
     .orient("right");
 
-   svg.append("g")
+   Bootsvg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0,272)")
       .call(xAxis);
@@ -96,7 +97,7 @@ var svg = d3.select("#BootDemo").append("svg")             // 640w x 440h
    CI = [ {"x": 11, "y": height/4, "txt": "10" },
               {"x": 31, "y": height/4, "txt": "32" }];
 
-   CIline = svg.selectAll("g.line")
+   CIline = Bootsvg.selectAll("g.line")
     .data(CI)
     .enter().append("line")
     .attr("x1", y(12))
@@ -106,13 +107,13 @@ var svg = d3.select("#BootDemo").append("svg")             // 640w x 440h
     .style("stroke-width",2)
     .style("stroke","white");
 
-   showCI = svg.append("text")
+   showCI = Bootsvg.append("text")
      .attr("x",x(20))
      .attr("y", height + 54)
      .text("Based on " + BootCount + " resamples")
      .style("stroke","white");
 
-   showStats = svg.append("text")
+   showStats = Bootsvg.append("text")
      .attr("x",x(28))
      .attr("y", height)
      .text("Mean ")
@@ -120,14 +121,13 @@ var svg = d3.select("#BootDemo").append("svg")             // 640w x 440h
 
 function rescale() {
     y.domain([0, resampMax + .5]);  // change scale to 0, max(y)
-    svg.select("yAxis")
+    Bootsvg.select("yAxis")
          .transition().duration(300).ease("sin-in-out") 
            .call(yAxis);  
  }
 
- 
   // display the population of costs
-  var popText = svg.selectAll("g.text")
+  var popText = Bootsvg.selectAll("g.text")
           .data(popData)
         .enter().append("text")
          .attr("y", function(d){ return d.y*10 + 12;})  
@@ -135,7 +135,7 @@ function rescale() {
          .text( function(d){return d.cost;});
 
    // add pop title
- var Ptext =  svg.append("text")
+ var Ptext =  Bootsvg.append("text")
      .attr("x", width/5 )
      .attr("y",0.03)
      .attr("font-size", 24 + 'px')
@@ -143,19 +143,19 @@ function rescale() {
      .text("Population of Book Costs");
 
    // create sample button
-  var Stext = svg.append("text")
+  var Stext = Bootsvg.append("text")
      .attr("x",30  )
      .attr("y",100)
      .attr("font-size", 20 + 'px')
      .text("Sample");
 
- for(var ndx = 0; ndx < 16; ndx++){
+ for( ndx = 0; ndx < 16; ndx++){
     oneSample[ndx] = {"x": 30 + ndx * 50, 
                        "y": 10, "txt": ndx};
  }
 
    // frame the button and make it clickable  
-  var Sbox= svg.append("rect")
+  var Sbox= Bootsvg.append("rect")
      .attr("x", 12)
      .attr("y", 80)
      .attr("width", 102)
@@ -175,16 +175,16 @@ function rescale() {
 	popCost = d3.shuffle(popCost);
 	oneSample.length =sampSize;
 
-	for(var ndx = 0; ndx < 16; ndx++){
+	for( ndx = 0; ndx < 16; ndx++){
 	    oneSample[ndx] = {"x": 30 + ndx * 50, 
 			      "y": 10, "txt": ndx};
 	}
 
-	for(var k = 0;  k < sampSize -0.1; k++ ){
-            oneSample[k].txt =  popCost[k] ;
+	for( ndx = 0;  ndx < sampSize -0.1; ndx++ ){
+            oneSample[ndx].txt =  popCost[ndx] ;
 	}
 	if(sampSize < 16){
-            for(var k = 15; k >= sampSize; k-- ){
+            for( k = 15; k >= sampSize; k-- ){
 		oneSample[k].txt =  null ;
 	    }
 	}
@@ -200,7 +200,7 @@ function rescale() {
 	sFontSize = (sampSize < 15) ? "30px": "20px";
 	xStepSize = (sampSize > 8) ? 30: (sampSize > 4)? 50: 100;
 
-       sampleText = svg.selectAll("text2")  // create the sample text objects
+       sampleText = Bootsvg.selectAll("text2")  // create the sample text objects
            .data(oneSample)
          .enter().append("text")
            .attr("y", function(d){ return d.y ;})  
@@ -220,7 +220,7 @@ function rescale() {
          Ptext.transition().delay(sampTime * sampSize).remove(function(d) { d.remove;}); 
 
 
-         svg.append("text")      // create 1 Resample button
+         Bootsvg.append("text")      // create 1 Resample button
           .attr("x",  4  )
           .attr("y",height)
           .attr("font-size", 18 + "px")
@@ -231,7 +231,7 @@ function rescale() {
            .duration(sampTime)
            .style("fill-opacity", 1);
 
-      Rbox = svg.append("rect")    // and it's frame and activation
+      Rbox = Bootsvg.append("rect")    // and it's frame and activation
            .attr("class", "rect")
            .attr("x", 0)
            .attr("y", height - 20)
@@ -251,7 +251,7 @@ function rescale() {
 //           .style("stroke", "blue" )
 //           .style("stroke-width",2 );
 
-         svg.append("text")      // create speed buttons
+         Bootsvg.append("text")      // create speed buttons
           .attr("x",  126  )
           .attr("y",height - 12)
           .attr("font-size", "9px")
@@ -262,7 +262,7 @@ function rescale() {
            .duration(sampTime)
            .style("fill-opacity", 1);
 
-         svg.append("text")   // faster label
+         Bootsvg.append("text")   // faster label
           .attr("x",  127  )
           .attr("y",height +8)
           .attr("font-size", "9px")
@@ -273,7 +273,7 @@ function rescale() {
            .duration(sampTime)
            .style("fill-opacity", 1);
 
-      Sbox1 = svg.append("rect")    // slower button
+      Sbox1 = Bootsvg.append("rect")    // slower button
            .attr("class", "rect")
            .attr("x", 122)
            .attr("y", height - 22)
@@ -293,7 +293,7 @@ function rescale() {
            .style("stroke", "blue" )
            .style("stroke-width", 1);
 
-      Sbox2 = svg.append("rect")    // faster button
+      Sbox2 = Bootsvg.append("rect")    // faster button
            .attr("class", "rect")
            .attr("x", 122)
            .attr("y", height -2 )
@@ -313,7 +313,7 @@ function rescale() {
            .style("stroke", "blue" )
            .style("stroke-width",1 );
 
-       svg.append("text")      // Many Resamples
+       Bootsvg.append("text")      // Many Resamples
             .attr("x", 0  )
           .attr("y",  height + 33)
           .attr("font-size", "18px")
@@ -324,7 +324,7 @@ function rescale() {
            .duration(sampTime)
           .style("fill-opacity", 1);
 
-       svg.append("text")      // create Resample 100 button
+       Bootsvg.append("text")      // create Resample 100 button
             .attr("x",  200  )
           .attr("y", height + 30)
           .attr("font-size", "16px")
@@ -335,7 +335,7 @@ function rescale() {
            .duration(sampTime)
            .style("fill-opacity", 1);
 
-     var overlayC = svg.append("rect")    // 100 frame and activation
+     var overlayC = Bootsvg.append("rect")    // 100 frame and activation
            .attr("class", "rect")
             .attr("x", 195)
            .attr("y", height + 10)
@@ -352,7 +352,7 @@ function rescale() {
            .duration(sampTime)
            .style("fill-opacity", 0.2);
 
-       svg.append("text")      // create Resample 500 button
+       Bootsvg.append("text")      // create Resample 500 button
             .attr("x",  250  )
           .attr("y", height + 30)
           .attr("font-size", "16px")
@@ -363,7 +363,7 @@ function rescale() {
            .duration(sampTime)
            .style("fill-opacity", 1);
 
-     var overlayD = svg.append("rect")    // 500 frame and activation
+     var overlayD = Bootsvg.append("rect")    // 500 frame and activation
            .attr("class", "rect")
             .attr("x", 245)
            .attr("y", height + 10)
@@ -380,7 +380,7 @@ function rescale() {
            .duration(sampTime)
           .style("fill-opacity", 0.4);
 
-       svg.append("text")      // create Resample 1000 button
+       Bootsvg.append("text")      // create Resample 1000 button
             .attr("x", 300 )
           .attr("y",  height + 30)
           .attr("font-size", "16px" )
@@ -391,7 +391,7 @@ function rescale() {
            .duration(sampTime)
           .style("fill-opacity", 1);
  
-    var overlayM =  svg.append("rect")    // 1000 frame and activation
+    var overlayM =  Bootsvg.append("rect")    // 1000 frame and activation
            .attr("class", "rect")
            .attr("x", 295 )
            .attr("y", height + 10)
@@ -408,7 +408,7 @@ function rescale() {
            .duration(sampTime)
           .style("fill-opacity", 0.15);
 
-      svg.append("text")      // create Resample 5000 button
+      Bootsvg.append("text")      // create Resample 5000 button
             .attr("x", 360  )
           .attr("y",  height + 30)
           .attr("font-size", "14px")
@@ -419,7 +419,7 @@ function rescale() {
            .duration(sampTime)
           .style("fill-opacity", 1);
 
-     var overlayDX = svg.append("rect")    // 5000 frame and activation
+     var overlayDX = Bootsvg.append("rect")    // 5000 frame and activation
            .attr("class", "rect")
             .attr("x", 355)
            .attr("y", height + 10)
@@ -436,7 +436,7 @@ function rescale() {
            .duration(sampTime)
           .style("fill-opacity", 0.15);
 
-      svg.append("text")      // create Resample 10000 button
+      Bootsvg.append("text")      // create Resample 10000 button
             .attr("x", 430 )
           .attr("y",  height + 30)
           .attr("font-size", "14px")
@@ -447,7 +447,7 @@ function rescale() {
            .duration(sampTime)
           .style("fill-opacity", 1);
 
-     var overlayMX = svg.append("rect")    // 10000 frame and activation
+     var overlayMX = Bootsvg.append("rect")    // 10000 frame and activation
            .attr("class", "rect")
             .attr("x", 425)
            .attr("y", height + 10)
@@ -498,7 +498,7 @@ function rescale() {
 		 .attr("width", 112);
          }
          // extract the selected number from sample and pull into resample
-          resamp = svg.selectAll("text3")
+          resamp = Bootsvg.selectAll("text3")
              .data(reData)
            .enter().append("text")
              .attr("y", height -40)  
@@ -508,7 +508,7 @@ function rescale() {
              .style("font-size","2px");
            resamp.transition()
              .delay(function(d, i) { return (i + 0.5) * 2 * resampTime ; })
-             .duration(.75*resampTime)
+             .duration(.75 * resampTime)
              .ease("linear")
              .attr("y", height )  
              .attr("x", function(d,i){ return 180 + i * xStepSize * .9 ;} ) 
@@ -526,7 +526,7 @@ function rescale() {
 	    // .attr("font-size","0px").remove()  ; 
              
 	 //use transparent circles to show numbers of resamples		     
-         spots = svg.selectAll("g.circle")
+         spots = Bootsvg.selectAll("g.circle")
              .data(reData)
            .enter().append("circle")
              .attr("cx", function(d,i){ return 145 + resample[i] * xStepSize +
@@ -606,7 +606,7 @@ function rescale() {
         //x.domain([resampMean[0], resampMean[BootCount-1] ]);
 	y.domain([0, resampMax + .5]);  
 
-	meanDots =  svg.selectAll("g.circle")
+	meanDots =  Bootsvg.selectAll("g.circle")
             .data(meansArray);
 	//meanDots.length = BootCount; 
 	meanDots.enter().append("circle")
@@ -653,7 +653,7 @@ function rescale() {
             .style("stroke-width",2)
             .style("stroke","red");
 
-       CItext = svg.selectAll("g.text")
+       CItext = Bootsvg.selectAll("g.text")
             .data(CI)
          .enter().append("text")
            //.transition().delay(resampTime * BootCount/1000)
@@ -680,7 +680,7 @@ function rescale() {
     // show population again
      //sampSize = 
      //confidence = 
-    popText = svg.selectAll("g.text")
+    popText = Bootsvg.selectAll("g.text")
       .data(popData)
       .enter().append("text")
       .attr("y", function(d){ return d.y*10 + 12;})  
