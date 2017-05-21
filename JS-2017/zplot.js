@@ -3,7 +3,19 @@ var changed,
 	margin = {top: 30, right: 20, bottom: 30, left: 50},
     width = 540 - margin.left - margin.right,
     height = 320 - margin.top - margin.bottom,
-    z = jStat.seq(-3.2,3.2, 303);
+    z = jStat.seq(-3.2,3.2, 303),
+    zlb = -2;
+    
+  function zfilter(z){
+  	if (z > 1.00) {return  jStat.normal.pdf(0, 0, 1);}
+    else {
+    	return 0;
+    }
+  }  
+  
+  function condition(z){
+  	return (z > 1.0);
+  }
 
    
 var x = d3.scale.linear().range([0, width]),
@@ -13,14 +25,23 @@ var x = d3.scale.linear().range([0, width]),
     y.domain([0, jStat.normal.pdf(0, 0, 1)]);
 
 var xAxis = d3.svg.axis().scale(x)
-    .orient("bottom").ticks(5);
+    .orient("bottom").ticks(7);
 
 //var yAxis = d3.svg.axis().scale(y)
 //    .orient("left").ticks(5);
 
+
 var pdfline = d3.svg.line()
     .x(function(d) { return x(d); })
     .y(function(d) { return y(jStat.normal.pdf(d, 0, 1)); });
+    
+var pdfarea = d3.svg.line()
+    .x(function(d) { return x(d ); })
+    .y(function(d) { if (d > zlb) { return y(0);} else {return y(jStat.normal.pdf(d, 0, 1))}; });
+
+var initarea = d3.svg.line()
+    .x(function(d) { return x(d ); })
+    .y(function(d){ return y(0.00);});
     
 var Zsvg = d3.select("#zPlotGoesHere")
      .append("svg")
@@ -35,25 +56,31 @@ var pdfLine = Zsvg.append("path")
                             .attr("stroke", "blue")
                             .attr("stroke-width", 2)
                             .attr("fill", "none");
-
-//var pathAttributes = pdfLine
-//                       .attr("x", function(d) {return d;})
-//                       .attr("y", function(d) {return jStat.normal.pdf(d, 0, 1);})
-//                      .style("fill", "green");
-
-
+var pdfArea = Zsvg.append("path")
+                            .attr("d", pdfarea(z))
+                            .attr("stroke", "red")
+                            .attr("stroke-width", 2)
+                            .attr("fill", "red")
+                            .on("mousedown", changeColor );
+  function changeColor(){
+    d3.select(this)
+      .transition()            
+        .delay(0)            
+        .duration(5000)
+        .attr("fill", "blue");
+//        .attr("d", pdfarea(z) );
+// for some reason starting with initarea and changing "d" to pdfarea does a weird shrink. 
+  };                       
   
-    Zsvg.append("g")			// Add the X Axis
+  Zsvg.append("g")			// Add the X Axis
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height + ")")
         .call(xAxis);
 
-    //svg.append("g")			// Add the Y Axis
+    //Zsvg.append("g")			// Add the Y Axis
     //    .attr("class", "y axis")
     //    .call(yAxis);
 
- 
-  // need to convert to using d3 to draw the polyline instead of the saved svg.
  
 function computeZ(myForm) {
 	var ZprobDiv = document.getElementById(myForm);
@@ -100,16 +127,24 @@ function computeNormalProb(z1, area) {
 	return 1 - p;
 }
 
-function showLower(z, p) {
+function showLower(zUpBd) {
 	// use filter to subset the data to values data.z < z
+	condition = function(z) {return (z <= zUpBd);};
 }
 
-function showUpper(z, p) {
+function showUpper(zLwBd) {
 	// use filter to subset the data to values data.z > z
+	condition = function(z) {return (z >= zLwBd);};
 }
 
-function showMiddle(z, p) {
+function showMiddle(zBd) {
 	// use filter to subset the data to values -z < data.z < z
+	condition = function(z) {return (z >= -zBd & z <= zBd); };
 }
        // extremes uses both lower and upper.
+       
+function showTails(zBd) {
+	// use filter to subset the data to values -z < data.z < z
+	condition = function(z) {return (z <= -zBd | z >= zBd );};
+}
 
