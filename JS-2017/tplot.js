@@ -1,68 +1,67 @@
-var changed = "N",
+var tchanged = "N",
 	ndx,
 	margin = {top: 10, right: 20, bottom: 30, left: 50},
-    p,
+    probt,
     plusminus = "+/-",
-    pText,
-    z = jStat.seq(-3.2,3.2, 303),
-    z1,
-    z2,
-    zText;
+    ptText,
+    tseq = jStat.seq(-5.2, 5.2, 303),
+    t1,
+    t2,
+    ttText;
 
    
 var width = 540 - margin.left - margin.right,
     height = 320 - margin.top - margin.bottom;
-var	xRange = d3.scale.linear().range([0, width]).domain(d3.extent(z)),
-	yRange = d3.scale.linear().range([height, margin.top]).domain([0, jStat.normal.pdf(0, 0, 1)]);
 
-var xAxis = d3.svg.axis().scale(xRange)
+
+ //ytAxis = d3.svg.axis().scale(ytRange)
+   // .orient("left").ticks(5);
+    
+drawTcurve = function(){   
+	//var new = true;
+  tdf= +document.getElementById("dfT").value;
+  xtRange = d3.scale.linear().range([0, width]).domain(d3.extent(tseq));
+  ytRange = d3.scale.linear().range([height, margin.top]).domain([0, jStat.studentt.pdf(0, tdf)]);
+ xtAxis = d3.svg.axis().scale(xtRange)
     .orient("bottom").ticks(7);
 
-var yAxis = d3.svg.axis().scale(yRange)
-    .orient("left").ticks(5);
-           
-var pdfline = d3.svg.line()
-    .x(function(d) { return xRange(d); })
-    .y(function(d) { return yRange(jStat.normal.pdf(d, 0, 1)); });
-    
-   
-var Zsvg = d3.select("#zPlotGoesHere")
+  pdftline = d3.svg.line()
+    .x(function(d) { return xtRange(d); })
+    .y(function(d) { return ytRange(jStat.studentt.pdf(d, tdf)); });
+	
+	if(typeof(tsvg) === "object"){
+	  d3.selectAll("path").remove();
+	} else{
+  	tsvg = d3.select("#tPlotGoesHere")
      .append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
     .append("g")
         .attr("transform", 
               "translate(" + margin.left + "," + margin.top + ")");
-  
-  Zsvg.append("g")			// Add the X Axis
+  }
+  tsvg.append("g")			// Add the X Axis
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
+        .call(xtAxis);
 
- //Zsvg.append("g")			// Add the Y Axis
- //    .attr("class", "y axis")
- //    .call(yAxis);
-
-var pdfLine = Zsvg.append("path")
-                      .attr("d", pdfline(z))
+  pdftLine = tsvg.append("path")
+                      .attr("d", pdftline(tseq))
                       .attr("stroke", "blue")
                       .attr("stroke-width", 2)
                       .attr("fill", "none");
 
 
- //TODO:
-  // controls: when prob changes run computeZ
-  // 			when z changes run computeProb
-  //  consider: move prob and z input into the svg?
 
-// add buttons for desired area  
-        Zsvg.append("text")      // create Lower Area Button
+// add buttons for desired area
+//if(typeof(tsvg) === "object"){  
+        tsvg.append("text")      // create Lower Area Button
           .attr("x",  4  )
           .attr("y", 20)
           .attr("font-size", 18 + "px")
           .text("Lower");
 
-   var   Lbox = Zsvg.append("rect")    // and it's frame and activation
+   var   Ltbox = tsvg.append("rect")    // add frame and activation
            .attr("class", "rect")
            .attr("x", 0)
            .attr("y", 0)
@@ -76,15 +75,15 @@ var pdfLine = Zsvg.append("path")
            .style("fill-opacity", 1.0E-6)
            .on("click",  function(){ 
 				area = "L";
-				filterZ( area);});
+				filtert( area);});
            
-         Zsvg.append("text")      // create Upper Area Button
+         tsvg.append("text")      // create Upper Area Button
           .attr("x", 425   )
           .attr("y", 20)
           .attr("font-size", 18 + "px")
           .text("Upper");
 
-   var   Ubox = Zsvg.append("rect")    // and it's frame and activation
+   var   Utbox = tsvg.append("rect")    // add frame and activation
            .attr("class", "rect")
            .attr("x", 420)
            .attr("y", 0)
@@ -98,15 +97,15 @@ var pdfLine = Zsvg.append("path")
            .style("fill-opacity", 1.0E-6)
            .on("click",  function(){ 
 				area = "U";
-				filterZ( area);});
+				filtert( area);});
            
-         Zsvg.append("text")      // create Center Area Button
+         tsvg.append("text")      // create Center Area Button
           .attr("x", 275   )
           .attr("y", 24)
           .attr("font-size", 18 + "px")
           .text("Center");
 
-   var   Cbox = Zsvg.append("rect")    // and it's frame and activation
+   var   Ctbox = tsvg.append("rect")    // add frame and activation
            .attr("class", "rect")
            .attr("x", 270)
            .attr("y", 0)
@@ -120,15 +119,15 @@ var pdfLine = Zsvg.append("path")
            .style("fill-opacity", 1.0E-6)
            .on("click",  function(){ 
 				area = "C";
-				filterZ( area);});
+				filtert( area);});
            
-         Zsvg.append("text")      // create Extremes Area Button
+         tsvg.append("text")      // create Extremes Area Button
           .attr("x", 4   )
           .attr("y", 114)
           .attr("font-size", 18 + "px")
           .text("Extremes");
 
-   var   Ebox = Zsvg.append("rect")    // and it's frame and activation
+   var   Etbox = tsvg.append("rect")    // add frame and activation
            .attr("class", "rect")
            .attr("x", 0)
            .attr("y", 94)
@@ -142,15 +141,15 @@ var pdfLine = Zsvg.append("path")
            .style("fill-opacity", 1.0E-6)
            .on("click", function(){ 
 				area = "E";
-				filterZ( area);});
+				filtert( area);});
            
-         Zsvg.append("text")      // create 2nd Extremes Area Button
+         tsvg.append("text")      // create 2nd Extremes Area Button
           .attr("x", 397   )
           .attr("y", 114)
           .attr("font-size", 18 + "px")
           .text("Extremes");
 
-   var   Ebox2 = Zsvg.append("rect")    // and it's frame and activation
+   var   Etbox2 = tsvg.append("rect")    // add frame and activation
            .attr("class", "rect")
            .attr("x", 394)
            .attr("y", 94)
@@ -164,85 +163,91 @@ var pdfLine = Zsvg.append("path")
            .style("fill-opacity", 1.0E-6)
            .on("click",  function(){ 
 				area = "E";
-				filterZ( area);});
-// See form validation example https://www.w3schools.com/js/js_validation.asp
+				filtert( area);});
+  
+  
+}
 
-function filterZ( area) {
-	var add = false,
-	    output, pOut, pIn,
-	    xpLoc, xzLoc, ypLoc, yzLoc,
-	    zIn, zAbs, zOut,zero = 0.000 ;  
-    if (changed ==="Z") {
-   		zIn = +document.getElementById("zInput").value + zero; // trouble if I input 1 with no decimal, it gets 10??
-   		//console.log(zIn.typeOf);
-    	zAbs = Math.abs(zIn);
+function filtert( area) {
+	var ptOut, ptIn,
+		tadd = false, toutput, 
+	    xptLoc, xttLoc, yptLoc, yttLoc,
+	    tscoreIn, tscoreAbs, tscoreOut, zero = 0.000 ;  
+    if (tchanged ==="T") {
+   		tscoreIn = +document.getElementById("tInput").value; 
+   		//console.log(tIn.typeof);
+    	tscoreAbs = Math.abs(tscoreIn);
+	     //console.log(typeof(tscoreIn));
 		if (area === "L") {
-			output = jStat.seq(-4.0, zIn, 200);
-			pOut = jStat.normal.cdf(zIn, 0, 1).toPrecision(4);
+			toutput = jStat.seq(-7.0, tscoreIn, 200);
+			ptOut = jStat.studentt.cdf(tscoreIn, tdf).toPrecision(4);
 		} else 	if (area === "U") {
-			output =  jStat.seq(zIn, 4.0,  200);
-			pOut = (1 - jStat.normal.cdf(zIn, 0, 1)).toPrecision(4);
+			toutput =  jStat.seq(tscoreIn, 7.0,  200);
+			ptOut = (1 - jStat.studentt.cdf(tscoreIn, tdf)).toPrecision(4);
 		} else 	if (area === "E") {
 			//Lower end
-			output =  jStat.seq(-4.0, -zAbs, 150);
-			zOut = -zAbs;
-			drawArea( jStat.seq(zAbs, 4.0,  150), false);
-			add = true;  // add in upper end
-			zOut = zAbs;
-			pOut = (2 * jStat.normal.cdf(-zAbs, 0, 1)).toPrecision(4);
+			toutput =  jStat.seq(-7.0, -tscoreAbs, 150);
+			tscoreOut = -tscoreAbs;
+			drawtArea( jStat.seq(tscoreAbs, 7.0,  150), false);
+			tadd = true;  // add in upper end
+			tscoreOut = tscoreAbs;
+			ptOut = (2 * jStat.studentt.cdf(-tscoreAbs, tdf)).toPrecision(4);
 		} else{   // center
-			output =  jStat.seq(-zAbs, zAbs, 200);
-			pOut = (jStat.normal.cdf(zAbs, 0, 1) - jStat.normal.cdf(-zAbs, 0, 1)).toPrecision(4);
+			toutput =  jStat.seq(-tscoreAbs, tscoreAbs, 200);
+			ptOut = (jStat.studentt.cdf(tscoreAbs, tdf) - jStat.studentt.cdf(-tscoreAbs, tdf)).toPrecision(4);
 		}
-		printPResults(pOut);
-    } else if (changed === "P"){
-    	pIn = document.getElementById("pInput").value +0.0;
-    	zIn = jStat.normal.inv(pIn, 0, 1);  // set for Lower, reverse sign for upper
+		printPtResults(ptOut);
+    } else if (tchanged === "P"){
+    	ptIn = +document.getElementById("ptInput").value;
+    	tscoreIn = jStat.studentt.inv(ptIn, tdf);  // set for Lower, reverse sign for upper
+		//console.log(typeof(tscoreIn));
 	if (area === "L") {
-		output = jStat.seq(-4.0, zIn, 200);
-		zOut =  zIn.toPrecision(4);
+		toutput = jStat.seq(-7.0, tscoreIn, 200);
+		tscoreOut =  tscoreIn.toPrecision(4);
 	} else 	if (area === "U") {
-		output =  jStat.seq(-zIn, 4.0,  200);
-		zOut =   -zIn.toPrecision(4);
+		toutput =  jStat.seq(-tscoreIn, 7.0,  200);
+		tscoreOut =   -tscoreIn.toPrecision(4);
 	} else 	if (area === "E") {
-   	    zAbs = -jStat.normal.inv(pIn/2.0, 0, 1); 
-		output =  jStat.seq(-4.0, -zAbs, 150);  // lower end
-		drawArea( output, false);
-		output = jStat.seq(zAbs, 4.0,  150);
-		add = true;
-		zOut = plusminus.concat(zAbs.toPrecision(4));
+   	    tscoreAbs = -jStat.studentt.inv(ptIn/2.0, tdf); 
+		toutput =  jStat.seq(-7.0, -tscoreAbs, 150);  // lower end
+		drawtArea( toutput, false);
+		toutput = jStat.seq(tscoreAbs, 7.0,  150);
+		tadd = true;
+		tscoreOut = plusminus.concat(tscoreAbs.toPrecision(4));
 	} else{   // center
-   	    zAbs = -jStat.normal.inv((1.0 - pIn)/2, 0, 1); 
-		output =  jStat.seq(-zAbs, zAbs, 200);
-		zOut = plusminus.concat(zAbs.toPrecision(4));
+   	    tscoreAbs = -jStat.studentt.inv((1.0 - ptIn)/2, tdf); 
+		toutput =  jStat.seq(-tscoreAbs, tscoreAbs, 200);
+		tscoreOut = plusminus.concat(tscoreAbs.toPrecision(4));
 	}
-    printZResults(zOut );  
+    printtResults(tscoreOut );  
    }
-   drawArea(output, add) ; 
+	//console.log(typeof(toutput));
+   drawtArea(toutput, tadd) ; 
 }  
 
-  function drawArea(filteredZs, add){
+  function drawtArea(filteredts, tadd){
   	 // clear out old areas
-  	 if(add == false){
-  	  Zsvg.append("path")
-                      .attr("d", pdfline(z))
+  	 //console.log(typeof(filteredts));
+  	 if(tadd == false){
+  	  tsvg.append("path")
+                      .attr("d", pdftline(tseq))
                       .attr("stroke", "blue")
                       .attr("stroke-width", 2)
                       .attr("fill", "white");
         }
-        var startData = filteredZs.map( function(d) { return 0; } );
-        var ydata = filteredZs.map(function(d){return jStat.normal.pdf(d, 0,1); });
+        var startData = filteredts.map( function(d) { return 0; } );
+        var ydata = filteredts.map(function(d){return jStat.studentt.pdf(d, tdf); });
         var area = d3.svg.area()
             .interpolate("linear")
             .x( function(d, i ) {
-              return xRange( filteredZs[i] );  // x_coord's don't change
+              return xtRange( filteredts[i] );  // x_coord's don't change
             })
             .y0(yRange(0))
             .y1(function(d) {
-              return yRange(d);    // y_coords will shift from 0 to full value 
+              return ytRange(d);    // y_coords will shift from 0 to full value 
             });
-        var path = Zsvg.append("path")
-        .datum(filteredZs)
+        Tpath = tsvg.append("path")
+        .datum(filteredts)
         .attr("fill", 'white')
         .attr("stroke", "red")
         .attr("opacity", .20)
@@ -261,31 +266,32 @@ function filterZ( area) {
   };                       
 
 
-function printPResults(pTxt ){
+function printPtResults(pTxt ){
 	var prob = "Probability: ";
-	if (pText){
-		pText.remove();
+	if (ptText){
+		ptText.remove();
 	}
-	if(zText){ 
-		zText.remove();
+	if(ttText){ 
+		ttText.remove();
 	}
-	pText = Zsvg.append("text")
+	ptText = tsvg.append("text")
 	.attr("x", 5)
 	.attr("y", 70)
 	.attr("style","none")
 	.text( prob.concat(pTxt));
 }
-function printZResults(zTxt ){
-	var zscore = "Z score: ";
-	if (pText){
-		pText.remove();
+
+function printtResults(tTxt ){
+	var tscore = "t score: ";
+	if (ptText){
+		ptText.remove();
 	}
-	if(zText){ 
-		zText.remove();
+	if(ttText){ 
+		ttText.remove();
 	}
-	zText = Zsvg.append("text")
+	ttText = tsvg.append("text")
 	.attr("x", 310)
 	.attr("y", 70)
 	.attr("style","none")
-	.text( zscore.concat( zTxt));
+	.text( tscore.concat( tTxt));
 }

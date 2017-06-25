@@ -16,6 +16,7 @@
         cumProb=[];     // cumulative probabilities
         //    nCat =  parseInt( document.getElementById("spinNCat").value),  // number of categories
         
+        
 var Spinvis = d3.select("#spinSVGgoesHere").append("svg")             // 640w x 440h
     .attr("width",  width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
