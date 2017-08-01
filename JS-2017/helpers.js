@@ -15,7 +15,7 @@ function cut(input, dividers) {
 	if (input < dividers[0] | input > dividers[dividers.length - 1]) {
 		return (null);
 	}
-	for ( i = 0; i < dividers.length; i++) {
+	for ( i = 1; i < dividers.length; i++) {
 		if (input < dividers[i]) {
 			break;
 		}
@@ -49,7 +49,7 @@ function rle(x) {
 
 
 function rgeom(prob) {
-	return ceiling(ln(Math.rand()) / ln(1 - prob));
+	return Math.ceiling(ln(Math.rand()) / ln(1 - prob));
 }
 
 
@@ -64,9 +64,9 @@ function sample(values, nreps, prob) {
 		return x / totalProb;
 	};
 	prob = jStat.map(prob, stdize);
-	cumProb = jStat.cumsum(prob);
+	cumProb = jStat.cumsum(prob).unshift(0);
 	for ( i = 0; i < nreps; i++) {
-		out[i] = values[ cut(Math.random(), [0, cumProb])];
+		out[i] = values[ cut(Math.random(), cumProb)];
 	}
 	return out;
 }

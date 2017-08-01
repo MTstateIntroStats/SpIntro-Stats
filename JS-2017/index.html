@@ -103,17 +103,46 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
     	</div>
     	
    <!--             Two Categorical  --------------->
-  	 <button class="w3-button w3-hover-white w3-mobile" 
+  	 <button class="w3-button  w3-hover-white w3-mobile" onclick="actionsFunc('cat2Actions')">
+				2 Cat  <i class="fa fa-caret-down"></i> </button>
+   		<div id="cat2Actions" class="w3-dropdown-content w3-hide w3-light-blue w3-card-4">
+  			<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('TestEstC2')">
+  				Test/Estimate</button>
+      		<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('Ztable')">			
+    			Normal Prob's </button>
+    	</div>
+  	<!--
+  		 <button class="w3-button w3-hover-white w3-mobile" 
                  onclick="openVble('TwoCat')">
                   2 Cat</button>
     	
    <!--             Two Quantitative  --------------->
-  	<button class="w3-button w3-hover-white w3-mobile" 
+  	 <button class="w3-button  w3-hover-white w3-mobile" onclick="actionsFunc('quant2Actions')">
+				2 Quant  <i class="fa fa-caret-down"></i> </button>
+   		<div id="quant2Actions" class="w3-dropdown-content w3-hide w3-light-blue w3-card-4">
+  			<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('TestEstQ2')">
+  				Test/Estimate</button>
+      		<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('RegressionDemo')">
+      			Regression Demo</button>
+      		<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('Ttable')">			
+    			T Prob's </button>
+    	</div>
+  	<!-- 
+  		<button class="w3-button w3-hover-white w3-mobile" 
                  onclick="openVble('TwoQuant')">
                  2 Quant</button>
     	
    <!--             One Categorical AND One Quantitative  --------------->
-  	<button class="w3-button w3-hover-white w3-mobile" 
+  	 <button class="w3-button  w3-hover-white w3-mobile"onclick="actionsFunc('cat1quant1Actions')">
+				1 Cat, 1 Quant  <i class="fa fa-caret-down"></i> </button>
+   		<div id="cat1quant1Actions" class="w3-dropdown-content w3-hide w3-light-blue w3-card-4">
+  			<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('TestEstC1Q1')">
+  				Test/Estimate</button>
+      		<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('Ttable')">			
+    			T Prob's </button>
+    	</div>
+  	<!--
+  		<button class="w3-button w3-hover-white w3-mobile" 
                  onclick="openVble('Cat1Quant1')">
                  1 Cat, 1 Quant</button>
    
@@ -149,6 +178,7 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
 <div id="OneQuant" class="w3-container vType" style="display:none">
   <span onclick="this.parentElement.style.display='none'"
   class="w3-button w3-large w3-display-bottomright">Back</span>
+ 
   <div class="w3-display-container w3-white" style="height:50px;">
   	<div class="w3-bar w3-light-blue w3-card-2 w3-left-align w3-large w3-mobile w3-display-topmiddle">
   		<button class="w3-bar-item w3-button w3-hover-white w3-mobile" onclick="choosePage('TestEstQ1')">
@@ -296,7 +326,12 @@ function closePages() {
    	---------------------- One Categorical Actions  -----------------
    	*****************************************************************
    	*      
-   	1) Test or Estimate:   -->
+   	1) Test or Estimate:   
+   	 ToDo:  needs data entry, 
+   	 summary, 
+   	 bar chart, 
+   	 test p = p0
+   	 estimate p-->
  
 <div id="TestEstC1" class="w3-container Page" style="display:none">
   <div class = w3-container>
@@ -305,8 +340,10 @@ function closePages() {
       <span onclick="openVble('OneCat')" class="w3-button w3-large w3-display-bottomright">Back</span>
 </div>
 
-   <!-- -------  One Categorical Options     
-   	2) CI Demo with known p:   -->
+   <!-- -------  One Categorical Actions     
+   	2) CI Demo with known p:   
+   	ToDo:  Inputs work, need replication and plot of outcomes
+   	-->
 
 <div id="CIDemoC1" class="w3-container Page" style="display:none">
   <div class = w3-container>
@@ -354,7 +391,8 @@ function closePages() {
 </div>
 
    <!-- -------  One Categorical Actions     
-   	3) Lurking Demo   -->
+   	3) Lurking Demo  
+   	ToDo:  everything -->
  
 <div id="LurkingDemoC1" class="w3-container Page" style="display:none">
 	  <h3>Demo of the effects of a categorical lurking variable on proportion estimates</h3>
@@ -369,22 +407,32 @@ function closePages() {
 
    <!-- -------  One Categorical Actions     
    	4) Spinner  
+   	ToDo:  get spinner to show in the svg window
+   	 choose outcome
+   	 replicate number
+   	 summary
+   	 dotplot
    	 -->
- <script src="spin.js" charset="utf-8"></script>
-
  <div id="Spinner" class="w3-container Page" style="display:none">
 	  <h3>Random sampling using a 'game board' spinner</h3>
 	 <p>Type as many labels (separated with commas or tabs) in the first box 
 	 as percentages or probabilities in the second. </p>
-	 
- 	<div class = "w3-cell-row w3-mobile" >
- 	<div class = "w3-container w3-cell w3-mobile w3-margin-left" style="width:25%; float:left;">
-  	<div class = "w3-form  w3-mobile" id ="SpinForm">		
-  		<input class = "w3-input w3-border w3-mobile" type = "text" name="spin_categories" 
-  		    id = "spinCats" placeholder="Labels"  style="display:block"</input>
-  		<input class = "w3-input w3-border w3-mobile" type = "text" name="spin_probs" 
-  		    id = "spinPs" placeholder="Weights" action="drawDonut();" style="display:block"</input><br>  		    
-  		<!--
+  	<div class = "w3-form w3-cell-row w3-mobile" id ="spinInputs"> 
+  		<div class = "w3-cell w3-mobile">
+  		<input class = "w3-input w3-border w3-mobile" type = "text" id="spinCats" 
+  		     placeholder="Labels"  style="display:block"</input>
+		</div> 
+  		<div class = "w3-cell w3-mobile">
+  		</div>
+  		<div class = "w3-cell w3-mobile">
+  		<input class = "w3-input w3-border w3-mobile" type = "text" id="spinProbs" 
+  		     placeholder="Weights" onchange="drawDonut();" style="display:block"</input>	        
+  	 </div>
+   </div>
+     <br>
+   <div class = "w3-container w3-mobile" id = "spinSVGgoesHere" >
+    </div>
+	 	<!--
 		<input class="w3-input w3-border w3-mobile" type="text" name = "spin_nCat" 
 		      id = "spinNCat" placeholder="Number of categories" action = "drawDonut();"> </input>
   		<input class = "w3-select w3-border w3-mobile" type = "text" 
@@ -397,23 +445,21 @@ function closePages() {
        <div class = "w3-button"  id = "getSpinStop" style = "display:none width:35%" >
        	    <input class="w3-input w3-border w3-cell w3-mobile" type="text" name = "spin_nStop" 
 		              id = "spinNStop" placeholder="Last Spin:"> </input> 	
-		  -->
+		  
        </div>
-    </div>
-  <!--           If "fixed number" use a popup card to input the number of spins.--> 	 
-   <div class = "w3-container w3-cell" style = "width: 600px; height:410px;" = "spinSVGgoesHere">  
-     
-   </div>  
- </div>
-
-    <span onclick="openVble('OneCat')" class="w3-button w3-large w3-display-bottomright">Back</span>
-  <div class = w3-container>
-  </div>            
+       -->
+      <!--           If "fixed number" use a popup card to input the number of spins.-->
+  <script src="spin.js" charset="utf-8"></script>
 </div>
 
-
    <!-- -------  One Categorical Actions     
-   	5) Mixer:   -->
+   	5) Mixer:   
+   	ToDo:  get balls and box to show in the svg window
+   	 choose outcome
+   	 replicate number
+   	 summary
+   	 dotplot
+   	 -->
  <div id="Mixer" class="w3-container Page" style="display:none">
 	  <h3>Random sampling using by drawing balls from a box</h3>
 	 Pick the number of categories, then enter that many labels (separated with commas or spaces) 
@@ -450,7 +496,10 @@ function closePages() {
 
 
    <!-- -------  One Categorical Actions     
-   	6) Z Table:   -->
+   	6) Z Table:   
+   	ToDo:
+   	 mostly works, but output doesn't show nicely in the svg
+   	 -->
   <div id="Ztable" class="w3-container Page" style="display:none">
   
   	<h3>Compute cutoffs or probabilities. &nbsp;  &nbsp;  &nbsp;  &nbsp; 
@@ -499,7 +548,14 @@ function closePages() {
    <!-- ************************************************************
    	    -------  One Quantitative Actions  --------------------------
    	    ************************************************************    
-   	1) Test or Estimate a single Mean -->
+   	1) Test or Estimate a single Mean 
+   	   	ToDo:
+   	 data entry 
+   	 summary
+   	 display 
+   	 test mu
+   	 estimate mu
+-->
 
   <div id="TestEstQ1" class="w3-container Page" style="display:none">
   <div class = w3-container>
@@ -511,7 +567,9 @@ function closePages() {
   
   
   <!-- -------  One Quantitative Actions    
-   	2) Bootstrap Demo -->
+   	2) Bootstrap Demo 
+   	 Works, but need to fix axis positioning
+   	 -->
   
   <div id="BootDemo" class="w3-container Page" style="display:none">
   <div class = w3-container>
@@ -546,12 +604,18 @@ function closePages() {
     </form> 
   </div>
   <script  src="boot.js" charset="utf-8">  </script>
-  <span onclick="openVble('BootDemo')" class="w3-button w3-large w3-display-bottomright">Back</span>
+ <!--   <span onclick="openVble('BootDemo')" class="w3-button w3-large w3-display-bottomright">Back</span>
+ -->
  </div>
 </div>  
 
    <!-- -------  One Quantitative Actions    
-   	3) Sampling Demo -->
+   	3) Sampling Demo 
+   	text box entry
+   	count # words and length of each
+   	sample 10 words and find mean length
+   	repeat and plot/summarize results
+   	-->
 
   <div id="SamplingDemo" class="w3-container Page" style="display:none">
   <div class = w3-container>
@@ -561,7 +625,10 @@ function closePages() {
   </div>
       		
     <!-- -------  One Quantitative Actions    
-   	4) Lurking Demo for quantitative variables -->
+   	4) Lurking Demo for quantitative variables 
+   	 ToDo:
+   	  everything
+   	-->
 
   <div id="LurkingDemoQ1" class="w3-container Page" style="display:none">
   <div class = w3-container>
@@ -571,7 +638,11 @@ function closePages() {
   </div>
      		
      <!-- -------  One Quantitative Actions    
-   	5) Power of testing a single mean -->
+   	5) Power of testing a single mean 
+   	 ToDo:
+   	 inputs
+   	 plots of noncentral t distn
+   	 -->
 
   <div id="Power" class="w3-container Page" style="display:none">
   <div class = w3-container>
@@ -581,7 +652,10 @@ function closePages() {
   </div>
     		
     <!-- -------  One Quantitative Actions    
-   	6) T probabilities -->
+   	6) T probabilities    	   
+   	ToDo:
+   	 mostly works, but output doesn't show nicely in the svg
+   	 -->
    	
   <div id="Ttable" class="w3-container Page" style="display:none">
   
@@ -641,7 +715,15 @@ function closePages() {
    	    -------  Two Categorical Actions  ----------------------------------
    	    ******************************************************************* 
    	       
-   	1) Test or Estimate Difference between two Proportions -->
+   	1) Test or Estimate Difference between two Proportions 
+   	   
+   	ToDo:
+   	 data entry 
+   	 summary
+   	 display 
+   	 test p1 = p2
+   	 estimate p1 - p2
+   	 -->
 
   <div id="TestEstC2" class="w3-container Page" style="display:none">
   <div class = w3-container>
@@ -652,7 +734,11 @@ function closePages() {
   </div>   
 
  <!-- -------  Two Categorical Actions    
-   	2) Z Table -->
+   	2) Z Table 
+   	   
+   	ToDo:
+   	 mostly works, but output doesn't show nicely in the svg
+   	 -->
 
   <div id="Ztable2" class="w3-container Page" style="display:none">
   <div class = w3-container>
@@ -681,7 +767,14 @@ function closePages() {
    	    -------  Two Quantitative Actions ------------------------
    	    ************************************************************
    	        
-   	1) Test or Estimate correlation or slope  -->
+   	1) Test or Estimate correlation or slope  
+   	   	ToDo:
+   	 data entry 
+   	 summary
+   	 display 
+   	 test rho=0 slope = 0
+   	 estimate rho, slope
+-->
 
   <div id="TestEstQ2" class="w3-container Page" style="display:none">
   <div class = w3-container>
@@ -692,7 +785,11 @@ function closePages() {
   </div>   
 
  <!-- -------  Two Quantitative Actions    
-   	2) Demo of least squares regression  -->
+   	2) Demo of least squares regression  
+   	choose or input data
+   	allow line to be dragged around
+   	compute and display SSE
+   	-->
 
   <div id="RegressionDemo" class="w3-container Page" style="display:none">
   <div class = w3-container>
@@ -703,7 +800,10 @@ function closePages() {
   </div>   
 
  <!-- -------  Two Quantitative Actions    
-   	3) T table   -->
+   	3) T table     
+   	ToDo:
+   	 mostly works, but output doesn't show nicely in the svg
+   	  -->
 
   <div id="Ttable2" class="w3-container Page" style="display:none">
   <div class = w3-container>
@@ -731,7 +831,14 @@ function closePages() {
    	    -------  One Categorical, One Quantitative Actions -------
    	   ************************************************************
    	        
-   	1) Test/ Estimate   -->
+   	1) Test/ Estimate   
+   	   	ToDo:
+   	 data entry 
+   	 summary
+   	 display 
+   	 test mu1 = mu2
+   	 estimate mu1 - mu2
+-->
 
   <div id="TestEstC1Q1" class="w3-container Page" style="display:none">
   <div class = w3-container>
@@ -742,7 +849,9 @@ function closePages() {
   </div>   
 
  <!-- -------  One Categorical, One Quantitative Actions    
-   	2) T table   -->
+   	2) T table   
+   	  working except for svg placement of output
+   	  -->
 
   <div id="Ttable3" class="w3-container Page" style="display:none">
   <div class = w3-container>
@@ -761,8 +870,8 @@ function closePages() {
 	   	</select>
   </div>
   </div>
-      <span onclick="openVble('Ttable3')" class="w3-button w3-large w3-display-bottomright">Back</span>
-
+  <!--      <span onclick="openVble('Ttable3')" class="w3-button w3-large w3-display-bottomright">Back</span>
+  -->
   </div>   
 
 
