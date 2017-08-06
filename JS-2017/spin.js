@@ -12,10 +12,11 @@
             .range(["#a05d56","#ff8c00","#d0743c","#98abc5", "#8a89a6", 
                     "#7b6888", "#6b486b" ]),      
         //dColor = spinData.drawColor,
+        spacing,
         spinDiv = d3.select("#spinSVGgoesHere"),
         pieData = [],
-        spinAngle = [],
-        spinDrawColor = [],
+        spinData = [],
+        //spinDrawColor = [],
         spinCumProb=[],     // cumulative probabilities
  		spinDuration = 400,
         spinSlideDuration = 400;
@@ -52,7 +53,6 @@ function drawDonut(){
     var spinNCat = spinGroups.length,
       w = width;        
 
-    //var spacing = w / (spinData.nDraws + 1); //for sampled circles
     // force group length to = prob length
     if( spinNCat > spinProb.length){
     	spinGroups.length = spinNCat = spinProb.length;
@@ -129,7 +129,7 @@ function drawDonut(){
 	.ease("cubic-out")
 	.attrTween("transform", function (){
           return d3.interpolateString("rotate( 0, 0, 0)", 
-                                   "rotate(" + (Number(spinAngle[i]) * 360 + 360)+ ", 0, 0)");
+                                   "rotate(" + (Number(spinData[i][0]) * 360 + 360)+ ", 0, 0)");
         });
    };
 
@@ -138,7 +138,7 @@ function drawDonut(){
  //   }
     
     var xspace = function(i){
-           return i * spacing - (width /2) ; 
+           return i * spacing + 10 ; 
     }
 
 function getNSpin() {
@@ -169,25 +169,55 @@ function spin1(){
 
 function spinMore(nDraws){
 	// for testing
-	//var   ;
+	var angle,
+		color ;
+    spacing = width / (nDraws + 1); //for sampled circles
+
   	for(i=0;i<nDraws;i++){
-  		spinAngle[i] = Math.random(nDraws);
-  		spinDrawColor[i] =  cut( spinAngle[i], spinCumProb);
+  		angle = Math.random();
+  		color =  cut( angle, spinCumProb);
+  		spinData[i] = [angle, color]
   	    tween(i);  
 	}
+	console.log(spinData);				
+	    // Create the sampled circles (output)
+   //  but hide them with r = 0 
+    var circles = svgSpin.selectAll("g.circle")
+         .data(spinData)
+       .enter().append("circle")
+         .attr("fill", function(d, i){ return color[d[1]]; } )
+            .attr("cx", function(d){return  93 * Math.cos((90 - Number(d[0])*360)*Math.PI/180 );})  
+            .attr("cy", function(d){return -93 * Math.sin((90 - Number(d[0])*360)*Math.PI/180);})
+         .attr("r", 0)     // -> 20  
+         .attr("class", "circle") ; 
+
 	//console.log(spinAngle);
 	//console.log(drawColor);
+	  circles.each(function(d,i){
+      d3.select(this).transition()
+          // toss out circle
+          .delay(spinDuration + (spinSlideDuration + spinDuration) * i )
+          .duration( spinSlideDuration )
+          .ease("linear")
+          .attr("cx", xspace(i))
+          .attr("cy", 135)
+          .attr("r", 20);
+	});
 }
+
+
 function draws2get1(prob, reps) {
 	// randomly spin till we get one of the first category
 	// returns the number of spins needed
 	var nCat = prob.length,
 	    totalProb = jStat.sum(prob),
 	    i,
-	    out = [],
-	    draws = [];
+	    out = [];
+	stdize = function(x) {
+		return x / totalProb;
+	};
 	prob = jStat.map(prob, stdize);
-	cumProb = jStat.cumsum(prob);
+	var cumProb = jStat.cumsum(prob);
 	if (nCat < 2) {
 		return 1 ;
 	}
@@ -195,7 +225,7 @@ function draws2get1(prob, reps) {
 		return rgeom(prob[0]);  // rgeom defined in helpers.js
 	}
 	for ( i = 0; i < reps; i++) {
-		out[i] = rgeom(prob[0])
+		out.push = rgeom(prob[0])
 	}
 	return out;
 } 
@@ -226,10 +256,12 @@ function draws2get1ofEach(prob, reps,fullOut) {
 	if (nCat < 2) {
 		return 1;
 	}
-	temp = sample(jStat.seq(1, nCat, 1), reps * nCat * Math.ceil(4 / Math.min(prob)), prob);
+	temp = sample(jStat.seq(1, nCat, nCat), reps * nCat * Math.ceil(4 / Math.min(prob)), prob);
 	for ( i = 0; i < reps; i++) {
 		// reset the table
-		table = jStat.seq(1, nCat, 1) * 0.000;  // zero in each category
+		for(j =0; j < nCat; j++){
+			table[j] = 0;
+		}  
 		for ( j = 0; j < temp.length; j++) {
 			table[temp[j]] += 1;
 			// after nCat spins, table the row to see if we have every category
@@ -241,8 +273,8 @@ function draws2get1ofEach(prob, reps,fullOut) {
 		}
 		while (j >= temp.length) {
 			// we ran out of draws, get more
-			console.log("Ran out of draws in 231 of spin.js");
-			temp = sample(jStat.seq(1, nCat, 1), reps * nCat * Math.ceil(4 / Math.min(prob)), prob);
+			console.log("Ran out of draws in 262 of spin.js");
+			temp = sample(jStat.seq(1, nCat, nCat), reps * nCat * Math.ceil(4 / Math.min(prob)), prob);
 			
 			for ( j = 0; j < temp.length; j++) {
 				table[temp[j]] += 1;
@@ -286,11 +318,11 @@ function reconstructSpins(output, prob) {
 		if (nCat == 2) {
 			catObs[0] = 1;
 			for(i = 1; i < output; i++){
-				catObs.unshift(0);
+				catObs.unshift(0);        // push a 0 onto the front of the vector
 			}
 			return catObs;
 		}
-		return [sample(jStat.seq(2, nCat, 1), output - 1, shift(prob)), 1];
+		return [sample(jStat.seq(2, nCat, nCat-1), output - 1, shift(prob)), 1];
 	}
 	// else we're doing 'draws2get1ofEach()
 
@@ -501,10 +533,7 @@ function reconstructSpins(output, prob) {
 	//console.log([circles, drawData]);
 
      
-    function xspace(i){
-           return i * spacing - w /2 ; 
-    };
-
+   
     var textLabels = svgSpin.selectAll("g.text")
          .data(drawData)
        .enter().append("text")
@@ -516,16 +545,7 @@ function reconstructSpins(output, prob) {
          .attr("opacity",0)
          .attr("font-size", "20px");
 
-    circles.each(function(d,i){
-      d3.select(this).transition()
-          // toss out circle
-          .delay(spinDuration + (slideDuration + spinDuration) * i )
-          .duration( slideDuration )
-          .ease("linear")
-          .attr("cx", xspace(i))
-          .attr("cy", 135)
-          .attr("r", 20);
-	});
+
 
 
 

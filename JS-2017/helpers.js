@@ -49,7 +49,7 @@ function rle(x) {
 
 
 function rgeom(prob) {
-	return Math.ceiling(ln(Math.rand()) / ln(1 - prob));
+	return Math.ceil(Math.log(Math.random()) / Math.log(1 - prob));
 }
 
 
@@ -64,9 +64,11 @@ function sample(values, nreps, prob) {
 		return x / totalProb;
 	};
 	prob = jStat.map(prob, stdize);
-	cumProb = jStat.cumsum(prob).unshift(0);
+	cumProb = jStat.cumsum(prob);
+	cumProb.unshift(0);
+	//console.log(cumProb);
 	for ( i = 0; i < nreps; i++) {
-		out[i] = values[ cut(Math.random(), cumProb)];
+		out.push(values[ cut(Math.random(), cumProb)]);
 	}
 	return out;
 }
@@ -76,7 +78,7 @@ function sample(values, nreps, prob) {
   	// number of bins for a histogram
     var n = size(arr);
     var k = Math.ceil((Math.log(n)/Math.log(2))+1);
-    var h = (max(arr) - min(arr)) / k;
-    return {"k":k, "h":h};
+    var h = (max(arr) - min(arr)) / k;  // length of each bin
+    return {"binCount":k, "binLength":h};
   };
     
