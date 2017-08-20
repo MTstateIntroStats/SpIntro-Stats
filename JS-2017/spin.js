@@ -3,55 +3,53 @@
  //     category labels and relative probabilities
  
     var margin = [{top: 50}, {right: 20}, {bottom: 50}, {left: 20}],
-        width =  Number(540), // - margin.right - margin.left,
+        width =  Number(400), // - margin.right - margin.left,
         height = Number(300), // - margin.top - margin.bottom;       
         r = 110,         //radius
         tr = 150,        //text radius
-        ir = 75,         //inner radius 
-        color = d3.scale.ordinal()
-            .range(["#a05d56","#ff8c00","#d0743c","#98abc5", "#8a89a6", 
-                    "#7b6888", "#6b486b" ]),      
+        ir = 75,         //inner radius
+        //circles = [],
+        colors = [], 
+        //color = d3.scale.ordinal()
+        //    .range(["#a05d56","#ff8c00","#d0743c","#98abc5", "#8a89a6", 
+        //            "#7b6888", "#6b486b" ]),      
         //dColor = spinData.drawColor,
-        spacing,
+        nCat,
+        spacing =10,
         spinDiv = d3.select("#spinSVGgoesHere"),
         pieData = [],
+        spinAngle = [],
         spinData = [],
-        //spinDrawColor = [],
+        spinDrawColor = [],
         spinCumProb=[],     // cumulative probabilities
  		spinDuration = 400,
         spinSlideDuration = 400;
        
-   var svgSpin = spinDiv.append("svg")             // 580w x 400h
-      .attr("width",  580) //(width + margin.left + margin.right))
-      .attr("height", 400)//(height + margin.top + margin.bottom))
+   var svgSpin = spinDiv.append("svg")             // 440w x 440h
+      .attr("width",  (440))
+      .attr("height", (300))
       .append("g")
-      .attr("transform", "translate(" + (r + 10) + ","+ (r + 5) + ")");     
-    
-
-      var arrowData = [ { "x": 4,   "y": 78},  { "x": 0,   "y": 0},  
+      .attr("transform", "translate(" + (+r +10) + ","+ ( +r+10) + ")");     
+   
+  var arrowData = [ { "x": 4,   "y": 78},  { "x": 0,   "y": 0},  
                        { "x": -4,   "y": 78},  { "x": 0,   "y": 0}, 
                        { "x": 0,   "y": 80},  { "x": 0,   "y": 0}, 
 		       { "x": 0,  "y": -93}, { "x": -4,  "y": -83}, 
                        { "x": 4,  "y": -83}, { "x":  0,  "y": -93}];
       //using this method
-      var lineFunction = d3.svg.line()
+  var lineFunction = d3.svg.line()
                           .x(function(d) { return d.x; })
                           .y(function(d) { return d.y; })
                          .interpolate("linear");
        // now draw the pointer
 
-    //for ( i=0; i < spinData.nDraws; i++)  { 
-    //        drawData[i]  = [{"angle": spinData.spinAngle[i],
-	//		                      "group": spinData.drawColor[i]}];  // error here
-	//}
-	//console.log(drawData);
 	
 	
 function drawDonut(){
+    var  w = width;        
     spinGroups =  Papa.parse( document.getElementById("spinCats").value).data[0]; // labels of each
     spinProb =   jStat.map( Papa.parse( document.getElementById("spinProbs").value).data, Number); 
-    var spinNCat = spinGroups.length,
-      w = width;        
+    spinNCat = spinGroups.length;
 
     // force group length to = prob length
     if( spinNCat > spinProb.length){
@@ -70,22 +68,20 @@ function drawDonut(){
             pieData[i]  = { "label": spinGroups[i] , 
  			                      "value": spinProb[i]
 						};
+    	colors[i] = d3.hcl(30 + 300 * i/spinNCat , 25, 80, .9);
 	}
+    spinColorFn = d3.scale.ordinal().range(colors);      
  
     svgSpin.data([pieData])     
        .append("svgSpin:g")
        .attr("transform", "translate(" + (r + 10) + "," + ( r + 35) + ")");
-
-     var arc = d3.svg.arc()  // create <path> elements  in arcs
-       .outerRadius(r)
-       .innerRadius(ir);   
 
      var pie = d3.layout.pie().sort(null)
               .value(function(d) { return d.value; });  
         // create arc data for us given a list of values
 
 
-    var arcs = svgSpin.selectAll("g.slice")
+    arcs = svgSpin.selectAll("g.slice")
          .data( d3.layout.pie().value(function(d, i) { return d.value; } )
 		.sort(null))
           //  .data([drawData])
@@ -93,7 +89,7 @@ function drawDonut(){
          .attr("class", "slice");
 
      arcs.append("svgSpin:path")
-          .attr("fill", function(d, i) { return color(i); } ) 
+          .attr("fill", function(d, i) { return colors[i]; } ) 
           .attr("d", arc); 
                      
      arcs.append("svgSpin:text")     //add a label to each slice
@@ -129,7 +125,7 @@ function drawDonut(){
 	.ease("cubic-out")
 	.attrTween("transform", function (){
           return d3.interpolateString("rotate( 0, 0, 0)", 
-                                   "rotate(" + (Number(spinData[i][0]) * 360 + 360)+ ", 0, 0)");
+                                   "rotate(" + (Number(spinData[i].angle) * 360 + 360)+ ", 0, 0)");
         });
    };
 
@@ -137,10 +133,6 @@ function drawDonut(){
  //       tween(i);
  //   }
     
-    var xspace = function(i){
-           return i * spacing + 10 ; 
-    }
-
 function getNSpin() {
 	var stopper = document.getElementById("spinStopper");
 	if (stopper == "Fixed number") {
@@ -154,7 +146,7 @@ function spin1(){
 	// for testing
 	var nDraws = 1;
       spinAngle = Math.random(nDraws) * 360;
-      drawColor = cut( spinAngle, spinCumProb);
+      //drawColor = cut( spinAngle, spinCumProb);
    arrow.transition()
 	//.delay((slideDuration + spinDuration) * i)
 	.duration(spinDuration)
@@ -167,32 +159,81 @@ function spin1(){
 	//console.log(drawColor);
 }
 
+function xspace(i){
+           return i * spacing; 
+    }
+
 function spinMore(nDraws){
 	// for testing
 	var angle,
-		color ;
-    spacing = width / (nDraws + 1); //for sampled circles
+	spinColor,
+    spacing = (width -20) / (nDraws + 1); //for sampled circles
 
+    function xspace(i){
+           return i * spacing - r + 10; 
+    }
+
+    arc = d3.svg.arc()  // create <path> elements  in arcs
+       .outerRadius(r)
+       .innerRadius(ir);   
+
+    //clear out old arrow, circles, and text
+    if(typeof(arrow) !== "undefined"){
+    	arrow.remove();
+    }
+    //circles = svgSpin.selectAll("circle");
+    if(typeof(circles) !=="undefined"){
+    	circles.remove();
+    }
+    //textLabels = svgSpin.selectAll("text");
+    if(typeof(textLabels) !=="undefined"){
+    	textLabels.remove();
+    }
+
+    drawDonut();
+     arcs.append("svgSpin:text")     //add a label to each slice
+        .attr("transform", function(d) { 
+         d.innerRadius = 0;
+         d.outerRadius = tr ;
+            return "translate(" + arc.centroid(d) + ")";   
+              })
+         .attr("text-anchor", "middle")               
+         .text(function(d, i) { return pieData[i].label; });  
+         
   	for(i=0;i<nDraws;i++){
   		angle = Math.random();
-  		color =  cut( angle, spinCumProb);
-  		spinData[i] = [angle, color]
+  		spinColor =  cut( angle, spinCumProb);
+  		spinData[i] = {angle: angle, group: spinColor};
+  		//spinDrawColor[i] = colors[spinColor];
   	    tween(i);  
 	}
-	console.log(spinData);				
-	    // Create the sampled circles (output)
-   //  but hide them with r = 0 
-    var circles = svgSpin.selectAll("g.circle")
-         .data(spinData)
-       .enter().append("circle")
-         .attr("fill", function(d, i){ return color[d[1]]; } )
-            .attr("cx", function(d){return  93 * Math.cos((90 - Number(d[0])*360)*Math.PI/180 );})  
-            .attr("cy", function(d){return -93 * Math.sin((90 - Number(d[0])*360)*Math.PI/180);})
-         .attr("r", 0)     // -> 20  
-         .attr("class", "circle") ; 
-
+	spinData.length = nDraws;
+	//console.log(spinData);				
+	// Create the sampled circles (output)
+      //  but hide them with r = 0 
+    circles = svgSpin.selectAll("g.circle")
+         .data(spinData);
+       circles.enter().append("circle")
+          .attr("fill", function(d){ return colors[d.group]; } )
+          .attr("cx", function(d){return  93 * Math.cos((90 - +d.angle*360)*Math.PI/180 );})  
+          .attr("cy", function(d){return -93 * Math.sin((90 - +d.angle*360)*Math.PI/180);})
+          .attr("r", 0)     // -> 20  
+          ;
+        
 	//console.log(spinAngle);
 	//console.log(drawColor);
+	  
+    textLabels = svgSpin.selectAll("g.text")
+         .data(spinData)
+       .enter().append("text")
+         .attr("x", function(d,i){ return xspace(i)  ;} )  
+         .attr("y", 140)
+         .text( function(d){return  pieData[d.group].label ;}) 
+         .style("text-anchor", "middle")
+         .attr("font-family", "sans-serif")
+         .attr("opacity",0)
+         .attr("font-size", "20px");
+
 	  circles.each(function(d,i){
       d3.select(this).transition()
           // toss out circle
@@ -200,9 +241,19 @@ function spinMore(nDraws){
           .duration( spinSlideDuration )
           .ease("linear")
           .attr("cx", xspace(i))
-          .attr("cy", 135)
+          .attr("cy", + r + 20)
           .attr("r", 20);
 	});
+
+    textLabels.each(function(d,i){
+	// move the selected ball out
+        d3.select(this)
+          .transition()
+           .delay( ( spinSlideDuration + spinDuration) * (i+1) )
+          .attr("opacity", 1)
+       ;  
+   });
+
 }
 
 
@@ -520,45 +571,5 @@ function reconstructSpins(output, prob) {
       // data  pointer arrow 
     // Create the sampled circles (output)
    //  but hide them with r = 0 
-    var circles = svgSpin.selectAll("g.circle")
-         .data(drawData)
-       .enter().append("circle")
-         .attr("fill", function(d, i){ return color(d.group); } )
-            .attr("cx", function(d){return 93 * Math.cos( (810 - d.angle)*Math.PI/180 );})  
-            .attr("cy", function(d){return -93 * Math.sin((810 - d.angle)*Math.PI/180);})
-         //.attr("cy", -93)  // -> 150
-         .attr("r", 0)     // -> 20  
-         .attr("class", "circle") ; 
-		
-	//console.log([circles, drawData]);
-
-     
-   
-    var textLabels = svgSpin.selectAll("g.text")
-         .data(drawData)
-       .enter().append("text")
-           .attr("x", function(d,i){ return xspace(i)  ;} ) // 
-         .attr("y", 140)
-         .text( function(d){return  spinData.pieLabels[d.group];})  // 
-         .style("text-anchor", "middle")
-         .attr("font-family", "sans-serif")
-         .attr("opacity",0)
-         .attr("font-size", "20px");
-
-
-
-
-
-   textLabels.each(function(d,i){
-	// move the selected ball out
-        d3.select(this)
-          .transition()
-           .delay( ( slideDuration + spinDuration) * (i+1) )
-          .attr("opacity", 1)
-       ;   
-//          .attr("transform", function(d) {
-//              return "rotate(-45)" 
-//            });   // see fiddle:  http://jsfiddle.net/eremita/BujPJ/
-   });
-
+ 
 }
