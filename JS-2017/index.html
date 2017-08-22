@@ -46,6 +46,7 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
 </style>
 <!-- Load D3  -->
 <script src="d3.v3.min.js" charset="utf-8"></script>
+<script src="alertify.min.js" charset="utf-8"></script>
 <!-- Load data on textbook cost  -->
 <script src= "costs.js"> </script>
 <script src= "norms.js"> </script>
@@ -426,9 +427,25 @@ function closePages() {
   		</div>
   		<div class = "w3-cell w3-mobile">
   		<input class = "w3-input w3-border w3-mobile" type = "text" id="spinProbs" 
-  		     placeholder="Weights" onchange="spinMore(5);" style="display:block"</input>	        
+  		     placeholder="Weights"  style="display:block"</input>	        
+  	    </div>
+     </div>
+     <div class = "w3-form w3-cell-row w3-mobile" id ="spinStops">
+	  	 <div class = "w3-cell w3-mobile"> Fixed number:
+  			<input class = "w3-input w3-border w3-mobile" type = "text" id="nSpins" 
+  			     placeholder="Stop after this many spins:" onchange="spinNSpins();"
+  		    	     style="display:block"</input>
+  	 	</div> or
+  	 	<div class = "w3-cell w3-mobile"> Til type: 
+  			<input class = "w3-input w3-border w3-mobile" type = "text" id="spinTil" 
+  			     placeholder="Stop after first of this type:" onchange="spinsTill1();"
+  		    	     style="display:block"</input>
+  	 	</div> or
+  	 	<div class = "w3-button w3-mobile"> 
+  	 		 <button onclick="spinsTillAll()" class="w3-button w3-blue w3-medium w3-round-xlarge">
+  	  		Stop after one of each type.</button> 
+  	 	</div>
   	 </div>
-   </div>
      <br>
    <div class = "w3-container w3-mobile" id = "spinSVGgoesHere" >
     </div>
@@ -490,8 +507,6 @@ function closePages() {
     <svg class = "w3-cell" id="mixSVG" width = 400 height = 300 ></svg>
 	</div>
  
-    <span onclick="openVble('Mixer')" class="w3-button w3-large w3-display-bottomright">Back</span>
-
 </div>
 
 

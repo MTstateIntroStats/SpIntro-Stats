@@ -50,6 +50,9 @@ function drawDonut(){
     spinGroups =  Papa.parse( document.getElementById("spinCats").value).data[0]; // labels of each
     spinProb =   jStat.map( Papa.parse( document.getElementById("spinProbs").value).data, Number); 
     spinNCat = spinGroups.length;
+    if(spinNCat < 2){
+    	alert("Must have more than one label and more than one probability");
+    }
 
     // force group length to = prob length
     if( spinNCat > spinProb.length){
@@ -58,6 +61,10 @@ function drawDonut(){
     	spinProb.length = spinNCat;
     }
     
+    arc = d3.svg.arc()  // create <path> elements  in arcs
+       .outerRadius(r)
+       .innerRadius(ir);   
+	   
     var spinTotalProb = jStat.sum(spinProb),
     stdize = function(x){return x/spinTotalProb;};
     spinProb =  jStat.map(spinProb, stdize);
@@ -68,8 +75,10 @@ function drawDonut(){
             pieData[i]  = { "label": spinGroups[i] , 
  			                      "value": spinProb[i]
 						};
-    	colors[i] = d3.hcl(30 + 300 * i/spinNCat , 25, 80, .9);
+    	colors[i] = d3.hcl(30 + 300 * i/spinNCat , 25, 80, 0.8);
 	}
+	pieData.length = spinNCat;
+	
     spinColorFn = d3.scale.ordinal().range(colors);      
  
     svgSpin.data([pieData])     
@@ -113,7 +122,7 @@ function drawDonut(){
               .attr("stroke-width", 4)
               .attr("fill", "blue");   
    
-}
+}  //end of drawDonut
 
   // -----  Transitions --- //
   // t1  spin it to angle
@@ -128,20 +137,7 @@ function drawDonut(){
                                    "rotate(" + (Number(spinData[i].angle) * 360 + 360)+ ", 0, 0)");
         });
    };
-
- //   for( var i = 0; i < data.nDraws; i++){ 
- //       tween(i);
- //   }
     
-function getNSpin() {
-	var stopper = document.getElementById("spinStopper");
-	if (stopper == "Fixed number") {
-		document.getElementById("getSpinStop").style.display = "block";
-	} else {
-		document.getElementById("getSpinStop").style.display = "none";
-	}
-}
-
 function spin1(){
 	// for testing
 	var nDraws = 1;
@@ -163,33 +159,58 @@ function xspace(i){
            return i * spacing; 
     }
 
-function spinMore(nDraws){
-	// for testing
-	var angle,
-	spinColor,
-    spacing = (width -20) / (nDraws + 1); //for sampled circles
+function spinNSpins(){
+   var nSpin = +document.getElementById("nSpins").value;
+   spinMore(nSpin);	
+}
 
+function spinMore(nDraws){
+	// grab a random set of n draws and plot each as a spinner outcome in showSequence()
+	var angle,
+	spinColor;
+    //clear out old arrow, arcs, circles, and text
+    if(typeof(arrow) !== "undefined"){
+    	arrow.remove();
+    }
+
+	drawDonut();
+	
+  	for(i=0;i<nDraws;i++){
+  		angle = Math.random();
+  		spinColor =  cut( angle, spinCumProb);
+  		spinData[i] = {angle: angle, group: spinColor};
+	}
+	 // error: first time through, all groups are 0
+	//console.log(spinData);
+	spinData.length = nDraws;
+	showSequence(spinData);
+} 
+   //  end of spinMore
+
+
+function showSequence(spinData){
+	var nDraws = spinData.length;
+	var spacing = (width -20) / (nDraws + 1); //for sampled circles
+	 // console.log([nDraws, spacing]);
     function xspace(i){
            return i * spacing - r + 10; 
     }
 
-    arc = d3.svg.arc()  // create <path> elements  in arcs
-       .outerRadius(r)
-       .innerRadius(ir);   
-
-    //clear out old arrow, circles, and text
+    //clear out old arrow, arcs, circles, and text
     if(typeof(arrow) !== "undefined"){
     	arrow.remove();
     }
-    //circles = svgSpin.selectAll("circle");
     if(typeof(circles) !=="undefined"){
     	circles.remove();
     }
-    //textLabels = svgSpin.selectAll("text");
     if(typeof(textLabels) !=="undefined"){
     	textLabels.remove();
     }
-
+    if(typeof(arcs) !== "undefined"){
+    	arcs.remove();
+    }
+    
+	// draw new spinner
     drawDonut();
      arcs.append("svgSpin:text")     //add a label to each slice
         .attr("transform", function(d) { 
@@ -201,13 +222,9 @@ function spinMore(nDraws){
          .text(function(d, i) { return pieData[i].label; });  
          
   	for(i=0;i<nDraws;i++){
-  		angle = Math.random();
-  		spinColor =  cut( angle, spinCumProb);
-  		spinData[i] = {angle: angle, group: spinColor};
-  		//spinDrawColor[i] = colors[spinColor];
   	    tween(i);  
 	}
-	spinData.length = nDraws;
+	//spinData.length = nDraws;
 	//console.log(spinData);				
 	// Create the sampled circles (output)
       //  but hide them with r = 0 
@@ -257,9 +274,76 @@ function spinMore(nDraws){
 }
 
 
+function spinsTill1(){
+	var spinStopper =  document.getElementById("spinTil").value,
+    	match ,
+    	newSpins,
+    	newProb,
+    	order,
+    	w = width;        
+    spinGroups =  Papa.parse( document.getElementById("spinCats").value).data[0]; // labels of each
+    spinProb =   jStat.map( Papa.parse( document.getElementById("spinProbs").value).data, Number); 
+    spinNCat = spinGroups.length;
+    var spins = [];
+    match = spinGroups.indexOf(spinStopper);
+    if (match < 0){
+    	alert("You must choose one of the labels.")
+    }
+    for(i =0; i < spinNCat; i++){
+    	spins[i] = {label : spinGroups[i], prb : spinProb[i]};
+    }
+    function labelFirst(a,b){
+    	if( a.label === spinStopper){
+    		//console.log(a);
+    		return -1;
+    	} else if (b.label === spinStopper) {
+    		//console.log(b);
+    		return 1;
+    	} else {
+    		//console.log([a,b]);
+    		return 0;}
+    }
+      
+	newSpins = spins.sort(labelFirst);
+	newProb = newSpins.map(function(d){return d.prb;});
+	//console.log(spinProb);		
+    return draws2get1(newProb, 1);
+	//showSpinSequence(spins);
+}
+
+function spinsTillAll(){
+	var spinStopper =  document.getElementById("spinTil").value,
+    	match = 0,
+    	order,
+    	sequence =[],
+    	sequenceLength,
+    	w = width;        
+    spinGroups =  Papa.parse( document.getElementById("spinCats").value).data[0]; // labels of each
+    spinProb =   jStat.map( Papa.parse( document.getElementById("spinProbs").value).data, Number); 
+    spinNCat = spinGroups.length;
+    order = jStat.seq(0, spinNCat-1, spinNCat);
+    match = spinGroups.indexOf(spinStopper);
+    if (match < 0){
+    	alert("You must choose one of the labels.")
+    }
+    function matchFirst(a,b){
+    	if( a === spinStopper){
+    		return -1;
+    	} else if (b === spinStopper) {
+    		return 1;
+    	} else {
+    		return 0;}
+    }
+      
+	spinProb = 	spinProb.sort(matchFirst); //sorts to make the desired category first
+	//show 1 sequence of spins		
+    sequenceLength =  draws2get1(spinProb, 1);
+	sequence[sequenceLength -1] = {group: match, angle: Math.random() }
+}
+
 function draws2get1(prob, reps) {
 	// randomly spin till we get one of the first category
-	// returns the number of spins needed
+	// returns only the number of spins needed
 	var nCat = prob.length,
 	    totalProb = jStat.sum(prob),
 	    i,
@@ -268,15 +352,14 @@ function draws2get1(prob, reps) {
 		return x / totalProb;
 	};
 	prob = jStat.map(prob, stdize);
-	var cumProb = jStat.cumsum(prob);
-	if (nCat < 2) {
-		return 1 ;
-	}
-	if (reps == 1) {
-		return rgeom(prob[0]);  // rgeom defined in helpers.js
-	}
-	for ( i = 0; i < reps; i++) {
-		out.push = rgeom(prob[0])
+	if(nCat < 2){
+   		for ( i = 0; i < reps; i++) {
+	  		out.push = 1;
+	   	}
+	} else{
+   		for ( i = 0; i < reps; i++) {
+			out.push = rgeom(prob[0]);  // rgeom defined in helpers.js
+		}
 	}
 	return out;
 } 
@@ -433,11 +516,6 @@ function reconstructSpins(output, prob) {
     //  }
    // }
   //}
-  
-//  function spin_Plot() {
-//    if(spinRunButton == 0) {return null ;}
-//    return spinData;
-//  }
   
   
 //   function spin_Summary () {
