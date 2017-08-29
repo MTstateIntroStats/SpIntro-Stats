@@ -52,6 +52,26 @@ function rgeom(prob) {
 	return Math.ceil(Math.log(Math.random()) / Math.log(1 - prob));
 }
 
+function rbern(reps, prob){
+	var i, 
+		results = [];
+	for(i=0; i< reps; i++){
+		results.push(Math.random() > prob? 0: 1)
+	}
+	return results;
+}
+
+function rbinom(n, prob, times) {
+	//return a random count of number of successes in n trials with prob = prob of success for each
+	// make a matrix of Bernoullis with n rows, times columns, ans sum over rows
+    var i,
+    	results = [];
+    for( i =0; i < times; i++){
+    	results.push(d3.sum( rbern(n, prob)));
+    }	
+	return results;
+}
+
 
 function sample(values, nreps, prob) {
 	// draw  values  (with replacement) at random using probs as weights
@@ -78,7 +98,7 @@ function sample(values, nreps, prob) {
   	// number of bins for a histogram
     var n = size(arr);
     var k = Math.ceil((Math.log(n)/Math.log(2))+1);
-    var h = (max(arr) - min(arr)) / k;  // length of each bin
+    var h = (d3.max(arr) - d3.min(arr)) / k;  // length of each bin
     return {"binCount":k, "binLength":h};
   };
     

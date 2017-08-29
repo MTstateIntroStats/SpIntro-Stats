@@ -15,15 +15,20 @@
         //            "#7b6888", "#6b486b" ]),      
         //dColor = spinData.drawColor,
         nCat,
+        nSpin,
         spacing =10,
         spinDiv = d3.select("#spinSVGgoesHere"),
+       // spinSmryDiv = d3.select("#spinSmrySVGdiv"),
         pieData = [],
-        spinAngle = [],
         spinData = [],
-        spinDrawColor = [],
         spinCumProb=[],     // cumulative probabilities
  		spinDuration = 400,
-        spinSlideDuration = 400;
+        spinSlideDuration = 400,
+        spinGroups =[],
+        spinMatch,
+        spinProb = [],
+        spinRepResults = [],
+        spinStopRule;
        
    var svgSpin = spinDiv.append("svg")             // 440w x 440h
       .attr("width",  (440))
@@ -31,6 +36,12 @@
       .append("g")
       .attr("transform", "translate(" + (+r +10) + ","+ ( +r+10) + ")");     
    
+//   var svgSpinSmry = spinSmryDiv.append("svg")             // 440w x 440h
+//      .attr("width",  (440))
+//      .attr("height", (200))
+//      .append("g")
+//      .attr("transform", "translate(" + (+r +10) + ","+ ( +r+10) + ")");     
+    
   var arrowData = [ { "x": 4,   "y": 78},  { "x": 0,   "y": 0},  
                        { "x": -4,   "y": 78},  { "x": 0,   "y": 0}, 
                        { "x": 0,   "y": 80},  { "x": 0,   "y": 0}, 
@@ -160,7 +171,24 @@ function xspace(i){
     }
 
 function spinNSpins(){
-   var nSpin = +document.getElementById("nSpins").value;
+    nSpin = +document.getElementById("nSpins").value;
+     
+    spinGroups =  Papa.parse( document.getElementById("spinCats").value).data[0]; // labels of each
+    spinProb =   jStat.map( Papa.parse( document.getElementById("spinProbs").value).data, Number); 
+    spinNCat = spinGroups.length;
+    
+    if(spinStopRule !== "Fixed"){
+    	// zap any results hanging around
+    	spinRepResults = [];
+    }
+   spinStopRule = "Fixed";
+   
+    //clear out old arrow, arcs, circles, and text
+    if(typeof(arrow) !== "undefined"){
+    	arrow.remove();
+    }
+
+	drawDonut();
    spinMore(nSpin);	
 }
 
@@ -168,27 +196,110 @@ function spinMore(nDraws){
 	// grab a random set of n draws and plot each as a spinner outcome in showSequence()
 	var angle,
 	spinColor;
-    //clear out old arrow, arcs, circles, and text
-    if(typeof(arrow) !== "undefined"){
-    	arrow.remove();
-    }
-
-	drawDonut();
+	spinData = [];
+	
+	//drawDonut();
 	
   	for(i=0;i<nDraws;i++){
   		angle = Math.random();
   		spinColor =  cut( angle, spinCumProb);
   		spinData[i] = {angle: angle, group: spinColor};
 	}
-	 // error: first time through, all groups are 0
 	//console.log(spinData);
 	spinData.length = nDraws;
-	showSequence(spinData);
+	showSpinSequence(spinData);
 } 
    //  end of spinMore
 
+function spinsTill1(){
+	var spinStopper =  document.getElementById("spinTil").value,
+    	angle,
+    	i =0,
+    	spinColor = -1,
+    	w = width;        
+    spinData.length = 0;
+    
+     if(spinStopRule !== "OneOfOneType"){
+    	// zap any results hanging around
+    	spinRepResults = [];
+    }
+	spinStopRule = "OneOfOneType";
+	
+    spinGroups =  Papa.parse( document.getElementById("spinCats").value).data[0]; // labels of each
+    spinProb =   jStat.map( Papa.parse( document.getElementById("spinProbs").value).data, Number); 
+    spinNCat = spinGroups.length;
 
-function showSequence(spinData){
+    //clear out old arrow, arcs, circles, and text
+    if(typeof(arrow) !== "undefined"){
+    	arrow.remove();
+    }
+    
+	drawDonut();
+	
+	//console.log(spinStopper);
+	//console.log(spinStopper.length);
+    //if(spinStopper.length > 1){
+    	spinMatch = spinGroups.indexOf(spinStopper);
+    	if (spinMatch < 0){
+    		alert("You must choose one of the labels.")
+    	}
+    	while (spinColor !== spinMatch){
+  			angle = Math.random();
+  			spinColor =  cut( angle, spinCumProb);
+  			spinData[i++] = {angle: angle, group: spinColor};
+    	}
+
+	showSpinSequence(spinData);
+	//}
+}
+
+function spinsTillAll(){        
+	var angle,
+		error=" ",
+		i = 0,
+		ndx=0,
+		spinColor,
+		table = [];  
+    spinData = [];
+    if(spinStopRule !== "OneOfEach"){
+    	// zap any results hanging around
+    	spinRepResults = [];
+    }
+	spinStopRule = "OneOfEach";
+	
+    spinGroups =  Papa.parse( document.getElementById("spinCats").value).data[0]; // labels of each
+    spinProb =   jStat.map( Papa.parse( document.getElementById("spinProbs").value).data, Number); 
+    spinNCat = spinGroups.length;
+    
+
+    //clear out old arrow, arcs, circles, and text
+    if(typeof(arrow) !== "undefined"){
+    	arrow.remove();
+    }
+	drawDonut();
+	
+    for(i=0;i<spinNCat;i++){
+    	table[i] = 0;
+    }
+    
+    table.length = spinNCat;
+    
+    while (d3.min(table) < 1){
+  		angle = Math.random();
+  		spinColor =  cut( angle, spinCumProb);
+  		spinData[ndx] = {angle: angle, group: spinColor};
+  		table[spinColor] += 1;
+  		ndx++;
+  		if(ndx > 10000){ error="10K";
+  			break;}
+    }
+    //console.log(table);
+    if(error !== "10K"){
+    	showSpinSequence(spinData);
+    }
+}
+
+function showSpinSequence(spinData){
 	var nDraws = spinData.length;
 	var spacing = (width -20) / (nDraws + 1); //for sampled circles
 	 // console.log([nDraws, spacing]);
@@ -270,384 +381,179 @@ function showSequence(spinData){
           .attr("opacity", 1)
        ;  
    });
-
+   document.getElementById("repeatSpins").style.display = "block"; 
 }
 
 
-function spinsTill1(){
-	var spinStopper =  document.getElementById("spinTil").value,
-    	match ,
-    	newSpins,
-    	newProb,
-    	order,
-    	w = width;        
-    spinGroups =  Papa.parse( document.getElementById("spinCats").value).data[0]; // labels of each
-    spinProb =   jStat.map( Papa.parse( document.getElementById("spinProbs").value).data, Number); 
-    spinNCat = spinGroups.length;
-    var spins = [];
-    match = spinGroups.indexOf(spinStopper);
-    if (match < 0){
-    	alert("You must choose one of the labels.")
-    }
-    for(i =0; i < spinNCat; i++){
-    	spins[i] = {label : spinGroups[i], prb : spinProb[i]};
-    }
-    function labelFirst(a,b){
-    	if( a.label === spinStopper){
-    		//console.log(a);
-    		return -1;
-    	} else if (b.label === spinStopper) {
-    		//console.log(b);
-    		return 1;
-    	} else {
-    		//console.log([a,b]);
-    		return 0;}
-    }
-      
-	newSpins = spins.sort(labelFirst);
-	newProb = newSpins.map(function(d){return d.prb;});
-	//console.log(spinProb);		
-    return draws2get1(newProb, 1);
-	//showSpinSequence(spins);
+function spinRepeat(times){
+	var i,
+		thisProb;
+	
+    if(spinStopRule === "Fixed"){
+    	thisProb = spinProb[0];
+    	spinRepResults = spinRepResults.concat(rbinom(nSpin, thisProb, times));
+    	// track  number of first type?                    
+    } else if(spinStopRule === "OneOfOneType"){
+    	// track number of spins needed
+    	thisProb = spinProb[spinMatch];
+    	spinRepResults[0] = spinData.length;
+    	for(i=0; i<times; i++ ){
+    		spinRepResults.push(rgeom(thisProb));
+    	}
+    } else if(spinStopRule === "OneOfEach"){
+    	// track number of spins needed
+    	spinRepResults[0] = spinData.length;
+    	spinRepResults = spinRepResults.concat(draws2get1ofEach(times));
+    } else {
+    	console.log("Bad option for spinStopRule");
+    }	
+    //plot spinResults as a histogram
 }
 
-function spinsTillAll(){
-	var spinStopper =  document.getElementById("spinTil").value,
-    	match = 0,
-    	order,
-    	sequence =[],
-    	sequenceLength,
-    	w = width;        
-    spinGroups =  Papa.parse( document.getElementById("spinCats").value).data[0]; // labels of each
-    spinProb =   jStat.map( Papa.parse( document.getElementById("spinProbs").value).data, Number); 
-    spinNCat = spinGroups.length;
-    order = jStat.seq(0, spinNCat-1, spinNCat);
-    match = spinGroups.indexOf(spinStopper);
-    if (match < 0){
-    	alert("You must choose one of the labels.")
-    }
-    function matchFirst(a,b){
-    	if( a === spinStopper){
-    		return -1;
-    	} else if (b === spinStopper) {
-    		return 1;
-    	} else {
-    		return 0;}
-    }
-      
-	spinProb = 	spinProb.sort(matchFirst); //sorts to make the desired category first
-	//show 1 sequence of spins		
-    sequenceLength =  draws2get1(spinProb, 1);
-	sequence[sequenceLength -1] = {group: match, angle: Math.random() }
-}
-
-function draws2get1(prob, reps) {
-	// randomly spin till we get one of the first category
-	// returns only the number of spins needed
-	var nCat = prob.length,
-	    totalProb = jStat.sum(prob),
-	    i,
-	    out = [];
-	stdize = function(x) {
-		return x / totalProb;
-	};
-	prob = jStat.map(prob, stdize);
-	if(nCat < 2){
-   		for ( i = 0; i < reps; i++) {
-	  		out.push = 1;
-	   	}
-	} else{
-   		for ( i = 0; i < reps; i++) {
-			out.push = rgeom(prob[0]);  // rgeom defined in helpers.js
-		}
-	}
-	return out;
-} 
 
 
 
-function draws2get1ofEach(prob, reps,fullOut) {
+function draws2get1ofEach(reps) {
 	// randomly spin til we get one of each category
 	// returns the number of spins needed
-	// if fullOut = TRUE, gives info to trace the critical steps
-	//  of each sequence of spins: Category seen, and
-	//  spins to the next new category
-	var nCat = prob.length,
-	    //totalProb = jStat.sum(prob),
-	    i = 0,
+	var i = 0,
 	    j = 0,
 	    table = [],
 	    temp = [],
-	    nDraws = [],
-	    draws = [];
-	    //cols = [];
-	//if (totalProb !== 1.000) {
-		//prob = jStat.map(prob, function(x) {
-		//	return x / totalProb;
-		//});
-	//}
-	//reps = Number(reps);
+	    draw1 = [],
+	    nDraws = jStat.ones(1,reps),
+	    nCat = spinProb.length,
+	    probs = spinProb.slice(0);
+	    
 	if (nCat < 2) {
-		return 1;
-	}
-	temp = sample(jStat.seq(1, nCat, nCat), reps * nCat * Math.ceil(4 / Math.min(prob)), prob);
-	for ( i = 0; i < reps; i++) {
-		// reset the table
-		for(j =0; j < nCat; j++){
-			table[j] = 0;
-		}  
-		for ( j = 0; j < temp.length; j++) {
-			table[temp[j]] += 1;
-			// after nCat spins, table the row to see if we have every category
-			if (j >= nCat) {
-				if (Math.min(table) > 0) {
-					break;
-				}
-			}
+		return nDraws; // with only 1 category, we get all (only one) categories right away
+	} // at least 2 categories
+	draw1 = sample(jStat.seq(0,nCat-1,nCat), reps, probs);
+	for( i=0; i < reps; i++){
+		probs = spinProb.slice(0);  // need to reset for each rep
+		//console.log(probs);
+		probs.splice(draw1[i],1);
+		//console.log(probs);
+		if(d3.sum(probs) > 0){
+			nDraws[i] = 1 + recursiveDraws(probs );
 		}
-		while (j >= temp.length) {
-			// we ran out of draws, get more
-			console.log("Ran out of draws in 262 of spin.js");
-			temp = sample(jStat.seq(1, nCat, nCat), reps * nCat * Math.ceil(4 / Math.min(prob)), prob);
-			
-			for ( j = 0; j < temp.length; j++) {
-				table[temp[j]] += 1;
-				// after nCat spins, table the row to see if we have every category
-				if (j >= nCat) {
-					if (Math.min(table) > 0) {
-						break;
-					}
-				}
-			}
-		}
-		nDraws[i] = j;
-		// do a shift on temp to get to new portion of the sequence
-		draws[i] = table;
-		temp.splice(0, j); //removes the first j values in temp
+		//console.log(nDraws[i]);
 	}
-	if (!fullOut) {
-		return [{"nDraws": nDraws}];
-	} else{	return [{"nDraws" : nDraws}, {"draws" : draws}];
-	}
-
+	return nDraws;
 }
 
 
-
-
-function reconstructSpins(output, prob) {
-	// uses fullOut from 'draws2get1ofEach()' or a count from 'draws2get1()'
-	// and reconstructs a history of spins.  With more than 2 categories,
-	// the sequence is not unique, as intermediate draws could have come
-	// from any of several sequences which have the same 'new categories'
-	// in the same positions, but differ in the "filler" spots.
-	var catObs = [],
-	    val,
-	    i,
-	    nCat = prob.length;
-	if (output.length == 1) { // from draws2get1()
-		if (output == 1) {
-			return 1;
-		}
-		if (nCat == 2) {
-			catObs[0] = 1;
-			for(i = 1; i < output; i++){
-				catObs.unshift(0);        // push a 0 onto the front of the vector
-			}
-			return catObs;
-		}
-		return [sample(jStat.seq(2, nCat, nCat-1), output - 1, shift(prob)), 1];
-	}
-	// else we're doing 'draws2get1ofEach()
-
-	//if(Math.abs(nCat - (output.length -1) / 2) > .01){
-	//  return "Output dimensions don't match length(prob)";}
-	return output.draws;
-	// catObs = output[ 2:(nCat + 1)];
-	//  trial =  output[ -(1 + 0:nCat)];
-
-	//  val = [ jStat.seq(1, trial[2]-trial[1],1) * 0 + catObs[0], 1];
-	// uses first 2 categories observed
-	//  if(nCat > 2){
-	//    for(i = 2; i < nCat; i++){
-	//      covered = catObs[1:(i-1)];
-	// print(covered)
-	// print( trial[ndx] - trial[ndx-1] )
-	//      val =  [val, sample(covered, trial[i] - trial[i-1] -1,  prob = prob[covered]),
-	//                catObs[i]];
-	//    }
-	//  }
-	//  return val;
+function recursiveDraws(probs){
+	 var sumProb = d3.sum(probs), // this needs to be less than 1 for rgeom to work
+	     draw,
+	     group,
+	     nCat = probs.length;
+	 //console.log(probs);
+	 if(sumProb >= 1.00){
+	 	console.log("Error in recursiveDraw: probs sum to one");
+	 	return(NaN);
+	 }
+	 draw = rgeom(sumProb);
+	 if(nCat === 1){ 
+	 	return draw;
+	 } else{
+	 	group = sample(jStat.seq(0,nCat-1,nCat), 1, probs ) ;
+	 	probs.splice(group, 1); // remove the observed probability
+	 	return draw + recursiveDraws(probs);
+	 }    
 }
 
-   
-  
+//TODO:
+//  Need a generic plotting function for dotcharts.
+//  Here's the one adapted from boot.js, not tested
 
-  //function repData() {
-  	// 
-   // run = spinRunButton;
-   // prob = sapply(strsplit( spinProbs, ","), as.numeric);
-   // sumProb = jStat.sum(prob);
-   // groups = sapply(strsplit( spinCategories, ","), function(x){
-   //   gsub("[[:space:]]", "", x);});  //[order(-prob)]
-    //prob = -sort(-prob);
-   // nCat =  length(groups);
-   // nReps =  ifelse(is.null( spinReps), 1, as.numeric( spinReps));
-   // fixedN = ( spinStopRule == "Fixed number");
-   // if(fixedN){ 
-//      nDraws = Number( spinNDraws);
-//      nCat = Number( spinNCat);
-      //samplData = matrix(sample(arange(1,nCat,1), nReps * nDraws,
-      //                           prob = prob,replace = TRUE), ncol=nDraws);
-      //fn = match( spinFn, spinFunctionList);
-      //if(fn==3){
-      //  return(apply(samplData, 1 , function(x) { max(rle(x)[[1]]);}));
-      //} else{
-      //  return(apply(samplData, 1 , function(x) {table([arange(1,fn,1),x](fn)-1);}));
-      // }
-    //} else {
-      // apply stopping rule
-    //  if( spinStopRule =="One of first type"){
-    //    nDraws = draws2get1( prob, nReps);
-    //    return(nDraws)
-    //  } else {  //  spin_stopRule =="One of each"
-    //    nDraws =  draws2get1ofEach( prob, nReps);
-    //    return(nDraws)
-    //  }
-   // }
-  //}
-  
-  
-//   function spin_Summary () {
-//    if(spinRunButton == 0) return( null)
-//    var i,
-//        dataDf = spinData,
-//        out1 = [];
-//     for(i=0,i < dataDf.drawColor.length;i++){
-//     	out1[i] += 1;
-//     }  
-//     out1 = [{labels: dataDf.pieLabels},{counts: out1}];
-     
-//    if(spinStopRule =="Fixed number"){
-//        runs =  rle(dataDf.drawColor[arange(1, dataDf.nDraws, 1)]);  
-//        out1 =  [ out1, runs[0].max];                               // fixme
-//        names(out1)[dataDf.nCat + 1] = "maxRunLength";
-//      } else{
-//        out1 =  [ out1, dataDf.drawColor.length];
-//        names(out1)[dataDf.nCat ] = "spins";
-//      };
-//      out1 = jStat.transpose(out1);
-//      rownames(out1) = " ";
-//      return(out1);
-//    }
-  
-  
-  // run more:
-//  function spin_Summry2 (){
-//    var rData =  repData();
-//    as.table(matrix(c(quantile(rData,c(0,.25,.5,.75,1)), mean(rData), sd(rData)),nrow=1,
-//                    dimnames = list(" ", c("Min","Q1","Median","Q3","Max","Mean","SD") )));
-//  }
-  
-//  function spin_Summry3(){
-//    var counts  = repData();
-//    if(spinStopRule =="Fixed number"){
-//      temp = jStat.transpose(table(counts));
-//    } else {
-//    	if(spinStopRule =="One of first type"){
-//      	temp =  jStat.transpose(table([counts, arange(1,counts.max,1)])); // -1??
-//        } else  if(spinStopRule =="One of each"){
-//      temp =   jStat.transpose(table([counts, arange(spinNCat,counts.max, 1)]))// -1) ??
-//    }
-//    }
-    //print(temp)
-    //rownames(temp) <- "Counts"
-//    return(temp);
-//  }
-  
-//   function spin_Histogrm(){
-//    var stat, xlimits, x = sort(repData());
-//    var y = jStat.map(x, function(z) {arange(1,z.length,1);} ); 
-//    if(spinStopRule =="Fixed number"){
-//      stat =  spinFn;
-//      begin = 0 + (spinFn == spinFunctionList[3]); 
-//      xlimits = x.range // c(begin,  spinNDraws)
-//    } else  if(spinStopRule == "One of each") {                // or one of first fixme
-//      stat = "Number of Spins";
-//      xlimits = [x.Math.min, x.Math.max];
-//    }  // fixme plot below
-//    plot(jitter(x, .3), y, main = paste("Distribution of ", stat), xlab = "", cex=2, 
-//         ylab = "Frequency",  xlim=xlimits, ylim=c(.5, pmax(10, max(y))), pch = 16, col = blu);
-    //
-//  }
+var dotChart = function(sample){
+	var margin = 40,
+		myArray =[],
+	    nN = sample.length,
+	    plotX,
+	    ypos =0,
+	    wdth = 440 - margin * 2,
+	    hght = 320 - margin * 2,
+	    xlegend = spinStopRule === "Fixed"? "Spins to get one of the first type":
+	       			spinStopRule === "OneOfOneType"? "Spins to get a " + spinGroups[spinMatch]:
+	       			"Spins to get one of each type";
+	    
+	sample.sort(function(a,b){return a - b}) ;   
+          // numeric sort to build bins for y values
+          // start on left with smallest x.
 
-//  D3 stuff  
+	
+	var radius = (nN < 101)? 6:
+	    (nN < 501)? 5:
+	    (nN < 1001)? 4:
+	    (nN < 5001)? 3: 2; // perhaps this should relate to width/height of svg]
+    var gees = d3.select("#spinSmrySVG").selectAll("g");
+	if(typeof(gees) === "object"){
+		gees.remove();
+	}    
+	//  first dot goes at y=0, then add one to each from there
+	var j = 0;
+	while( j <  nN ){    
+	    plotX = sample[j];	    // start a fresh bin with left edge at sample[j]
+	    ypos = 0;	            // bin y starts at 0
+	    myArray[j] = {"x": sample[j++], "y": ypos++};
+        while( (sample[j] - plotX < radius/6) & (j < nN)){
+		  //stay in same bin -- increment yposition
+		  myArray[j] = {"x": sample[j++], "y": ypos++};
+	    };
+	     // console.log(x(plotX));
+	}
+	sampMax = d3.max(myArray, function(d) { return d.y;});
 
-   function spinner(){
-   	// create data for spinner
-    var nDraws=5, // number of repeats (spins)
-    spinAngle=[],  // angle for each spin
-    drawColor=[],  // color of each spin 
-    drawSumry=[],  // results summary
-    cumProb=[];     // cumulative probabilities
-    // force group length to = prob length
-    if( groups.length > prob.length){
-    	groups.length = prob.length;
-    } else if(prob.length < groups.length){
-    	prob.length =groups.length;
-    }
-    var totalProb = jStat.sum(prob),
-     spinStopRule = "Fixed number"; //document.getElementById("spinNStop").value,         // when to stop
-     spinNstop =  1; //parseInt( document.getElementById("spinNStop").value); // if stopping after fixed number
-    stdize = function(x){return x/totalProb;};
-    prob =  jStat.map(prob, stdize);
-    cumProb = jStat.cumsum(prob);
-    //console.log(groups);
-    //console.log(prob);
-    //console.log(cumProb);
+   var DCyScale = d3.scale.linear()
+    	.range([hght, 0])
+    	.domain([0, sampMax + .5]);
 
-    if(spinStopRule === "Fixed number"){
-      spinAngle = jStat.rand(spinNstop,1);   
-      drawColor = jStat.map(spinAngle, function(x){ cut(x, spinCumProb);});  
-      nDraws =  spinNStop;
-    } else {
-      // apply a stopping rule
-      if(spinStopRule == "One of first type"){
-        drawSumry <- draws2get1( prob, 1);               //fixme, I'm  not defined
-        if(drawSumry === 1){                 // got it on 1st spin
-          drawColor =  1;
-          nDraws = 1;
-          spinAngle =  Math.random() * prob[0];
-        } else{                            // take a few spins first
-          cumProb =  [0, cumProb];
-          drawColor = reconstructSpins( drawSumry, prob);
-          nDraws = drawSumry;
-          spinAngle =  jStat.rand(drawSumry[0],1) * prob[drawColor] + cumProb[drawColor];
-          //  gives random spin in 1st category for last draw,
-          //  in other categories for prior draws.
-        }
-      } else{
-        // Stop after we get one of each type
-        drawSumry = draws2get1ofEach( prob, 1, fullOut = true);
-        nDraws = drawSumry.nDraws;
-        cumProb =  [0, cumProb];
-        drawColor = reconstructSpins( drawSumry , prob);
-        spinAngle =  Math.random() * prob[drawColor] + cumProb[drawColor]; // howto get more reps?
-      }
-    }
-    
-    spinData  = [{"nCat": spinNCat},   // define globally without using var
-                    {"nDraws": nDraws},
-                    {"pieValues": prob},
-                    {"pieLabels": groups},
-                    {"spinAngle": (spinAngle + 1 ) * 360},
-                    {"drawColor": drawColor }
-    			];
-      //D3 variables
+	var DCxScale = d3.scale.linear()
+    	.range([margin, wdth])
+    	.domain([-0.1, sample[nN - 1] +0.5]);
+
+	// change scales to hold all x, all y
+   var DCxAxis = d3.svg.axis()
+      .scale(DCxScale)
+      .orient("bottom");
+
+   var DCyAxis = d3.svg.axis()
+      .scale(DCyScale)
+      .orient("left");
       
+  var graph = d3.select("#spinSmrySVG")
+    .attr("width", wdth + margin*2)
+    .attr("height", hght + margin*2)
+  .append("g")
+   .attr("transform", "translate("+ (2 * margin) + "," + margin + ")");
+    
+    
+    graph.append("g")
+      .attr("class", "y axis")
+      .call(DCyAxis);
+      
+      
+	graph.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + (radius + hght) +")")
+      .call(DCxAxis);
 
-      // data  pointer arrow 
-    // Create the sampled circles (output)
-   //  but hide them with r = 0 
- 
-}
+    graph.append("g")
+    	.attr("class", "text")
+    	.attr("x", 20)
+    	.attr("y", hght + 5)
+    	.text(xlegend);  
+      
+   	Dots =  graph.selectAll("g.circle")
+            .data(myArray); 
+	Dots.enter().append("circle")
+            .attr("cx", function(d){ return DCxScale(d.x);} ) 
+            .attr("r", radius ) 
+            .attr("cy", function(d){ return DCyScale(d.y);} ) 
+            .style("fill","steelblue")
+            .style("fill-opacity", 0.6);
+    //return Dots; // and myArray?
+ }
+

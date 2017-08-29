@@ -2,13 +2,13 @@
   CI = [],
   CIline = [],
   CItext = [],
-  confidence = 0.95,
+  confidence = 0.90,
   cumsum = 0,
   k,
   lowerCount = 0,
   lowerBd = 0,
   minx=50, 
-  margin = {top: 20, right: 20, bottom: 60, left: 30},
+  margin = {top: 20, right: 20, bottom: 80, left: 30},
   maxx = 0,
   meansArray = [],
   meanDots = [],
@@ -30,8 +30,8 @@
   sampTime = 300,  
   sampleText = [],
   sFontSize = 30,
-  showCI = [],
-  showStats = [],
+  //showCI = [],
+  //showStats = [],
   spots=[],
   spotTime=200,
   summaryStats = [],
@@ -46,8 +46,8 @@
  
 
 var width = 640 - margin.left - margin.right,   //20 to 590
-    height = 440 - margin.top - margin.bottom;
-var  yht = height* 0.75 - margin.top;          // 250
+    height = 440 + margin.top - margin.bottom;
+var  yht = height * .7 - margin.top;          // 250
 
      //need range of x's to determine x plot axis
  for( ndx = 0; ndx< popSize; ndx++){
@@ -78,7 +78,7 @@ var Bootsvg = d3.select("#BootDemo").append("svg")             // 640w x 440h
     .domain([0, 80]);
 
   var y = d3.scale.linear()
-    .range([height* 0.75, margin.top])
+    .range([height * .7, margin.top])
     .domain([0, 12.5]);
 
   var xAxis = d3.svg.axis()
@@ -105,19 +105,8 @@ var Bootsvg = d3.select("#BootDemo").append("svg")             // 640w x 440h
     .attr("y1", y(0))
     .attr("y2", 28)
     .style("stroke-width",2)
-    .style("stroke","white");
-
-   showCI = Bootsvg.append("text")
-     .attr("x",x(20))
-     .attr("y", height + 54)
-     .text("Based on " + BootCount + " resamples")
-     .style("stroke","white");
-
-   showStats = Bootsvg.append("text")
-     .attr("x",x(28))
-     .attr("y", height)
-     .text("Mean ")
-     .style("stroke","white");
+    .style("stroke","red")
+    .style("display","none");
 
 function rescale() {
     y.domain([0, resampMax + .5]);  // change scale to 0, max(y)
@@ -194,7 +183,7 @@ function rescale() {
             .style("fill","white")
             .remove();          // remove the sample button frame
 	Stext.transition()      // move the sample text to the bottom
-	    .attr("y", height - 41 )
+	    .attr("y", height * 1.16 )
 	    .attr("duration", 100);
 
 	sFontSize = (sampSize < 15) ? "30px": "20px";
@@ -212,7 +201,7 @@ function rescale() {
 			// move sample to bottom
            .delay(function(d, i) { return (i+1) * sampTime; })
           .duration(sampTime)
-           .attr("y", height - 40)  
+           .attr("y", height * 1.15)  
            .attr("x", function(d,i){ return 120 + i * xStepSize ;} ) 
            .style("font-size", sFontSize);   
 
@@ -222,7 +211,7 @@ function rescale() {
 
          Bootsvg.append("text")      // create 1 Resample button
           .attr("x",  4  )
-          .attr("y",height)
+          .attr("y",height * 1.25)
           .attr("font-size", 18 + "px")
           .style("fill-opacity", 1.0E-6)
           .text("1 Resample")
@@ -234,7 +223,7 @@ function rescale() {
       Rbox = Bootsvg.append("rect")    // and it's frame and activation
            .attr("class", "rect")
            .attr("x", 0)
-           .attr("y", height - 20)
+           .attr("y", height *1.25 - 20)
            .attr("width", 112)
            .attr("height",30)
            .attr("rx", 4)
@@ -253,7 +242,7 @@ function rescale() {
 
          Bootsvg.append("text")      // create speed buttons
           .attr("x",  126  )
-          .attr("y",height - 12)
+          .attr("y",height * 1.25 - 12)
           .attr("font-size", "9px")
           .style("fill-opacity", 1.0E-6)
           .text("Slower")
@@ -264,7 +253,7 @@ function rescale() {
 
          Bootsvg.append("text")   // faster label
           .attr("x",  127  )
-          .attr("y",height +8)
+          .attr("y",height *1.25 +8)
           .attr("font-size", "9px")
           .style("fill-opacity", 1.0E-6)
           .text("Faster")
@@ -276,7 +265,7 @@ function rescale() {
       Sbox1 = Bootsvg.append("rect")    // slower button
            .attr("class", "rect")
            .attr("x", 122)
-           .attr("y", height - 22)
+           .attr("y", height * 1.25 - 22)
            .attr("width", 40)
            .attr("height",14)
            .attr("rx", 4)
@@ -296,7 +285,7 @@ function rescale() {
       Sbox2 = Bootsvg.append("rect")    // faster button
            .attr("class", "rect")
            .attr("x", 122)
-           .attr("y", height -2 )
+           .attr("y", height * 1.25 - 2 )
            .attr("width", 40)
            .attr("height",14)
            .attr("rx", 4)
@@ -315,7 +304,7 @@ function rescale() {
 
        Bootsvg.append("text")      // Many Resamples
             .attr("x", 0  )
-          .attr("y",  height + 33)
+          .attr("y",  height * 1.38)
           .attr("font-size", "18px")
           .text("Many Resamples: ")
           .style("fill-opacity", 1.0E-6)
@@ -323,10 +312,54 @@ function rescale() {
            .delay( sampSize * sampTime  )
            .duration(sampTime)
           .style("fill-opacity", 1);
+ 
+   // TODO:  should be able to build all resample buttons at once, 
+   //         but not sure how to do it with text and rectangle.
+   //		 Here's a data build as a start.   Does display, but only the last box is active.
+          
+    var resampButtonData = [
+    	{x: 200,  wd: 40, txt: "100", n: 100},
+    	{x: 250,  wd: 40, txt: "500", n: 500},
+    	{x: 300,  wd: 48, txt: "1000", n: 1000},
+    	{x: 360,  wd: 48, txt: "5000", n: 5000},
+    	{x: 430,  wd: 54, txt: "10,000", n: 10000}
+    ]
+    	
+
+    var manyTexts =   Bootsvg.selectAll("text4")
+          .data(resampButtonData)
+          .enter().append("text")
+          .attr("x",  function(d){ return d.x;}  )
+          .attr("y",  height * 1.44 )
+          .attr("font-size", "16px")
+          .text(function(d){return d.txt;})
+          .style("fill-opacity", 1.0E-6)
+          .transition(this)
+           .delay( sampTime * sampSize)
+           .duration(sampTime)
+           .style("fill-opacity", 1)
+          ;
+     var manyBoxes = Bootsvg.selectAll("rect")   
+          .data(resampButtonData)
+          .enter().append("rect")
+          .attr("x",  function(d){ return d.x -5 ;}  )
+           .attr("y", height * 1.44 -20)
+           .attr("width",  function(d){ return d.wd;} )
+           .attr("height",30)
+           .style("fill","red")
+           .style("fill-opacity", 1.0E-6)
+           .on("click", function(d){ 
+		       BootCount = d.n;	
+  				reSampleMany(BootCount);})
+          .transition(this)
+           .delay( sampTime * sampSize)
+           .duration(sampTime)
+           .style("fill-opacity", 0.2)
+            ;
 
        Bootsvg.append("text")      // create Resample 100 button
-            .attr("x",  200  )
-          .attr("y", height + 30)
+          .attr("x",  200  )
+          .attr("y", height * 1.38 )
           .attr("font-size", "16px")
           .text(" 100 ")
           .style("fill-opacity", 1.0E-6)
@@ -338,14 +371,13 @@ function rescale() {
      var overlayC = Bootsvg.append("rect")    // 100 frame and activation
            .attr("class", "rect")
             .attr("x", 195)
-           .attr("y", height + 10)
+           .attr("y", height * 1.38 -20)
            .attr("width", 40)
            .attr("height",30)
            .style("fill","red")
            .style("fill-opacity", 1.0E-6)
             .on("click", function(){ 
 		BootCount = 100;	
-		//showStats.transition().style("stroke","white");
 		reSampleMany(BootCount);})
           .transition(this)
            .delay( sampTime * sampSize)
@@ -354,7 +386,7 @@ function rescale() {
 
        Bootsvg.append("text")      // create Resample 500 button
             .attr("x",  250  )
-          .attr("y", height + 30)
+          .attr("y", height * 1.38)
           .attr("font-size", "16px")
           .text(" 500 ")
           .style("fill-opacity", 1.0E-6)
@@ -366,15 +398,14 @@ function rescale() {
      var overlayD = Bootsvg.append("rect")    // 500 frame and activation
            .attr("class", "rect")
             .attr("x", 245)
-           .attr("y", height + 10)
+           .attr("y", height * 1.38 -20)
            .attr("width", 40)
            .attr("height",30)
            .style("fill","orange")
            .style("fill-opacity", 1.0E-6)
            .on("click", function(){ 
-	       BootCount = 500;
-	       //showStats.transition().style("stroke","white");
-               reSampleMany(BootCount);})
+		       BootCount = 500;
+    	       reSampleMany(BootCount);})
           .transition(this)
            .delay( sampTime * sampSize)
            .duration(sampTime)
@@ -382,7 +413,7 @@ function rescale() {
 
        Bootsvg.append("text")      // create Resample 1000 button
             .attr("x", 300 )
-          .attr("y",  height + 30)
+          .attr("y",  height * 1.38)
           .attr("font-size", "16px" )
           .text(" 1000 ")
           .style("fill-opacity", 1.0E-6)
@@ -394,14 +425,13 @@ function rescale() {
     var overlayM =  Bootsvg.append("rect")    // 1000 frame and activation
            .attr("class", "rect")
            .attr("x", 295 )
-           .attr("y", height + 10)
+           .attr("y", height * 1.38 -20)
            .attr("width", 48)
            .attr("height",30)
            .style("fill","green")
            .style("fill-opacity", 1.0E-6)
            .on("click", function(){ 
 	       BootCount = 1000;
-	       //showStats.transition().style("stroke","white");
                reSampleMany(BootCount);})
           .transition(this)
            .delay( sampTime * sampSize)
@@ -410,7 +440,7 @@ function rescale() {
 
       Bootsvg.append("text")      // create Resample 5000 button
             .attr("x", 360  )
-          .attr("y",  height + 30)
+          .attr("y",  height * 1.38)
           .attr("font-size", "14px")
           .text(" 5000 ")
           .style("fill-opacity", 1.0E-6)
@@ -422,14 +452,13 @@ function rescale() {
      var overlayDX = Bootsvg.append("rect")    // 5000 frame and activation
            .attr("class", "rect")
             .attr("x", 355)
-           .attr("y", height + 10)
+           .attr("y", height * 1.38 -20)
            .attr("width", 48)
            .attr("height",30)
            .style("fill","blue")
            .style("fill-opacity", 1.0E-6)
            .on("click", function(){ 
 	       BootCount = 5000;
-	       //showStats.transition().style("stroke","white");
 	       reSampleMany(BootCount);})
           .transition(this)
            .delay( sampTime * sampSize)
@@ -438,7 +467,7 @@ function rescale() {
 
       Bootsvg.append("text")      // create Resample 10000 button
             .attr("x", 430 )
-          .attr("y",  height + 30)
+          .attr("y",  height * 1.38)
           .attr("font-size", "14px")
           .text(" 10,000 ")
           .style("fill-opacity", 1.0E-6)
@@ -450,14 +479,13 @@ function rescale() {
      var overlayMX = Bootsvg.append("rect")    // 10000 frame and activation
            .attr("class", "rect")
             .attr("x", 425)
-           .attr("y", height + 10)
+           .attr("y", height * 1.38 -20)
            .attr("width", 54)
            .attr("height",30)
            .style("fill","purple")
            .style("fill-opacity", 1.0E-6)
            .on("click", function(){ 
 	       BootCount = 10000;
-	       //showStats.transition().style("stroke","white");
                reSampleMany(BootCount);})
           .transition(this)
            .style("fill-opacity", 0.1)
@@ -473,7 +501,10 @@ function rescale() {
 	 if(reData.length > 0){
             reData.length = 0;
 	 }
-	 showStats.transition().style("stroke","white");
+	 if(typeof(showStats) != "undefined"){
+	 	showStats.style("display","none");
+	 	showCI.style("display","none");
+	 }
 	 var resampMn = 0;
          for( i =0; i < sampSize; i++){
              // select the datapoint in the sample
@@ -487,13 +518,13 @@ function rescale() {
 		 .duration(resampTime)
 		 .delay( 2* resampTime * i)
 		 .attr("x",  xStepSize * resample[i] + 120)
-		 .attr("y", height - 70)
+		 .attr("y", height * 1.15 - 27)
 		 .attr("height",36)
 		 .attr("width", 50)
 		 .transition()  
              // slide it back quickly
 		 .attr("x",  0)
-		 .attr("y", height - 20)
+		 .attr("y", height * 1.25 - 20)
 		 .attr("height",30)
 		 .attr("width", 112);
          }
@@ -501,16 +532,16 @@ function rescale() {
           resamp = Bootsvg.selectAll("text3")
              .data(reData)
            .enter().append("text")
-             .attr("y", height -40)  
+             .attr("y", height * 1.3)  
              .attr("x", function(d,i){ return 120 + resample[i] * xStepSize ;}) 
              .text( function(d) { return d.txt ;})
              .style("fill","green")
              .style("font-size","2px");
            resamp.transition()
              .delay(function(d, i) { return (i + 0.5) * 2 * resampTime ; })
-             .duration(.75 * resampTime)
+             .duration(0.75 * resampTime)
              .ease("linear")
-             .attr("y", height )  
+             .attr("y", height * 1.26)  
              .attr("x", function(d,i){ return 180 + i * xStepSize * .9 ;} ) 
              .style("font-size", sFontSize);
 	      // let that sit a bit, then take its mean and move it
@@ -531,7 +562,7 @@ function rescale() {
            .enter().append("circle")
              .attr("cx", function(d,i){ return 145 + resample[i] * xStepSize +
                          (i-sampSize) * 1 ;} ) 
-             .attr("cy", height - 54)  
+             .attr("cy", height * 1.15 - 10)  
              .attr("r", 0)
              .style("fill","white")
              .style("fill-opacity", 0.15)
@@ -549,23 +580,28 @@ function rescale() {
   
     var reSampleMany = function(BootCount){
       // shrink down existing means, then call for new resamples
+	 if(typeof(showStats) != "undefined"){
+	 	showStats.style("display","none");
+	 	showCI.style("display","none");
+	 }
  	if(meanDots.length >0){
           meanDots.transition()
             .style("fill","white")
             .remove(function(d) { d.remove;});
           //remove CIs and text
           CItext.transition().style("fill","white").remove(function(d) { d.remove;});
-          CIline.transition().style("stroke", "white").style("fill","white"); 
+          CIline.transition().style("display","block"); 
 	}
         resampleMeans(BootCount);
 	drawCI(BootCount);
     };
 
     
-    var resampleMeans = function(BootCount){
+var resampleMeans = function(BootCount){
       // sample n from sample with replacement, average them and 
       //  plop into the array. Repeat count times.  update points.
-       var i =0;   // set up storage for resampled Means with (x,y) coords 
+       var j, 
+       	i =0;   // set up storage for resampled Means with (x,y) coords 
         // radius: shrinks as # of samples increases
 	radius = (BootCount < 101)? 6:
 	    (BootCount < 501)? 5:
@@ -575,11 +611,11 @@ function rescale() {
 	resample.length  = sampSize;
 	resampMean.length = BootCount;  
 	meansArray.length = BootCount; 
-      for( var j = 0; j <  BootCount; j++){         
+    for(  j = 0; j <  BootCount; j++){         
         // ###  Do the Resampling here ##################	 
-        for( var i =0; i < sampSize; i++){
+        for( i =0; i < sampSize; i++){
           resample[i] =  oneSample[Math.floor(Math.random() * sampSize)].txt + 0.0;
-	};  // close i loop
+		};  // close i loop
         resampMean[j] = d3.mean(resample); // compute mean
       };   // done resampling##################################
 
@@ -618,6 +654,10 @@ function rescale() {
     };
 
     var drawCI = function(BootCount){  // draw percentile conf interval
+	 if(typeof(showCI) != "undefined"){
+	 	showStats.style("display","none");
+	 	showCI.style("display","none");
+	 }
       if(BootCount > 90){	
 	if(CItext.length >0){
           //remove CI text
@@ -644,39 +684,42 @@ function rescale() {
               {"x": upperBd, "y": height/4, "txt": upperBd}];
 
        CIline.data(CI)
-          .transition()
+          //.transition()
             //.delay(resampTime * BootCount/1000)
             .attr("x1", function(d) {return x(d.x + 0.0);})
             .attr("x2", function(d) {return x(d.x + 0.0);})
             .attr("y1", y(0))
-            .attr("y2", 28)
+            .attr("y2", margin.top + 20)
             .style("stroke-width",2)
-            .style("stroke","red");
+            .style("stroke","red")
+            .style("display","block");
 
        CItext = Bootsvg.selectAll("g.text")
             .data(CI)
          .enter().append("text")
            //.transition().delay(resampTime * BootCount/1000)
-           .attr("x",  function(d) {return x(d.x -.5);})
+           .attr("x",  function(d) {return x(d.x -0.5);})
            .attr("y",  25 )
            .text(function(d) {return d.txt;} )
            .style("font-size","12px")
            .style("fill","red");
 
-	showCI.transition()
-          .style("stroke","black")
-          .text( (confidence*100) + "% CI is (" + CI[0].x + ", " + CI[1].x +") based on " + BootCount + " resamples");
-    
-	showStats.transition()
-	    .style("stroke","black")
-	    .text( "Mean: " + d3.round(d3.mean( resampMean),2) +
+    showCI = Bootsvg.append("text")
+     .attr("x",x(20))
+     .attr("y", height *1.48)
+     .text( (confidence*100) + "% CI is (" + CI[0].x + ", " + CI[1].x +") based on " + BootCount + " resamples");
+   
+    showStats = Bootsvg.append("text")
+     .attr("x",x(28))
+     .attr("y", height * 1.28) 
+     .text( "Mean: " + d3.round(d3.mean( resampMean),2) +
                    ",  SD: " + d3.round(d3.deviation(resampMean), 2));
-	  }
-    }
-;
+	}
+
+}
 
   // when newSAMPLE is clicked. Clear all and start over
- function newSample() {
+ var newSample = function() {
     // show population again
      //sampSize = 
      //confidence = 
@@ -694,7 +737,7 @@ function rescale() {
             .style("fill","white")
             .remove(function(d) { d.remove;});
 	    CItext.transition().style("fill","white").remove(function(d) { d.remove;});
-	    CIline.transition().style("stroke", "white").style("fill","white"); 
+	    CIline.style("display","none"); 
 	}
             //remove old sample
      if(sampleText.length >0){
@@ -702,8 +745,12 @@ function rescale() {
      }
 
        // remove old output
-     showCI.transition().style("stroke","white");
-     showStats.transition().style("stroke","white");
+     if(typeof(showStats) !== "undefined"){  
+     	//showCI.transition().style("stroke","white");
+     	//showStats.transition().style("stroke","white");
+     	showCI.transition().style("display","none");
+     	showStats.transition().style("display","none");
+     }
       Sample();
     }
 

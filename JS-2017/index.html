@@ -288,6 +288,8 @@ function actionsFunc(actns) {
 
 
 <script>
+var hideSpins = false;
+
 function openVble(vbleName) {
     var i;
     var x = document.getElementsByClassName("vType");
@@ -301,6 +303,7 @@ function openVble(vbleName) {
     document.getElementById(vbleName).style.display = "block";  
     w3_close();
 }
+
 function choosePage(page) {
     var i;
     var x = document.getElementsByClassName("Page");
@@ -318,7 +321,13 @@ function closePages() {
        x[i].style.display = "none";  
     }
 }
-
+function hideShowSpins() {
+    hideSpins = !hideSpins;
+    var xDiv = document.getElementById("spinSVGgoesHere");
+    
+    xDiv.style.display = hideSpins ? "none" : "block";  
+    
+}
 </script>
 
 
@@ -408,64 +417,75 @@ function closePages() {
 
    <!-- -------  One Categorical Actions     
    	4) Spinner  
-   	ToDo:  get spinner to show in the svg window
-   	 choose outcome
-   	 replicate number
-   	 summary
-   	 dotplot
+   	ToDo:  
+   	 summary table
+   	 dotplot needs a legend to say what the "x" axis represents
+   	 a clear button to start over
    	 -->
  <div id="Spinner" class="w3-container Page" style="display:none">
 	  <h3>Random sampling using a 'game board' spinner</h3>
-	 <p>Type as many labels (separated with commas or tabs) in the first box 
-	 as percentages or probabilities in the second. </p>
+	 <p>Spinner setup: Type as many labels (separated with commas or tabs) in the first box 
+	 as percentages or probability weights in the second. </p>
   	<div class = "w3-form w3-cell-row w3-mobile" id ="spinInputs"> 
-  		<div class = "w3-cell w3-mobile">
-  		<input class = "w3-input w3-border w3-mobile" type = "text" id="spinCats" 
-  		     placeholder="Labels"  style="display:block"</input>
+  		<div class = "w3-cell w3-mobile"  style="width:40%">
+  			Labels:
+  		<input class = "w3-input w3-border w3-mobile w3-pale-yellow" type = "text" id="spinCats" 
+  		       style="display:block"</input>
 		</div> 
   		<div class = "w3-cell w3-mobile">
   		</div>
-  		<div class = "w3-cell w3-mobile">
-  		<input class = "w3-input w3-border w3-mobile" type = "text" id="spinProbs" 
-  		     placeholder="Weights"  style="display:block"</input>	        
+  		<div class = "w3-cell w3-mobile" style="width:40%"> 
+  			Probability weights:
+  		<input class = "w3-input w3-border w3-mobile w3-pale-yellow" type = "text" id="spinProbs" 
+  		       style="display:block"</input>	        
   	    </div>
      </div>
+     Stop after: 
      <div class = "w3-form w3-cell-row w3-mobile" id ="spinStops">
-	  	 <div class = "w3-cell w3-mobile"> Fixed number:
-  			<input class = "w3-input w3-border w3-mobile" type = "text" id="nSpins" 
-  			     placeholder="Stop after this many spins:" onchange="spinNSpins();"
+	  	 <div class = "w3-cell w3-mobile" style="width:30%"> 
+  			<input class = "w3-input w3-border w3-mobile w3-pale-blue " type = "text" id="nSpins" 
+  			     placeholder="This many spins:" onchange="spinNSpins();"
   		    	     style="display:block"</input>
-  	 	</div> or
-  	 	<div class = "w3-cell w3-mobile"> Til type: 
-  			<input class = "w3-input w3-border w3-mobile" type = "text" id="spinTil" 
-  			     placeholder="Stop after first of this type:" onchange="spinsTill1();"
+  	 	</div>&nbsp; or&nbsp;
+  	 	<div class = "w3-cell w3-mobile"  style="width:30%">  
+  			<input class = "w3-input w3-border w3-mobile w3-pale-blue " type = "text" id="spinTil" 
+  			     placeholder="getting one of this type:" onchange="spinsTill1();"
   		    	     style="display:block"</input>
-  	 	</div> or
-  	 	<div class = "w3-button w3-mobile"> 
-  	 		 <button onclick="spinsTillAll()" class="w3-button w3-blue w3-medium w3-round-xlarge">
-  	  		Stop after one of each type.</button> 
+  	 	</div> 
+  	 	<div class = "w3-cell w3-mobile"  style="width:30%"> 
+  	 		 <button id = "spinAllButton" onclick="spinsTillAll()" 
+  	 		 class="w3-button w3-pale-blue w3-medium w3-round-xlarge">
+  	  		&nbsp; OR getting one of each type.</button> 
   	 	</div>
   	 </div>
      <br>
-   <div class = "w3-container w3-mobile" id = "spinSVGgoesHere" >
-    </div>
-	 	<!--
-		<input class="w3-input w3-border w3-mobile" type="text" name = "spin_nCat" 
-		      id = "spinNCat" placeholder="Number of categories" action = "drawDonut();"> </input>
-  		<input class = "w3-select w3-border w3-mobile" type = "text" 
-  			action = "spinner();" id = "spinStopper" name="spin_stopRule" > </input> 
-			<option value="" disabled selected>Stop after ...</option>
-  			<option value="Fixed number">Fixed number of spins</option>
-  			<option value="One of first">One of first type</option>
-  			<option value="One of each">One of each type</option>
-	   	</select>  
-       <div class = "w3-button"  id = "getSpinStop" style = "display:none width:35%" >
-       	    <input class="w3-input w3-border w3-cell w3-mobile" type="text" name = "spin_nStop" 
-		              id = "spinNStop" placeholder="Last Spin:"> </input> 	
-		  
-       </div>
-       -->
-      <!--           If "fixed number" use a popup card to input the number of spins.-->
+   <div  class = "w3-form w3-cell-row w3-mobile"    style="display:block" >
+   		<div class = "w3-container w3-cell w3-mobile" id = "spinSVGgoesHere" >
+   		</div>
+   		<div class = "w3-cell w3-mobile" >
+   		 <button onclick="hideShowSpins()" class="w3-button w3-pale-green w3-medium w3-round-xlarge">
+  	  		&nbsp; Hide / Show </button> 
+   		</div>
+   </div>
+   <div  class = "w3-form w3-cell-row w3-mobile"    style="display:none" id = "repeatSpins" >
+   	<div class = "w3-btn w3-cell">      </div>
+	<form class="w3-cell w3-card">
+   		<h4>Repeat Process:</h4>
+   		<div class="w3-bar">
+      	<input class="w3-radio" value = 100 type="radio" name="spinReps" 
+      	    onClick = "spinRepeat(100);dotChart(spinRepResults);" />       	<label>100</label>
+      	<input class="w3-radio" value = 1000 type="radio" name="spinReps" 
+      		onClick = "spinRepeat(1000);dotChart(spinRepResults);" checked="checked" /> <label >1000</label>
+      	<input class="w3-radio" value = 5000 type="radio" name="spinReps" 
+      		onClick = "spinRepeat(5000); dotChart(spinRepResults);"  />     	<label >5000</label> 
+    	</div>
+   	</form>
+   	   	
+   </div>
+  <div class = "w3-container w3-cell w3-mobile" id = "spinSmrySVGdiv">
+  	<svg id = "spinSmrySVG" > </svg>
+  </div>
+
   <script src="spin.js" charset="utf-8"></script>
 </div>
 
@@ -583,7 +603,8 @@ function closePages() {
   
   <!-- -------  One Quantitative Actions    
    	2) Bootstrap Demo 
-   	 Works, but need to fix axis positioning
+   	 Works, but I'd like to reduce the code for the many resamples buttons using a button builder function.
+   	 That displays OK, but doesn't create active buttons.
    	 -->
   
   <div id="BootDemo" class="w3-container Page" style="display:none">
