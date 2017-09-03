@@ -288,7 +288,6 @@ function actionsFunc(actns) {
 
 
 <script>
-var hideSpins = false;
 
 function openVble(vbleName) {
     var i;
@@ -320,13 +319,6 @@ function closePages() {
     for (i = 0; i < x.length; i++) {
        x[i].style.display = "none";  
     }
-}
-function hideShowSpins() {
-    hideSpins = !hideSpins;
-    var xDiv = document.getElementById("spinSVGgoesHere");
-    
-    xDiv.style.display = hideSpins ? "none" : "block";  
-    
 }
 </script>
 
@@ -418,9 +410,9 @@ function hideShowSpins() {
    <!-- -------  One Categorical Actions     
    	4) Spinner  
    	ToDo:  
-   	 summary table
+   	 summary table Maybe not needed if we switch from dotchart to barchart with text for height of bars.
    	 dotplot needs a legend to say what the "x" axis represents
-   	 a clear button to start over
+   	 a clear button to start over?
    	 -->
  <div id="Spinner" class="w3-container Page" style="display:none">
 	  <h3>Random sampling using a 'game board' spinner</h3>
@@ -498,34 +490,76 @@ function hideShowSpins() {
    	 dotplot
    	 -->
  <div id="Mixer" class="w3-container Page" style="display:none">
-	  <h3>Random sampling using by drawing balls from a box</h3>
-	 Pick the number of categories, then enter that many labels (separated with commas or spaces) 
-	 and the same number of percentages or probabilities for each. Spinner starts when you select or 
-	 change the stopping rule.
- 	<div class = "w3-cell-row">
-  	<div class = "w3-form w3-cell-row w3-card" style="width:25%" id ="MixForm">
-		<input class="w3-input w3-border w3-cell w3-mobile" type="text" name = "mix_nCat" 
-		              placeholder="Number of categories"> </input> 		
-  		<input class = "w3-input w3-border w3-cell w3-mobile" type = "text" name="mix_categories" 
-  		  placeholder="Labels" </input><br>
-  		<input class = "w3-input w3-border w3-cell w3-mobile" type = "text" name="mix_probs" 
-  		  placeholder="Numbers of Balls" </input><br>
-  		<select class = "w3-select w3-card w3-border w3-mobile"  name="mix_Replace" > 
+	  <h3>Random sampling by drawing balls from a box</h3>
+ 	 <p>Setup: Type as many labels (separated with commas or tabs) in the first box 
+	 as number of balls of the respective types in the second. </p>
+  	<div class = "w3-form w3-cell-row w3-mobile" id ="mixInputs"> 
+  		<div class = "w3-cell w3-mobile"  style="width:40%">
+  			Labels:
+  		<input class = "w3-input w3-border w3-mobile w3-pale-yellow" type = "text" id="mixCats" 
+  		       style="display:block"</input>
+		</div> 
+  		<div class = "w3-cell w3-mobile">
+  		</div>
+  		<div class = "w3-cell w3-mobile" style="width:40%"> 
+  			Numbers of balls::
+  		<input class = "w3-input w3-border w3-mobile w3-pale-yellow" type = "text" id="mixNs" 
+  		       style="display:block"</input>	        
+  	    </div>
+  	    <select class = "w3-select w3-card w3-border w3-mobile"  name="mix_Replace" > 
   			<option value="" disabled selected>Replace balls?</option>
   			<option value="1">Yes</option>
   			<option value="0">No</option>
 	   	</select>  
-  		<select class = "w3-select w3-card w3-border w3-mobile" onclick="spinner()" name="mix_stopRule" > 
-  			<option value="" disabled selected>Stop after ...</option>
-  			<option value="Fixed Number">Fixed number of spins</option>
-  			<option value="One in First Cat">One spin in 1st category</option>
-  			<option value="One of Each">One of each type</option>
-	   	</select>
-    </div>
-  <!--           If "fixed number" try a card to input the number of spins. -->
-   
-    <svg class = "w3-cell" id="mixSVG" width = 400 height = 300 ></svg>
-	</div>
+     </div>
+     Stop after: 
+     <div class = "w3-form w3-cell-row w3-mobile" id ="mixStops">
+	  	 <div class = "w3-cell w3-mobile" style="width:30%"> 
+  			<input class = "w3-input w3-border w3-mobile w3-pale-blue " type = "text" id="nDraws" 
+  			     placeholder="This many draws:" onchange="mixNtimes()"
+  		    	     style="display:block"</input>
+  	 	</div>&nbsp; or&nbsp;
+  	 	<div class = "w3-cell w3-mobile"  style="width:30%">  
+  			<input class = "w3-input w3-border w3-mobile w3-pale-blue " type = "text" id="mixTil" 
+  			     placeholder="getting one of this type:" onchange="mixTill1()"
+  		    	     style="display:block"</input>
+  	 	</div> 
+  	 	<div class = "w3-cell w3-mobile"  style="width:30%"> 
+  	 		 <button id = "mixAllButton" onclick="mixTillAll()" 
+  	 		 class="w3-button w3-pale-blue w3-medium w3-round-xlarge">
+  	  		&nbsp; OR getting one of each type.</button> 
+  	 	</div>
+  	 </div>
+     <br>
+   <div  class = "w3-form w3-cell-row w3-mobile"    style="display:block" >
+   		<div class = "w3-container w3-cell w3-mobile" id = "mixSVGgoesHere" >
+   		</div>
+   		<div class = "w3-cell w3-mobile" >
+   		 <button onclick="hideShowMix()" class="w3-button w3-pale-green w3-medium w3-round-xlarge">
+  	  		&nbsp; Hide / Show </button> 
+   		</div>
+   </div>
+   <div  class = "w3-form w3-cell-row w3-mobile"    style="display:none" id = "repeatMix" >
+   	<div class = "w3-btn w3-cell">      </div>
+	<form class="w3-cell w3-card">
+   		<h4>Repeat Process:</h4>
+   		<div class="w3-bar">
+      	<input class="w3-radio" value = 100 type="radio" name="mixReps" 
+      	    onClick = "mixRepeat(100);dotChart(mixRepResults);" />       	<label>100</label>
+      	<input class="w3-radio" value = 1000 type="radio" name="mixReps" 
+      		onClick = "mixRepeat(1000);dotChart(mixRepResults);" checked="checked" /> <label >1000</label>
+      	<input class="w3-radio" value = 5000 type="radio" name="mixReps" 
+      		onClick = "mixRepeat(5000); dotChart(mixRepResults);"  />     	<label >5000</label> 
+    	</div>
+   	</form>
+   	   	
+   </div>
+  <div class = "w3-container w3-cell w3-mobile" id = "mixSmrySVGdiv">
+  	<svg id = "mixSmrySVG" > </svg>
+  </div>
+
+  <script src="mix.js" charset="utf-8"></script>
+
  
 </div>
 
@@ -858,7 +892,7 @@ function hideShowSpins() {
 	   	</select>
   </div>
   </div>
-      <span onclick="openVble('TwoQuant')" class="w3-button w3-large w3-display-bottomright">  spinData./span>
+      <span onclick="openVble('TwoQuant')" class="w3-button w3-large w3-display-bottomright"></span>
 
   </div>   
 

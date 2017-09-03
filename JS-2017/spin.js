@@ -14,6 +14,7 @@
         //    .range(["#a05d56","#ff8c00","#d0743c","#98abc5", "#8a89a6", 
         //            "#7b6888", "#6b486b" ]),      
         //dColor = spinData.drawColor,
+		hideSpins = false,
         nCat,
         nSpin,
         spacing =10,
@@ -384,6 +385,14 @@ function showSpinSequence(spinData){
    document.getElementById("repeatSpins").style.display = "block"; 
 }
 
+
+function hideShowSpins() {
+    hideSpins = !hideSpins;
+    var xDiv = document.getElementById("spinSVGgoesHere");
+    
+    xDiv.style.display = hideSpins ? "none" : "block";  
+    
+}
 
 function spinRepeat(times){
 	var i,
