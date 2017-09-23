@@ -465,11 +465,11 @@ function closePages() {
    		<h4>Repeat Process:</h4>
    		<div class="w3-bar">
       	<input class="w3-radio" value = 100 type="radio" name="spinReps" 
-      	    onClick = "spinRepeat(100);dotChart(spinRepResults);" />       	<label>100</label>
+      	    onClick = "spinRepeat(100);  dotChart(spinRepResults, "spinSmrySVG","spins to get one of the first type");" />       	<label>100</label>
       	<input class="w3-radio" value = 1000 type="radio" name="spinReps" 
-      		onClick = "spinRepeat(1000);dotChart(spinRepResults);" checked="checked" /> <label >1000</label>
+      		onClick = "spinRepeat(1000); dotChart(spinRepResults, "spinSmrySVG","1000");" checked="checked" /> <label >1000</label>
       	<input class="w3-radio" value = 5000 type="radio" name="spinReps" 
-      		onClick = "spinRepeat(5000); dotChart(spinRepResults);"  />     	<label >5000</label> 
+      		onClick = "spinRepeat(5000); dotChart(spinRepResults, "spinSmrySVG","5k");"  />     	<label >5000</label> 
     	</div>
    	</form>
    	   	
@@ -502,11 +502,11 @@ function closePages() {
   		<div class = "w3-cell w3-mobile">
   		</div>
   		<div class = "w3-cell w3-mobile" style="width:40%"> 
-  			Numbers of balls::
+  			Numbers of balls:
   		<input class = "w3-input w3-border w3-mobile w3-pale-yellow" type = "text" id="mixNs" 
   		       style="display:block"</input>	        
   	    </div>
-  	    <select class = "w3-select w3-card w3-border w3-mobile"  name="mix_Replace" > 
+  	    <select class = "w3-select w3-card w3-border w3-mobile"  id="mix_Replace" > 
   			<option value="" disabled selected>Replace balls?</option>
   			<option value="1">Yes</option>
   			<option value="0">No</option>

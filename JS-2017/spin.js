@@ -83,11 +83,13 @@ function drawDonut(){
     spinCumProb = jStat.cumsum(spinProb);
 	spinCumProb.unshift(0);
 	
+	colorSeq = jStat.seq(30, 300, spinNCat)
+
     for ( i=0; i < spinNCat; i++)  { 
             pieData[i]  = { "label": spinGroups[i] , 
  			                      "value": spinProb[i]
 						};
-    	colors[i] = d3.hcl(30 + 300 * i/spinNCat , 25, 80, 0.8);
+    	colors[i] = d3.hcl(colorSeq[i] , 25, 80, 0.8);
 	}
 	pieData.length = spinNCat;
 	
@@ -437,7 +439,7 @@ function draws2get1ofEach(reps) {
 	if (nCat < 2) {
 		return nDraws; // with only 1 category, we get all (only one) categories right away
 	} // at least 2 categories
-	draw1 = sample(jStat.seq(0,nCat-1,nCat), reps, probs);
+	draw1 = sampleWrep(jStat.seq(0,nCat-1,nCat), reps, probs);
 	for( i=0; i < reps; i++){
 		probs = spinProb.slice(0);  // need to reset for each rep
 		//console.log(probs);
@@ -466,103 +468,9 @@ function recursiveDraws(probs){
 	 if(nCat === 1){ 
 	 	return draw;
 	 } else{
-	 	group = sample(jStat.seq(0,nCat-1,nCat), 1, probs ) ;
+	 	group = sampleWrep(jStat.seq(0,nCat-1,nCat), 1, probs ) ;
 	 	probs.splice(group, 1); // remove the observed probability
 	 	return draw + recursiveDraws(probs);
 	 }    
 }
-
-//TODO:
-//  Need a generic plotting function for dotcharts.
-//  Here's the one adapted from boot.js, not tested
-
-var dotChart = function(sample){
-	var margin = 40,
-		myArray =[],
-	    nN = sample.length,
-	    plotX,
-	    ypos =0,
-	    wdth = 440 - margin * 2,
-	    hght = 320 - margin * 2,
-	    xlegend = spinStopRule === "Fixed"? "Spins to get one of the first type":
-	       			spinStopRule === "OneOfOneType"? "Spins to get a " + spinGroups[spinMatch]:
-	       			"Spins to get one of each type";
-	    
-	sample.sort(function(a,b){return a - b}) ;   
-          // numeric sort to build bins for y values
-          // start on left with smallest x.
-
-	
-	var radius = (nN < 101)? 6:
-	    (nN < 501)? 5:
-	    (nN < 1001)? 4:
-	    (nN < 5001)? 3: 2; // perhaps this should relate to width/height of svg]
-    var gees = d3.select("#spinSmrySVG").selectAll("g");
-	if(typeof(gees) === "object"){
-		gees.remove();
-	}    
-	//  first dot goes at y=0, then add one to each from there
-	var j = 0;
-	while( j <  nN ){    
-	    plotX = sample[j];	    // start a fresh bin with left edge at sample[j]
-	    ypos = 0;	            // bin y starts at 0
-	    myArray[j] = {"x": sample[j++], "y": ypos++};
-        while( (sample[j] - plotX < radius/6) & (j < nN)){
-		  //stay in same bin -- increment yposition
-		  myArray[j] = {"x": sample[j++], "y": ypos++};
-	    };
-	     // console.log(x(plotX));
-	}
-	sampMax = d3.max(myArray, function(d) { return d.y;});
-
-   var DCyScale = d3.scale.linear()
-    	.range([hght, 0])
-    	.domain([0, sampMax + .5]);
-
-	var DCxScale = d3.scale.linear()
-    	.range([margin, wdth])
-    	.domain([-0.1, sample[nN - 1] +0.5]);
-
-	// change scales to hold all x, all y
-   var DCxAxis = d3.svg.axis()
-      .scale(DCxScale)
-      .orient("bottom");
-
-   var DCyAxis = d3.svg.axis()
-      .scale(DCyScale)
-      .orient("left");
-      
-  var graph = d3.select("#spinSmrySVG")
-    .attr("width", wdth + margin*2)
-    .attr("height", hght + margin*2)
-  .append("g")
-   .attr("transform", "translate("+ (2 * margin) + "," + margin + ")");
-    
-    
-    graph.append("g")
-      .attr("class", "y axis")
-      .call(DCyAxis);
-      
-      
-	graph.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + (radius + hght) +")")
-      .call(DCxAxis);
-
-    graph.append("g")
-    	.attr("class", "text")
-    	.attr("x", 20)
-    	.attr("y", hght + 5)
-    	.text(xlegend);  
-      
-   	Dots =  graph.selectAll("g.circle")
-            .data(myArray); 
-	Dots.enter().append("circle")
-            .attr("cx", function(d){ return DCxScale(d.x);} ) 
-            .attr("r", radius ) 
-            .attr("cy", function(d){ return DCyScale(d.y);} ) 
-            .style("fill","steelblue")
-            .style("fill-opacity", 0.6);
-    //return Dots; // and myArray?
- }
 
