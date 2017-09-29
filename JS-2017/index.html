@@ -19,17 +19,14 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
 </head>
 
 <style>
-
 .area {
   fill: steelblue;
   fill-opacity: 0.3;
 }
-
 .circle {
   fill: blue;
   fill-opacity: 0.3;
 }
-
 .axis path,
 .axis line {
   fill: none;
@@ -41,9 +38,8 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
   fill: none;
   pointer-events: all;
 }
-
-
 </style>
+
 <!-- Load D3  -->
 <script src="d3.v3.min.js" charset="utf-8"></script>
 <script src="alertify.min.js" charset="utf-8"></script>
@@ -465,11 +461,11 @@ function closePages() {
    		<h4>Repeat Process:</h4>
    		<div class="w3-bar">
       	<input class="w3-radio" value = 100 type="radio" name="spinReps" 
-      	    onClick = "spinRepeat(100);  dotChart(spinRepResults, "spinSmrySVG","spins to get one of the first type");" />       	<label>100</label>
+      	    onClick = "spinRepeat(100);  dotChart(spinRepResults );" />       	<label>100</label>
       	<input class="w3-radio" value = 1000 type="radio" name="spinReps" 
-      		onClick = "spinRepeat(1000); dotChart(spinRepResults, "spinSmrySVG","1000");" checked="checked" /> <label >1000</label>
+      		onClick = "spinRepeat(1000); dotChart(spinRepResults);" checked="checked" /> <label >1000</label>
       	<input class="w3-radio" value = 5000 type="radio" name="spinReps" 
-      		onClick = "spinRepeat(5000); dotChart(spinRepResults, "spinSmrySVG","5k");"  />     	<label >5000</label> 
+      		onClick = "spinRepeat(5000); dotChart(spinRepResults);"  />     	<label >5000</label> 
     	</div>
    	</form>
    	   	
@@ -494,23 +490,25 @@ function closePages() {
  	 <p>Setup: Type as many labels (separated with commas or tabs) in the first box 
 	 as number of balls of the respective types in the second. </p>
   	<div class = "w3-form w3-cell-row w3-mobile" id ="mixInputs"> 
-  		<div class = "w3-cell w3-mobile"  style="width:40%">
+  		<div class = "w3-cell w3-mobile"  style="width:30%">
   			Labels:
   		<input class = "w3-input w3-border w3-mobile w3-pale-yellow" type = "text" id="mixCats" 
   		       style="display:block"</input>
 		</div> 
   		<div class = "w3-cell w3-mobile">
   		</div>
-  		<div class = "w3-cell w3-mobile" style="width:40%"> 
+  		<div class = "w3-cell w3-mobile" style="width:30%"> 
   			Numbers of balls:
   		<input class = "w3-input w3-border w3-mobile w3-pale-yellow" type = "text" id="mixNs" 
   		       style="display:block"</input>	        
   	    </div>
-  	    <select class = "w3-select w3-card w3-border w3-mobile"  id="mix_Replace" > 
-  			<option value="" disabled selected>Replace balls?</option>
-  			<option value="1">Yes</option>
-  			<option value="0">No</option>
+  	    <div class = "w3-cell w3-mobile" style="width:40%">
+  	    	Replace drawn balls?
+  	    <select class = "w3-select w3-card w3-border w3-mobile w3-pale-yellow"  id="mix_Replace" > 
+  			<option value="yes">Yes</option>
+  			<option value="no">No</option>
 	   	</select>  
+	   	</div>
      </div>
      Stop after: 
      <div class = "w3-form w3-cell-row w3-mobile" id ="mixStops">

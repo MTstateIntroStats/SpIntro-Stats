@@ -83,13 +83,11 @@ function drawDonut(){
     spinCumProb = jStat.cumsum(spinProb);
 	spinCumProb.unshift(0);
 	
-	colorSeq = jStat.seq(30, 300, spinNCat)
-
     for ( i=0; i < spinNCat; i++)  { 
             pieData[i]  = { "label": spinGroups[i] , 
  			                      "value": spinProb[i]
 						};
-    	colors[i] = d3.hcl(colorSeq[i] , 25, 80, 0.8);
+    	colors[i] = d3.hcl(30 + 300 * i/spinNCat , 25, 80, 0.8);
 	}
 	pieData.length = spinNCat;
 	
@@ -414,7 +412,7 @@ function spinRepeat(times){
     } else if(spinStopRule === "OneOfEach"){
     	// track number of spins needed
     	spinRepResults[0] = spinData.length;
-    	spinRepResults = spinRepResults.concat(draws2get1ofEach(times));
+    	spinRepResults = spinRepResults.concat(spins2get1ofEach(times));
     } else {
     	console.log("Bad option for spinStopRule");
     }	
@@ -424,7 +422,7 @@ function spinRepeat(times){
 
 
 
-function draws2get1ofEach(reps) {
+function spins2get1ofEach(reps) {
 	// randomly spin til we get one of each category
 	// returns the number of spins needed
 	var i = 0,
@@ -439,14 +437,14 @@ function draws2get1ofEach(reps) {
 	if (nCat < 2) {
 		return nDraws; // with only 1 category, we get all (only one) categories right away
 	} // at least 2 categories
-	draw1 = sampleWrep(jStat.seq(0,nCat-1,nCat), reps, probs);
+	draw1 = sampleWOrep(jStat.seq(0,nCat-1,nCat), reps, probs);
 	for( i=0; i < reps; i++){
 		probs = spinProb.slice(0);  // need to reset for each rep
 		//console.log(probs);
 		probs.splice(draw1[i],1);
 		//console.log(probs);
 		if(d3.sum(probs) > 0){
-			nDraws[i] = 1 + recursiveDraws(probs );
+			nDraws[i] = 1 + recursiveSpins(probs );
 		}
 		//console.log(nDraws[i]);
 	}
@@ -454,7 +452,7 @@ function draws2get1ofEach(reps) {
 }
 
 
-function recursiveDraws(probs){
+function recursiveSpins(probs){
 	 var sumProb = d3.sum(probs), // this needs to be less than 1 for rgeom to work
 	     draw,
 	     group,
@@ -468,9 +466,103 @@ function recursiveDraws(probs){
 	 if(nCat === 1){ 
 	 	return draw;
 	 } else{
-	 	group = sampleWrep(jStat.seq(0,nCat-1,nCat), 1, probs ) ;
+	 	group = sampleWOrep(jStat.seq(0,nCat-1,nCat), 1, probs ) ;
 	 	probs.splice(group, 1); // remove the observed probability
-	 	return draw + recursiveDraws(probs);
+	 	return draw + recursiveSpins(probs);
 	 }    
 }
+
+//TODO:
+//  Need a generic plotting function for dotcharts.
+//  This is too specific to spinner. Generalize it and add an x axis label.
+
+var dotChart = function(plotData){
+	var margin = 40,
+		myArray =[],
+	    nN = plotData.length,
+	    plotX,
+	    ypos =0,
+	    wdth = 440 - margin * 2,
+	    hght = 320 - margin * 2,
+	    xlegend = spinStopRule === "Fixed"? "Spins to get one of the first type":
+	       			spinStopRule === "OneOfOneType"? "Spins to get a " + spinGroups[spinMatch]:
+	       			"Spins to get one of each type";
+	    
+	plotData.sort(function(a,b){return a - b}) ;   
+          // numeric sort to build bins for y values
+          // start on left with smallest x.
+
+	
+	var radius = (nN < 101)? 6:
+	    (nN < 501)? 5:
+	    (nN < 1001)? 4:
+	    (nN < 5001)? 3: 2; // perhaps this should relate to width/height of svg]
+    var gees = d3.select("#spinSmrySVG").selectAll("g");
+	if(typeof(gees) === "object"){
+		gees.remove();
+	}    
+	//  first dot goes at y=0, then add one to each from there
+	var j = 0;
+	while( j <  nN ){    
+	    plotX = plotData[j];	    // start a fresh bin with left edge at plotData[j]
+	    ypos = 0;	            // bin y starts at 0
+	    myArray[j] = {"x": plotData[j++], "y": ypos++};
+        while( (plotData[j] - plotX < radius/6) & (j < nN)){
+		  //stay in same bin -- increment yposition
+		  myArray[j] = {"x": plotData[j++], "y": ypos++};
+	    };
+	     // console.log(x(plotX));
+	}
+	sampMax = d3.max(myArray, function(d) { return d.y;});
+
+   var DCyScale = d3.scale.linear()
+    	.range([hght, 0])
+    	.domain([0, sampMax + .5]);
+
+	var DCxScale = d3.scale.linear()
+    	.range([margin, wdth])
+    	.domain([-0.1, plotData[nN - 1] +0.5]);
+
+	// change scales to hold all x, all y
+   var DCxAxis = d3.svg.axis()
+      .scale(DCxScale)
+      .orient("bottom");
+
+   var DCyAxis = d3.svg.axis()
+      .scale(DCyScale)
+      .orient("left");
+      
+  var graph = d3.select("#spinSmrySVG")
+    .attr("width", wdth + margin*2)
+    .attr("height", hght + margin*2)
+  .append("g")
+   .attr("transform", "translate("+ (2 * margin) + "," + margin + ")");
+    
+    
+    graph.append("g")
+      .attr("class", "y axis")
+      .call(DCyAxis);
+      
+      
+	graph.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + (radius + hght) +")")
+      .call(DCxAxis);
+
+    graph.append("g")
+    	.attr("class", "text")
+    	.attr("x", 20)
+    	.attr("y", 240) //hght +margin - 10)
+    	.text(xlegend);  
+      
+   	Dots =  graph.selectAll("g.circle")
+            .data(myArray); 
+	Dots.enter().append("circle")
+            .attr("cx", function(d){ return DCxScale(d.x);} ) 
+            .attr("r", radius ) 
+            .attr("cy", function(d){ return DCyScale(d.y);} ) 
+            .style("fill","steelblue")
+            .style("fill-opacity", 0.6);
+    //return Dots; // and myArray?
+ }
 

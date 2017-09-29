@@ -6,16 +6,13 @@
         w =  Number(400), // - margin.right - margin.left,
         h = Number(300), // - margin.top - margin.bottom    
         balls = [],
-        colors = [], 
-        hideMix = false,
-        nCat,
-        nMix,
-        spacing =12,
-        mixDiv = d3.select("#mixSVGgoesHere"),
-       // mixSmryDiv = d3.select("#mixSmrySVGdiv"),
         boxData = [ { "x": w/2 -40,   "y": h/2-2 },  { "x": -w/2 +22,  "y": h/2-2},
                   { "x": -w/2+22,  "y": -h/+2}, { "x":w/2 -40 ,  "y": -h/2+2},
                   { "x": w/2 -40,  "y": h/2 - 40}],
+        colors = [], 
+        hideMix = false,
+        mixDiv = d3.select("#mixSVGgoesHere"),
+        mixCircles =[],          
         mixData = [],
         mixDraws=[],     // cumulative probabilities
  		mixDuration = 400,
@@ -23,10 +20,12 @@
         mixGroups =[],
         mixMatch,
         mixNs = [],
-        mixRepResults = [],
         mixStopRule,
         mixRadius = 10,
-        stepSize = mixRadius/10;
+        mixText = [],
+        nCat,
+        nMix,
+        spacing =12;
        
    var svgMix = mixDiv.append("svg")        
       .attr("width",  w)
@@ -47,7 +46,7 @@
 
 	
 function initialMixState(){
-	//setup the original batch of balls in the box
+	//setup the original batch of balls in the box -- mixCircles with data: balls
 	var colorSeq = [],
 		k = 0,
 		grdSize = Math.floor(Math.min(w,h)/( mixRadius*2)),
@@ -77,8 +76,8 @@ function initialMixState(){
     	colors[i] = d3.hcl(colorSeq[i] , 50, 80, 0.8);
 	}
 
-    var x = sampleWrep(xyvalues, mixNballs, repeat(1, xyvalues.length)),
-	   	y = sampleWrep(xyvalues, mixNballs, repeat(1, xyvalues.length));
+    var x = sampleWrep(xyvalues, mixNballs, repeat(1, xyvalues.length))[0],
+	   	y = sampleWrep(xyvalues, mixNballs, repeat(1, xyvalues.length))[0];
 	//console.log(x, y);   	
        
     k=0;
@@ -100,35 +99,26 @@ function initialMixState(){
     					r: mixRadius - .75} );
     	}
      }
-                
+    // if(mixCircles.length > 0){
+    // 	mixCircles = [];
+    // }           
      mixCircles = svgMix.selectAll("circle")
-        .data(balls)
-        .enter().append("circle")
+        .data(balls);
+     mixCircles.enter().append("circle")
          .attr("fill", function(d, i){ return colors[d.group]; } )
          .attr("cx", function(d){ return d.x * mixRadius - w/5;} ) // 
          .attr("cy", function(d){ return d.y * mixRadius - h/4;} )  // 
          .attr("r",  function(d){ return d.r;} )
-         .attr("text",function(d){return mixGroups[d.group];})  // 
-         ;//.attr("class", "circle") ; 
+         //.attr("text",function(d){return mixGroups[d.group];})  // 
+         ;//.attr("class", "circle") 
+      mixCircles.exit().remove(); 
          	
        
-function ignore(){
-     var textLabels = svgMix.selectAll("text")
-         .data(sample)
-       .enter().append("text")
-           .attr("x", function(d,i){ return -w/2 + xspace(i)  ;} ) // 
-         .attr("y", h/2 +34 )
-         .text( function(d){return mixGroups[d.group];})  // 
-         .style("text-anchor", "middle")
-         .attr("font-family", "sans-serif")
-         .attr("opacity",0)
-         .attr("font-size", "20px");
-  }
 }  //end of initialMixState
 
     // Transitions and timers
   
-function turn(i) {// rotate the whole batch
+function turn(i) {// rotate the whole batch of mixCircles
 	mixCircles.transition()
 		.delay(mixDuration * (i + (i > 0)* 1.4) *2 )
 		.duration(mixDuration )
@@ -141,7 +131,7 @@ function turn(i) {// rotate the whole batch
 
 function mixTest(draws) {
 	// for testing
-	var i;
+	var i ;
 	for (i = 0; i < draws.length; i++) {
 		turn(i);
 	}
@@ -163,21 +153,21 @@ function mixTest(draws) {
 			.duration(mixDuration)
 //			.ease("cubic-out")
 			.attr("cy",  i * 2*spacing - h/2 + mixRadius);
-		if(mixReplace === 0)  {
+		if(mixReplace === "no")  {
 		      balls.splice(balls.length -1, 1);
-		mixCircles.exit().remove();
+			mixCircles.exit().remove();
 		}
 	});
 }
 
 function mixNtimes(){
 	// generate a fixed number of draws
-    var nBalls,
+    var 
     	mixSeq = [];
     
 	initialMixState();
     mixReplace =  document.getElementById("mix_Replace").value;
-    
+	nMix =   +document.getElementById("nDraws").value;
     //if(mixStopRule !== "Fixed"){
     	// zap any results hanging around
     //	mixData = [];
@@ -185,23 +175,18 @@ function mixNtimes(){
     mixStopRule = "Fixed";
    	mixData = [];
 	
-	//check state of replacement. If "no" just use sampleWOrep, otherwise use sampleWrep
-	if(mixReplace === 0){
+	//check state of replacement. If "no" use sampleWOrep, otherwise use sampleWrep
+	if(mixReplace === "no"){
 		mixData = sampleWOrep(balls, nMix);
+	} else if(mixReplace === "yes"){
+		mixData = sampleWrep(balls, nMix,  repeat(1, balls.length));
 	} else{
-		mixData = sampleWrep(balls, nMix,  repeat(1, balls.length))
+		alert("error in mixReplace");
 	}
-		
-	//for(i=0; i < nDraws; i++){
-	//	mixData[i] = balls[mixData[i]];	
-	//}
-	//console.log(mixData);
+	//console.log(mixData[0]);
 	
-	//mixData.length = nDraws;
-	//console.log(mixData);
-	//showmixSequence(mixData);
+	showmixSequence(mixData);
 } 
-   //  end of mixMore
 
 function mixTill1(){
 	// generate a random sample of draws ending with one of the right color
@@ -218,17 +203,19 @@ function mixTill1(){
     //}
 	mixStopRule = "OneOfOneType";
 	
+    
 	initialMixState();
+    mixReplace =  document.getElementById("mix_Replace").value;
 	mixMatch = mixGroups.indexOf(mixStopper);
     if (mixMatch < 0){
     		alert("You must choose one of the labels.")
     }
     //check state of replacement. If "no" just use sampleWOrep, otherwise use sampleWrep
-	if(mixReplace === 0){
-		mixData = sampleWOrep(balls, nBalls);
-		for (i=0; i < nBalls; i++){
-			if(mixMatch === mixData[i].group){
-				mixData.length = i+1;
+	if(mixReplace === "no"){
+		mixData = sampleWOrep(balls, mixNballs);
+		for (i=0; i < mixNballs; i++){
+			if(mixMatch === mixData[0][i].group){
+				mixData[0].length = i+1;
 				break;
 			}
 		}
@@ -236,12 +223,12 @@ function mixTill1(){
 		mixLength = rgeom(1 - mixNs[mixMatch]/mixNballs);
 		otherBalls = balls.filter(function(d) {return d.group !== mixMatch;} );
 		theseBalls = balls.filter(function(d) {return d.group === mixMatch;} );
-		mixData = sampleWrep(otherBalls, mixLength-1,  repeat(1, otherBalls.length));
-		mixData.push(sampleWrep(theseBalls, 1, repeat(1, theseBalls.length)));
+		mixData = sampleWrep(otherBalls, mixLength-1,  repeat(1, otherBalls.length))[0];
+		mixData.push(sampleWrep(theseBalls, 1, repeat(1, theseBalls.length)[0]));
 	}
 	
 	console.log(mixData);
-	//showmixSequence(mixData);
+	showmixSequence(mixData);
 	//}
 }
 
@@ -260,15 +247,17 @@ function mixTillAll(){
 	mixStopRule = "OneOfEach";
 	
 	initialMixState();
-    
-    for(i=0; i<mixNCat; i++){
+        
+    mixReplace =  document.getElementById("mix_Replace").value;
+
+    for(i=0; i < mixNCat; i++){
     	table[i] = 0;
     }
     table.length = mixNCat;
     
     //check state of replacement. If "no" just use sampleWOrep once.
-	if(mixReplace === 0){
-		mixData = sampleWOrep(balls, nBalls);
+	if(mixReplace === "no"){
+		mixData = sampleWOrep(balls, mixNballs)[0];
     	while (d3.min(table) < 1){
 		   mixColor =  	mixData[ndx].group;
   		   table[mixColor] += 1;
@@ -277,7 +266,7 @@ function mixTillAll(){
   		mixData.length == ndx;  
  	} else{    // sampling with replacement
    	    while(d3.min(table) < 1){
-   	    	newBall = sampleWOrep(balls, 1, repeat(1, balls.length)); 
+   	    	newBall = sampleWOrep(balls, 1)[0]; 
   			mixData.push(newBall);
   			table[newBall.group] += 1;
   			ndx++;
@@ -286,74 +275,85 @@ function mixTillAll(){
   				}
   		}
    }
-    //console.log(table);
+    console.log(table);
     if(error !== "10K"){
     	showmixSequence(mixData);
     }
 }
 
 function showmixSequence(mixData){
-	var nDraws = mixData.length;
+	var nDraws = mixData[0].length,
+		mixSeq = mixData[1];
 	var spacing = (h -20) / (nDraws + 1); //for sampled circles
 	 // console.log([nDraws, spacing]);
     
-    var mixDraws = svgMix.selectAll("g.circle")
-         .data(mixData)
+    
+  	// setup the turning or mixing balls for all draws at once
+  	  // note: if replace =="no", the number of circles decreases with each draw.
+  	//for(i=0;i<nDraws;i++){
+  	//    turn(i);  
+	//}
+	// create new circles for the selected sample.
+	// hide them by setting radius to zero
+	mixDraws = svgMix.selectAll("g.circle")
+         .data(mixData[0])
        .enter().append("circle")
          .attr("fill", function(d, i){ return colors[d.group]; } )
          .attr("cx", function(d){ return d.x * mixRadius - w/5;} ) // 
          .attr("cy", function(d){ return d.y * mixRadius - h/4;} )  // 
-         .attr("r",  2 )
+         .attr("r",  0 )
          .attr("text",function(d){return mixGroups[d.group];})  // 
-         .attr("class", "circle") ; 
-      // these are copies of the first set of circles above
-
-  
-  	for(i=0;i<nDraws;i++){
-  	    tween(i);  
-	}
-	// Create the sampled circles (output)
-      //  but hide them with r = 0 
-    circles = svgMix.selectAll("g.circle")
-         .data(mixData);
-       circles.enter().append("circle")
-          .attr("fill", function(d){ return colors[d.group]; } )
-          .attr("cx", function(d){return  93 * Math.cos((90 - +d.angle*360)*Math.PI/180 );})  
-          .attr("cy", function(d){return -93 * Math.sin((90 - +d.angle*360)*Math.PI/180);})
-          .attr("r", 0)     // -> 20  
-          ;
+         ;//.attr("class", "circle") ; 
+      
 	  
-    textLabels = svgMix.selectAll("g.text")
-         .data(mixData)
-       .enter().append("text")
-         .attr("x", function(d,i){ return xspace(i)  ;} )  
-         .attr("y", 140)
-         .text( function(d){return  pieData[d.group].label ;}) 
+	  mixDraws.each(function(d, i) {
+		turn(i);  
+		d3.select(this)
+			.transition()		// move the selected ball to opening
+			.delay(mixDuration * 2 * (i + 1.1))
+			.attr("cx", w/2 -40  )
+			.attr("cy", h / 2 - 21) 
+         	.attr("r",  mixRadius )
+			.style("stroke", "black")
+			.transition()       // moveover to line up at right
+			.delay(mixDuration * 2 * (i + 1.4))
+			.duration(mixDuration)
+		//  .ease("cubic-in")
+			.attr("cx", w / 2 + 3 * mixRadius  )
+			.transition()       // move up to its row
+		    .delay( mixDuration * 2 * (i + 1.6) )
+			.duration(mixDuration)
+//			.ease("cubic-out")
+			.attr("cy",  i *spacing - h/2 + mixRadius)
+			.attr("opacity", 1)
+			.style("stroke", "black");
+		if(mixReplace === "no")  {
+		     	balls.splice(mixSeq[i], 1);
+				mixCircles.exit().remove();
+		}
+	});
+
+     mixText = svgMix.selectAll("text")
+         .data(mixData[0]);
+     mixText.enter().append("text")
+         .attr("x", w/2 - 2*mixRadius ) // 
+         .attr("y", function(d, i){ return i * spacing - h/2 + 1.2 * mixRadius;} )
+         .text( function(d){return mixGroups[d.group];})  // 
          .style("text-anchor", "middle")
          .attr("font-family", "sans-serif")
          .attr("opacity",0)
          .attr("font-size", "20px");
-
-	  circles.each(function(d,i){
-      d3.select(this).transition()
-          // toss out circle
-          .delay(mixDuration + (mixSlideDuration + mixDuration) * i )
-          .duration( mixSlideDuration )
-          .ease("linear")
-          .attr("cx", xspace(i))
-          .attr("cy", + r + 20)
-          .attr("r", 20);
-	});
-
-    textLabels.each(function(d,i){
-	// move the selected ball out
+         
+   mixText.each(function(d,i){
+	// show the label
         d3.select(this)
           .transition()
-           .delay( ( mixSlideDuration + mixDuration) * (i+1) )
+           .delay( 200+ ( mixSlideDuration + mixDuration) * (i + 1.6) )
           .attr("opacity", 1)
        ;  
    });
-   document.getElementById("repeatMix").style.display = "block"; 
+   //document.getElementById("repeatMix").style.display = "block";
+   // need to get rid of old draws when miReplace is "no" 
 }
 
 function hideShowMix() {

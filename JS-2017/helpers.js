@@ -86,7 +86,8 @@ function sampleWrep(values, nreps, prob) {
 	var cumProb = [],
 	    nCat = prob.length,
 	    totalProb = jStat.sum(prob),
-	    i,
+	    i, k,
+	    ids = [],
 	    out = [];
 	stdize = function(x) {
 		return x / totalProb;
@@ -96,9 +97,12 @@ function sampleWrep(values, nreps, prob) {
 	cumProb.unshift(0);
 	//console.log(cumProb);
 	for ( i = 0; i < nreps; i++) {
-		out.push(values[ cut(Math.random(), cumProb)]);
+		k = cut(Math.random(), cumProb);
+		out.push( values[k ] );
+		ids.push(k);
 	}
-	return out;
+	//console.log(out);
+	return [out, ids];
 }
 
 function sample1(values) {
@@ -109,18 +113,21 @@ function sample1(values) {
 
 function sampleWOrep(values, nreps){
   var i, k, len = values.length, 
+	  ids = [],
 	  out = [];
  var  seq1 = jStat.seq(0, len -1, len);	  
 	  nreps = Math.min(nreps, len); // can't draw more than the number of values
 	for ( i = 0; i < nreps; i++) {
 		k = seq1[Math.floor(Math.random() * len)];
 		//console.log(k);
+		ids.push(k);
 		out.push( values[k] );
 		seq1.splice(k, 1);    // remove kth element and repeat as needed
 		len--;                //  decrement length
 	}
-	out.length = nreps;
-	return out;  
+	//console.log(out);
+	
+	return [out, ids];  
 }
 
   var sturgesFormula = function(arr){
