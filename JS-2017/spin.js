@@ -484,15 +484,15 @@ var dotChart = function(plotData){
 	    ypos =0,
 	    wdth = 440 - margin * 2,
 	    hght = 320 - margin * 2,
-	    xlegend = spinStopRule === "Fixed"? "Spins to get one of the first type":
-	       			spinStopRule === "OneOfOneType"? "Spins to get a " + spinGroups[spinMatch]:
+	    xlegend = (spinStopRule === "Fixed")? "Spins to get one of the first type":
+	       			(spinStopRule === "OneOfOneType")? "Spins to get a " + spinGroups[spinMatch]:
 	       			"Spins to get one of each type";
 	    
 	plotData.sort(function(a,b){return a - b}) ;   
           // numeric sort to build bins for y values
           // start on left with smallest x.
 
-	
+	// TODO: trouble with size of svg -- not big enough to allow axis labels
 	var radius = (nN < 101)? 6:
 	    (nN < 501)? 5:
 	    (nN < 1001)? 4:
@@ -533,10 +533,10 @@ var dotChart = function(plotData){
       .orient("left");
       
   var graph = d3.select("#spinSmrySVG")
-    .attr("width", wdth + margin*2)
+    .attr("width", wdth + margin*2)             // size problems
     .attr("height", hght + margin*2)
   .append("g")
-   .attr("transform", "translate("+ (2 * margin) + "," + margin + ")");
+   .attr("transform", "translate("+ (margin) + "," + margin + ")");
     
     
     graph.append("g")
@@ -549,11 +549,6 @@ var dotChart = function(plotData){
       .attr("transform", "translate(0," + (radius + hght) +")")
       .call(DCxAxis);
 
-    graph.append("g")
-    	.attr("class", "text")
-    	.attr("x", 20)
-    	.attr("y", 240) //hght +margin - 10)
-    	.text(xlegend);  
       
    	Dots =  graph.selectAll("g.circle")
             .data(myArray); 
@@ -564,5 +559,15 @@ var dotChart = function(plotData){
             .style("fill","steelblue")
             .style("fill-opacity", 0.6);
     //return Dots; // and myArray?
+    graph.append("g")
+    	.attr("class", "text")
+    	.attr("x", wdth/2)
+    	.attr("y", 20)
+        .style("text-anchor", "middle")
+         .attr("font-family", "sans-serif")
+         .attr("opacity",1)
+         .attr("font-size", "20px")
+    	.text(xlegend);  
+
  }
 

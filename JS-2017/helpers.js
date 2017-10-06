@@ -80,6 +80,14 @@ function repeat(x, n){
 	return out;
 }
 
+function sequence(start, stop, inc){
+	var i, out = [];
+	for(i =start; i <= stop; i += inc){
+		out.push(i);
+	}
+	return out;
+}
+
 
 function sampleWrep(values, nreps, prob) {
 	// draw  values  (with replacement) at random using probs as weights
@@ -105,31 +113,38 @@ function sampleWrep(values, nreps, prob) {
 	return [out, ids];
 }
 
-function sample1(values) {
+function sample1(nItems) {
 	// draw  one value assuming each is equally likely
-	var  nItems = values.length;
-	return values[Math.floor(Math.random() * nItems)];
+	return Math.floor(Math.random() * nItems);
 }
 
 function sampleWOrep(values, nreps){
   var i, k, len = values.length, 
 	  ids = [],
 	  out = [];
- var  seq1 = jStat.seq(0, len -1, len);	  
+ var  seq1 = sequence(0, len - 1, 1);	  
 	  nreps = Math.min(nreps, len); // can't draw more than the number of values
 	for ( i = 0; i < nreps; i++) {
-		k = seq1[Math.floor(Math.random() * len)];
-		//console.log(k);
-		ids.push(k);
-		out.push( values[k] );
-		seq1.splice(k, 1);    // remove kth element and repeat as needed
-		len--;                //  decrement length
+		k = sample1(seq1.length);
+		//console.log(k, seq1[k]);
+		ids.push(seq1[k]);
+		out.push( values[seq1[k]] );
+		seq1.splice(k , 1);    // remove kth element and repeat as needed
+		//console.log(seq1);
 	}
 	//console.log(out);
 	
 	return [out, ids];  
 }
 
+ function inArray(array, value){
+ 	var i = array.length;
+ 	while(i--){
+ 		if (array[i] === value){ return true;}
+ 	}
+ 	return false;
+ }
+ 
   var sturgesFormula = function(arr){
   	// number of bins for a histogram
     var n = size(arr);
