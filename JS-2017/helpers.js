@@ -110,6 +110,7 @@ function sampleWrep(values, nreps, prob) {
 		ids.push(k);
 	}
 	//console.log(out);
+	// return the values in sampled order and their ids or positions in the original list
 	return [out, ids];
 }
 
@@ -133,7 +134,7 @@ function sampleWOrep(values, nreps){
 		//console.log(seq1);
 	}
 	//console.log(out);
-	
+	// return the values in sampled order and their ids or positions in the original list
 	return [out, ids];  
 }
 
@@ -145,7 +146,17 @@ function sampleWOrep(values, nreps){
  	return false;
  }
  
-  var sturgesFormula = function(arr){
+  function indexOfXY(array, X, Y){
+  	var  xIndx=[], yIndx=[];
+  	xIndx = array.findIndex(i => i.x === X);
+  	yIndx = array.findIndex(i => i.y === Y);
+  	if(xIndx.length == 1){	return xIndx;
+  	} else if (yIndx.length == 1){	return yIndx;
+  	}  // X,Y pairs are unique
+  	return yIndx.filter(function(d) {return inArray(xIndx, d);} );
+  }
+ 
+  function sturgesFormula(arr){
   	// number of bins for a histogram
     var n = size(arr);
     var k = Math.ceil((Math.log(n)/Math.log(2))+1);

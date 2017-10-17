@@ -203,7 +203,8 @@ function mixTill1(){
     	i =0,
     	mixLength,
     	otherBalls =[],
-    	theseBalls = [];        
+    	theseBalls = [],
+    	tempDraw;        
     mixData = [[],[]];
     
 //     if(mixStopRule !== "OneOfOneType"){
@@ -225,20 +226,27 @@ function mixTill1(){
 		for (i=0; i < mixNballs; i++){
 			if(mixMatch === mixData[0][i].group){
 				mixData[0].length = i+1;
-				mixData[i].length = i+1;
+				mixData[1].length = i+1;
+				nDraws = i+1;
 				break;
 			}
 		}
 	} else{
-		nDraws = rgeom(1 - mixNs[mixMatch]/mixNballs);
-		otherBalls = balls.filter(function(d) {return d.group !== mixMatch;} );
-		theseBalls = balls.filter(function(d) {return d.group === mixMatch;} );
-		mixData = sampleWrep(otherBalls, nDraws-1,  repeat(1, otherBalls.length))[0];
-		mixData[0].push(balls[sample1(theseBalls.length)]);
-		mixData[1].push(theseBalls[sample1(theseBalls.length)]);
+		nDraws = rgeom(mixNs[mixMatch]/mixNballs);
+		otherBalls = balls.filter(function(d) {return d.group !== mixMatch;} ); // other colors
+		theseBalls = balls.filter(function(d) {return d.group === mixMatch;} ); // target color
+		if(nDraws > 1){
+			mixData = sampleWrep(otherBalls, nDraws-1,  repeat(1, otherBalls.length));
+		}
+		// last ball is of right color to give the right random geometric.
+		tempDraw = sample1(theseBalls.length);
+		mixData[0][nDraws -1] = theseBalls[tempDraw];
+		// trouble finding the index number of the ball of drawn, but then why do I need it?
+		mixData[1][nDraws -1] = mixNballs; // indexOfXY(balls, theseBalls[tempDraw].x, theseBalls[tempDraw].y); 
 	}
+	//console.log(nDraws);
 	
-	console.log(mixData[0], mixData[1]);
+	//console.log(mixData[0], mixData[1]);
 	showmixSequence(mixData);
 	//}
 }
@@ -277,21 +285,33 @@ function mixTillAll(){
   		mixData[0].length = ndx; 
   		mixData[1].length = ndx;  
  	} else{    // sampling with replacement
-   	    while(d3.min(table) < 1){                   //needs a fix -- doesn't sample any balls
-   	    	newBall = sampleWOrep(balls, 1); 
-  			mixData[0][ndx] = newBall[0]; 
-  			mixData[1][ndx] = newBall[1];
+   	    mixData = sampleWrep(balls, nCat, repeat(1,balls.length));
+   	    for(ndx=0; ndx< nCat; ndx++){
+  			mixColor = mixData[0][ndx].group;
+   	    	table[mixColor] += 1;
+   	    }
+   	    newBall = sampleWrep(balls, 10, repeat(1,balls.length));
+   	    while(d3.min(table) < 1){   
+   	    	for(i=0; i<10; i++){
+  				mixData[0][ndx] = newBall[0][i]; 
+  				mixData[1][ndx] = newBall[1][i];
+  				ndx++;
+		   		mixColor = newBall[0][i].group;
+   	    		table[mixColor] += 1;
+   	    		if(d3.min(table) >= 1){
+   	    			break;
+   	    		}	
+   	    	}
   			//console.log(newBall[0][0].group);
-  			table[newBall[0][0].group] += 1;
-  			ndx++;
   			if(ndx > 10000){ error="10K";
   				break;
   				}
+  			newBall = sampleWrep(balls, 10, repeat(1, balls.length));
   		}
    }
-   console.log(table);
-   console.log(mixData[0]);
-   console.log( mixData[1]);
+   //console.log(table);
+   //console.log(mixData[0]);
+   //console.log(mixData[1]);
    if(error !== "10K"){
     	showmixSequence(mixData);
     }
