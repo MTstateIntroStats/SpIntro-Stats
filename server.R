@@ -1286,12 +1286,12 @@ output$cat1Estimate_Plot2 <- renderPlot({
            samplData <- matrix(sample(1:input$mix_nCat, nReps * nDraws,
                                       prob = counts/nBalls, replace = TRUE),
                                ncol=nDraws)
-         }
-         if(fn == 3){
+         }  ## what to count?
+         if(fn == 3){   ## count  max run length
            return(apply(samplData, 1 , function(x)  max(rle(x)[[1]])))
-         } else if(fn ==4){
+         } else if(fn ==4){  ## count 
            return(apply(samplData, 1 , function(x) sum( x == groups[1:length(x)])))
-         } else
+         } else              ## count number in type fn
            return(apply(samplData, 1 , function(x) table(x)[fn]))
        } else {
          ## apply stopping rule
