@@ -110,6 +110,7 @@ function sampleWrep(values, nreps, prob) {
 		ids.push(k);
 	}
 	//console.log(out);
+	// return the values in sampled order and their ids or positions in the original list
 	return [out, ids];
 }
 
@@ -117,6 +118,7 @@ function sample1(nItems) {
 	// draw  one value assuming each is equally likely
 	return Math.floor(Math.random() * nItems);
 }
+
 
 function sampleWOrep(values, nreps){
   var i, k, len = values.length, 
@@ -133,7 +135,7 @@ function sampleWOrep(values, nreps){
 		//console.log(seq1);
 	}
 	//console.log(out);
-	
+	// return the values in sampled order and their ids or positions in the original list
 	return [out, ids];  
 }
 
@@ -145,7 +147,17 @@ function sampleWOrep(values, nreps){
  	return false;
  }
  
-  var sturgesFormula = function(arr){
+  function indexOfXY(array, X, Y){
+  	var  xIndx=[], yIndx=[];
+  	xIndx = array.findIndex(i => i.x === X);
+  	yIndx = array.findIndex(i => i.y === Y);
+  	if(xIndx.length == 1){	return xIndx;
+  	} else if (yIndx.length == 1){	return yIndx;
+  	}  // X,Y pairs are unique
+  	return yIndx.filter(function(d) {return inArray(xIndx, d);} );
+  }
+ 
+  function sturgesFormula(arr){
   	// number of bins for a histogram
     var n = size(arr);
     var k = Math.ceil((Math.log(n)/Math.log(2))+1);
@@ -157,7 +169,7 @@ function sampleWOrep(values, nreps){
 //  Need a generic plotting function for dotcharts.
 //
 
-var dotChart = function(sample, svgObject, xlegend){
+var dotChart = function(sample, svgObject){
 	var margin = 40,
 		myArray =[],
 	    nN = sample.length,
@@ -230,11 +242,11 @@ var dotChart = function(sample, svgObject, xlegend){
       .attr("transform", "translate(0," + (radii + hght) +")")
       .call(DCxAxis);
 
-    graph.append("g")
-    	.attr("class", "text")
-    	.attr("x", 20)
-    	.attr("y", hght + 5)
-    	.text(xlegend);  
+  //  graph.append("g")
+  //  	.attr("class", "text")
+  //  	.attr("x", 20)
+  //  	.attr("y", hght + 5)
+  //  	.text(xlegend);  
       
    	Dots =  graph.selectAll("g.circle")
             .data(myArray); 
@@ -246,4 +258,6 @@ var dotChart = function(sample, svgObject, xlegend){
             .style("fill-opacity", 0.6);
     //return Dots; // and myArray?
 }
+
+
 

@@ -22,6 +22,7 @@
         mixNs = [],
         mixStopRule,
         mixRadius = 10,
+        mixRepResults = [],
         mixText = [],
         nCat,
         nMix,
@@ -203,7 +204,8 @@ function mixTill1(){
     	i =0,
     	mixLength,
     	otherBalls =[],
-    	theseBalls = [];        
+    	theseBalls = [],
+    	tempDraw;        
     mixData = [[],[]];
     
 //     if(mixStopRule !== "OneOfOneType"){
@@ -225,20 +227,27 @@ function mixTill1(){
 		for (i=0; i < mixNballs; i++){
 			if(mixMatch === mixData[0][i].group){
 				mixData[0].length = i+1;
-				mixData[i].length = i+1;
+				mixData[1].length = i+1;
+				nDraws = i+1;
 				break;
 			}
 		}
 	} else{
-		nDraws = rgeom(1 - mixNs[mixMatch]/mixNballs);
-		otherBalls = balls.filter(function(d) {return d.group !== mixMatch;} );
-		theseBalls = balls.filter(function(d) {return d.group === mixMatch;} );
-		mixData = sampleWrep(otherBalls, nDraws-1,  repeat(1, otherBalls.length))[0];
-		mixData[0].push(balls[sample1(theseBalls.length)]);
-		mixData[1].push(theseBalls[sample1(theseBalls.length)]);
+		nDraws = rgeom(mixNs[mixMatch]/mixNballs);
+		otherBalls = balls.filter(function(d) {return d.group !== mixMatch;} ); // other colors
+		theseBalls = balls.filter(function(d) {return d.group === mixMatch;} ); // target color
+		if(nDraws > 1){
+			mixData = sampleWrep(otherBalls, nDraws-1,  repeat(1, otherBalls.length));
+		}
+		// last ball is of right color to give the right random geometric.
+		tempDraw = sample1(theseBalls.length);
+		mixData[0][nDraws -1] = theseBalls[tempDraw];
+		// trouble finding the index number of the ball of drawn, but then why do I need it?
+		mixData[1][nDraws -1] = mixNballs; // indexOfXY(balls, theseBalls[tempDraw].x, theseBalls[tempDraw].y); 
 	}
+	//console.log(nDraws);
 	
-	console.log(mixData[0], mixData[1]);
+	//console.log(mixData[0], mixData[1]);
 	showmixSequence(mixData);
 	//}
 }
@@ -277,30 +286,42 @@ function mixTillAll(){
   		mixData[0].length = ndx; 
   		mixData[1].length = ndx;  
  	} else{    // sampling with replacement
-   	    while(d3.min(table) < 1){                   //needs a fix -- doesn't sample any balls
-   	    	newBall = sampleWOrep(balls, 1); 
-  			mixData[0][ndx] = newBall[0]; 
-  			mixData[1][ndx] = newBall[1];
+   	    mixData = sampleWrep(balls, nCat, repeat(1,balls.length));
+   	    for(ndx=0; ndx< nCat; ndx++){
+  			mixColor = mixData[0][ndx].group;
+   	    	table[mixColor] += 1;
+   	    }
+   	    newBall = sampleWrep(balls, 10, repeat(1,balls.length));
+   	    while(d3.min(table) < 1){   
+   	    	for(i=0; i<10; i++){
+  				mixData[0][ndx] = newBall[0][i]; 
+  				mixData[1][ndx] = newBall[1][i];
+  				ndx++;
+		   		mixColor = newBall[0][i].group;
+   	    		table[mixColor] += 1;
+   	    		if(d3.min(table) >= 1){
+   	    			break;
+   	    		}	
+   	    	}
   			//console.log(newBall[0][0].group);
-  			table[newBall[0][0].group] += 1;
-  			ndx++;
   			if(ndx > 10000){ error="10K";
   				break;
   				}
+  			newBall = sampleWrep(balls, 10, repeat(1, balls.length));
   		}
    }
-   console.log(table);
-   console.log(mixData[0]);
-   console.log( mixData[1]);
+   //console.log(table);
+   //console.log(mixData[0]);
+   //console.log(mixData[1]);
    if(error !== "10K"){
     	showmixSequence(mixData);
     }
 }
 
 function showmixSequence(mixData){
-	var nDraws = mixData[0].length, //values sampled
+	var nDraws = mixData[0].length, //sampled balls
 		mixSeq = mixData[1];        // indices of those sampled
-	var spacing = (h -20) / (nDraws + 1); //for sampled circles going outside the box
+	var spacing = (h -20) / (nDraws + 1); //for sampled balls going outside the box
 	 //console.log(mixSeq);
 
 	// create new circles for the selected sample.
@@ -374,9 +395,8 @@ function showmixSequence(mixData){
           .attr("opacity", 1)
        ;  
    });
-   //document.getElementById("repeatMix").style.display = "block";
-   // need to get rid of old draws when miReplace is "no" 
-}
+   document.getElementById("repeatMix").style.display = "block";
+ }
 
 function hideShowMix() {
     hideMix = !hideMix;
@@ -391,19 +411,19 @@ function mixRepeat(times){
 		thisProb;
 	
     if(mixStopRule === "Fixed"){
-    	thisProb = mixProb[0];
+    	thisProb = mixNs[0]/ d3.sum(mixNs);
     	mixRepResults = mixRepResults.concat(rbinom(nMix, thisProb, times));
     	// track  number of first type?                    
     } else if(mixStopRule === "OneOfOneType"){
     	// track number of mixs needed
-    	thisProb = mixProb[mixMatch];
-    	mixRepResults[0] = mixData.length;
+    	thisProb = mixNs[mixMatch]/ d3.sum(mixNs);
+    	mixRepResults[0] = mixData[0].length;
     	for(i=0; i<times; i++ ){
     		mixRepResults.push(rgeom(thisProb));
     	}
     } else if(mixStopRule === "OneOfEach"){
     	// track number of mixs needed
-    	mixRepResults[0] = mixData.length;
+    	mixRepResults[0] = mixData[0].length;
     	mixRepResults = mixRepResults.concat(draws2get1ofEach(times));
     } else {
     	console.log("Bad option for mixStopRule");
@@ -412,25 +432,25 @@ function mixRepeat(times){
 }
 
 function draws2get1ofEach(reps) {
-	// randomly mix til we get one of each category
+	// randomly draw til we get one of each category
 	// returns the number of mixs needed
 	var i = 0,
 	    j = 0,
 	    table = [],
 	    temp = [],
 	    draw1 = [],
-	    nDraws = jStat.ones(1,reps),
-	    nCat = mixProb.length,
-	    probs = mixProb.slice(0);
+	    nDraws = repeat(1,reps),
+	    nCat = mixGroups.length,
+	    probs = [];
 	    
 	if (nCat < 2) {
 		return nDraws; // with only 1 category, we get all (only one) categories right away
 	} // at least 2 categories
-	draw1 = sample(jStat.seq(0,nCat-1,nCat), reps, probs);
+	draw1 = sampleWrep(sequence(0,nCat-1,1), reps, probs);
 	for( i=0; i < reps; i++){
-		probs = mixProb.slice(0);  // need to reset for each rep
+		probs = mixNs/ d3.sum(mixNs);  // need to reset for each rep
 		//console.log(probs);
-		probs.splice(draw1[i],1);
+		probs.splice(draw1[i],1);  // remove the first draws prob for each rep
 		//console.log(probs);
 		if(d3.sum(probs) > 0){
 			nDraws[i] = 1 + recursiveDraws(probs );
@@ -441,6 +461,8 @@ function draws2get1ofEach(reps) {
 }
 
 function recursiveDraws(probs){
+	// returns the (random) number of draws needed to get one of each type
+	// probs are the relative probabilities of catgories not yet selected
 	 var sumProb = d3.sum(probs), // this needs to be less than 1 for rgeom to work
 	     draw,
 	     group,
@@ -450,11 +472,11 @@ function recursiveDraws(probs){
 	 	console.log("Error in recursiveDraw: probs sum to one");
 	 	return(NaN);
 	 }
-	 draw = rgeom(sumProb);
+	 draw = rgeom(sumProb);  // draws to get the next new type
 	 if(nCat === 1){ 
 	 	return draw;
-	 } else{
-	 	group = sample(jStat.seq(0,nCat-1,nCat), 1, probs ) ;
+	 } else{                 // assign the new draw a category 
+	 	group = sample(sequence(0,nCat-1,1), 1, probs ) ;
 	 	probs.splice(group, 1); // remove the observed probability
 	 	return draw + recursiveDraws(probs);
 	 }    

@@ -430,14 +430,14 @@ function spins2get1ofEach(reps) {
 	    table = [],
 	    temp = [],
 	    draw1 = [],
-	    nDraws = jStat.ones(1,reps),
+	    nDraws = repeat(1,reps),
 	    nCat = spinProb.length,
-	    probs = spinProb.slice(0);
+	    probs = [];
 	    
 	if (nCat < 2) {
 		return nDraws; // with only 1 category, we get all (only one) categories right away
 	} // at least 2 categories
-	draw1 = sampleWOrep(jStat.seq(0,nCat-1,nCat), reps, probs);
+	draw1 = sampleWOrep(sequence(0,nCat-1,1), reps, probs);
 	for( i=0; i < reps; i++){
 		probs = spinProb.slice(0);  // need to reset for each rep
 		//console.log(probs);
@@ -466,7 +466,7 @@ function recursiveSpins(probs){
 	 if(nCat === 1){ 
 	 	return draw;
 	 } else{
-	 	group = sampleWOrep(jStat.seq(0,nCat-1,nCat), 1, probs ) ;
+	 	group = sampleWOrep(sequence(0,nCat-1,1), 1, probs ) ;
 	 	probs.splice(group, 1); // remove the observed probability
 	 	return draw + recursiveSpins(probs);
 	 }    
@@ -476,7 +476,7 @@ function recursiveSpins(probs){
 //  Need a generic plotting function for dotcharts.
 //  This is too specific to spinner. Generalize it and add an x axis label.
 
-var dotChart = function(plotData){
+var dotChart1 = function(plotData){
 	var margin = 40,
 		myArray =[],
 	    nN = plotData.length,
@@ -541,6 +541,7 @@ var dotChart = function(plotData){
     
     graph.append("g")
       .attr("class", "y axis")
+      .attr("font-size", "10px")
       .call(DCyAxis);
       
       
@@ -566,7 +567,7 @@ var dotChart = function(plotData){
         .style("text-anchor", "middle")
          .attr("font-family", "sans-serif")
          .attr("opacity",1)
-         .attr("font-size", "20px")
+         .attr("font-size", "10px")
     	.text(xlegend);  
 
  }
