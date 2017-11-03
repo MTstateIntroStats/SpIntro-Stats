@@ -258,6 +258,3 @@ var dotChart = function(sample, svgObject){
             .style("fill-opacity", 0.6);
     //return Dots; // and myArray?
 }
-
-
-

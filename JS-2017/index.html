@@ -332,12 +332,60 @@ function closePages() {
    	 estimate p-->
  
 <div id="TestEstC1" class="w3-container Page" style="display:none">
-  <div class = w3-container>
-  	<h3>Estimate true p or Test for a particular value</h3>
+	
+  <script src="cat1.js" charset="utf-8"></script>
+  
+  <div class = "w3-container">
+  	<div class = "w3-cell-row w3-mobile">
+  		<div class = "w3-cell" style="width:40%">
+  		  <h4>    Enter Data</h4>
+  		  <table class="w3-table w3-border">
+			 <tr>
+  				<th>Label</th>
+			 	 <th>Count</th>
+			 </tr>
+			 <tr>
+  				<td><input class = "w3-input w3-border w3-mobile " type = "text" id="cat1Label1" 
+  		            placeholder = "Success"</input>
+  			</td>
+  				<td> <input class = "w3-input w3-border w3-mobile" type = "text" id="cat1N1" 
+  		            placeholder = "1" onchange = "summarizeP1()"</input>
+  					</td>
+			 </tr>
+			 <tr>
+  				<td><input class = "w3-input w3-border w3-mobile " type = "text" id="cat1Label2" 
+  		            placeholder = "Failure"</input>
+  				</td>
+  				<td> <input class = "w3-input w3-border w3-mobile" type = "text" id="cat1N2" 
+  		            placeholder = "1" onchange = "summarizeP1()"</input>
+  					</td> 				
+			 </tr>
+		    </table>
+    </div> &nbsp;&nbsp;
+	    <div class = "w3-cell" style=":40%" style="display:block">
+	    	<h4> Summary</h4>
+   		<div class = "w3-container w3-cell w3-mobile" id = "cat1SummarySVGgoesHere" >
+   			<svg class="chart" ></svg>
+   		</div>
+   		<div class = "w3-container w3-cell w3-mobile" id = "cat1SummaryText" style="display:none">
+   			p&#770; = <br>
+   			sd(p&#770) = 
+   		</div>
+        </div>
+   </div> <br>
+    <div class = "w3-cell-row w3-mobile">  
+    	Either
+  	 		 <button id = "EstimateP1" onclick="estimateP1()" 
+  	 		 class="w3-button w3-pale-blue w3-medium w3-round-xlarge">
+  	  		&nbsp;  Estimate a true proportion.</button> 
+  	  		
+  	 		 <button id = "TestP1" onclick="testP1()" 
+  	 		 class="w3-button w3-pale-blue w3-medium w3-round-xlarge">
+  	  		&nbsp; OR Test for a particular value.</button> 
+    	
+    </div>  
   </div>
-      <span onclick="openVble('OneCat')" class="w3-button w3-large w3-display-bottomright">Back</span>
 </div>
-
    <!-- -------  One Categorical Actions     
    	2) CI Demo with known p:   
    	ToDo:  Inputs work, need replication and plot of outcomes
@@ -415,7 +463,7 @@ function closePages() {
 	 <p>Spinner setup: Type as many labels (separated with commas or tabs) in the first box 
 	 as percentages or probability weights in the second. </p>
   	<div class = "w3-form w3-cell-row w3-mobile" id ="spinInputs"> 
-  		<div class = "w3-cell w3-mobile"  style="width:40%">
+  		<div class = "w3-cell w3-mobile"  style=":40%">
   			Labels:
   		<input class = "w3-input w3-border w3-mobile w3-pale-yellow" type = "text" id="spinCats" 
   		       style="display:block"</input>

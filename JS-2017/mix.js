@@ -323,7 +323,8 @@ function showmixSequence(mixData){
 		mixSeq = mixData[1];        // indices of those sampled
 	var spacing = (h -20) / (nDraws + 1); //for sampled balls going outside the box
 	 //console.log(mixSeq);
-
+       
+	
 	// create new circles for the selected sample.
 	// hide them by setting radius to zero
 	mixDraws = svgMix.selectAll("g.circle")
@@ -441,14 +442,18 @@ function draws2get1ofEach(reps) {
 	    draw1 = [],
 	    nDraws = repeat(1,reps),
 	    nCat = mixGroups.length,
-	    probs = [];
+	    probs = [],
+ 	    stdize = function(x) {
+		  return x / totalProb;
+	    },
+	    totalProb = d3.sum(mixNs);
 	    
 	if (nCat < 2) {
 		return nDraws; // with only 1 category, we get all (only one) categories right away
 	} // at least 2 categories
 	draw1 = sampleWrep(sequence(0,nCat-1,1), reps, probs);
 	for( i=0; i < reps; i++){
-		probs = mixNs/ d3.sum(mixNs);  // need to reset for each rep
+		probs = jStat.map(mixNs, stdize);  // need to reset for each rep
 		//console.log(probs);
 		probs.splice(draw1[i],1);  // remove the first draws prob for each rep
 		//console.log(probs);
@@ -476,7 +481,7 @@ function recursiveDraws(probs){
 	 if(nCat === 1){ 
 	 	return draw;
 	 } else{                 // assign the new draw a category 
-	 	group = sample(sequence(0,nCat-1,1), 1, probs ) ;
+	 	group = sampleWrep(sequence(0,nCat-1,1), 1, probs ) ;
 	 	probs.splice(group, 1); // remove the observed probability
 	 	return draw + recursiveDraws(probs);
 	 }    
