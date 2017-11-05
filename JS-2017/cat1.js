@@ -89,6 +89,8 @@ function summarizeP1() {
 //    		.attr("class", "x axis")
 //    		.attr("transform", "translate(0,"+ h  +")")
 //    		.call(xAxis);
+   // adding axis throws off the bar heights and doesn't allow nice updates.
+   // TODO: use an unfilled rectangle instead??
     
      barC1 = chartC1.selectAll("g")
       .data(c1Data);
@@ -124,4 +126,59 @@ function summarizeP1() {
   
  }
 
- 	  
+	var confLevels = [		{ key: "80%", value: "0.80" },
+		{ key: "90%", value: "0.90" },
+		{ key: "95%", value: "0.95" },
+		{ key: "99%", value: "0.99" }
+	];
+    
+	var rangeslide2 = rangeslide("#cat1ConfLvl", {
+		data: confLevels,
+		showLabels: true,
+		startPosition: 0,
+		showTicks: false,
+        dataSource: "value",
+        labelsContent: "key",
+        valueIndicatorContent: "key",
+		thumbWidth: 24,
+		thumbHeight: 24,
+		handlers: {
+			"valueChanged": [onChange]
+		}
+	});
+
+function EstimateP1(){
+	//function to estimate the true proportion based on a sample of 'success/failure' data
+	// Gather Inputs:
+      cat1Label1 = document.getElementById("cat1Label1").value;
+      cat1Label2 = document.getElementById("cat1Label2").value;
+      cat1N1 = +document.getElementById("cat1N1").value;
+      cat1N2 = +document.getElementById("cat1N2").value;
+      phat = cat1N1/ (cat1N1 + cat1N2);
+	 // print header 'Re-sampled Proportions Using the Given Data'
+	 // show plot
+	 // click buttons for more re-samples
+	 // click buttons for confidence level
+	 // change point colors based on in/outside the CI
+	 //print CI
+	
+} 	  
+
+function TestP1(){
+	//function to test 'Is the true proportion  = some value?' for 'success/failure' data
+	// Gather Inputs:
+      cat1Label1 = document.getElementById("cat1Label1").value;
+      cat1Label2 = document.getElementById("cat1Label2").value;
+      cat1N1 = +document.getElementById("cat1N1").value;
+      cat1N2 = +document.getElementById("cat1N2").value;
+      phat = cat1N1/ (cat1N1 + cat1N2);
+	 // print header 'Proportions From Samples From the Null Distribution'
+	   // by setting innerhtml for a selected header
+	 // show plot -- use same SVG for test and estimate
+	 // click buttons for more samples -- same for both test and estimate
+	 // choose bounds (less, greater, more extreme) and cutoff (phat)
+	 // change point colors based on in/outside the bounds
+	 //print p-value
+	 //   clicking a point changes a table to show that proportion
+	
+} 	  

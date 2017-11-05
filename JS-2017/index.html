@@ -3,6 +3,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="w3.css">
+
+<link rel="stylesheet" href="rangeslide/dist/rangeslide.css">
+<!--
+	<link rel="stylesheet" href="rangeslide/example/example.css">
 <!--
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
@@ -43,14 +47,17 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
 <!-- Load D3  -->
 <script src="d3.v3.min.js" charset="utf-8"></script>
 <script src="alertify.min.js" charset="utf-8"></script>
-<!-- Load data on textbook cost  -->
 <script src= "costs.js"> </script>
 <script src= "norms.js"> </script>
 <!-- Load jStat  -->
-<script src="jstat.js" charset="utf-8"></script>
+<script src="jstat.js"     charset="utf-8"></script>
 <script src="papaparse.js" charset="utf-8"></script>
-<script src="helpers.js" charset="utf-8"></script > 
+<script src="helpers.js"   charset="utf-8"></script> 
+<script src="rangeslide/dist/rangeslide.js" charset="utf-8"></script>
 
+<link rel="stylesheet" href="rangeslide/dist/rangeslide.css" type="text/css" />
+	
+<!-- Load data on textbook cost  -->
 <script src= "../www/costs.js"> </script>
      <!--  -------------------------------------
      		Sidebar Menu Navigator
@@ -346,23 +353,23 @@ function closePages() {
 			 </tr>
 			 <tr>
   				<td><input class = "w3-input w3-border w3-mobile " type = "text" id="cat1Label1" 
-  		            placeholder = "Success"</input>
-  			</td>
+  		            placeholder = "Success"></input>
+  			    </td>
   				<td> <input class = "w3-input w3-border w3-mobile" type = "text" id="cat1N1" 
-  		            placeholder = "1" onchange = "summarizeP1()"</input>
+  		            placeholder = "1" onchange = "summarizeP1()"></input>
   					</td>
 			 </tr>
 			 <tr>
   				<td><input class = "w3-input w3-border w3-mobile " type = "text" id="cat1Label2" 
-  		            placeholder = "Failure"</input>
+  		            placeholder = "Failure"></input>
   				</td>
   				<td> <input class = "w3-input w3-border w3-mobile" type = "text" id="cat1N2" 
-  		            placeholder = "1" onchange = "summarizeP1()"</input>
+  		            placeholder = "1" onchange = "summarizeP1()"></input>
   					</td> 				
 			 </tr>
 		    </table>
     </div> &nbsp;&nbsp;
-	    <div class = "w3-cell" style=":40%" style="display:block">
+	 <div class = "w3-cell" style=":40%" style="display:block">
 	    	<h4> Summary</h4>
    		<div class = "w3-container w3-cell w3-mobile" id = "cat1SummarySVGgoesHere" >
    			<svg class="chart" ></svg>
@@ -371,9 +378,10 @@ function closePages() {
    			p&#770; = <br>
    			sd(p&#770) = 
    		</div>
-        </div>
+     </div>
    </div> <br>
-    <div class = "w3-cell-row w3-mobile">  
+  </div>
+  <div class = "w3-container w3-mobile">  
     	Either
   	 		 <button id = "EstimateP1" onclick="estimateP1()" 
   	 		 class="w3-button w3-pale-blue w3-medium w3-round-xlarge">
@@ -383,9 +391,42 @@ function closePages() {
   	 		 class="w3-button w3-pale-blue w3-medium w3-round-xlarge">
   	  		&nbsp; OR Test for a particular value.</button> 
     	
-    </div>  
-  </div>
+    </div> 
+     
+    <h3 id = "cat1OutputHead1"> Estimate True Proportion with a Confidence Interval</h3>
+	<div class="sliders">
+		<div class="example">
+			<div>
+				Choose a Confidence Level:
+			</div>
+			<div id="cat1ConfLvl" style="width:40%" ></div>
+		</div>
+	</div>
 </div>
+
+<script>
+	function onChange(arg) {
+		//var presenter = document.getElementById("presenter");
+		//presenter.innerHTML = "<b>#" + arg.key + ":</b> " + arg.value;
+		console.log(arg.key)
+	}
+	
+	var rangeslide2 = rangeslide("#cat1ConfLvl", {
+		data: confLevels,
+		showLabels: true,
+		startPosition: 0,
+		showTicks: false,
+        dataSource: "value",
+        labelsContent: "key",
+        valueIndicatorContent: "key",
+		thumbWidth: 24,
+		thumbHeight: 24,
+		handlers: {
+			"valueChanged": [onChange]
+		}
+	});
+	
+</script>
    <!-- -------  One Categorical Actions     
    	2) CI Demo with known p:   
    	ToDo:  Inputs work, need replication and plot of outcomes
