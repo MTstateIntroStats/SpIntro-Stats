@@ -159,7 +159,7 @@ function sampleWOrep(values, nreps){
  
   function sturgesFormula(arr){
   	// number of bins for a histogram
-    var n = size(arr);
+    var n = arr.length;
     var k = Math.ceil((Math.log(n)/Math.log(2))+1);
     var h = (d3.max(arr) - d3.min(arr)) / k;  // length of each bin
     return {"binCount":k, "binLength":h};
@@ -176,15 +176,22 @@ var dotChart = function(sample, svgObject){
 	    plotX,
 	    ypos =0,
 	    wdth = 440 - margin * 2,
-	    hght = 320 - margin * 2;
+	    hght = 320 - margin * 2,
+	    xmin,
+	    xmax ;
 	   // xlegend = spinStopRule === "Fixed"? "spins to get one of the first type":
 	     //  			spinStopRule === "OneOfOneType"? "Spins to get a " + spinGroups[spinMatch]:
 	       //			"spins to get one of each type";
 	    
 	sample.sort(function(a,b){return a - b}) ;   
           // numeric sort to build bins for y values
-          // start on left with smallest x.
-
+          // start on left with smallest x.	
+	
+	    xmin = sample[0];
+	     xmin *= (sample[0] <= 0)? 1.01: 0.99;
+	    xmax = sample[nN-1] ;
+	     xmax *= (sample[nN-1] >= 0)? 1.01: 0.99;
+	    console.log([xmin,sample[0], sample[nN-1], xmax])
 	
 	var radii = (nN < 101)? 6:
 	    (nN < 501)? 5:
@@ -214,7 +221,7 @@ var dotChart = function(sample, svgObject){
 
 	var DCxScale = d3.scale.linear()
     	.range([margin, wdth])
-    	.domain([-0.1, sample[nN - 1] +0.5]);
+    	.domain([xmin, xmax]);
 
 	// change scales to hold all x, all y
    var DCxAxis = d3.svg.axis()
@@ -257,4 +264,109 @@ var dotChart = function(sample, svgObject){
             .style("fill","steelblue")
             .style("fill-opacity", 0.6);
     //return Dots; // and myArray?
+}
+
+var discreteChart = function(sample, svgObject){
+	var margin = 40,
+		myArray =[],
+	    nN = sample.length,
+	    plotX,
+	    ypos =0,
+	    wdth = 440 - margin * 2,
+	    hght = 320 - margin * 2,
+	    xmin,
+	    xmax ;
+
+	   // xlegend = spinStopRule === "Fixed"? "spins to get one of the first type":
+	     //  			spinStopRule === "OneOfOneType"? "Spins to get a " + spinGroups[spinMatch]:
+	       //			"spins to get one of each type";
+	    
+	sample.sort(function(a,b){return a - b}) ;   
+          // numeric sort to build bins for y values
+          // start on left with smallest x.	
+	
+	    xmin = sample[0];
+	     xmin *= (sample[0] <= 0)? 1.01: 0.99;
+	    xmax = sample[nN-1] ;
+	     xmax *= (sample[nN-1] >= 0)? 1.01: 0.99;
+	   // console.log([xmin,sample[0], sample[nN-1], xmax])
+	
+	var radii = (nN < 101)? 6:
+	    (nN < 501)? 5:
+	    (nN < 1001)? 4:
+	    (nN < 5001)? 3: 2; // perhaps this should relate to width/height of svg]
+    var gees = d3.select(svgObject).selectAll("g");
+	if(typeof(gees) === "object"){
+		gees.remove();
+	}    
+	//  first dot goes at y=0, then add one to each from there
+	var j = 0;
+	while( j <  nN ){    
+	    plotX = sample[j];	    // start a fresh bin with left edge at sample[j]
+	    ypos = 0;	            // bin y starts at 0
+	    myArray[j] = {"x": sample[j++], "y": ypos++};
+        while( (sample[j] === sample[j-1]) & (j < nN)){
+		  //stay in same bin -- increment yposition
+		  myArray[j] = {"x": sample[j++], "y": ypos++};
+	    };
+	     // console.log(x(plotX));
+	}
+	sampMax = d3.max(myArray, function(d) { return d.y;});
+
+   var DCyScale = d3.scale.linear()
+    	.range([hght, 0])
+    	.domain([0, sampMax + .5]);
+
+	var DCxScale = d3.scale.linear()
+    	.range([margin, wdth])
+    	.domain([xmin, xmax]);
+
+	// change scales to hold all x, all y
+   var DCxAxis = d3.svg.axis()
+      .scale(DCxScale)
+      .ticks(5)
+      .orient("bottom");
+      
+//   d3.selectAll(".xAxis>.tick>text")
+  //	.each(function(d, i){
+  //  	d3.select(this).style("font-size","10px");
+  //	});   
+
+   var DCyAxis = d3.svg.axis()
+      .scale(DCyScale)
+      .orient("left");
+      
+  var graph = d3.select(svgObject)
+    .attr("width", wdth + margin*2)
+    .attr("height", hght + margin*2)
+  .append("g")
+   .attr("transform", "translate("+ (2 * margin) + "," + margin + ")");
+    
+    
+    graph.append("g")
+      .attr("class", "y axis")
+      .call(DCyAxis);
+      
+      
+	graph.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + (radii + hght) +")")
+      .call(DCxAxis);
+
+  //  graph.append("g")
+  //  	.attr("class", "text")
+  //  	.attr("x", 20)
+  //  	.attr("y", hght + 5)
+  //  	.text(xlegend);  
+      
+   	Dots =  graph.selectAll("g.circle")
+            .data(myArray); 
+	Dots.enter().append("circle")
+            .attr("cx", function(d){ return DCxScale(d.x);} ) 
+            .attr("r", radii ) 
+            .attr("cy", function(d){ return DCyScale(d.y);} ) 
+            .style("fill","steelblue")
+            .style("fill-opacity", 0.6)
+            .on("click", function(d,i){ console.log("point", i)});
+    return [Dots, sample];
 }
