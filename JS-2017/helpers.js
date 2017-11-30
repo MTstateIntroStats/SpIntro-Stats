@@ -367,6 +367,11 @@ var discreteChart = function(sample, svgObject){
             .attr("cy", function(d){ return DCyScale(d.y);} ) 
             .style("fill","steelblue")
             .style("fill-opacity", 0.6)
-            .on("click", function(d,i){ console.log("point", i)});
+            .on("click", function(d,i){ c1InterAct(d,i);}); // defined below with problem noted
     return [Dots, sample];
 }
+
+var c1InterAct = function(d,i){
+	console.log(d.x);
+}   // this works, but makes the discreteChart function non-generic.
+    // for different applications, we need different interaction functions.

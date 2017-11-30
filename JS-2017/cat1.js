@@ -217,6 +217,6 @@ function testP1(){
 
 function c1InteractWith(infOut){
 	var sample = infOut[1],  // values
-	    dots = infOut[0];    // circles on the chart
+	    dots = infOut[0][0];    // circles on the chart
 	dots.style("fill","steelblue");
 }
