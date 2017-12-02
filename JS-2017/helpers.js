@@ -266,8 +266,10 @@ var dotChart = function(sample, svgObject){
     //return Dots; // and myArray?
 }
 
-var discreteChart = function(sample, svgObject){
-	var margin = 40,
+var discreteChart = function(sample, svgObject, interactFunction){
+	var circleColors = ["steelblue","red"],
+		color,
+		margin = 40,
 		myArray =[],
 	    nN = sample.length,
 	    plotX,
@@ -276,11 +278,12 @@ var discreteChart = function(sample, svgObject){
 	    hght = 320 - margin * 2,
 	    xmin,
 	    xmax ;
+	if (nN ===2){
+		color = sample[1];
+		sample = sample[0];
+		nN = sample.length;
+	}
 
-	   // xlegend = spinStopRule === "Fixed"? "spins to get one of the first type":
-	     //  			spinStopRule === "OneOfOneType"? "Spins to get a " + spinGroups[spinMatch]:
-	       //			"spins to get one of each type";
-	    
 	sample.sort(function(a,b){return a - b}) ;   
           // numeric sort to build bins for y values
           // start on left with smallest x.	
@@ -304,13 +307,15 @@ var discreteChart = function(sample, svgObject){
 	while( j <  nN ){    
 	    plotX = sample[j];	    // start a fresh bin with left edge at sample[j]
 	    ypos = 0;	            // bin y starts at 0
-	    myArray[j] = {"x": sample[j++], "y": ypos++};
-        while( (sample[j] === sample[j-1]) & (j < nN)){
+	    myArray[j] = {"x": sample[j++], "y": ypos++, "color" : circleColors[color[j]]};
+        while( (sample[j] === sample[j-1]) & (j <= nN)){
 		  //stay in same bin -- increment yposition
-		  myArray[j] = {"x": sample[j++], "y": ypos++};
+		  myArray[j] = {"x": sample[j++], "y": ypos++, "color" : circleColors[color[j]]};
 	    };
 	     // console.log(x(plotX));
 	}
+	myArray[nN-1].color = circleColors[1];
+	
 	sampMax = d3.max(myArray, function(d) { return d.y;});
 
    var DCyScale = d3.scale.linear()
@@ -365,13 +370,9 @@ var discreteChart = function(sample, svgObject){
             .attr("cx", function(d){ return DCxScale(d.x);} ) 
             .attr("r", radii ) 
             .attr("cy", function(d){ return DCyScale(d.y);} ) 
-            .style("fill","steelblue")
+            .style("fill", function(d){return d.color;})
             .style("fill-opacity", 0.6)
-            .on("click", function(d,i){ c1InterAct(d,i);}); // defined below with problem noted
+            .on("click", interactFunction ); 
     return [Dots, sample];
 }
 
-var c1InterAct = function(d,i){
-	console.log(d.x);
-}   // this works, but makes the discreteChart function non-generic.
-    // for different applications, we need different interaction functions.

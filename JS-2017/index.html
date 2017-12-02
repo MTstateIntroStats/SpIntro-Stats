@@ -394,21 +394,31 @@ function closePages() {
     	Either
   	 		 <button id = "EstimateP1" 
   	 		 onclick="c1Inference = 'estimate';
-				c1InfOutput = discreteChart(estimateP1(), cat1InfSVG); 
+				c1InfOutput = discreteChart(estimateP1(), cat1InfSVG, cat1CIinteract); 
 				c1InteractWith(c1InfOutput);" 
   	 		 class="w3-button w3-pale-blue w3-medium w3-round-xlarge">
   	  		&nbsp;  Estimate a true proportion.</button> 
   	  		&nbsp; OR &nbsp;
   	 		 <button id = "TestP1" 
   	 		  onclick="c1Inference = 'test';
-  	 		   	c1InfOutput = discreteChart(testP1(), cat1InfSVG()); 
+  	 		   	c1InfOutput = discreteChart(testP1(), cat1InfSVG, cat1TestInteract ); 
   	 		   	c1InteractWith(c1InfOutput);" 
   	 		  class="w3-button w3-pale-blue w3-medium w3-round-xlarge">
   	  		&nbsp; Test for a particular value.</button> 
     	
   </div> <br>
      
-    <div id = "cat1ConfLvl" style = "width: 40%; display: none"> </div>
+    <div id = "cat1ConfLvl" style = "width: 40%; display: none"> Choose a Confidence Level:</div>
+    <div id = "cat1Test"  class = "w3-container  w3-mobile" style = "width: 70%; display: none"> 
+    	 <div class = "w3-cell  w3-mobile" style = "width: 60%">
+    	 	   <h4>&nbsp; &nbsp; &nbsp; Test: Is the true proportion = </h4>  </div>
+		<div  class = "w3-cell  w3-mobile" style = "width: 20%">  
+			<input class = "w3-input w3-mobile w3-pale-green" type = "text" 
+				  id="cat1trueP" placeholder = "0.625" onchange="c1Inference = 'test';
+  	 		   	c1InfOutput = discreteChart(testP1(), cat1InfSVG, cat1TestInteract ); 
+  	 		   	c1InteractWith(c1InfOutput);"  ></input> 
+  	 	</div>
+      </div>
     <div id = "cat1OutputHead1"> </div>
     
   <div class = "w3-container w3-cell w3-mobile" id = "cat1Inference">

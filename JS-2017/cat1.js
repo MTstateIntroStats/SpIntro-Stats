@@ -1,35 +1,36 @@
  // subroutine to estimate a proportion or test for a special value
  // Inputs: 
  //     2 category labels (default = Success/Failure) and a count for each 
- // Test routine needs a null hypothesis value
  
     var c1SummDiv = d3.select("#cat1Inference"),
         cat1Label1,
         cat1Label2,
+		cat1hdr,
+		cat1CnfLvl,
+		cat1CLvl,
         cat1N1,
         cat1N2,
         c1Data = [],
         c1bars ,
         chartC1 ,
+        color = [],
         confLevels = [
 			{ key: "80%", value: "0.80" },
 			{ key: "90%", value: "0.90" },
 			{ key: "95%", value: "0.95" },
 			{ key: "99%", value: "0.99" }
 		], 
-		cnfLvl,
 		c1Inference,
 		c1InfOutput,
-		muNull,
+		targetQuantile,
+      	upperBd,
+      	upperCI,
         phat,
         resampleC1,
         sampleC1,
         total;
 
  var svgCat1 = d3.select("#cat1InfSVG");      
-     // .attr("width",  '400px')
-     // .attr("height", '300px')
-     // .append("g");
                
 function summarizeP1() {
       // builds summary table and plot for 1 categorical variable
@@ -114,14 +115,11 @@ function summarizeP1() {
         .attr("fill", "blue");	
 }
 	
-	function onChange(arg) {
-		cnfLvl = arg.value
-		console.log(cnfLvl)
-	}
+function cat1OnChange(arg) {
+		cat1CnfLvl = +arg.value;
+		console.log(cat1CnfLvl);
+}
 	
-var cat1hdr,
-	cat1CLvl;
-
 var rangeslide2 = rangeslide("#cat1ConfLvl", {
 		data: confLevels,
 		showLabels: true,
@@ -133,7 +131,7 @@ var rangeslide2 = rangeslide("#cat1ConfLvl", {
 		thumbWidth: 24,
 		thumbHeight: 24,
 		handlers: {
-			"valueChanged": [onChange]
+			"valueChanged": [cat1OnChange]
 		}
 	});
 	
@@ -146,25 +144,37 @@ function estimateP1(){
       cat1N1 = +document.getElementById("cat1N1").value;
       cat1N2 = +document.getElementById("cat1N2").value;
       var sC1Len,
-      	  total = cat1N1 + cat1N2;
+      	total = cat1N1 + cat1N2;
       phat = cat1N1/ total;
 
 	 cat1hdr = document.getElementById("cat1OutputHead1");
-	 cat1hdr.innerHTML = "Choose a Confidence Level"+ 
+	 cat1hdr.innerHTML = 
 	 "<h4>Estimate True Proportion with a Confidence Interval</h4>"+
 	 "&nbsp; &nbsp; &nbsp; &nbsp; Proportion "+ cat1Label1 +" in Re-samples"; 
  	  cat1CLvl = document.getElementById("cat1ConfLvl");
 	  cat1CLvl.style.display ="";
+	   cat1Tst = document.getElementById("cat1Test");
+	  cat1Tst.style.display ="none";
 	 // show plot
-	 
-	  resampleC1 = rbinom(total, phat, 1000);
+	   
+	  resampleC1 = rbinom(total, phat, 1000).sort(function(a,b){return a - b});
 	  sC1Len = resampleC1.length;
+	  targetQuantile = Math.round((1 - cat1CnfLvl)/2 * sC1Len);
 	  for(i=0; i < sC1Len; i++){
 	      resampleC1[i] *= 1/total;
+	      color[i] = 0; 
 	  } 
-	 return(resampleC1);		
+	  for(i=1; i<= targetQuantile; i++){
+	  	color[i-1] = 1;
+	  	color[sC1Len -i] = 1;
+	  }
+	  lowerBd = resampleC1[i-2];
+	  upperBd = resampleC1[sC1Len - i];
+	  
+	  //console.log(d3.sum(color), i,lowerBd, upperBd);
+	 return([resampleC1, color]);		
 	 // TODO  
-	   // this goes into discrete plot with output saved as infOutput.
+	   // this goes into discrete plot with output saved as c1InfOutput.
 	   // Now need another function to allow interaction:
 	 // click buttons for more re-samples
 	 // plot:
@@ -172,8 +182,8 @@ function estimateP1(){
 	     // [alpha/2, 1 - alpha/2] where alpha = 1- confLevel
 	   // change point colors based on in/outside the CI
 	     // to change colors, we need to build sample as an array with a color attribute
-	     // do we need (x,y) coordinates to use for 'click to see the underlying sample'?
-	       //  or can we use onclick on each circle?
+	     // do we need (x,y) coordinates to use for 'click to see the underlying sample'? NO
+	       //  I did get onclick to work for each circle w/out (x,y).
 	 //print CI
 	
 } 	  
@@ -187,26 +197,31 @@ function testP1(){
       cat1Label2 = document.getElementById("cat1Label2").value;
       cat1N1 = +document.getElementById("cat1N1").value;
       cat1N2 = +document.getElementById("cat1N2").value;
-      muNull = 0.5;
+      cat1Pnull = +document.getElementById("cat1trueP").value;
+      cat1CLvl = document.getElementById("cat1ConfLvl");
+	  cat1CLvl.style.display ="none";
+	  
       var sC1Len,
       	  total = cat1N1 + cat1N2;
       phat = cat1N1/ total;
 	 // print header 'Proportions From Samples From the Null Distribution'
 	   // by setting innerhtml for a selected header
+	  cat1Tst = document.getElementById("cat1Test");
+	  cat1Tst.style.display ="";
+	  
 	 cat1hdr = document.getElementById("cat1OutputHead1");
-	 cat1hdr.innerHTML = "<h4>Test if True Proportion Equals a Particular Value</h4>"+
-	 "&nbsp; &nbsp; &nbsp; Proportion "+ cat1Label1 +" in Samples from the Null Hypothesis";
-	  if(cat1CLvl = document.getElementById("cat1ConfLvl")){
-	  	cat1CLvl.style.display ="none";
-	  	}
+	 cat1hdr.innerHTML = 
+	 "&nbsp; &nbsp; &nbsp; Proportion "+ cat1Label1 +" in samples from the Null Hypothesis";
+	  ///if(cat1CLvl = document.getElementById("cat1ConfLvl")){
+	  ///	cat1CLvl.style.display ="none";
+	  ///	}
 	 // show plot -- use same SVG for test and estimate
-	 	sampleC1 = rbinom(total, muNull, 1000);
+	 	sampleC1 = rbinom(total, cat1Pnull, 1000);
 	 	sC1Len = sampleC1.length;
 	  for(i=0; i < sC1Len; i++){
 	      sampleC1[i] *= 1/total;
 	  } 
-	  discreteChart(sampleC1, svgCat1);
-
+	  
 	 // click buttons for more samples -- same for both test and estimate
 	 // choose bounds (less, greater, more extreme) and cutoff (phat)
 	 // change point colors based on in/outside the bounds
@@ -218,5 +233,12 @@ function testP1(){
 function c1InteractWith(infOut){
 	var sample = infOut[1],  // values
 	    dots = infOut[0][0];    // circles on the chart
-	dots.style("fill","steelblue");
+	//dots.style("fill","steelblue");
 }
+
+var cat1CIinteract = function(d,i){
+	console.log(d.x);
+} ;
+var cat1TestInteract = function(d,i){
+	console.log(d.x);
+} ;
