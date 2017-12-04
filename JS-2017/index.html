@@ -390,48 +390,65 @@ function closePages() {
      </div>
    </div> <br>
   </div>
+  <!--                             Select Your Inference                        -->
   <div class = "w3-container w3-mobile">  
     	Either
   	 		 <button id = "EstimateP1" 
   	 		 onclick="c1Inference = 'estimate';
-				c1InfOutput = discreteChart(estimateP1(), cat1InfSVG, cat1CIinteract); 
-				c1InteractWith(c1InfOutput);" 
+  	 		    c1CIdata = estimateP1();
+				c1InfOutput = discreteChart(c1CIdata, cat1InfSVG, cat1CIinteract); 
+				" 
   	 		 class="w3-button w3-pale-blue w3-medium w3-round-xlarge">
   	  		&nbsp;  Estimate a true proportion.</button> 
   	  		&nbsp; OR &nbsp;
   	 		 <button id = "TestP1" 
   	 		  onclick="c1Inference = 'test';
-  	 		   	c1InfOutput = discreteChart(testP1(), cat1InfSVG, cat1TestInteract ); 
-  	 		   	c1InteractWith(c1InfOutput);" 
+  	 		   	c1Tstdata = testP1();
+  	 		   	c1InfOutput = discreteChart(c1Tstdata, cat1InfSVG, cat1TestInteract ); 
+  	 		   	" 
   	 		  class="w3-button w3-pale-blue w3-medium w3-round-xlarge">
   	  		&nbsp; Test for a particular value.</button> 
     	
   </div> <br>
-     
-    <div id = "cat1ConfLvl" style = "width: 40%; display: none"> Choose a Confidence Level:</div>
-    <div id = "cat1Test"  class = "w3-container  w3-mobile" style = "width: 70%; display: none"> 
+
+     <!--  Inputs for each inference  (before plotting)  -->
+
+   <div id = "cat1ConfLvl" style = "width: 40%; display: none"> Choose a Confidence Level:
+    	</div>
+   <div id = "cat1Test"  class = "w3-container  w3-mobile" style = "width: 70%; display: none"> 
     	 <div class = "w3-cell  w3-mobile" style = "width: 60%">
     	 	   <h4>&nbsp; &nbsp; &nbsp; Test: Is the true proportion = </h4>  </div>
-		<div  class = "w3-cell  w3-mobile" style = "width: 20%">  
+		 <div  class = "w3-cell  w3-mobile" style = "width: 20%">  
 			<input class = "w3-input w3-mobile w3-pale-green" type = "text" 
 				  id="cat1trueP" placeholder = "0.625" onchange="c1Inference = 'test';
-  	 		   	c1InfOutput = discreteChart(testP1(), cat1InfSVG, cat1TestInteract ); 
+  	 		   	c1Tstdata = testP1();
+  	 		   	c1InfOutput = discreteChart(c1Tstdata, cat1InfSVG, cat1TestInteract ); 
   	 		   	c1InteractWith(c1InfOutput);"  ></input> 
   	 	</div>
       </div>
     <div id = "cat1OutputHead1"> </div>
     
+    <!--  Show Inference Plot -->
+    
   <div class = "w3-container w3-cell w3-mobile" id = "cat1Inference">
     <!--  Inference plot goes here for CI or Test of 1 proportion -->
   	<svg id = "cat1InfSVG" height = "300px" width = "400px"> </svg>
    </div>
-  <div class = "w3-container w3-cell w3-mobile" id = "cat1SelectedSample">
-  </div> 
-</div>
+   
+   <!-- Setup Modal Box to popup info on a single data point -->
+   
+   <div class = "w3-container w3-modal w3-mobile" style = "width: 33%" >
+      <div class="w3-modal-content w3-card-4" id = "cat1SelectedSample">
+    </div>
+      </div>
+      <br>
+      
+      <!--  Post-plot footer. Output CI or inputs for p-value p-value -->
+    <div id = "cat1OutputFoot1" class="w3-display-container"> </div>
+      
+   </div> 
 
-<script>
-	
-</script>
+
   <script src="cat1.js" charset="utf-8"></script>
 
    <!-- -------  One Categorical Actions     
@@ -680,6 +697,18 @@ function closePages() {
     		</div>
   		</div>
 <br>
+
+<script>
+// Get the modal
+var Zmodal = document.getElementById('ZinfoModal');
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == Zmodal) {
+        Zmodal.style.display = "none";
+    }
+}
+</script>
      
   	<div class = "w3-form w3-cell-row w3-mobile" id ="Z1inputs"> 
   		<div class = "w3-cell w3-mobile">

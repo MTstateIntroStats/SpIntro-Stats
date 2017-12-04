@@ -3,6 +3,8 @@
  //     2 category labels (default = Success/Failure) and a count for each 
  
     var c1SummDiv = d3.select("#cat1Inference"),
+        c1Tstdata,
+        c1CIdata,
         cat1Label1,
         cat1Label2,
 		cat1hdr,
@@ -10,10 +12,12 @@
 		cat1CLvl,
         cat1N1,
         cat1N2,
+        cat1Pval,
+        cat1Direction,
         c1Data = [],
         c1bars ,
         chartC1 ,
-        color = [],
+        cat1Color = [],
         confLevels = [
 			{ key: "80%", value: "0.80" },
 			{ key: "90%", value: "0.90" },
@@ -61,8 +65,6 @@ function summarizeP1() {
                 (Math.sqrt(phat*(1-phat))/(cat1N1+cat1N2)).toPrecision(5);
       cat1Summ.style = "display: block"; 
     
-    //if(chartC1 === "a"){
-     //}
 
 	function updateP1(chart, data) {
   		// DATA JOIN
@@ -117,7 +119,9 @@ function summarizeP1() {
 	
 function cat1OnChange(arg) {
 		cat1CnfLvl = +arg.value;
-		console.log(cat1CnfLvl);
+		// when level changes we recompute the colors and redraw the plot (not regenerate the data).
+		// print the new CI below the plot.
+		//console.log(cat1CnfLvl);
 }
 	
 var rangeslide2 = rangeslide("#cat1ConfLvl", {
@@ -134,7 +138,30 @@ var rangeslide2 = rangeslide("#cat1ConfLvl", {
 			"valueChanged": [cat1OnChange]
 		}
 	});
-	
+
+function colorP1(resample){
+	var color = [],
+		quantile,
+	    sC1Len = resample.length;
+	    
+	  quantile = Math.round((1 - cat1CnfLvl)/2 * sC1Len);
+	  
+	 // CI =  colorP1(resampleC1);
+	 // color = CI[0];
+	 // lowerBd = CI[1];
+	 // upperBd = CI[2];
+	  
+	for(i=quantile; i < sC1Len-quantile ; i++){
+	      color[i] = 0; // color for middle circles
+	  } 
+	  for(i=1; i<= quantile; i++){
+	  	color[i-1] = 1;
+	  	color[sC1Len -i] = 1;  // color for tails
+	  }
+	  lowerBd = resampleC1[i-2];
+	  upperBd = resampleC1[sC1Len - i];
+	  return [color, lowerBd, upperBd];
+}	
   
 function estimateP1(){
 	//function to estimate the true proportion based on a sample of 'success/failure' data
@@ -149,8 +176,9 @@ function estimateP1(){
 
 	 cat1hdr = document.getElementById("cat1OutputHead1");
 	 cat1hdr.innerHTML = 
-	 "<h4>Estimate True Proportion with a Confidence Interval</h4>"+
-	 "&nbsp; &nbsp; &nbsp; &nbsp; Proportion "+ cat1Label1 +" in Re-samples"; 
+	 "<h4>Estimate True Proportion with a Confidence Interval</h4>"; //+
+	 // "&nbsp; &nbsp; &nbsp; &nbsp; Proportion "+ cat1Label1 +" in Re-samples"; 
+	  
  	  cat1CLvl = document.getElementById("cat1ConfLvl");
 	  cat1CLvl.style.display ="";
 	   cat1Tst = document.getElementById("cat1Test");
@@ -159,20 +187,24 @@ function estimateP1(){
 	   
 	  resampleC1 = rbinom(total, phat, 1000).sort(function(a,b){return a - b});
 	  sC1Len = resampleC1.length;
-	  targetQuantile = Math.round((1 - cat1CnfLvl)/2 * sC1Len);
 	  for(i=0; i < sC1Len; i++){
-	      resampleC1[i] *= 1/total;
-	      color[i] = 0; 
+	      resampleC1[i] *= 1/total; 
 	  } 
-	  for(i=1; i<= targetQuantile; i++){
-	  	color[i-1] = 1;
-	  	color[sC1Len -i] = 1;
-	  }
-	  lowerBd = resampleC1[i-2];
-	  upperBd = resampleC1[sC1Len - i];
+	  targetQuantile = Math.round((1 - cat1CnfLvl)/2 * sC1Len);
 	  
-	  //console.log(d3.sum(color), i,lowerBd, upperBd);
-	 return([resampleC1, color]);		
+	  CI =  colorP1(resampleC1, targetQuantile);
+	  cat1Color = CI[0];
+	  lowerBd = CI[1].toPrecision(4);
+	  upperBd = CI[2].toPrecision(4);
+	  
+	 cat1ftr = document.getElementById("cat1OutputFoot1");
+	 cat1ftr.innerHTML = 
+	   "<div class='w3-display-middle' style = 'width:160'> Proportion "+ cat1Label1 +" in Re-samples" +
+	   "<br> <br>"+ (cat1CnfLvl*100)+ 
+	   "% Confidence Interval: (" + lowerBd +", "+ upperBd +" )</div>"; 
+ 	  
+	  //console.log(lowerBd, upperBd);
+	 return([resampleC1, cat1Color]);		
 	 // TODO  
 	   // this goes into discrete plot with output saved as c1InfOutput.
 	   // Now need another function to allow interaction:
@@ -204,41 +236,57 @@ function testP1(){
       var sC1Len,
       	  total = cat1N1 + cat1N2;
       phat = cat1N1/ total;
-	 // print header 'Proportions From Samples From the Null Distribution'
-	   // by setting innerhtml for a selected header
 	  cat1Tst = document.getElementById("cat1Test");
 	  cat1Tst.style.display ="";
 	  
 	 cat1hdr = document.getElementById("cat1OutputHead1");
-	 cat1hdr.innerHTML = 
-	 "&nbsp; &nbsp; &nbsp; Proportion "+ cat1Label1 +" in samples from the Null Hypothesis";
-	  ///if(cat1CLvl = document.getElementById("cat1ConfLvl")){
-	  ///	cat1CLvl.style.display ="none";
-	  ///	}
-	 // show plot -- use same SVG for test and estimate
+	 cat1hdr.innerHTML = "<div class = 'w3-cell-row'> <div class = 'w3-cell' style = 'width:40%'> Stronger evidence means data </div>"+ 
+  	    "<div class = 'w3-cell' style='width:40%'><select class = 'w3-select w3-card w3-border w3-mobile w3-pale-yellow' id='cat1Extreme' >"+ 
+  			"<option value='lower'>Less Than</option>"+
+  			"<option value='both' selected >More Extreme Than</option>"+
+  			"<option value='upper'>Greater Than</option>"+
+	   	"</select> </div>  <div class ='w3-cell' style = 'width:30%'> &nbsp;&nbsp;" + phat.toPrecision(4) +
+	   	"</div> </div> ";
+	  
 	 	sampleC1 = rbinom(total, cat1Pnull, 1000);
 	 	sC1Len = sampleC1.length;
 	  for(i=0; i < sC1Len; i++){
 	      sampleC1[i] *= 1/total;
+	      cat1Color[i] = 0;
 	  } 
-	  
+	 cat1ftr = document.getElementById("cat1OutputFoot1");
+	 cat1ftr.innerHTML = 
+	   "<div class='w3-display-middle' style = 'width:160'> Proportion "+ cat1Label1 +
+	   " in Samples from H<sub>0</sub> <br>"+
+	   "p-value (strength of evidence): " + 0.066 + "</div>"; //cat1Pval.toPrecision(5)
+ 	  
 	 // click buttons for more samples -- same for both test and estimate
 	 // choose bounds (less, greater, more extreme) and cutoff (phat)
 	 // change point colors based on in/outside the bounds
 	 // print p-value
 	 // clicking a point changes a table to show that proportion
-	return(sampleC1);
+	return([sampleC1, cat1Color]);
 } 	  
 
-function c1InteractWith(infOut){
-	var sample = infOut[1],  // values
-	    dots = infOut[0][0];    // circles on the chart
+//function c1InteractWith(infOut){
+//	var sample = infOut[1],  // values
+//	    dots = infOut[0][0];    // circles on the chart
 	//dots.style("fill","steelblue");
-}
+//}
 
 var cat1CIinteract = function(d,i){
 	console.log(d.x);
+	var C1modal = document.getElementById("cat1SelectedSample");
+	C1modal.style.display = "block";
+	C1modal.innerHTML = d.x;
+	// open modal box to show success and failure counts in the selected resample;
+	window.onclick = function(event) {
+    if (event.target == C1modal) {
+        C1modal.style.display = "none";
+    }
+}
 } ;
 var cat1TestInteract = function(d,i){
 	console.log(d.x);
+	// open modal box to show success and failure counts in the selected sample;
 } ;
