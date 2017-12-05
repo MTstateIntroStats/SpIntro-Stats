@@ -305,12 +305,12 @@ function actionsFunc(actns) {
 <script>
 
 function openVble(vbleName) {
-    var i;
-    var x = document.getElementsByClassName("vType");
+    var i,
+        y = document.getElementsByClassName("Page"),
+        x = document.getElementsByClassName("vType");
     for (i = 0; i < x.length; i++) {
        x[i].style.display = "none";  
     }
-    var y = document.getElementsByClassName("Page");
     for (i = 0; i < y.length; i++) {
        y[i].style.display = "none";  
     }
@@ -319,8 +319,8 @@ function openVble(vbleName) {
 }
 
 function choosePage(page) {
-    var i;
-    var x = document.getElementsByClassName("Page");
+    var i,
+        x = document.getElementsByClassName("Page");
     for (i = 0; i < x.length; i++) {
        x[i].style.display = "none";  
     }
@@ -329,8 +329,8 @@ function choosePage(page) {
 
 }
 function closePages() {
-    var i;
-    var x = document.getElementsByClassName("Page");
+    var i,
+        x = document.getElementsByClassName("Page");
     for (i = 0; i < x.length; i++) {
        x[i].style.display = "none";  
     }
@@ -415,15 +415,12 @@ function closePages() {
 
    <div id = "cat1ConfLvl" style = "width: 40%; display: none"> Choose a Confidence Level:
     	</div>
-   <div id = "cat1Test"  class = "w3-container  w3-mobile" style = "width: 70%; display: none"> 
+   <div id = "cat1Test"  class = "w3-cell-row w3-mobile" style = "width: 70%; display: none"> 
     	 <div class = "w3-cell  w3-mobile" style = "width: 60%">
     	 	   <h4>&nbsp; &nbsp; &nbsp; Test: Is the true proportion = </h4>  </div>
 		 <div  class = "w3-cell  w3-mobile" style = "width: 20%">  
 			<input class = "w3-input w3-mobile w3-pale-green" type = "text" 
-				  id="cat1trueP" placeholder = "0.625" onchange="c1Inference = 'test';
-  	 		   	c1Tstdata = testP1();
-  	 		   	c1InfOutput = discreteChart(c1Tstdata, cat1InfSVG, cat1TestInteract ); 
-  	 		   	c1InteractWith(c1InfOutput);"  ></input> 
+				  id="cat1trueP" placeholder = "0.625" onchange="cat1TestUpdate()"  ></input> 
   	 	</div>
       </div>
     <div id = "cat1OutputHead1"> </div>
@@ -443,7 +440,7 @@ function closePages() {
       </div>
       <br>
       
-      <!--  Post-plot footer. Output CI or inputs for p-value p-value -->
+      <!--  Post-plot footer. Output CI or inputs for p-value and output the p-value -->
     <div id = "cat1OutputFoot1" class="w3-display-container"> </div>
       
    </div> 

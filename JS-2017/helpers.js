@@ -267,8 +267,9 @@ var dotChart = function(sample, svgObject){
 }
 
 var discreteChart = function(sample, svgObject, interactFunction){
+	//console.log(sample[0]);
 	var circleColors = ["steelblue","red"],
-		color,
+		color = [],
 		margin = 40,
 		myArray =[],
 	    nN = sample.length,
@@ -307,14 +308,14 @@ var discreteChart = function(sample, svgObject, interactFunction){
 	while( j <  nN ){    
 	    plotX = sample[j];	    // start a fresh bin with left edge at sample[j]
 	    ypos = 0;	            // bin y starts at 0
-	    myArray[j] = {"x": sample[j++], "y": ypos++, "color" : circleColors[color[j]]};
+	    myArray[j] = {"x": sample[j], "y": ypos++, "color" : circleColors[color[j++]]};
         while( (sample[j] === sample[j-1]) & (j <= nN)){
 		  //stay in same bin -- increment yposition
-		  myArray[j] = {"x": sample[j++], "y": ypos++, "color" : circleColors[color[j]]};
+		  myArray[j] = {"x": sample[j], "y": ypos++, "color" : circleColors[color[j++]]};
 	    };
 	     // console.log(x(plotX));
 	}
-	myArray[nN-1].color = circleColors[1];
+	//myArray[nN-1].color = circleColors[1];
 	
 	sampMax = d3.max(myArray, function(d) { return d.y;});
 
@@ -323,7 +324,7 @@ var discreteChart = function(sample, svgObject, interactFunction){
     	.domain([0, sampMax + .5]);
 
 	var DCxScale = d3.scale.linear()
-    	.range([margin, wdth])
+    	.range([margin, wdth - margin/2])
     	.domain([xmin, xmax]);
 
 	// change scales to hold all x, all y

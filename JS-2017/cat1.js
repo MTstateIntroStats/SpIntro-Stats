@@ -10,6 +10,8 @@
 		cat1hdr,
 		cat1CnfLvl,
 		cat1CLvl,
+		cat1lowerBd,
+		cat1upperBd,
         cat1N1,
         cat1N2,
         cat1Pval,
@@ -29,7 +31,7 @@
 		targetQuantile,
       	upperBd,
       	upperCI,
-        phat,
+        cat1Phat,
         resampleC1,
         sampleC1,
         total;
@@ -57,12 +59,12 @@ function summarizeP1() {
       cat1Label2 = document.getElementById("cat1Label2").value;
       cat1N1 = +document.getElementById("cat1N1").value;
       cat1N2 = +document.getElementById("cat1N2").value;
-      phat = cat1N1/ (cat1N1 + cat1N2);
+      cat1Phat = cat1N1/ (cat1N1 + cat1N2);
       cat1Summ = document.getElementById("cat1SummaryText");
-      c1Data = [{"label": cat1Label1, "xx": phat},
-      			{"label": cat1Label2, "xx": 1-phat}];
-      cat1Summ.innerHTML = "p&#770; =  " + phat.toPrecision(5) +" <br> sd(p&#770) = " + 
-                (Math.sqrt(phat*(1-phat))/(cat1N1+cat1N2)).toPrecision(5);
+      c1Data = [{"label": cat1Label1, "xx": cat1Phat},
+      			{"label": cat1Label2, "xx": 1-cat1Phat}];
+      cat1Summ.innerHTML = "p&#770; =  " + cat1Phat.toPrecision(5) +" <br> sd(p&#770) = " + 
+                (Math.sqrt(cat1Phat*(1-cat1Phat))/(cat1N1+cat1N2)).toPrecision(5);
       cat1Summ.style = "display: block"; 
     
 
@@ -118,7 +120,22 @@ function summarizeP1() {
 }
 	
 function cat1OnChange(arg) {
+	// set colors for dots to illustrate confidence interval
+	var tempColors;
 		cat1CnfLvl = +arg.value;
+		if(c1CIdata){
+			tempColors = colorP1(c1CIdata[0]);
+			 cat1lowerBd = tempColors[1].toPrecision(4);
+			 cat1upperBd = tempColors[2].toPrecision(4);
+			c1CIdata = [c1CIdata[0], tempColors[0] ];
+			c1InfOutput = discreteChart(c1CIdata, cat1InfSVG, cat1CIinteract); 
+		}
+		cat1ftr = document.getElementById("cat1OutputFoot1");
+	 	cat1ftr.innerHTML = "<div style = 'height = 10'> </div>" +
+	   "<div class='w3-display-middle' style = 'width:160'> Proportion "+ cat1Label1 +" in Re-samples" +
+	   "<br> <br>"+ (cat1CnfLvl*100)+ 
+	   "% Confidence Interval: (" + cat1lowerBd +", "+ cat1upperBd +" )</div>";
+	   
 		// when level changes we recompute the colors and redraw the plot (not regenerate the data).
 		// print the new CI below the plot.
 		//console.log(cat1CnfLvl);
@@ -140,26 +157,25 @@ var rangeslide2 = rangeslide("#cat1ConfLvl", {
 	});
 
 function colorP1(resample){
+	// changes colors for CI illustration
 	var color = [],
+		lowerBd,
+		upperBd,
 		quantile,
 	    sC1Len = resample.length;
 	    
 	  quantile = Math.round((1 - cat1CnfLvl)/2 * sC1Len);
 	  
-	 // CI =  colorP1(resampleC1);
-	 // color = CI[0];
-	 // lowerBd = CI[1];
-	 // upperBd = CI[2];
-	  
-	for(i=quantile; i < sC1Len-quantile ; i++){
+	for(i=quantile; i <= sC1Len-quantile ; i++){
 	      color[i] = 0; // color for middle circles
 	  } 
-	  for(i=1; i<= quantile; i++){
-	  	color[i-1] = 1;
-	  	color[sC1Len -i] = 1;  // color for tails
+	  for(i=0; i<= quantile; i++){
+	  	color[i] = 1;   // color lower tail
+	  	if(i < quantile){
+	  		color[sC1Len-i] = 1;}  // color upper tail
 	  }
 	  lowerBd = resampleC1[i-2];
-	  upperBd = resampleC1[sC1Len - i];
+	  upperBd = resampleC1[sC1Len - i +1];
 	  return [color, lowerBd, upperBd];
 }	
   
@@ -172,12 +188,11 @@ function estimateP1(){
       cat1N2 = +document.getElementById("cat1N2").value;
       var sC1Len,
       	total = cat1N1 + cat1N2;
-      phat = cat1N1/ total;
+      cat1Phat = cat1N1/ total;
 
 	 cat1hdr = document.getElementById("cat1OutputHead1");
 	 cat1hdr.innerHTML = 
-	 "<h4>Estimate True Proportion with a Confidence Interval</h4>"; //+
-	 // "&nbsp; &nbsp; &nbsp; &nbsp; Proportion "+ cat1Label1 +" in Re-samples"; 
+	 "<h4>Estimate True Proportion with a Confidence Interval</h4>"; 
 	  
  	  cat1CLvl = document.getElementById("cat1ConfLvl");
 	  cat1CLvl.style.display ="";
@@ -185,38 +200,29 @@ function estimateP1(){
 	  cat1Tst.style.display ="none";
 	 // show plot
 	   
-	  resampleC1 = rbinom(total, phat, 1000).sort(function(a,b){return a - b});
+	  resampleC1 = rbinom(total, cat1Phat, 100).sort(function(a,b){return a - b});
 	  sC1Len = resampleC1.length;
 	  for(i=0; i < sC1Len; i++){
 	      resampleC1[i] *= 1/total; 
 	  } 
-	  targetQuantile = Math.round((1 - cat1CnfLvl)/2 * sC1Len);
 	  
-	  CI =  colorP1(resampleC1, targetQuantile);
+	  CI =  colorP1(resampleC1);
 	  cat1Color = CI[0];
-	  lowerBd = CI[1].toPrecision(4);
-	  upperBd = CI[2].toPrecision(4);
+	  cat1lowerBd = CI[1].toPrecision(4);
+	  cat1upperBd = CI[2].toPrecision(4);
 	  
 	 cat1ftr = document.getElementById("cat1OutputFoot1");
 	 cat1ftr.innerHTML = 
 	   "<div class='w3-display-middle' style = 'width:160'> Proportion "+ cat1Label1 +" in Re-samples" +
 	   "<br> <br>"+ (cat1CnfLvl*100)+ 
-	   "% Confidence Interval: (" + lowerBd +", "+ upperBd +" )</div>"; 
+	   "% Confidence Interval: (" + cat1lowerBd +", "+ cat1upperBd +" )</div>"; 
  	  
-	  //console.log(lowerBd, upperBd);
+	  //console.log(cat1lowerBd, cat1upperBd);
 	 return([resampleC1, cat1Color]);		
 	 // TODO  
-	   // this goes into discrete plot with output saved as c1InfOutput.
-	   // Now need another function to allow interaction:
-	 // click buttons for more re-samples
-	 // plot:
-	   // sort resampled phats and find appropriate quantiles:
-	     // [alpha/2, 1 - alpha/2] where alpha = 1- confLevel
-	   // change point colors based on in/outside the CI
-	     // to change colors, we need to build sample as an array with a color attribute
-	     // do we need (x,y) coordinates to use for 'click to see the underlying sample'? NO
-	       //  I did get onclick to work for each circle w/out (x,y).
-	 //print CI
+	   // input to get more samples
+	   // when there are too few to color any points in the tails, 
+	   // downgrade confidence level to (1 - 2/sC1Len)*100%
 	
 } 	  
  
@@ -235,38 +241,89 @@ function testP1(){
 	  
       var sC1Len,
       	  total = cat1N1 + cat1N2;
-      phat = cat1N1/ total;
+      cat1Phat = cat1N1/ total;
 	  cat1Tst = document.getElementById("cat1Test");
 	  cat1Tst.style.display ="";
 	  
 	 cat1hdr = document.getElementById("cat1OutputHead1");
 	 cat1hdr.innerHTML = "<div class = 'w3-cell-row'> <div class = 'w3-cell' style = 'width:40%'> Stronger evidence means data </div>"+ 
-  	    "<div class = 'w3-cell' style='width:40%'><select class = 'w3-select w3-card w3-border w3-mobile w3-pale-yellow' id='cat1Extreme' >"+ 
+  	    "<div class = 'w3-cell' style='width:40%'>"+
+  	    "<select class = 'w3-select w3-card w3-border w3-mobile w3-pale-yellow' id='cat1Extreme'"+
+  	    " onchange = 'cat1TestUpdate()' >"+ 
   			"<option value='lower'>Less Than</option>"+
   			"<option value='both' selected >More Extreme Than</option>"+
   			"<option value='upper'>Greater Than</option>"+
-	   	"</select> </div>  <div class ='w3-cell' style = 'width:30%'> &nbsp;&nbsp;" + phat.toPrecision(4) +
+	   	"</select> </div>  <div class ='w3-cell' style = 'width:30%'> &nbsp;&nbsp;" + cat1Phat.toPrecision(4) +
 	   	"</div> </div> ";
 	  
-	 	sampleC1 = rbinom(total, cat1Pnull, 1000);
+	 	sampleC1 = rbinom(total, cat1Pnull, 100);
 	 	sC1Len = sampleC1.length;
 	  for(i=0; i < sC1Len; i++){
-	      sampleC1[i] *= 1/total;
-	      cat1Color[i] = 0;
+	      sampleC1[i] *= 1/total
 	  } 
-	 cat1ftr = document.getElementById("cat1OutputFoot1");
-	 cat1ftr.innerHTML = 
-	   "<div class='w3-display-middle' style = 'width:160'> Proportion "+ cat1Label1 +
-	   " in Samples from H<sub>0</sub> <br>"+
-	   "p-value (strength of evidence): " + 0.066 + "</div>"; //cat1Pval.toPrecision(5)
- 	  
 	 // click buttons for more samples -- same for both test and estimate
 	 // choose bounds (less, greater, more extreme) and cutoff (phat)
 	 // change point colors based on in/outside the bounds
 	 // print p-value
 	 // clicking a point changes a table to show that proportion
-	return([sampleC1, cat1Color]);
+	return(sampleC1);
 } 	  
+
+function cat1TestUpdate(){
+	var check, 
+		extCount = 0,
+		lowP,
+		hiP,
+		sC1Len; //moveOver, oldP;
+ 	c1Inference = 'test';
+ 	//if(shift){  // for means we could shift, but this won't work with samples from binomial
+ 	//	oldP = cat1TrueP;
+ 	//	cat1TrueP = 0;
+ 	//	moveOver = cat1TrueP - oldP;
+ 	//	for(i=0; i< s1Len; i++){
+ 	//		c1Tstdata[i] += moveOver;
+ 	//	}
+ 	//}
+ 	if(!(sampleC1)){
+ 		sampleC1 = testP1();
+ 	}
+ 	sC1Len = sampleC1.length;
+ 	// get direction of evidence:
+ 	 cat1TestDirection = document.getElementById("cat1Extreme").value;
+ 	 if(cat1TestDirection ==="lower"){
+ 	 	for(i = 0; i < sC1Len; i++){
+ 	 		check = 0 + (sampleC1[i] <= cat1Phat);
+ 	 		extCount += check;
+			cat1Color[i] =  check; 	 		
+ 	 	}
+ 	 } else if(cat1TestDirection ==="upper"){
+ 	 	for(i = 0; i < sC1Len; i++){
+ 	 		check = 0 + (sampleC1[i] >= cat1Phat) ;
+ 	 		extCount += check;
+			cat1Color[i] =  check; 	 		
+ 	 	}
+ 	 	
+ 	 } else{
+		lowP = cat1Phat * (cat1Phat <= cat1Pnull) + (2*cat1Pnull - cat1Phat)*(cat1Phat > cat1Pnull);
+		hiP  = cat1Phat * (cat1Phat >= cat1Pnull) + (2*cat1Pnull - cat1Phat)*(cat1Phat < cat1Pnull)
+ 	 	for(i = 0; i < sC1Len; i++){
+ 	 		check = 0 + ((sampleC1[i] <= lowP)|(sampleC1[i] >= hiP));
+ 	 		extCount += check;
+			cat1Color[i] =  check; 	 		
+ 	 	} 	 	
+ 	 }
+ 	 console.log(d3.sum(cat1Color));
+ 	 cat1Pval = extCount / sC1Len;
+ 	 c1Tstdata = [sampleC1, cat1Color];
+  	c1InfOutput = discreteChart(c1Tstdata, cat1InfSVG, cat1TestInteract ); 	
+  	
+	 cat1ftr = document.getElementById("cat1OutputFoot1");
+	 cat1ftr.innerHTML = 
+	   "<div class='w3-display-middle' style = 'width:160'> Proportion "+ cat1Label1 +
+	   " in " + sC1Len +" Samples from H<sub>0</sub> <br>"+
+	   "p-value (strength of evidence): " + cat1Pval.toPrecision(4)+ "</div>"; //
+ 	  
+}
 
 //function c1InteractWith(infOut){
 //	var sample = infOut[1],  // values
@@ -274,7 +331,7 @@ function testP1(){
 	//dots.style("fill","steelblue");
 //}
 
-var cat1CIinteract = function(d,i){
+function cat1CIinteract(d,i){
 	console.log(d.x);
 	var C1modal = document.getElementById("cat1SelectedSample");
 	C1modal.style.display = "block";
@@ -283,10 +340,12 @@ var cat1CIinteract = function(d,i){
 	window.onclick = function(event) {
     if (event.target == C1modal) {
         C1modal.style.display = "none";
-    }
-}
+    	}
+	}
 } ;
-var cat1TestInteract = function(d,i){
+
+function cat1TestInteract(d,i){
 	console.log(d.x);
 	// open modal box to show success and failure counts in the selected sample;
 } ;
+
