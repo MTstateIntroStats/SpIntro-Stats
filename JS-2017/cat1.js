@@ -121,19 +121,25 @@ function summarizeP1() {
 	
 function cat1OnChange(arg) {
 	// set colors for dots to illustrate confidence interval
-	var tempColors;
+	var sC1Len, tempColors, twoTail;
 		cat1CnfLvl = +arg.value;
 		if(c1CIdata){
 			tempColors = colorP1(c1CIdata[0]);
 			 cat1lowerBd = tempColors[1].toPrecision(4);
 			 cat1upperBd = tempColors[2].toPrecision(4);
 			c1CIdata = [c1CIdata[0], tempColors[0] ];
-			c1InfOutput = discreteChart(c1CIdata, cat1InfSVG, cat1CIinteract); 
+			c1InfOutput = discreteChart(c1CIdata, cat1InfSVG, cat1CIinteract);
+			sC1Len = c1CIdata[0].length;
+			twoTail = (1 - cat1CnfLvl)* sC1Len;
+			if(twoTail % 2 != 0){ // check for odd number
+				cat1CnfLvl = cat1CnfLvl - 1/sC1Len; // reduce to lower confidence
+				//console.log(cat1CnfLvl);
+			}  
 		}
 		cat1ftr = document.getElementById("cat1OutputFoot1");
 	 	cat1ftr.innerHTML = "<div style = 'height = 10'> </div>" +
 	   "<div class='w3-display-middle' style = 'width:160'> Proportion "+ cat1Label1 +" in Re-samples" +
-	   "<br> <br>"+ (cat1CnfLvl*100)+ 
+	   "<br> <br>"+ Math.round(cat1CnfLvl*100)+ 
 	   "% Confidence Interval: (" + cat1lowerBd +", "+ cat1upperBd +" )</div>";
 	   
 		// when level changes we recompute the colors and redraw the plot (not regenerate the data).
@@ -161,21 +167,26 @@ function colorP1(resample){
 	var color = [],
 		lowerBd,
 		upperBd,
-		quantile,
+		quantile, twoTail,
 	    sC1Len = resample.length;
 	    
-	  quantile = Math.round((1 - cat1CnfLvl)/2 * sC1Len);
+	  twoTail = (1 - cat1CnfLvl)* sC1Len;
+	  quantile = Math.floor(twoTail / 2);
+	  if(! twoTail % 2){ // check for odd number 
+	  	cat1CnfLvl = cat1CnfLvl - 1/sC1Len; // reduce to lower confidence
+	  } 
 	  
 	for(i=quantile; i <= sC1Len-quantile ; i++){
 	      color[i] = 0; // color for middle circles
 	  } 
-	  for(i=0; i<= quantile; i++){
+	for(i=0; i<= quantile; i++){
 	  	color[i] = 1;   // color lower tail
-	  	if(i < quantile){
-	  		color[sC1Len-i] = 1;}  // color upper tail
+	  	lowerBd = resampleC1[i];
+	  	//if(i <= quantile){
+	  		color[sC1Len-i-1] = 1;
+	  		upperBd = resampleC1[sC1Len - i -1];
+	  		//}  // color upper tail
 	  }
-	  lowerBd = resampleC1[i-2];
-	  upperBd = resampleC1[sC1Len - i +1];
 	  return [color, lowerBd, upperBd];
 }	
   
@@ -214,7 +225,7 @@ function estimateP1(){
 	 cat1ftr = document.getElementById("cat1OutputFoot1");
 	 cat1ftr.innerHTML = 
 	   "<div class='w3-display-middle' style = 'width:160'> Proportion "+ cat1Label1 +" in Re-samples" +
-	   "<br> <br>"+ (cat1CnfLvl*100)+ 
+	   "<br> <br>"+ Math.round(cat1CnfLvl*100) + 
 	   "% Confidence Interval: (" + cat1lowerBd +", "+ cat1upperBd +" )</div>"; 
  	  
 	  //console.log(cat1lowerBd, cat1upperBd);
@@ -238,6 +249,7 @@ function testP1(){
       cat1Pnull = +document.getElementById("cat1trueP").value;
       cat1CLvl = document.getElementById("cat1ConfLvl");
 	  cat1CLvl.style.display ="none";
+	  //cat1Pval = undefined;
 	  
       var sC1Len,
       	  total = cat1N1 + cat1N2;
@@ -255,7 +267,8 @@ function testP1(){
   			"<option value='upper'>Greater Than</option>"+
 	   	"</select> </div>  <div class ='w3-cell' style = 'width:30%'> &nbsp;&nbsp;" + cat1Phat.toPrecision(4) +
 	   	"</div> </div> ";
-	  
+	   cat1ftr.innerHTML = 
+	   "<div class='w3-display-middle' style = 'width:160'> Proportion "+ cat1Label1 +" in samples from H<sub>0</sub>";
 	 	sampleC1 = rbinom(total, cat1Pnull, 100);
 	 	sC1Len = sampleC1.length;
 	  for(i=0; i < sC1Len; i++){
@@ -304,15 +317,15 @@ function cat1TestUpdate(){
  	 	}
  	 	
  	 } else{
-		lowP = cat1Phat * (cat1Phat <= cat1Pnull) + (2*cat1Pnull - cat1Phat)*(cat1Phat > cat1Pnull);
-		hiP  = cat1Phat * (cat1Phat >= cat1Pnull) + (2*cat1Pnull - cat1Phat)*(cat1Phat < cat1Pnull)
+		lowP = cat1Phat * (cat1Phat <= cat1Pnull) + (2*cat1Pnull - cat1Phat)*(cat1Phat > cat1Pnull)+ 1/1000000;
+		hiP  = cat1Phat * (cat1Phat >= cat1Pnull) + (2*cat1Pnull - cat1Phat)*(cat1Phat < cat1Pnull)- 1/1000000;
  	 	for(i = 0; i < sC1Len; i++){
  	 		check = 0 + ((sampleC1[i] <= lowP)|(sampleC1[i] >= hiP));
  	 		extCount += check;
 			cat1Color[i] =  check; 	 		
  	 	} 	 	
  	 }
- 	 console.log(d3.sum(cat1Color));
+ 	 //console.log(d3.sum(cat1Color));
  	 cat1Pval = extCount / sC1Len;
  	 c1Tstdata = [sampleC1, cat1Color];
   	c1InfOutput = discreteChart(c1Tstdata, cat1InfSVG, cat1TestInteract ); 	
