@@ -15,7 +15,7 @@
         cat1N1,
         cat1N2,
         cat1Pval,
-        cat1Direction,
+        cat1TestDirection,
         c1Data = [],
         c1bars ,
         chartC1 ,
@@ -130,21 +130,17 @@ function cat1OnChange(arg) {
 			c1CIdata = [c1CIdata[0], tempColors[0] ];
 			c1InfOutput = discreteChart(c1CIdata, cat1InfSVG, cat1CIinteract);
 			sC1Len = c1CIdata[0].length;
-			twoTail = (1 - cat1CnfLvl)* sC1Len;
-			if(twoTail % 2 != 0){ // check for odd number
+			twoTail = Math.round((1 - cat1CnfLvl)* sC1Len);
+			if(twoTail % 2 === 1){ // check for odd number
 				cat1CnfLvl = cat1CnfLvl - 1/sC1Len; // reduce to lower confidence
 				//console.log(cat1CnfLvl);
 			}  
 		}
 		cat1ftr = document.getElementById("cat1OutputFoot1");
-	 	cat1ftr.innerHTML = "<div style = 'height = 10'> </div>" +
-	   "<div class='w3-display-middle' style = 'width:160'> Proportion "+ cat1Label1 +" in Re-samples" +
+	 	cat1ftr.innerHTML = //"<div style = 'height = 10'> </div>" +
+	   "<div style = 'width:360px'> Proportion "+ cat1Label1 +" in Re-samples" +
 	   "<br> <br>"+ Math.round(cat1CnfLvl*100)+ 
-	   "% Confidence Interval: (" + cat1lowerBd +", "+ cat1upperBd +" )</div>";
-	   
-		// when level changes we recompute the colors and redraw the plot (not regenerate the data).
-		// print the new CI below the plot.
-		//console.log(cat1CnfLvl);
+	   "% Confidence Interval: (" + cat1lowerBd +", "+ cat1upperBd +" )</div>";	   
 }
 	
 var rangeslide2 = rangeslide("#cat1ConfLvl", {
@@ -181,10 +177,10 @@ function colorP1(resample){
 	  } 
 	for(i=0; i<= quantile; i++){
 	  	color[i] = 1;   // color lower tail
-	  	lowerBd = resampleC1[i];
+	  	lowerBd = resample[i];
 	  	//if(i <= quantile){
 	  		color[sC1Len-i-1] = 1;
-	  		upperBd = resampleC1[sC1Len - i -1];
+	  		upperBd = resample[sC1Len - i -1];
 	  		//}  // color upper tail
 	  }
 	  return [color, lowerBd, upperBd];
@@ -224,22 +220,21 @@ function estimateP1(){
 	  
 	 cat1ftr = document.getElementById("cat1OutputFoot1");
 	 cat1ftr.innerHTML = 
-	   "<div class='w3-display-middle' style = 'width:160'> Proportion "+ cat1Label1 +" in Re-samples" +
+	   "<div style='width=50px'></div>"+
+	   "<div style = 'width:360px'> Proportion "+ cat1Label1 +" in Re-samples" +
 	   "<br> <br>"+ Math.round(cat1CnfLvl*100) + 
 	   "% Confidence Interval: (" + cat1lowerBd +", "+ cat1upperBd +" )</div>"; 
  	  
 	  //console.log(cat1lowerBd, cat1upperBd);
+	  
 	 return([resampleC1, cat1Color]);		
 	 // TODO  
 	   // input to get more samples
-	   // when there are too few to color any points in the tails, 
-	   // downgrade confidence level to (1 - 2/sC1Len)*100%
-	
 } 	  
  
  
 
-function testP1(){
+function testP1(tailChoice){
 	//function to test 'Is the true proportion  = some value?' for 'success/failure' data
 	// Gather Inputs:
       cat1Label1 = document.getElementById("cat1Label1").value;
@@ -256,29 +251,29 @@ function testP1(){
       cat1Phat = cat1N1/ total;
 	  cat1Tst = document.getElementById("cat1Test");
 	  cat1Tst.style.display ="";
-	  
-	 cat1hdr = document.getElementById("cat1OutputHead1");
-	 cat1hdr.innerHTML = "<div class = 'w3-cell-row'> <div class = 'w3-cell' style = 'width:40%'> Stronger evidence means data </div>"+ 
-  	    "<div class = 'w3-cell' style='width:40%'>"+
-  	    "<select class = 'w3-select w3-card w3-border w3-mobile w3-pale-yellow' id='cat1Extreme'"+
-  	    " onchange = 'cat1TestUpdate()' >"+ 
-  			"<option value='lower'>Less Than</option>"+
-  			"<option value='both' selected >More Extreme Than</option>"+
-  			"<option value='upper'>Greater Than</option>"+
-	   	"</select> </div>  <div class ='w3-cell' style = 'width:30%'> &nbsp;&nbsp;" + cat1Phat.toPrecision(4) +
-	   	"</div> </div> ";
-	   cat1ftr.innerHTML = 
-	   "<div class='w3-display-middle' style = 'width:160'> Proportion "+ cat1Label1 +" in samples from H<sub>0</sub>";
-	 	sampleC1 = rbinom(total, cat1Pnull, 100);
-	 	sC1Len = sampleC1.length;
-	  for(i=0; i < sC1Len; i++){
-	      sampleC1[i] *= 1/total
-	  } 
-	 // click buttons for more samples -- same for both test and estimate
-	 // choose bounds (less, greater, more extreme) and cutoff (phat)
-	 // change point colors based on in/outside the bounds
-	 // print p-value
-	 // clicking a point changes a table to show that proportion
+	 
+	 if(tailChoice === 'undefined'){ 
+	 	cat1hdr = document.getElementById("cat1OutputHead1");
+	 	cat1hdr.innerHTML = "<div class = 'w3-cell-row'> <div class = 'w3-cell' style = 'width:40%'> Stronger evidence means data </div>"+ 
+  	 	   "<div class = 'w3-cell' style='width:40%'>"+
+  	 	   "<select class = 'w3-select w3-card w3-border w3-mobile w3-pale-yellow' id='cat1Extreme'"+
+  	 	   " onchange = 'cat1TestUpdate()' >"+ 
+  				"<option value='lower'>Less Than</option>"+
+  				"<option value='both' selected >More Extreme Than</option>"+
+  				"<option value='upper'>Greater Than</option>"+
+		   	"</select> </div>  <div class ='w3-cell' style = 'width:30%'> &nbsp;&nbsp;" + cat1Phat.toPrecision(4) +
+		   	"</div> </div> ";
+		   cat1ftr.innerHTML = 
+		   "<div  style = 'width:320px'> Proportion "+ cat1Label1 +" in samples from H<sub>0</sub>";
+		 	sampleC1 = rbinom(total, cat1Pnull, 100);
+		 	sC1Len = sampleC1.length;
+		  for(i=0; i < sC1Len; i++){
+	    	  sampleC1[i] *= 1/total
+	  	} 
+	 } else{
+	 	
+	 }
+	 // TODO: clicking a point changes a table to show that proportion
 	return(sampleC1);
 } 	  
 
@@ -289,6 +284,8 @@ function cat1TestUpdate(){
 		hiP,
 		sC1Len; //moveOver, oldP;
  	c1Inference = 'test';
+ 	// get direction of evidence:
+ 	 cat1TestDirection = document.getElementById("cat1Extreme").value;
  	//if(shift){  // for means we could shift, but this won't work with samples from binomial
  	//	oldP = cat1TrueP;
  	//	cat1TrueP = 0;
@@ -297,12 +294,11 @@ function cat1TestUpdate(){
  	//		c1Tstdata[i] += moveOver;
  	//	}
  	//}
+ 	
  	if(!(sampleC1)){
  		sampleC1 = testP1();
  	}
  	sC1Len = sampleC1.length;
- 	// get direction of evidence:
- 	 cat1TestDirection = document.getElementById("cat1Extreme").value;
  	 if(cat1TestDirection ==="lower"){
  	 	for(i = 0; i < sC1Len; i++){
  	 		check = 0 + (sampleC1[i] <= cat1Phat);
@@ -332,7 +328,7 @@ function cat1TestUpdate(){
   	
 	 cat1ftr = document.getElementById("cat1OutputFoot1");
 	 cat1ftr.innerHTML = 
-	   "<div class='w3-display-middle' style = 'width:160'> Proportion "+ cat1Label1 +
+	   "<div  style = 'width:320px'> Proportion "+ cat1Label1 +
 	   " in " + sC1Len +" Samples from H<sub>0</sub> <br>"+
 	   "p-value (strength of evidence): " + cat1Pval.toPrecision(4)+ "</div>"; //
  	  
@@ -358,7 +354,45 @@ function cat1CIinteract(d,i){
 } ;
 
 function cat1TestInteract(d,i){
-	console.log(d.x);
+	//console.log(d.x);
 	// open modal box to show success and failure counts in the selected sample;
 } ;
 
+function cat1MoreSimFn(){
+	// function to add more points to an estimate or test of one proportion
+	var sC1Len,
+		more = +document.getElementById("cat1More").value,
+		newValues =[];
+	if(more > 0){
+	  	total = cat1N1 + cat1N2;
+        cat1Phat = cat1N1/ total;
+	 	
+	if( c1Inference === 'test'){
+	    newValues = rbinom(total, cat1Pnull, more);
+	    for(i=0; i < more; i++){
+	      sampleC1.push(newValues[i] /total);
+	    } 
+	  console.log(sampleC1.length);
+	  c1InfOutput = discreteChart(sampleC1, cat1InfSVG, cat1TestInteract );
+	  // should not have to re-input direction for test
+   	  return(sampleC1);
+	} else{
+		newValues= rbinom(total, cat1Phat, more).sort(function(a,b){return a - b});
+	    for(i=0; i < more; i++){
+	        resampleC1.push(newValues[i]/total); 
+	    }
+	  console.log(resampleC1.length);
+	  CI =  colorP1(resampleC1);
+	  cat1Color = CI[0];
+	  cat1OnChange(cat1CnfLvl );
+	  
+	  //cat1ftr = document.getElementById("cat1OutputFoot1");
+	  //cat1ftr.innerHTML = 
+	    //"<div style='width=50px'></div>"+
+	    //"<div style = 'width:360px'> Proportion "+ cat1Label1 +" in Re-samples" +
+	    //"<br> <br>"+ Math.round(cat1CnfLvl*100) + 
+	    //"% Confidence Interval: (" + cat1lowerBd +", "+ cat1upperBd +" )</div>"; 	
+	   return(resampleC1);  
+	}
+  }
+}

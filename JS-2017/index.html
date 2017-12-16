@@ -403,7 +403,7 @@ function closePages() {
   	  		&nbsp; OR &nbsp;
   	 		 <button id = "TestP1" 
   	 		  onclick="c1Inference = 'test';
-  	 		   	c1Tstdata = testP1();
+  	 		   	c1Tstdata = testP1('undefined');
   	 		   	c1InfOutput = discreteChart(c1Tstdata, cat1InfSVG, cat1TestInteract ); 
   	 		   	" 
   	 		  class="w3-button w3-pale-blue w3-medium w3-round-xlarge">
@@ -419,7 +419,7 @@ function closePages() {
     	 <div class = "w3-cell  w3-mobile" style = "width: 60%">
     	 	   <h4>&nbsp; &nbsp; &nbsp; Test: Is the true proportion = </h4>  </div>
 		 <div  class = "w3-cell  w3-mobile" style = "width: 20%">  
-			<input class = "w3-input w3-mobile w3-pale-green" type = "text" 
+			<input class = "w3-input w3-mobile w3-pale-yellow" type = "text" 
 				  id="cat1trueP" placeholder = "0.625" onchange="cat1TestUpdate()"  ></input> 
   	 	</div>
       </div>
@@ -442,7 +442,18 @@ function closePages() {
       
       <!--  Post-plot footer. Output CI or inputs for p-value and output the p-value -->
     <div id = "cat1OutputFoot1" class="w3-display-container"> </div>
-      
+      <!--  Increase simulation size -->
+    <div id = "cat1MoreSims" style = 'width: 360px'>
+    	<div class="w3-cell-row"> 
+	      <div class = 'w3-cell'  w3-mobile' style = 'width: 20%'>Add </div>
+	      <div  class = 'w3-cell  w3-mobile' style = 'width: 20%'>
+	  			<input class = 'w3-input w3-mobile w3-pale-yellow' type = 'text'  
+	  			  id='cat1More' placeholder = '0' onchange='cat1MoreSimFn()'></input>	
+	  	  </div>
+	  	  <div class = 'w3-cell  w3-mobile' style = 'width: 40%'> simulated points</div>
+	  </div>
+	   </div>
+     </div>
    </div> 
 
 
