@@ -8,7 +8,7 @@
         cat1Label1,
         cat1Label2,
 		cat1hdr,
-		cat1CnfLvl,
+		cat1CnfLvl = .80,
 		cat1CLvl,
 		cat1lowerBd,
 		cat1upperBd,
@@ -121,9 +121,13 @@ function summarizeP1() {
 	
 function cat1OnChange(arg) {
 	// set colors for dots to illustrate confidence interval
-	var sC1Len, tempColors, twoTail;
-		cat1CnfLvl = +arg.value;
+	var sC1Len, 
+		tempColors, twoTail;
+		if(arg.value){
+			cat1CnfLvl = +arg.value;
+		};
 		if(c1CIdata){
+			sC1Len  = c1CIdata[0].length;
 			tempColors = colorP1(c1CIdata[0]);
 			 cat1lowerBd = tempColors[1].toPrecision(4);
 			 cat1upperBd = tempColors[2].toPrecision(4);
@@ -135,15 +139,17 @@ function cat1OnChange(arg) {
 				cat1CnfLvl = cat1CnfLvl - 1/sC1Len; // reduce to lower confidence
 				//console.log(cat1CnfLvl);
 			}  
+		} else{
+			console.log("No resampled data for CI");
 		}
 		cat1ftr = document.getElementById("cat1OutputFoot1");
 	 	cat1ftr.innerHTML = //"<div style = 'height = 10'> </div>" +
-	   "<div style = 'width:360px'> Proportion "+ cat1Label1 +" in Re-samples" +
+	   "<div style = 'width:360px'> Proportion "+ cat1Label1 +" in  "+ sC1Len + " Re-samples" +
 	   "<br> <br>"+ Math.round(cat1CnfLvl*100)+ 
 	   "% Confidence Interval: (" + cat1lowerBd +", "+ cat1upperBd +" )</div>";	   
 }
 	
-var rangeslide2 = rangeslide("#cat1ConfLvl", {
+var cat1CIrangeslide = rangeslide("#cat1ConfLvl", {
 		data: confLevels,
 		showLabels: true,
 		startPosition: 0,
@@ -165,23 +171,27 @@ function colorP1(resample){
 		upperBd,
 		quantile, twoTail,
 	    sC1Len = resample.length;
-	    
-	  twoTail = (1 - cat1CnfLvl)* sC1Len;
-	  quantile = Math.floor(twoTail / 2);
-	  if(! twoTail % 2){ // check for odd number 
-	  	cat1CnfLvl = cat1CnfLvl - 1/sC1Len; // reduce to lower confidence
-	  } 
+	  if(sC1Len > 0){  
+	  	//console.log(cat1CnfLvl, sC1Len);
+	  	twoTail = (1 - cat1CnfLvl)* sC1Len;
+	  	quantile = Math.floor(twoTail / 2);
+	  	if(! twoTail % 2){ // check for odd number 
+	  		cat1CnfLvl = cat1CnfLvl - 1/sC1Len; // reduce to lower confidence
+	  	} 
 	  
-	for(i=quantile; i <= sC1Len-quantile ; i++){
+		for(i=quantile; i <= sC1Len-quantile ; i++){
 	      color[i] = 0; // color for middle circles
-	  } 
-	for(i=0; i<= quantile; i++){
-	  	color[i] = 1;   // color lower tail
-	  	lowerBd = resample[i];
-	  	//if(i <= quantile){
+	  	} 
+		for(i=0; i<= quantile; i++){
+	  		color[i] = 1;   
+	  		// color lower tail
 	  		color[sC1Len-i-1] = 1;
-	  		upperBd = resample[sC1Len - i -1];
-	  		//}  // color upper tail
+	  		 // color upper tail
+	  		lowerBd = resample[i];   // move lowerBd up
+	  		upperBd = resample[sC1Len - i -1];  // move upperBd down
+	  	}
+	  } else{
+	  	 console.log("No Data for CI");
 	  }
 	  return [color, lowerBd, upperBd];
 }	
@@ -221,7 +231,7 @@ function estimateP1(){
 	 cat1ftr = document.getElementById("cat1OutputFoot1");
 	 cat1ftr.innerHTML = 
 	   "<div style='width=50px'></div>"+
-	   "<div style = 'width:360px'> Proportion "+ cat1Label1 +" in Re-samples" +
+	   "<div style = 'width:360px'> Proportion "+ cat1Label1 +" in  "+ sC1Len + " Re-samples" +
 	   "<br> <br>"+ Math.round(cat1CnfLvl*100) + 
 	   "% Confidence Interval: (" + cat1lowerBd +", "+ cat1upperBd +" )</div>"; 
  	  
@@ -254,13 +264,13 @@ function testP1(tailChoice){
 	 
 	 if(tailChoice === 'undefined'){ 
 	 	cat1hdr = document.getElementById("cat1OutputHead1");
-	 	cat1hdr.innerHTML = "<div class = 'w3-cell-row'> <div class = 'w3-cell' style = 'width:40%'> Stronger evidence means data </div>"+ 
+	 	cat1hdr.innerHTML = "<div class = 'w3-cell-row'> <div class = 'w3-cell' style = 'width:40%'> Stronger evidence is sample proportion </div>"+ 
   	 	   "<div class = 'w3-cell' style='width:40%'>"+
   	 	   "<select class = 'w3-select w3-card w3-border w3-mobile w3-pale-yellow' id='cat1Extreme'"+
   	 	   " onchange = 'cat1TestUpdate()' >"+ 
-  				"<option value='lower'>Less Than</option>"+
-  				"<option value='both' selected >More Extreme Than</option>"+
-  				"<option value='upper'>Greater Than</option>"+
+  				"<option value='lower'>Less Than or =</option>"+
+  				"<option value='both' selected >As or More Extreme Than</option>"+
+  				"<option value='upper'>Greater Than or =</option>"+
 		   	"</select> </div>  <div class ='w3-cell' style = 'width:30%'> &nbsp;&nbsp;" + cat1Phat.toPrecision(4) +
 		   	"</div> </div> ";
 		   cat1ftr.innerHTML = 
@@ -372,24 +382,22 @@ function cat1MoreSimFn(){
 	    for(i=0; i < more; i++){
 	      sampleC1.push(newValues[i] /total);
 	    } 
-	  console.log(sampleC1.length);
-	  c1InfOutput = discreteChart(sampleC1, cat1InfSVG, cat1TestInteract );
-	  // should not have to re-input direction for test
-   	  return(sampleC1);
+	  sampleC1 = sampleC1.sort(function(a,b){return a - b});
+	  cat1TestUpdate();
+	  //c1InfOutput = discreteChart(sampleC1, cat1InfSVG, cat1TestInteract );
+	  return(sampleC1);
 	} else{
 		newValues= rbinom(total, cat1Phat, more).sort(function(a,b){return a - b});
 	    for(i=0; i < more; i++){
 	        resampleC1.push(newValues[i]/total); 
 	    }
-	  console.log(resampleC1.length);
-	  CI =  colorP1(resampleC1);
-	  cat1Color = CI[0];
-	  cat1OnChange(cat1CnfLvl );
+	  //console.log(cat1CnfLvl);
+	  cat1OnChange(cat1CnfLvl);
 	  
 	  //cat1ftr = document.getElementById("cat1OutputFoot1");
 	  //cat1ftr.innerHTML = 
 	    //"<div style='width=50px'></div>"+
-	    //"<div style = 'width:360px'> Proportion "+ cat1Label1 +" in Re-samples" +
+	    //"<div style = 'width:360px'> Proportion "+ cat1Label1 +" in "+ sC1Len + " Re-samples" +
 	    //"<br> <br>"+ Math.round(cat1CnfLvl*100) + 
 	    //"% Confidence Interval: (" + cat1lowerBd +", "+ cat1upperBd +" )</div>"; 	
 	   return(resampleC1);  
