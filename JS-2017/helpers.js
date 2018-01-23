@@ -164,7 +164,14 @@ function sampleWOrep(values, nreps){
     var h = (d3.max(arr) - d3.min(arr)) / k;  // length of each bin
     return {"binCount":k, "binLength":h};
   };
-    
+
+ function formatPvalue(extremeCount, reps){
+ 	if(extremeCount === 0){
+ 		return("Less than 1/"+ reps);
+ 	} else{
+ 		return ((extremeCount/reps).toPrecision(4));
+ 	}
+ }    
 //
 //  Need a generic plotting function for dotcharts.
 //
