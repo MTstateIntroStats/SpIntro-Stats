@@ -340,7 +340,7 @@ function cat1TestUpdate(){
 	 cat1ftr.innerHTML = 
 	   "<div  style = 'width:320px'> Proportion "+ cat1Label1 +
 	   " in " + sC1Len +" Samples from H<sub>0</sub> <br>"+
-	   "p-value (strength of evidence): " + cat1Pval.toPrecision(4)+ "</div>"; //
+	   "p-value (strength of evidence): " + formatPvalue(extCount, sC1Len) + "</div>"; //
  	  
 }
 

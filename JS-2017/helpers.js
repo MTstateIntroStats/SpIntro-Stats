@@ -114,6 +114,30 @@ function sampleWrep(values, nreps, prob) {
 	return [out, ids];
 }
 
+function resample1Mean(values, nreps){
+	//take resamples of values with replacement (nreps times), return the mean of each
+	var cumProb = [],
+	    nVals = values.length,
+	    prob = repeat(1/nVals, nVals),
+	    i, j, k,
+	    out = [],
+	    resamples = [],
+	    totalProb = 1;
+	cumProb = jStat.cumsum(prob);
+	cumProb.unshift(0);
+	for ( i = 0; i < nreps; i++) {
+		resamples = [];
+		for(j=0; j < nVals; j++){
+			k = cut(Math.random(), cumProb);
+			resamples.push( values[k ] );
+		}
+		out[i] = d3.mean(resamples);
+	}
+	//console.log(out);
+	// return the vector of means
+	return out ;
+}
+
 function sample1(nItems) {
 	// draw  one value assuming each is equally likely
 	return Math.floor(Math.random() * nItems);
@@ -164,21 +188,30 @@ function sampleWOrep(values, nreps){
     var h = (d3.max(arr) - d3.min(arr)) / k;  // length of each bin
     return {"binCount":k, "binLength":h};
   };
-    
+
+ function formatPvalue(extremeCount, reps){
+ 	if(extremeCount === 0){
+ 		return("Less than 1/"+ reps);
+ 	} else{
+ 		return ((extremeCount/reps).toPrecision(4));
+ 	}
+ }    
 //
 //  Need a generic plotting function for dotcharts.
 //
 
 var dotChart = function(sample, svgObject){
+	//console.log(svgObject.attributes);
 	var margin = 40,
 		myArray =[],
 	    nN = sample.length,
 	    plotX,
-	    ypos =0,
-	    wdth = 440 - margin * 2,
-	    hght = 320 - margin * 2,
+	    ypos =1,
+	    wdth = svgObject.getAttribute("width") - margin * 2,
+	    hght = svgObject.getAttribute("height") - margin * 2,
 	    xmin,
 	    xmax ;
+	    //console.log([wdth, hght]);
 	   // xlegend = spinStopRule === "Fixed"? "spins to get one of the first type":
 	     //  			spinStopRule === "OneOfOneType"? "Spins to get a " + spinGroups[spinMatch]:
 	       //			"spins to get one of each type";
@@ -191,7 +224,7 @@ var dotChart = function(sample, svgObject){
 	     xmin *= (sample[0] <= 0)? 1.01: 0.99;
 	    xmax = sample[nN-1] ;
 	     xmax *= (sample[nN-1] >= 0)? 1.01: 0.99;
-	    console.log([xmin,sample[0], sample[nN-1], xmax])
+	    //console.log([xmin,sample[0], sample[nN-1], xmax])
 	
 	var radii = (nN < 101)? 6:
 	    (nN < 501)? 5:
@@ -205,7 +238,7 @@ var dotChart = function(sample, svgObject){
 	var j = 0;
 	while( j <  nN ){    
 	    plotX = sample[j];	    // start a fresh bin with left edge at sample[j]
-	    ypos = 0;	            // bin y starts at 0
+	    ypos = 1;	            // bin y count starts at 1
 	    myArray[j] = {"x": sample[j++], "y": ypos++};
         while( (sample[j] - plotX < radii/6) & (j < nN)){
 		  //stay in same bin -- increment yposition
@@ -217,7 +250,7 @@ var dotChart = function(sample, svgObject){
 
    var DCyScale = d3.scale.linear()
     	.range([hght, 0])
-    	.domain([0, sampMax + .5]);
+    	.domain([1, sampMax + .5]);
 
 	var DCxScale = d3.scale.linear()
     	.range([margin, wdth])
@@ -226,11 +259,13 @@ var dotChart = function(sample, svgObject){
 	// change scales to hold all x, all y
    var DCxAxis = d3.svg.axis()
       .scale(DCxScale)
-      .orient("bottom");
+      .orient("bottom")
+      .ticks(5,"0f");
 
    var DCyAxis = d3.svg.axis()
       .scale(DCyScale)
-      .orient("left");
+      .orient("left")
+      .ticks(5);
       
   var graph = d3.select(svgObject)
     .attr("width", wdth + margin*2)
