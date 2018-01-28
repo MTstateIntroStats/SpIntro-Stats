@@ -146,7 +146,9 @@ function cat1OnChange(arg) {
 	 	cat1ftr.innerHTML = //"<div style = 'height = 10'> </div>" +
 	   "<div style = 'width:360px'> Proportion "+ cat1Label1 +" in  "+ sC1Len + " Re-samples" +
 	   "<br> <br>"+ Math.round(cat1CnfLvl*100)+ 
-	   "% Confidence Interval: (" + cat1lowerBd +", "+ cat1upperBd +" )</div>";	   
+	   "% Confidence Interval: (" + cat1lowerBd +", "+ cat1upperBd +" )</div>";	 
+   	 document.getElementById("cat1MoreSims").style.display = 'block';
+  
 }
 	
 var cat1CIrangeslide = rangeslide("#cat1ConfLvl", {
@@ -341,7 +343,8 @@ function cat1TestUpdate(){
 	   "<div  style = 'width:320px'> Proportion "+ cat1Label1 +
 	   " in " + sC1Len +" Samples from H<sub>0</sub> <br>"+
 	   "p-value (strength of evidence): " + formatPvalue(extCount, sC1Len) + "</div>"; //
- 	  
+  	 document.getElementById("cat1MoreSims").style.display = 'block';
+
 }
 
 //function c1InteractWith(infOut){
@@ -394,13 +397,11 @@ function cat1MoreSimFn(){
 	  //console.log(cat1CnfLvl);
 	  cat1OnChange(cat1CnfLvl);
 	  
-	  //cat1ftr = document.getElementById("cat1OutputFoot1");
-	  //cat1ftr.innerHTML = 
-	    //"<div style='width=50px'></div>"+
-	    //"<div style = 'width:360px'> Proportion "+ cat1Label1 +" in "+ sC1Len + " Re-samples" +
-	    //"<br> <br>"+ Math.round(cat1CnfLvl*100) + 
-	    //"% Confidence Interval: (" + cat1lowerBd +", "+ cat1upperBd +" )</div>"; 	
-	   return(resampleC1);  
+	  return(resampleC1);  
 	}
   }
 }
+
+
+// I don't know why the 'more sims' line shows up before everything else unless I kill it here.
+  document.getElementById("cat1MoreSims").style.display = "none";  

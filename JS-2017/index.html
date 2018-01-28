@@ -439,11 +439,11 @@ function closePages() {
       <br>
       
       <!--  Post-plot footer. Output CI or inputs for p-value and output the p-value -->
-    <div id = "cat1OutputFoot1" class="w3-display-container"> </div>
+    <div id = "cat1OutputFoot1" class="w3-display-container" style = "display:none"> </div>
       <!--  Increase simulation size -->
-    <div id = "cat1MoreSims" style = 'width: 360px'>
+    <div id = "cat1MoreSims" style = "width:360; display:none" >
     	<div class="w3-cell-row"> 
-	      <div class = 'w3-cell'  w3-mobile' style = 'width: 20%'>Add </div>
+	      <div class = 'w3-cell  w3-mobile' style = 'width: 20%'>Add </div>
 	      <div  class = 'w3-cell  w3-mobile' style = 'width: 20%'>
 	  			<input class = 'w3-input w3-mobile w3-pale-yellow' type = 'text'  
 	  			  id='cat1More' placeholder = '0' onchange='cat1MoreSimFn()'></input>	
@@ -809,12 +809,14 @@ window.onclick = function(event) {
   	 		   	" 
   	 		  class="w3-button w3-pale-blue w3-medium w3-round-xlarge">
   	  		&nbsp; Test for a particular value.</button> 
-    	
+    	<!-- TODO
+    		need to print summary stats of the dots in the chart: mean, SD, and number of resamples
+    		-->
   </div> <br>
 
      <!--  Inputs for each inference  (before plotting)  -->
 
-   <div id = "q1ConfLvl" style = "width: 40%; display: none"> Choose a Confidence Level:>
+   <div id = "q1ConfLvl" style = "width: 40%; display: none"> Choose a Confidence Level:
     	</div>
    <div id = "q1Test"  class = "w3-cell-row w3-mobile" style = "width: 70%; display: none"> 
     	 <div class = "w3-cell  w3-mobile" style = "width: 60%">
@@ -842,9 +844,9 @@ window.onclick = function(event) {
       <br>
       
       <!--  Post-plot footer. Output CI or inputs for p-value and output the p-value -->
-    <div id = "q1OutputFoot1" class="w3-display-container"> </div>
+    <div id = "q1OutputFoot1" class="w3-display-container" style = "display: none"> </div>
       <!--  Increase simulation size -->
-    <div id = "qt1MoreSims" style = 'width: 360px'>
+    <div id = "qt1MoreSims" style = "width: 360px; display:none" >
     	<div class="w3-cell-row"> 
 	      <div class = 'w3-cell  w3-mobile' style = 'width: 20%'>Add 
 	      	</div>
@@ -858,8 +860,8 @@ window.onclick = function(event) {
      </div>
    </div> 
   
-  
   <script src="quant1.js" charset="utf-8"></script>
+  
   <!-- -------  One Quantitative Actions    
    	2) Bootstrap Demo 
    	 Works, but I'd like to reduce the code for the many resamples buttons using a button builder function.
@@ -1023,8 +1025,131 @@ window.onclick = function(event) {
   <div id="TestEstC2" class="w3-container Page" style="display:none">
   <div class = w3-container>
   	<h3>Estimate a difference in proportions or Test for a particular value</h3>
+  	
+  <div class = "w3-container">
+  	<div class = "w3-cell-row w3-mobile">
+  		<div class = "w3-cell" style="width:60%">
+  		  <h4>    Enter Data as counts</h4>
+  		  <table class="w3-table w3-border">
+			 <tr>
+  				<th>Labels:</th>
+			 	 <th> <input class = "w3-input w3-mobile w3-pale-yellow" type = "text" id="cat2LabelPop1" 
+  		            placeholder = "Group A"></input>
+  			   </th>
+			 	 <th> <input class = "w3-input w3-mobile w3-pale-yellow" type = "text" id="cat2LabelPop2" 
+  		            placeholder = "Group B"></input>
+  			   </th>
+			 </tr>
+			 <tr>
+  				<td><input class = "w3-input w3-mobile w3-pale-yellow" type = "text" id="cat2LabelOut1" 
+  		            placeholder = "Success"></input>
+  			    </td>
+  				<td> <input class = "w3-input  w3-mobile w3-pale-yellow" type = "text" id="cat2N11" 
+  		            placeholder = "1" onchange = "summarizeP2()"></input>
+  					</td>
+  				<td> <input class = "w3-input  w3-mobile w3-pale-yellow" type = "text" id="cat2N12" 
+  		            placeholder = "1" onchange = "summarizeP2()"></input>
+  					</td>
+			 </tr>
+			 <tr>
+  				<td><input class = "w3-input w3-mobile w3-pale-yellow" type = "text" id="cat2LabelOut2" 
+  		            placeholder = "Failure"></input>
+  				</td>
+  				<td> <input class = "w3-input w3-mobile w3-pale-yellow" type = "text" id="cat2N21" 
+  		            placeholder = "1" onchange = "summarizeP2()"></input>
+  					</td>
+  				<td> <input class = "w3-input w3-mobile w3-pale-yellow" type = "text" id="cat2N22" 
+  		            placeholder = "1" onchange = "summarizeP2()"></input>
+  					</td> 				
+			 </tr>
+		    </table>
+    </div> &nbsp;&nbsp;
+	 <div class = "w3-cell" style="width:40%" style="display:block">
+	    	<h4> Summary</h4>
+   		<div class = "w3-container w3-cell w3-mobile" id = "cat2SummarySVGgoesHere" >
+   			<svg class="chartC2" ></svg>
+   		</div>
+   		<div class = "w3-container w3-cell w3-mobile" id = "cat2SummaryText" style="display:none">
+   			p&#770; = <br>
+   			sd(p&#770) = 
+   		</div>
+     </div>
+   </div> <br>
   </div>
-      <span onclick="openVble('TestEstC2')" class="w3-button w3-large w3-display-bottomright">Back</span>
+  <!--                             Select Your Inference                        -->
+  <div class = "w3-container w3-mobile">  
+    	Either
+  	 		 <button id = "EstimateP2" 
+  	 		 onclick="c2Inference = 'estimate';
+  	 		    c2CIdata = estimateP2();
+				c2InfOutput = discreteChart(c2CIdata, cat2InfSVG, cat2CIinteract); 
+				" 
+  	 		 class="w3-button w3-pale-blue w3-medium w3-round-xlarge">
+  	  		&nbsp;  Estimate a difference in true proportions.</button> 
+  	  		&nbsp; OR &nbsp;
+  	 		 <button id = "TestP2" 
+  	 		  onclick="c2Inference = 'test';
+  	 		   	c2Tstdata = testP2('undefined');
+  	 		   	c2InfOutput = discreteChart(c2Tstdata, cat2InfSVG, cat2TestInteract ); 
+  	 		   	" 
+  	 		  class="w3-button w3-pale-blue w3-medium w3-round-xlarge">
+  	  		&nbsp; Test for a particular difference.</button> 
+    	
+  </div> <br>
+
+     <!--  Inputs for each inference  (before plotting)  -->
+
+   <div id = "cat2ConfLvl" style = "width: 40%; display: none"> Choose a Confidence Level:
+    	</div>
+   <div id = "cat2Test"  class = "w3-cell-row w3-mobile" style = "width: 70%; display: none"> 
+    	 <div class = "w3-cell  w3-mobile" style = "width: 60%">
+    	 	   <h4>&nbsp; &nbsp; &nbsp; Test: Is the true difference = </h4>  </div>
+		 <div  class = "w3-cell  w3-mobile" style = "width: 20%">  
+			<input class = "w3-input w3-mobile w3-pale-yellow" type = "text" 
+				  id="cat2trueP" placeholder = "0" onchange="testP2('undefined')"  ></input> 
+  	 	</div>
+      </div>
+    <div id = "cat2OutputHead1"> </div>
+    
+    <!--  Show Inference Plot -->
+    
+  <div class = "w3-container w3-cell w3-mobile" id = "cat2Inference">
+    <!--  Inference plot goes here for CI or Test of 2 proportions -->
+  	<svg id = "cat2InfSVG" height = "300px" width = "400px"> </svg>
+   </div>
+   
+   <!-- Setup Modal Box to popup info on a single data point -->
+   
+   <div class = "w3-container w3-modal w3-mobile" style = "width: 33%" >
+      <div class="w3-modal-content w3-card-4" id = "cat2SelectedSample">
+      </div>
+      </div>
+   </div>
+      <br>
+      
+      <!--  Post-plot footer. Output CI or inputs for p-value and output the p-value -->
+    <div id = "cat2OutputFoot1" class="w3-display-container" style = "display:none"> </div>
+      <!--  Increase simulation size -->
+    <div id = "cat2MoreSims" style = "width:360; display:none" >
+    	<div class="w3-cell-row"> 
+	      <div class = 'w3-cell  w3-mobile' style = 'width: 20%'>Add </div>
+	      <div  class = 'w3-cell  w3-mobile' style = 'width: 20%'>
+	  			<input class = 'w3-input w3-mobile w3-pale-yellow' type = 'text'  
+	  			  id='cat2More' placeholder = '0' onchange='cat2MoreSimFn()'></input>	
+	  	  </div>
+	  	  <div class = 'w3-cell  w3-mobile' style = 'width: 40%'> simulated points</div>
+	  </div>
+	   </div>
+     </div>
+
+
+  <script src="cat2.js" charset="utf-8"></script>
+  	
+  	
+  </div>
+      <!--
+      	span onclick="openVble('TestEstC2')" class="w3-button w3-large w3-display-bottomright">Back</span
+      	-->
 
   </div>   
 

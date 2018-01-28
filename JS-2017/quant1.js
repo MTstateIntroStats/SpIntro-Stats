@@ -37,7 +37,7 @@
         resampleq1,
         sampleq1;
 
- var svgq1 = d3.select("#q1InfSVG");      
+ var svgq1 = d3.select("#q1InfSVG");    
                
 function summarizeMu1() {
       // builds summary table and dot plot for 1 quantitative variable
@@ -97,9 +97,11 @@ function q1OnChange(arg) {
 		} else{
 			console.log("No resampled data for CI");
 		}
+		document.getElementById("qt1MoreSims").style.display = 'block';
 		q1ftr = document.getElementById("q1OutputFoot1");
+		q1ftr.style.display = 'block';
 	 	q1ftr.innerHTML = //"<div style = 'height = 10'> </div>" +
-	   "<div style = 'width:360px'> Mean "+ q1Label +" in  "+ sq1Len + " Re-samples" +
+	   "<div style = 'width:360px'> Plot shows Mean "+ q1Label +" in  "+ sq1Len + " Re-samples" +
 	   "<br> <br>"+ Math.round(q1CnfLvl*100)+ 
 	   "% Confidence Interval: (" + q1lowerBd +", "+ q1upperBd +" )</div>";	   
 }
@@ -179,11 +181,13 @@ function estimateMu1(){
 	  q1upperBd = CI[2].toPrecision(4);
 	  
 	 q1ftr = document.getElementById("q1OutputFoot1");
+	 q1ftr.style.display = 'block';
 	 q1ftr.innerHTML = 
 	   "<div style='width=50px'></div>"+
-	   "<div style = 'width:360px'> Mean "+ q1Label +" in  "+ sq1Len + " Re-samples" +
+	   "<div style = 'width:360px'> Plot shows mean "+ q1Label +" in  "+ sq1Len + " Re-samples" +
 	   "<br> <br>"+ Math.round(q1CnfLvl*100) + 
 	   "% Confidence Interval: (" + q1lowerBd +", "+ q1upperBd +" )</div>"; 
+	 document.getElementById("qt1MoreSims").style.display = 'block';
  	  
 	  //console.log(q1lowerBd, q1upperBd);
 	  
@@ -284,10 +288,12 @@ function q1TestUpdate(){
   	q1InfOutput = discreteChart(q1Tstdata, q1InfSVG, q1TestInteract ); 	
   	
 	 q1ftr = document.getElementById("q1OutputFoot1");
+	 q1ftr.style.display = 'block';
 	 q1ftr.innerHTML = 
 	   "<div  style = 'width:320px'> Mean "+ q1Label +
 	   " in " + sq1Len +" Samples from H<sub>0</sub> <br>"+
-	   "p-value (strength of evidence): " + formatPvalue(extCount, sq1Len) + "</div>"; //
+	   "p-value (strength of evidence): " + formatPvalue(extCount, sq1Len) + "</div>"; 
+	 document.getElementById("qt1MoreSims").style.display = 'block';
  	  
 }
 
