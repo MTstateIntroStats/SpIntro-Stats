@@ -335,6 +335,11 @@ function closePages() {
        x[i].style.display = "none";  
     }
 }
+function closeCat1() {
+	document.getElementById('cat1MoreSims').style.display = 'none';
+	document.getElementById('cat1OutputFoot1').style.display = 'none';
+	}
+	// TODO:  close all elements with 'OutputFoot1' or 'MoreSims'
 </script>
 
 
@@ -346,7 +351,8 @@ function closePages() {
    	1) Test or Estimate:   
    	 -->
  
-<div id="TestEstC1" class="w3-container Page" style="display:none">
+<div id="TestEstC1" class="w3-container Page" style="display:none"
+	onfocusout = "closeCat1()" onfocusin = "closeCat1()">
   
   <div class = "w3-container">
   	<div class = "w3-cell-row w3-mobile">
@@ -1093,7 +1099,7 @@ window.onclick = function(event) {
   	 		   	c2InfOutput = discreteChart(c2Tstdata, cat2InfSVG, cat2TestInteract ); 
   	 		   	" 
   	 		  class="w3-button w3-pale-blue w3-medium w3-round-xlarge">
-  	  		&nbsp; Test for a particular difference.</button> 
+  	  		&nbsp; Test: Are the true proportions equal?</button> 
     	
   </div> <br>
 
@@ -1102,13 +1108,8 @@ window.onclick = function(event) {
    <div id = "cat2ConfLvl" style = "width: 40%; display: none"> Choose a Confidence Level:
     	</div>
    <div id = "cat2Test"  class = "w3-cell-row w3-mobile" style = "width: 70%; display: none"> 
-    	 <div class = "w3-cell  w3-mobile" style = "width: 60%">
-    	 	   <h4>&nbsp; &nbsp; &nbsp; Test: Is the true difference = </h4>  </div>
-		 <div  class = "w3-cell  w3-mobile" style = "width: 20%">  
-			<input class = "w3-input w3-mobile w3-pale-yellow" type = "text" 
-				  id="cat2trueP" placeholder = "0" onchange="testP2('undefined')"  ></input> 
-  	 	</div>
-      </div>
+    	 <div class = "w3-cell  w3-mobile" style = "width: 60%"> </div>
+       </div>
     <div id = "cat2OutputHead1"> </div>
     
     <!--  Show Inference Plot -->

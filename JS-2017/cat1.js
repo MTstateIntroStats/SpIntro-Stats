@@ -1,12 +1,17 @@
  // subroutine to estimate a proportion or test for a special value
  // Inputs: 
  //     2 category labels (default = Success/Failure) and a count for each 
- 
+ //TODO:
+  // hypothesis test not working until a null value is added
+  // first reps are not sorted right
+ // need to clear out resamples if data change
+  
     var c1SummDiv = d3.select("#cat1Inference"),
         c1Tstdata,
         c1CIdata,
         cat1Label1,
         cat1Label2,
+        cat1ftr,
 		cat1hdr,
 		cat1CnfLvl = .80,
 		cat1CLvl,
@@ -32,8 +37,8 @@
       	upperBd,
       	upperCI,
         cat1Phat,
-        resampleC1,
-        sampleC1,
+        resampleC1 = [],
+        sampleC1 = [],
         total;
 
  var svgCat1 = d3.select("#cat1InfSVG");      
@@ -55,6 +60,10 @@ function summarizeP1() {
     	.ticks(5)
     	.orient("bottom");
       
+        resampleC1 = [];
+        sampleC1 = [];
+        discreteChart([], cat1InfSVG, cat1CIinteract);
+        
       cat1Label1 = document.getElementById("cat1Label1").value;
       cat1Label2 = document.getElementById("cat1Label2").value;
       cat1N1 = +document.getElementById("cat1N1").value;
@@ -146,7 +155,8 @@ function cat1OnChange(arg) {
 	 	cat1ftr.innerHTML = //"<div style = 'height = 10'> </div>" +
 	   "<div style = 'width:360px'> Proportion "+ cat1Label1 +" in  "+ sC1Len + " Re-samples" +
 	   "<br> <br>"+ Math.round(cat1CnfLvl*100)+ 
-	   "% Confidence Interval: (" + cat1lowerBd +", "+ cat1upperBd +" )</div>";	 
+	   "% Confidence Interval: (" + cat1lowerBd +", "+ cat1upperBd +" )</div>";
+	   cat1ftr.style.display = 'block';
    	 document.getElementById("cat1MoreSims").style.display = 'block';
   
 }
@@ -263,7 +273,9 @@ function testP1(tailChoice){
       cat1Phat = cat1N1/ total;
 	  cat1Tst = document.getElementById("cat1Test");
 	  cat1Tst.style.display ="";
-	 
+	 if(cat1Pnull ==='undefined'){
+	 	return('undefined');
+	 }
 	 if(tailChoice === 'undefined'){ 
 	 	cat1hdr = document.getElementById("cat1OutputHead1");
 	 	cat1hdr.innerHTML = "<div class = 'w3-cell-row'> <div class = 'w3-cell' style = 'width:40%'> Stronger evidence is sample proportion </div>"+ 
@@ -343,6 +355,7 @@ function cat1TestUpdate(){
 	   "<div  style = 'width:320px'> Proportion "+ cat1Label1 +
 	   " in " + sC1Len +" Samples from H<sub>0</sub> <br>"+
 	   "p-value (strength of evidence): " + formatPvalue(extCount, sC1Len) + "</div>"; //
+	   cat1ftr.style.display = 'block';
   	 document.getElementById("cat1MoreSims").style.display = 'block';
 
 }
@@ -390,11 +403,11 @@ function cat1MoreSimFn(){
 	  //c1InfOutput = discreteChart(sampleC1, cat1InfSVG, cat1TestInteract );
 	  return(sampleC1);
 	} else{
-		newValues= rbinom(total, cat1Phat, more).sort(function(a,b){return a - b});
+		newValues= rbinom(total, cat1Phat, more);
 	    for(i=0; i < more; i++){
 	        resampleC1.push(newValues[i]/total); 
 	    }
-	  //console.log(cat1CnfLvl);
+	    resampleC1 = resampleC1.sort(function(a,b){return a - b});
 	  cat1OnChange(cat1CnfLvl);
 	  
 	  return(resampleC1);  
@@ -405,3 +418,4 @@ function cat1MoreSimFn(){
 
 // I don't know why the 'more sims' line shows up before everything else unless I kill it here.
   document.getElementById("cat1MoreSims").style.display = "none";  
+  cat1ftr.style.display = 'block';

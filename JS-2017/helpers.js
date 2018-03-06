@@ -265,7 +265,7 @@ var dotChart = function(sample, svgObject){
    var DCyAxis = d3.svg.axis()
       .scale(DCyScale)
       .orient("left")
-      .ticks(5);
+      .ticks(5,".0f");
       
   var graph = d3.select(svgObject)
     .attr("width", wdth + margin*2)
@@ -330,10 +330,10 @@ var discreteChart = function(sample, svgObject, interactFunction){
 	     xmax *= (sample[nN-1] >= 0)? 1.01: 0.99;
 	   // console.log([xmin,sample[0], sample[nN-1], xmax])
 	
-	var radii = (nN < 101)? 6:
-	    (nN < 501)? 5:
-	    (nN < 1001)? 4:
-	    (nN < 5001)? 3: 2; // perhaps this should relate to width/height of svg]
+	var radii = (nN < 101)? 10:
+	    (nN < 501)? 7:
+	    (nN < 1001)? 5:
+	    (nN < 5001)? 4: 3; // perhaps this should relate to width/height of svg]
     var gees = d3.select(svgObject).selectAll("g");
 	if(typeof(gees) === "object"){
 		gees.remove();

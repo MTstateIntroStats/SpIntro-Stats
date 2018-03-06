@@ -1,6 +1,9 @@
  // subroutine to estimate a proportion or test for a special value
  // Inputs: 
  //     2 category labels (default = Success/Failure) and a count for each 
+ //TODO:
+ // CI is not updating properly when more points are added. 
+ // Have to change Conf level and go back to see it.
  
     var q1SummDiv = d3.select("#q1Inference"),
         q1Tstdata,

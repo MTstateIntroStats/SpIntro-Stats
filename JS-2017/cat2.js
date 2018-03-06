@@ -1,6 +1,8 @@
  // subroutine to estimate a proportion or test for a special value
  // Inputs: 
  //     2 sets of category labels (default = Success/Failure) and a count for each of 4 outcomes
+ // TODO:
+ // need to clear out resamples if data change
  
     var c2SummDiv = d3.select("#cat2Inference"),
         c2Tstdata,
@@ -18,7 +20,11 @@
         cat2N21,
         cat2N12,
         cat2N22,
+        cat2NullEst,
         cat2Pval,
+        cat2Phat1,
+        cat2Phat2,
+        cat2Diff,
         cat2TestDirection,
         c2Data = [],
         c2bars ,
@@ -35,10 +41,14 @@
 		targetQuantile,
       	upperBd,
       	upperCI,
-        cat2Phat,
-        resampleC2,
-        sampleC2,
-        total;
+        resampleC21 = [],
+        resampleC22 = [],
+        resampleC2 = [],
+        sampleC21 = [],
+        sampleC22 = [],
+        sampleC2 = [],
+        total1,
+        total2;
 
  var svgCat2 = d3.select("#cat2InfSVG");      
                
@@ -59,6 +69,9 @@ function summarizeP2() {
     	.ticks(5)
     	.orient("bottom");
       
+        resampleC2 = [];
+        sampleC2 = [];
+      
       cat2LabelOut1 = document.getElementById("cat2LabelOut1").value;
       cat2LabelOut2 = document.getElementById("cat2LabelOut2").value;
       cat2LabelPop1 = document.getElementById("cat2LabelPop1").value;
@@ -67,8 +80,10 @@ function summarizeP2() {
       cat2N12 = +document.getElementById("cat2N12").value;
       cat2N21 = +document.getElementById("cat2N21").value;
       cat2N22 = +document.getElementById("cat2N22").value;
-      cat2Phat1 = cat2N11/ (cat2N11 + cat2N21);
-      cat2Phat2 = cat2N12/ (cat2N12 + cat2N22);
+      total1 = cat2N11 + cat2N21;
+      total2 = cat2N12 + cat2N22;
+      cat2Phat1 = cat2N11/ total1;
+      cat2Phat2 = cat2N12/ total2;
       cat2Summ = document.getElementById("cat2SummaryText");
       c2Data = [{"label": cat2LabelPop1, "xx": cat2Phat1},
       			{"label": cat2LabelPop2, "xx": cat2Phat2}];
@@ -125,6 +140,7 @@ function cat2OnChange(arg) {
 			 cat2upperBd = tempColors[2].toPrecision(4);
 			c2CIdata = [c2CIdata[0], tempColors[0] ];
 			c2InfOutput = discreteChart(c2CIdata, cat2InfSVG, cat2CIinteract);
+			//FIXME: this is not giving good y values when x values are differences (continuous vbles) 
 			sC2Len = c2CIdata[0].length;
 			twoTail = Math.round((1 - cat2CnfLvl)* sC2Len);
 			if(twoTail % 2 === 1){ // check for odd number
@@ -136,9 +152,11 @@ function cat2OnChange(arg) {
 		}
 		cat2ftr = document.getElementById("cat2OutputFoot1");
 	 	cat2ftr.innerHTML = //"<div style = 'height = 10'> </div>" +
-	   "<div style = 'width:360px'> Proportion "+ cat2LabelOut1 +" in  "+ sC2Len + " Re-samples" +
+	   "<div style = 'width:600px'> Difference in proportions \" "+ cat2LabelOut1 +"\" in  "+ sC2Len + " Re-samples" +
 	   "<br> <br>"+ Math.round(cat2CnfLvl*100)+ 
-	   "% Confidence Interval: (" + cat2lowerBd +", "+ cat2upperBd +" )</div>";	   
+	   "% Confidence Interval: (" + cat2lowerBd +", "+ cat2upperBd +" )</div>";	 
+	   cat2ftr.style.display = "block"; 
+   	   document.getElementById("cat2MoreSims").style.display = 'block'; 
 }
 	
 var cat2CIrangeslide = rangeslide("#cat2ConfLvl", {
@@ -200,30 +218,32 @@ function estimateP2(){
       cat2N12 = +document.getElementById("cat2N12").value;
       cat2N21 = +document.getElementById("cat2N21").value;
       cat2N22 = +document.getElementById("cat2N22").value;
-      cat2Phat1 = cat2N11/ (cat2N11 + cat2N21);
-      cat2Phat2 = cat2N12/ (cat2N12 + cat2N22);
+      total1 = cat2N11 + cat2N21;
+      total2 = cat2N12 + cat2N22;
+      cat2Phat1 = cat2N11/ total1;
+      cat2Phat2 = cat2N12/ total2;
       
-      var sC2Len,
-      	total = cat2N1 + cat2N2;
-      cat2Phat = cat2N1/ total;
+      var sC2Len;
 
 	 cat2hdr = document.getElementById("cat2OutputHead1");
 	 cat2hdr.innerHTML = 
 	 "<h4>Estimate True Proportion with a Confidence Interval</h4>"; 
 	  
  	  cat2CLvl = document.getElementById("cat2ConfLvl");
-	  cat2CLvl.style.display ="";
+	  cat2CLvl.style.display ="block";
 	   cat2Tst = document.getElementById("cat2Test");
 	  cat2Tst.style.display ="none";
 	 // show plot
 	   
-	  resampleC2 = rbinom(total, cat2Phat, 100).sort(function(a,b){return a - b});
-	  sC2Len = resampleC2.length;
+	  resampleC21 = rbinom(total1, cat2Phat1, 100);
+	  resampleC22 = rbinom(total2, cat2Phat2, 100);
+	  sC2Len = resampleC21.length;
 	  for(i=0; i < sC2Len; i++){
-	      resampleC2[i] *= 1/total; 
+	      resampleC2[i] = resampleC21[i]/total1 - resampleC22[i]/total2; 
 	  } 
+	  resampleC2 = resampleC2.sort(function(a,b){return a - b;});
 	  
-	  CI =  colorP2(resampleC2);
+	  CI =  colorP2(resampleC2);  // TODO: check colors when adding points
 	  cat2Color = CI[0];
 	  cat2lowerBd = CI[1].toPrecision(4);
 	  cat2upperBd = CI[2].toPrecision(4);
@@ -231,10 +251,10 @@ function estimateP2(){
 	 cat2ftr = document.getElementById("cat2OutputFoot1");
 	 cat2ftr.innerHTML = 
 	   "<div style='width=50px'></div>"+
-	   "<div style = 'width:360px'> Proportion "+ cat2Label1 +" in  "+ sC2Len + " Re-samples" +
+	   "<div style = 'width:360px'> Difference in proportion \""+ cat2LabelOut1 +"\" in  "+ sC2Len + " Re-samples" +
 	   "<br> <br>"+ Math.round(cat2CnfLvl*100) + 
 	   "% Confidence Interval: (" + cat2lowerBd +", "+ cat2upperBd +" )</div>"; 
- 	  
+ 	  cat2ftr.style.display = "block";
 	  //console.log(cat2lowerBd, cat2upperBd);
 	  
 	 return([resampleC2, cat2Color]);		
@@ -245,7 +265,8 @@ function estimateP2(){
  
 
 function testP2(tailChoice){
-	//function to test 'Is the true proportion  = some value?' for 'success/failure' data
+	//function to test 'Are two proportions equal?'
+      var sC2Len;
 	// Gather Inputs:
       
       cat2LabelOut1 = document.getElementById("cat2LabelOut1").value;
@@ -256,35 +277,40 @@ function testP2(tailChoice){
       cat2N12 = +document.getElementById("cat2N12").value;
       cat2N21 = +document.getElementById("cat2N21").value;
       cat2N22 = +document.getElementById("cat2N22").value;
-      cat2Phat1 = cat2N11/ (cat2N11 + cat2N21);
-      cat2Phat2 = cat2N12/ (cat2N12 + cat2N22);
+      total1 = cat2N11 + cat2N21;
+      total2 = cat2N12 + cat2N22;
+      cat2Phat1 = cat2N11/ total1;
+      cat2Phat2 = cat2N12/ total2;
+      cat2Diff = cat2Phat1 - cat2Phat2;
       
-      cat2DiffNull = +document.getElementById("cat2trueDiff").value;
+      cat2NullEst = (cat2N11 + cat2N12) / (total1 + total2);
       cat2CLvl = document.getElementById("cat2ConfLvl");
 	  cat2CLvl.style.display ="none";
 	  //cat2Pval = undefined;
 	  
-      var sC2Len;
 	  cat2Tst = document.getElementById("cat2Test");
 	  cat2Tst.style.display ="";
 	 
 	 if(tailChoice === 'undefined'){ 
 	 	cat2hdr = document.getElementById("cat2OutputHead1");
-	 	cat2hdr.innerHTML = "<div class = 'w3-cell-row'> <div class = 'w3-cell' style = 'width:40%'> Stronger evidence is sample proportion </div>"+ 
+	 	cat2hdr.innerHTML = "<div class = 'w3-cell-row'> <div class = 'w3-cell' style = 'width:40%'> Stronger evidence is a difference </div>"+ 
   	 	   "<div class = 'w3-cell' style='width:40%'>"+
   	 	   "<select class = 'w3-select w3-card w3-border w3-mobile w3-pale-yellow' id='cat2Extreme'"+
   	 	   " onchange = 'cat2TestUpdate()' >"+ 
   				"<option value='lower'>Less Than or =</option>"+
   				"<option value='both' selected >As or More Extreme Than</option>"+
   				"<option value='upper'>Greater Than or =</option>"+
-		   	"</select> </div>  <div class ='w3-cell' style = 'width:30%'> &nbsp;&nbsp;" + cat2Phat.toPrecision(4) +
-		   	"</div> </div> ";
+		   	"</select> </div>  <div class ='w3-cell' style = 'width:30%'> &nbsp;&nbsp;"+
+		   	  cat2Diff.toPrecision(4) +
+		   		"</div> </div> ";
 		   cat2ftr.innerHTML = 
-		   "<div  style = 'width:320px'> Proportion "+ cat2Label1 +" in samples from H<sub>0</sub>";
-		 	sampleC2 = rbinom(total, cat2Pnull, 100);
+		   "<div  style = 'width:600px'> Difference in proportions \""+ cat2LabelOut1 +
+		      "\" in samples from H<sub>0</sub>";
+		 	sampleC21 = rbinom(total1, cat2NullEst, 100);
+		 	sampleC22 = rbinom(total2, cat2NullEst, 100);
 		 	sC2Len = sampleC2.length;
 		  for(i=0; i < sC2Len; i++){
-	    	  sampleC2[i] *= 1/total
+	    	  sampleC2[i] = sampleC21[i]/total1 - sampleC22[i]/total2;
 	  	} 
 	 } else{
 	 	
@@ -309,20 +335,20 @@ function cat2TestUpdate(){
  	sC2Len = sampleC2.length;
  	 if(cat2TestDirection ==="lower"){
  	 	for(i = 0; i < sC2Len; i++){
- 	 		check = 0 + (sampleC2[i] <= cat2Phat);
+ 	 		check = 0 + (sampleC2[i] <= cat2Diff);
  	 		extCount += check;
 			cat2Color[i] =  check; 	 		
  	 	}
  	 } else if(cat2TestDirection ==="upper"){
  	 	for(i = 0; i < sC2Len; i++){
- 	 		check = 0 + (sampleC2[i] >= cat2Phat) ;
+ 	 		check = 0 + (sampleC2[i] >= cat2Diff) ;
  	 		extCount += check;
 			cat2Color[i] =  check; 	 		
  	 	}
  	 	
  	 } else{
-		lowP = cat2Phat * (cat2Phat <= cat2Pnull) + (2*cat2Pnull - cat2Phat)*(cat2Phat > cat2Pnull)+ 1/1000000;
-		hiP  = cat2Phat * (cat2Phat >= cat2Pnull) + (2*cat2Pnull - cat2Phat)*(cat2Phat < cat2Pnull)- 1/1000000;
+		lowP = ((cat2Diff < 0.00)? cat2Diff: -cat2Diff) + 1/1000000;
+		hiP  = ((cat2Diff > 0.00)? cat2Diff: -cat2Diff) - 1/1000000;
  	 	for(i = 0; i < sC2Len; i++){
  	 		check = 0 + ((sampleC2[i] <= lowP)|(sampleC2[i] >= hiP));
  	 		extCount += check;
@@ -332,12 +358,12 @@ function cat2TestUpdate(){
  	 //console.log(d3.sum(cat2Color));
  	 cat2Pval = extCount / sC2Len;
  	 c2Tstdata = [sampleC2, cat2Color];
-  	c2InfOutput = discreteChart(c2Tstdata, cat2InfSVG, cat2TestInteract ); 	
+  	 c2InfOutput = discreteChart(c2Tstdata, cat2InfSVG, cat2TestInteract ); 	
   	
 	 cat2ftr = document.getElementById("cat2OutputFoot1");
 	 cat2ftr.innerHTML = 
-	   "<div  style = 'width:320px'> Proportion "+ cat2Label1 +
-	   " in " + sC2Len +" Samples from H<sub>0</sub> <br>"+
+	   "<div  style = 'width:600px'> Differences in proportions \""+ cat2LabelOut1 +
+	   "\" in " + sC2Len +" Samples from H<sub>0</sub> <br>"+
 	   "p-value (strength of evidence): " + formatPvalue(extCount, sC2Len) + "</div>"; //
  	  
 }
@@ -370,32 +396,36 @@ function cat2MoreSimFn(){
 	// function to add more points to an estimate or test of one proportion
 	var sC2Len,
 		more = +document.getElementById("cat2More").value,
-		newValues =[];
+		newValues1 =[],
+		newValues2 = [];
 	if(more > 0){
-	  	total = cat2N1 + cat2N2;
-        cat2Phat = cat2N1/ total;
+	  	//total = cat2N1 + cat2N2;
+        //cat2Phat = cat2N1/ total;
 	 	
-	if( c2Inference === 'test'){
-	    newValues = rbinom(total, cat2Pnull, more);
+	if( c2Inference === 'test'){ 
+	    newValues1 = rbinom(total1, cat2NullEst, more);
+	    newValues2 = rbinom(total2, cat2NullEst, more);
 	    for(i=0; i < more; i++){
-	      sampleC2.push(newValues[i] /total);
+	      sampleC2.push(newValues1[i] /total1 - newValues2[i]/total2);
 	    } 
 	  sampleC2 = sampleC2.sort(function(a,b){return a - b});
 	  cat2TestUpdate();
 	  //c2InfOutput = discreteChart(sampleC2, cat2InfSVG, cat2TestInteract );
 	  return(sampleC2);
 	} else{
-		newValues= rbinom(total, cat2Phat, more).sort(function(a,b){return a - b});
+		resampleC21 = rbinom(total1, cat2Phat1, more);
+	  	resampleC22 = rbinom(total2, cat2Phat2, more);
 	    for(i=0; i < more; i++){
-	        resampleC2.push(newValues[i]/total); 
-	    }
+	      resampleC2.push(resampleC21[i]/total1 - resampleC22[i]/total2); 
+	  	}
+	  	resampleC2 = resampleC2.sort(function(a,b){return a - b}); 	
 	  //console.log(cat2CnfLvl);
 	  cat2OnChange(cat2CnfLvl);
 	  
 	  //cat2ftr = document.getElementById("cat2OutputFoot1");
 	  //cat2ftr.innerHTML = 
 	    //"<div style='width=50px'></div>"+
-	    //"<div style = 'width:360px'> Proportion "+ cat2Label1 +" in "+ sC2Len + " Re-samples" +
+	    //"<div style = 'width:360px'> Proportion "+ cat2LabelOut1 +" in "+ sC2Len + " Re-samples" +
 	    //"<br> <br>"+ Math.round(cat2CnfLvl*100) + 
 	    //"% Confidence Interval: (" + cat2lowerBd +", "+ cat2upperBd +" )</div>"; 	
 	   return(resampleC2);  
