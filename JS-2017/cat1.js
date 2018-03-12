@@ -77,23 +77,7 @@ function summarizeP1() {
       cat1Summ.style = "display: block"; 
     
 
-	function updateP1(chart, data) {
-  		// DATA JOIN
-  		var bars = chart.selectAll("rect")
-    		.data(data);
-	  	// UPDATE
-   		bars.enter().append("g")
-        	.attr("fill", "blue")
-        	.attr("transform", function(d, i) { return "translate(14," + i * barHeight + ")"; });
-	    bars.append("rect")
-    	  .attr("width", function(d){return x(d.xx ) - 14;} )
-    	  .attr("height", barHeight -1);
-
- 	  // EXIT
-  		// Remove old elements as needed.
- 	 	bars.exit().remove();
-	}
-   	if(!chartC1){
+	if(!chartC1){
 	    chartC1 = d3.select(".chart")
     	  .attr("width", w + margin*2)
       		.attr("height", h + margin);
@@ -126,6 +110,17 @@ function summarizeP1() {
  		.attr("dy", ".35em")
  		.text(function(d) {return d.label}) 
         .attr("fill", "blue");	
+        
+    //check for any old output plots. If present, erase them due to change in data
+    if(c1InfOutput){
+    	c1CIdata = [];
+    	 svgCat1.selectAll("g").remove();
+    	 document.getElementById("cat1OutputFoot1").style.display = "none";
+    	 document.getElementById("cat1OutputHead1").innerHTML = ""; 
+    	 //document.getElementById("cat1MoreSims").style.display = "none";
+    	 document.getElementById("cat1ConfLvl").style.display ="none";
+	     document.getElementById("cat1Test").style.display ="none";
+    }  
 }
 	
 function cat1OnChange(arg) {
@@ -224,7 +219,7 @@ function estimateP1(){
 	 "<h4>Estimate True Proportion with a Confidence Interval</h4>"; 
 	  
  	  cat1CLvl = document.getElementById("cat1ConfLvl");
-	  cat1CLvl.style.display ="";
+	  cat1CLvl.style.display ="none";
 	   cat1Tst = document.getElementById("cat1Test");
 	  cat1Tst.style.display ="none";
 	 // show plot
@@ -272,7 +267,7 @@ function testP1(tailChoice){
       	  total = cat1N1 + cat1N2;
       cat1Phat = cat1N1/ total;
 	  cat1Tst = document.getElementById("cat1Test");
-	  cat1Tst.style.display ="";
+	  cat1Tst.style.display ="none";
 	 if(cat1Pnull ==='undefined'){
 	 	return('undefined');
 	 }
@@ -417,5 +412,5 @@ function cat1MoreSimFn(){
 
 
 // I don't know why the 'more sims' line shows up before everything else unless I kill it here.
-  document.getElementById("cat1MoreSims").style.display = "none";  
-  cat1ftr.style.display = 'block';
+ // document.getElementById("cat1MoreSims").style.display = "none";  
+ // cat1ftr.style.display = 'block';

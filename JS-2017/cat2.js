@@ -54,20 +54,12 @@
                
 function summarizeP2() {
       // builds summary table and plot for 2 categorical variables
-	var margin = 30, 
+	var margin = 20, 
     	barHeight = 20,  
         colors = [],
-        w = 160,  
-        h = 60,  
-        
-        x = d3.scale.linear()
-         .domain([0, 1])
-         .range([14, w - margin*2]);
-
-	  var xAxis = d3.svg.axis()
-    	.scale(x)
-    	.ticks(5)
-    	.orient("bottom");
+        padding = 25,
+        w = 180,  
+        h = 60;     
       
         resampleC2 = [];
         sampleC2 = [];
@@ -92,38 +84,58 @@ function summarizeP2() {
                            " <br> p&#770;<sub>1</sub> - p&#770;<sub>2</sub> = " +(cat2Phat1 - cat2Phat2).toPrecision(5) ;
       cat2Summ.style = "display: block"; 
     
-    
+    var c2xScale = d3.scale.linear()
+         .domain([0, 1])
+         .range([0, w - 3*margin]);
+         
+     var c2xAxis = d3.svg.axis()
+      .scale(c2xScale)
+      .orient("bottom")
+      .ticks(3);     
+    	
    	if(!chartC2){
 	    chartC2 = d3.select(".chartC2")
-    	  .attr("width", w + margin*2)
-      		.attr("height", h + margin);
+    	  .attr("width", w + margin*3)
+      		.attr("height", h + 20);
      } else{
      		var oldbars = chartC2.selectAll("g").data(c2Data);
      		oldbars.remove();
      }
-   // adding axis throws off the bar heights and doesn't allow nice updates.
-   // TODO: use an unfilled rectangle instead??
 
     barC2 = chartC2.selectAll("g")
       .data(c2Data);
      barC2.enter().append("g")
-        //.attr("fill", "blue")
-        //.attr("transform", function(d, i) { return "translate(14," + i * barHeight + ")"; })
-	    .each(function(d) {this._current = d;} );
+	    .each(function(d) {this._current = d;} )
 	    //resets the figure to the current data
-    
-	  barC2.append("rect")
-    	.attr("width", function(d){return x(d.xx );})// - 14;} )
+		;    
+	  barC2.append("rect")                   
+         .attr('class', 'bar')
+    	.attr("width", function(d){return c2xScale(Math.max(0.005,d.xx) );} )
     	.attr("height", barHeight -1)
         .attr("fill", "blue")
-        .attr("transform", function(d, i) { return "translate(14," + i * barHeight + ")"; });
+        .attr("transform", function(d, i) { return "translate("+ padding + "  ," + i * barHeight + ")"; });
     
   	  barC2.append("text")
- 		.attr("x",  function(d){return 16 + x(d.xx) ;})
+ 		.attr("x",  function(d){return  padding + 16 + c2xScale(d.xx) ;})
  		.attr("y", function(d, i) { return (i+.5) * barHeight;})
  		.attr("dy", ".35em")
  		.text(function(d) {return d.label}) 
         .attr("fill", "blue");	
+      
+	barC2.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate("+ padding + "  ," + 3*barHeight +")")
+      .call(c2xAxis);  
+    //check for any old output plots. If present, erase them due to change in data
+    if(c2InfOutput){
+    	c2CIdata = [];
+    	 svgCat2.selectAll("g").remove();
+    	 document.getElementById("cat2OutputFoot1").style.display = "none";
+    	 document.getElementById("cat2OutputHead1").innerHTML = ""; 
+    	 //document.getElementById("cat2MoreSims").style.display = "none";
+    	 document.getElementById("cat2ConfLvl").style.display ="none";
+	     document.getElementById("cat2Test").style.display ="none";
+    }  
 }
 	
 function cat2OnChange(arg) {
@@ -140,12 +152,12 @@ function cat2OnChange(arg) {
 			 cat2upperBd = tempColors[2].toPrecision(4);
 			c2CIdata = [c2CIdata[0], tempColors[0] ];
 			c2InfOutput = discreteChart(c2CIdata, cat2InfSVG, cat2CIinteract);
-			//FIXME: this is not giving good y values when x values are differences (continuous vbles) 
+			// Works for small counts, but is all flat for just a few points from large count data
+			  
 			sC2Len = c2CIdata[0].length;
 			twoTail = Math.round((1 - cat2CnfLvl)* sC2Len);
 			if(twoTail % 2 === 1){ // check for odd number
 				cat2CnfLvl = cat2CnfLvl - 1/sC2Len; // reduce to lower confidence
-				//console.log(cat2CnfLvl);
 			}  
 		} else{
 			console.log("No resampled data for CI");
@@ -243,7 +255,7 @@ function estimateP2(){
 	  } 
 	  resampleC2 = resampleC2.sort(function(a,b){return a - b;});
 	  
-	  CI =  colorP2(resampleC2);  // TODO: check colors when adding points
+	  CI =  colorP2(resampleC2);  
 	  cat2Color = CI[0];
 	  cat2lowerBd = CI[1].toPrecision(4);
 	  cat2upperBd = CI[2].toPrecision(4);
@@ -258,8 +270,7 @@ function estimateP2(){
 	  //console.log(cat2lowerBd, cat2upperBd);
 	  
 	 return([resampleC2, cat2Color]);		
-	 // TODO  
-	   // input to get more samples
+	 
 } 	  
  
  
@@ -289,17 +300,17 @@ function testP2(tailChoice){
 	  //cat2Pval = undefined;
 	  
 	  cat2Tst = document.getElementById("cat2Test");
-	  cat2Tst.style.display ="";
+	  cat2Tst.style.display ="block";
 	 
 	 if(tailChoice === 'undefined'){ 
 	 	cat2hdr = document.getElementById("cat2OutputHead1");
 	 	cat2hdr.innerHTML = "<div class = 'w3-cell-row'> <div class = 'w3-cell' style = 'width:40%'> Stronger evidence is a difference </div>"+ 
-  	 	   "<div class = 'w3-cell' style='width:40%'>"+
-  	 	   "<select class = 'w3-select w3-card w3-border w3-mobile w3-pale-yellow' id='cat2Extreme'"+
-  	 	   " onchange = 'cat2TestUpdate()' >"+ 
-  				"<option value='lower'>Less Than or =</option>"+
+  	 	   "<div class = 'w3-cell' style='width:35%'>"+
+  	 	   "<select class = 'w3-select w3-card w3-border w3-mobile w3-pale-yellow' "+
+  	 	   " id='cat2Extreme' onchange = 'cat2TestUpdate()' >"+ 
+  				"<option value='lower'>Less Than or Equal to </option>"+
   				"<option value='both' selected >As or More Extreme Than</option>"+
-  				"<option value='upper'>Greater Than or =</option>"+
+  				"<option value='upper'>Greater Than or Equal to</option>"+
 		   	"</select> </div>  <div class ='w3-cell' style = 'width:30%'> &nbsp;&nbsp;"+
 		   	  cat2Diff.toPrecision(4) +
 		   		"</div> </div> ";

@@ -200,22 +200,32 @@ function sampleWOrep(values, nreps){
 //  Need a generic plotting function for dotcharts.
 //
 
-var dotChart = function(sample, svgObject){
+var dotChart = function(sample, svgObject, interactFunction){
 	//console.log(svgObject.attributes);
-	var margin = 40,
+	var circleColors = ["steelblue","red"],
+		color = [],
+		j = 0,
+		margin = 40,
 		myArray =[],
 	    nN = sample.length,
 	    plotX,
-	    ypos =1,
-	    wdth = svgObject.getAttribute("width") - margin * 2,
-	    hght = svgObject.getAttribute("height") - margin * 2,
+	    ypos = 0,
+	    radii,
+	    xbinWidth,
 	    xmin,
-	    xmax ;
-	    //console.log([wdth, hght]);
-	   // xlegend = spinStopRule === "Fixed"? "spins to get one of the first type":
-	     //  			spinStopRule === "OneOfOneType"? "Spins to get a " + spinGroups[spinMatch]:
-	       //			"spins to get one of each type";
-	    
+	    xmax ,
+	    wdth = 440 - margin * 2,
+	    hght = 320 - margin * 2;
+	
+        if(svgObject.getAttribute("width")>50){
+	     wdth= svgObject.getAttribute("width") - margin * 2;
+	    hght = svgObject.getAttribute("height") - margin * 2;
+	}
+	if (nN === 2){
+		color = sample[1];
+		sample = sample[0];
+		nN = sample.length;
+	}    
 	sample.sort(function(a,b){return a - b}) ;   
           // numeric sort to build bins for y values
           // start on left with smallest x.	
@@ -226,46 +236,53 @@ var dotChart = function(sample, svgObject){
 	     xmax *= (sample[nN-1] >= 0)? 1.01: 0.99;
 	    //console.log([xmin,sample[0], sample[nN-1], xmax])
 	
-	var radii = (nN < 101)? 6:
-	    (nN < 501)? 5:
-	    (nN < 1001)? 4:
-	    (nN < 5001)? 3: 2; // perhaps this should relate to width/height of svg]
+	
+	var radii = (nN < 101)? 10:
+	    (nN < 501)? 7:
+	    (nN < 1001)? 5:
+	    (nN < 5001)? 4: 3; // perhaps this should relate to width/height of svg]
     var gees = d3.select(svgObject).selectAll("g");
 	if(typeof(gees) === "object"){
 		gees.remove();
-	}    
-	//  first dot goes at y=0, then add one to each from there
-	var j = 0;
-	while( j <  nN ){    
-	    plotX = sample[j];	    // start a fresh bin with left edge at sample[j]
-	    ypos = 1;	            // bin y count starts at 1
-	    myArray[j] = {"x": sample[j++], "y": ypos++};
-        while( (sample[j] - plotX < radii/6) & (j < nN)){
-		  //stay in same bin -- increment yposition
-		  myArray[j] = {"x": sample[j++], "y": ypos++};
-	    };
-	     // console.log(x(plotX));
 	}
-	sampMax = d3.max(myArray, function(d) { return d.y;});
+	xbinWidth = sturgesFormula(sample).binLength;  
+	  // console.log(xbinWidth); 
+	//  first dot goes at y=0, then add one to each from there
+	j = 0;
+	ypos = 0;	            // y value is a count starting at 1
+	plotX = sample[0];	
+	sampMax = 0;
+    while( j <  nN ){    
+	    if( Math.abs(sample[j] - plotX) > xbinWidth ){
+			 plotX = sample[j];	    // start a fresh bin with left edge at sample[j]
+			 if(ypos > sampMax){ sampMax = ypos; }
+	         ypos = 0;
+	         //console.log(plotX, ypos);
+	    };
+	    myArray[j] = {"x": sample[j], "y": ypos++, "color" : circleColors[color[j++]]};
+	}
+	console.log(myArray);
+
+
 
    var DCyScale = d3.scale.linear()
     	.range([hght, 0])
     	.domain([1, sampMax + .5]);
 
 	var DCxScale = d3.scale.linear()
-    	.range([margin, wdth])
+    	.range([margin, wdth - margin/2])
     	.domain([xmin, xmax]);
 
 	// change scales to hold all x, all y
    var DCxAxis = d3.svg.axis()
       .scale(DCxScale)
       .orient("bottom")
-      .ticks(5,"0f");
+      .ticks(5);
 
    var DCyAxis = d3.svg.axis()
       .scale(DCyScale)
       .orient("left")
-      .ticks(5,".0f");
+      .ticks(5);
       
   var graph = d3.select(svgObject)
     .attr("width", wdth + margin*2)
@@ -296,9 +313,10 @@ var dotChart = function(sample, svgObject){
             .attr("cx", function(d){ return DCxScale(d.x);} ) 
             .attr("r", radii ) 
             .attr("cy", function(d){ return DCyScale(d.y);} ) 
-            .style("fill","steelblue")
-            .style("fill-opacity", 0.6);
-    //return Dots; // and myArray?
+            .style("fill",function(d){return d.color;})
+            .style("fill-opacity", 0.6)
+            .on("click", interactFunction );
+  return [Dots, sample];
 }
 
 var discreteChart = function(sample, svgObject, interactFunction){
@@ -310,10 +328,14 @@ var discreteChart = function(sample, svgObject, interactFunction){
 	    nN = sample.length,
 	    plotX,
 	    ypos =0,
-	    wdth = 440 - margin * 2,
-	    hght = 320 - margin * 2,
 	    xmin,
-	    xmax ;
+	    xmax ,
+	    wdth = 440 - margin * 2,
+	    hght = 320 - margin * 2;
+        if(svgObject.getAttribute("width")>50){
+	     wdth= svgObject.getAttribute("width") - margin * 2;
+	    hght = svgObject.getAttribute("height") - margin * 2;
+	}
 	if (nN ===2){
 		color = sample[1];
 		sample = sample[0];
