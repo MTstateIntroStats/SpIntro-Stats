@@ -2,8 +2,6 @@
  // Inputs: 
  //     2 category labels (default = Success/Failure) and a count for each 
  //TODO:
-  // hypothesis test not working until a null value is added
-  // first reps are not sorted right
  // need to clear out resamples if data change
   
     var c1SummDiv = d3.select("#cat1Inference"),
@@ -31,8 +29,9 @@
 			{ key: "95%", value: "0.95" },
 			{ key: "99%", value: "0.99" }
 		], 
-		c1Inference,
-		c1InfOutput,
+		cat1Inference,
+		cat1InfOutput,
+		noChoice = "undefined",
 		targetQuantile,
       	upperBd,
       	upperCI,
@@ -44,16 +43,16 @@
  var svgCat1 = d3.select("#cat1InfSVG");      
                
 function summarizeP1() {
-      // builds summary table and plot for 1 categorical variable
+    // builds summary table and plot for 1 categorical variable
 	var margin = 30, 
+		padding = 40,
     	barHeight = 20,  
         colors = [],
         w = 300,  
-        h = 60,  
-        
+        h = 60,          
         x = d3.scale.linear()
          .domain([0, 1])
-         .range([14, w - margin*2]);
+         .range([0, w - margin*2]);
 
 	  var xAxis = d3.svg.axis()
     	.scale(x)
@@ -75,7 +74,6 @@ function summarizeP1() {
       cat1Summ.innerHTML = "p&#770; =  " + cat1Phat.toPrecision(5) +" <br> sd(p&#770) = " + 
                 (Math.sqrt(cat1Phat*(1-cat1Phat))/(cat1N1+cat1N2)).toPrecision(5);
       cat1Summ.style = "display: block"; 
-    
 
 	if(!chartC1){
 	    chartC1 = d3.select(".chart")
@@ -92,38 +90,49 @@ function summarizeP1() {
     
     barC1 = chartC1.selectAll("g")
       .data(c1Data);
-     barC1.enter().append("g")
+    barC1.enter().append("g")
         //.attr("fill", "blue")
         //.attr("transform", function(d, i) { return "translate(14," + i * barHeight + ")"; })
 	    .each(function(d) {this._current = d;} );
 	    //resets the figure to the current data
     
 	  barC1.append("rect")
-    	.attr("width", function(d){return x(d.xx );})// - 14;} )
+    	.attr("width", function(d){return x( Math.max(0.005,d.xx) );})// - 14;} )
     	.attr("height", barHeight -1)
         .attr("fill", "blue")
-        .attr("transform", function(d, i) { return "translate(14," + i * barHeight + ")"; });
+        .attr("transform", function(d, i) { return "translate(" + padding + "," + i * barHeight + ")"; });
     
   	  barC1.append("text")
- 		.attr("x",  function(d){return 16 + x(d.xx) ;})
+ 		.attr("x",  function(d){return padding + 16 + x(d.xx) ;})
  		.attr("y", function(d, i) { return (i+.5) * barHeight;})
  		.attr("dy", ".35em")
  		.text(function(d) {return d.label}) 
         .attr("fill", "blue");	
+       
+       //TODO:  need update to data to redraw plot nicely.
+       
+     var c1xAxis = d3.svg.axis()
+      .scale(x)
+      .orient("bottom")
+      .ticks(3);    
+	barC1.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate("+ padding + "  ," + 3*barHeight +")")
+      .call(c1xAxis);  
         
     //check for any old output plots. If present, erase them due to change in data
-    if(c1InfOutput){
+    if(cat1InfOutput){
     	c1CIdata = [];
     	 svgCat1.selectAll("g").remove();
-    	 document.getElementById("cat1OutputFoot1").style.display = "none";
-    	 document.getElementById("cat1OutputHead1").innerHTML = ""; 
-    	 //document.getElementById("cat1MoreSims").style.display = "none";
-    	 document.getElementById("cat1ConfLvl").style.display ="none";
-	     document.getElementById("cat1Test").style.display ="none";
+    	 document.getElementById("cat1Output").style.display = "none";
+    	 document.getElementById("cat1MoreSims").style.display = "none";
+    	 document.getElementById("cat1ConfLvlInpt").style.display ="none";
+	     document.getElementById("cat1TestInpt1").style.display ="none";
+	     document.getElementById("cat1TestInpt2").style.display ="none";
     }  
 }
 	
-function cat1OnChange(arg) {
+function cat1CLChange(arg) {
 	// set colors for dots to illustrate confidence interval
 	var sC1Len, 
 		tempColors, twoTail;
@@ -136,7 +145,7 @@ function cat1OnChange(arg) {
 			 cat1lowerBd = tempColors[1].toPrecision(4);
 			 cat1upperBd = tempColors[2].toPrecision(4);
 			c1CIdata = [c1CIdata[0], tempColors[0] ];
-			c1InfOutput = discreteChart(c1CIdata, cat1InfSVG, cat1CIinteract);
+			cat1InfOutput = discreteChart(c1CIdata, cat1InfSVG, cat1CIinteract);
 			sC1Len = c1CIdata[0].length;
 			twoTail = Math.round((1 - cat1CnfLvl)* sC1Len);
 			if(twoTail % 2 === 1){ // check for odd number
@@ -146,17 +155,17 @@ function cat1OnChange(arg) {
 		} else{
 			console.log("No resampled data for CI");
 		}
-		cat1ftr = document.getElementById("cat1OutputFoot1");
+		cat1ftr = document.getElementById("cat1Results");
 	 	cat1ftr.innerHTML = //"<div style = 'height = 10'> </div>" +
 	   "<div style = 'width:360px'> Proportion "+ cat1Label1 +" in  "+ sC1Len + " Re-samples" +
 	   "<br> <br>"+ Math.round(cat1CnfLvl*100)+ 
 	   "% Confidence Interval: (" + cat1lowerBd +", "+ cat1upperBd +" )</div>";
 	   cat1ftr.style.display = 'block';
-   	 document.getElementById("cat1MoreSims").style.display = 'block';
+   	   document.getElementById("cat1MoreSims").style.display = 'block';  
   
 }
 	
-var cat1CIrangeslide = rangeslide("#cat1ConfLvl", {
+var cat1CIrangeslide = rangeslide("#cat1ConfLvlInpt", {
 		data: confLevels,
 		showLabels: true,
 		startPosition: 0,
@@ -167,7 +176,7 @@ var cat1CIrangeslide = rangeslide("#cat1ConfLvl", {
 		thumbWidth: 24,
 		thumbHeight: 24,
 		handlers: {
-			"valueChanged": [cat1OnChange]
+			"valueChanged": [cat1CLChange]
 		}
 	});
 
@@ -205,6 +214,7 @@ function colorP1(resample){
   
 function estimateP1(){
 	//function to estimate the true proportion based on a sample of 'success/failure' data
+ 	  cat1Inference = 'estimate';
 	// Gather Inputs:
       cat1Label1 = document.getElementById("cat1Label1").value;
       cat1Label2 = document.getElementById("cat1Label2").value;
@@ -214,15 +224,10 @@ function estimateP1(){
       	total = cat1N1 + cat1N2;
       cat1Phat = cat1N1/ total;
 
-	 cat1hdr = document.getElementById("cat1OutputHead1");
-	 cat1hdr.innerHTML = 
-	 "<h4>Estimate True Proportion with a Confidence Interval</h4>"; 
+	 cat1hdr = document.getElementById("cat1ConfLvlInpt");
+	  document.getElementById("cat1TestInpt1").style.display ="none";
+	 cat1hdr.style.display = "block"; 
 	  
- 	  cat1CLvl = document.getElementById("cat1ConfLvl");
-	  cat1CLvl.style.display ="none";
-	   cat1Tst = document.getElementById("cat1Test");
-	  cat1Tst.style.display ="none";
-	 // show plot
 	   
 	  resampleC1 = rbinom(total, cat1Phat, 100).sort(function(a,b){return a - b});
 	  sC1Len = resampleC1.length;
@@ -232,21 +237,26 @@ function estimateP1(){
 	  
 	  CI =  colorP1(resampleC1);
 	  cat1Color = CI[0];
+
+  	 c1CIdata = [resampleC1, cat1Color] ; 
+  	 //cat1InfOutput = discreteChart(c1CIdata, cat1InfSVG, cat1CIinteract);
+	  
 	  cat1lowerBd = CI[1].toPrecision(4);
 	  cat1upperBd = CI[2].toPrecision(4);
 	  
-	 cat1ftr = document.getElementById("cat1OutputFoot1");
+	 cat1ftr = document.getElementById("cat1Results");
 	 cat1ftr.innerHTML = 
 	   "<div style='width=50px'></div>"+
 	   "<div style = 'width:360px'> Proportion "+ cat1Label1 +" in  "+ sC1Len + " Re-samples" +
 	   "<br> <br>"+ Math.round(cat1CnfLvl*100) + 
 	   "% Confidence Interval: (" + cat1lowerBd +", "+ cat1upperBd +" )</div>"; 
  	  
+	 cat1ftr.style.display = "block";
+	 document.getElementById("cat1Output").style.display = "block";
+	 document.getElementById("cat1MoreSims").style.display = 'block';  
 	  //console.log(cat1lowerBd, cat1upperBd);
 	  
-	 return([resampleC1, cat1Color]);		
-	 // TODO  
-	   // input to get more samples
+	 return(c1CIdata);	
 } 	  
  
  
@@ -258,31 +268,25 @@ function testP1(tailChoice){
       cat1Label2 = document.getElementById("cat1Label2").value;
       cat1N1 = +document.getElementById("cat1N1").value;
       cat1N2 = +document.getElementById("cat1N2").value;
+      
+	  cat1hdr = document.getElementById("cat1TestInpt1");
+	  cat1hdr.style.display = "block";
+  	  cat1ftr = document.getElementById("cat1Results");
+	  
       cat1Pnull = +document.getElementById("cat1trueP").value;
-      cat1CLvl = document.getElementById("cat1ConfLvl");
-	  cat1CLvl.style.display ="none";
-	  //cat1Pval = undefined;
+      // turn off Confidence interval, turn on test inputs
+      document.getElementById("cat1ConfLvlInpt").style.display ="none";
 	  
       var sC1Len,
       	  total = cat1N1 + cat1N2;
       cat1Phat = cat1N1/ total;
-	  cat1Tst = document.getElementById("cat1Test");
-	  cat1Tst.style.display ="none";
 	 if(cat1Pnull ==='undefined'){
-	 	return('undefined');
+	 	//return('undefined');
 	 }
 	 if(tailChoice === 'undefined'){ 
-	 	cat1hdr = document.getElementById("cat1OutputHead1");
-	 	cat1hdr.innerHTML = "<div class = 'w3-cell-row'> <div class = 'w3-cell' style = 'width:40%'> Stronger evidence is sample proportion </div>"+ 
-  	 	   "<div class = 'w3-cell' style='width:40%'>"+
-  	 	   "<select class = 'w3-select w3-card w3-border w3-mobile w3-pale-yellow' id='cat1Extreme'"+
-  	 	   " onchange = 'cat1TestUpdate()' >"+ 
-  				"<option value='lower'>Less Than or =</option>"+
-  				"<option value='both' selected >As or More Extreme Than</option>"+
-  				"<option value='upper'>Greater Than or =</option>"+
-		   	"</select> </div>  <div class ='w3-cell' style = 'width:30%'> &nbsp;&nbsp;" + cat1Phat.toPrecision(4) +
-		   	"</div> </div> ";
-		   cat1ftr.innerHTML = 
+	 	 document.getElementById("cat1TestInpt2").style.display = 'block';
+	 	 cat1ftr = document.getElementById("cat1Results");
+		 cat1ftr.innerHTML = 
 		   "<div  style = 'width:320px'> Proportion "+ cat1Label1 +" in samples from H<sub>0</sub>";
 		 	sampleC1 = rbinom(total, cat1Pnull, 100);
 		 	sC1Len = sampleC1.length;
@@ -292,6 +296,9 @@ function testP1(tailChoice){
 	 } else{
 	 	
 	 }
+	 cat1ftr.style.display = "block";   		 	
+	 document.getElementById("cat1Output").style.display = "block";
+   	 document.getElementById("cat1MoreSims").style.display = 'block';  
 	 // TODO: clicking a point changes a table to show that proportion
 	return(sampleC1);
 } 	  
@@ -302,17 +309,9 @@ function cat1TestUpdate(){
 		lowP,
 		hiP,
 		sC1Len; //moveOver, oldP;
- 	c1Inference = 'test';
+ 	cat1Inference = 'test';
  	// get direction of evidence:
  	 cat1TestDirection = document.getElementById("cat1Extreme").value;
- 	//if(shift){  // for means we could shift, but this won't work with samples from binomial
- 	//	oldP = cat1TrueP;
- 	//	cat1TrueP = 0;
- 	//	moveOver = cat1TrueP - oldP;
- 	//	for(i=0; i< s1Len; i++){
- 	//		c1Tstdata[i] += moveOver;
- 	//	}
- 	//}
  	
  	if(!(sampleC1)){
  		sampleC1 = testP1();
@@ -343,23 +342,18 @@ function cat1TestUpdate(){
  	 //console.log(d3.sum(cat1Color));
  	 cat1Pval = extCount / sC1Len;
  	 c1Tstdata = [sampleC1, cat1Color];
-  	c1InfOutput = discreteChart(c1Tstdata, cat1InfSVG, cat1TestInteract ); 	
+  	cat1InfOutput = discreteChart(c1Tstdata, cat1InfSVG, cat1TestInteract ); 	
   	
-	 cat1ftr = document.getElementById("cat1OutputFoot1");
+	 cat1ftr = document.getElementById("cat1Results");
 	 cat1ftr.innerHTML = 
 	   "<div  style = 'width:320px'> Proportion "+ cat1Label1 +
 	   " in " + sC1Len +" Samples from H<sub>0</sub> <br>"+
 	   "p-value (strength of evidence): " + formatPvalue(extCount, sC1Len) + "</div>"; //
-	   cat1ftr.style.display = 'block';
+	   //cat1ftr.style.display = 'block';
   	 document.getElementById("cat1MoreSims").style.display = 'block';
 
 }
 
-//function c1InteractWith(infOut){
-//	var sample = infOut[1],  // values
-//	    dots = infOut[0][0];    // circles on the chart
-	//dots.style("fill","steelblue");
-//}
 
 function cat1CIinteract(d,i){
 	console.log(d.x);
@@ -388,14 +382,14 @@ function cat1MoreSimFn(){
 	  	total = cat1N1 + cat1N2;
         cat1Phat = cat1N1/ total;
 	 	
-	if( c1Inference === 'test'){
+	if( cat1Inference === 'test'){
 	    newValues = rbinom(total, cat1Pnull, more);
 	    for(i=0; i < more; i++){
 	      sampleC1.push(newValues[i] /total);
 	    } 
 	  sampleC1 = sampleC1.sort(function(a,b){return a - b});
 	  cat1TestUpdate();
-	  //c1InfOutput = discreteChart(sampleC1, cat1InfSVG, cat1TestInteract );
+	  //cat1InfOutput = discreteChart(sampleC1, cat1InfSVG, cat1TestInteract );
 	  return(sampleC1);
 	} else{
 		newValues= rbinom(total, cat1Phat, more);
@@ -403,14 +397,9 @@ function cat1MoreSimFn(){
 	        resampleC1.push(newValues[i]/total); 
 	    }
 	    resampleC1 = resampleC1.sort(function(a,b){return a - b});
-	  cat1OnChange(cat1CnfLvl);
+	  cat1CLChange(cat1CnfLvl);
 	  
 	  return(resampleC1);  
 	}
   }
 }
-
-
-// I don't know why the 'more sims' line shows up before everything else unless I kill it here.
- // document.getElementById("cat1MoreSims").style.display = "none";  
- // cat1ftr.style.display = 'block';

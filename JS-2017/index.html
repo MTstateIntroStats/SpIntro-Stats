@@ -351,10 +351,9 @@ function closeCat1() {
    	1) Test or Estimate:   
    	 -->
  
-<div id="TestEstC1" class="w3-container Page" style="display:none"
-	onfocusout = "closeCat1()" onfocusin = "closeCat1()">
+<div id="TestEstC1" class="w3-container Page" style="display:none" >
   
-  <div class = "w3-container">
+  <div class = "w3-container" id = "cat1DataIn&Summary">
   	<div class = "w3-cell-row w3-mobile">
   		<div class = "w3-cell" style="width:40%">
   		  <h4>    Enter Data</h4>
@@ -393,8 +392,10 @@ function closeCat1() {
      </div>
    </div> <br>
   </div>
+  
   <!--                             Select Your Inference                        -->
-  <div class = "w3-container w3-mobile">  
+  
+  <div class = "w3-container w3-mobile" id="c1SelectInf">  
     	Either
   	 		 <button id = "EstimateP1" 
   	 		 onclick="c1Inference = 'estimate';
@@ -402,8 +403,8 @@ function closeCat1() {
 				c1InfOutput = discreteChart(c1CIdata, cat1InfSVG, cat1CIinteract); 
 				" 
   	 		 class="w3-button w3-pale-blue w3-medium w3-round-xlarge">
-  	  		&nbsp;  Estimate a true proportion.</button> 
-  	  		&nbsp; OR &nbsp;
+  	  		   &nbsp;  Estimate a true proportion.</button> 
+  	  		   &nbsp; OR &nbsp;
   	 		 <button id = "TestP1" 
   	 		  onclick="c1Inference = 'test';
   	 		   	c1Tstdata = testP1('undefined');
@@ -413,42 +414,51 @@ function closeCat1() {
   	  		&nbsp; Test for a particular value.</button> 
     	
   </div> <br>
-
+  	
      <!--  Inputs for each inference  (before plotting)  -->
 
-   <div id = "cat1ConfLvl" style = "width: 40%; display: none"> Choose a Confidence Level:
-    	</div>
-   <div id = "cat1Test"  class = "w3-cell-row w3-mobile" style = "width: 70%; display: none"> 
+     <div id = "cat1ConfLvlInpt" style = "width: 70%; display: none"> 
+	 <h4>Estimate True Proportion with a Confidence Interval</h4>
+	 Choose a Confidence Level:
+      </div>
+    	
+   <div id = "cat1TestInpt1"  class = "w3-cell-row w3-mobile" style = "width: 70%; display: none"> 
     	 <div class = "w3-cell  w3-mobile" style = "width: 60%">
     	 	   <h4>&nbsp; &nbsp; &nbsp; Test: Is the true proportion = </h4>  </div>
 		 <div  class = "w3-cell  w3-mobile" style = "width: 20%">  
 			<input class = "w3-input w3-mobile w3-pale-yellow" type = "text" 
-				  id="cat1trueP" placeholder = "0.625" onchange="testP1('undefined')"  ></input> 
-  	 	</div>
-      </div>
-    <div id = "cat1OutputHead1"> </div>
+				  id="cat1trueP" placeholder = "0.625" onchange="testP1(noChoice)"  ></input> 
+  	 	 </div>
+  	   <div id = "cat1TestInpt2"  class = "w3-cell-row w3-mobile" style = " display: none">
+  	   	  <div class = 'w3-cell-row'> <div class = 'w3-cell' style = 'width:50%'> Stronger evidence is a proportion </div> 
+  	 	    <div class = 'w3-cell' style='width:40%'>
+  	 	     <select class = 'w3-select w3-card w3-border w3-mobile w3-pale-yellow' id='cat1Extreme'
+  	 	        onchange = 'cat1TestUpdate()' >
+  				<option value='lower'>Less Than or =</option>
+  				<option value='both' selected >As or More Extreme Than</option>
+  				<option value='upper'>Greater Than or =</option>
+		   	</select> </div>  <div class ='w3-cell' style = 'width:30%'> &nbsp;&nbsp; 
+		   		the p&#770; observed above.
+		   	</div> </div> 		   
+   	  </div>
+    </div>
     
+  <div id = "cat1Output" style = "display: none">
     <!--  Show Inference Plot -->
-    
-  <div class = "w3-container w3-cell w3-mobile" id = "cat1Inference">
-    <!--  Inference plot goes here for CI or Test of 1 proportion -->
-  	<svg id = "cat1InfSVG" height = "300px" width = "400px"> </svg>
-   </div>
    
-   <!-- Setup Modal Box to popup info on a single data point -->
+    <div class = "w3-container w3-cell w3-mobile" id = "cat1Inference">
+        <!--  Inference plot goes here for CI or Test of 1 proportion -->
+  	    <svg id = "cat1InfSVG" height = "300px" width = "400px"> </svg>
+     </div>
+     
+    <!-- Show Results -->
+
+
+    <div id = "cat1Results" class="w3-display-container" style = "display:none"> 
+     	 </div>
    
-   <div class = "w3-container w3-modal w3-mobile" style = "width: 33%" >
-      <div class="w3-modal-content w3-card-4" id = "cat1SelectedSample">
-      </div>
-      </div>
-   </div>
-      <br>
-      
-      <!--  Post-plot footer. Output CI or inputs for p-value and output the p-value -->
-    <div id = "cat1OutputFoot1" class="w3-display-container" style = "display:none"> 
-    	</div>
-      <!--  Increase simulation size -->
-    <div id = "cat1MoreSims" style = "width:360; display:none" >
+    <!-- Input for more simulations -->
+     <div id = "cat1MoreSims" style = "width:360; display:none" >
     	<div class="w3-cell-row"> 
 	      <div class = 'w3-cell  w3-mobile' style = 'width: 20%'>Add </div>
 	      <div  class = 'w3-cell  w3-mobile' style = 'width: 20%'>
@@ -456,13 +466,25 @@ function closeCat1() {
 	  			  id='cat1More' placeholder = '0' onchange='cat1MoreSimFn()'></input>	
 	  	  </div>
 	  	  <div class = 'w3-cell  w3-mobile' style = 'width: 40%'> simulated points</div>
+	     </div>
 	  </div>
-	   </div>
-     </div>
-   </div> 
+	  
+   
 
+   </div>
+   <!-- End of c1Output -->
 
-  <script src="cat1.js" charset="utf-8"></script>
+   <!-- Setup Modal Box to popup info on a single data point -->
+   <div class = "w3-container w3-modal w3-mobile" style = "width: 33%" >
+      <div class="w3-modal-content w3-card-4" id = "cat1SelectedSample">
+      </div>
+   </div>
+   
+   </div>
+
+   <!-- End of cat1 Test- Estimate -->
+     
+   <script src="cat1.js" charset="utf-8"></script>
 
    <!-- -------  One Categorical Actions     
    	2) CI Demo with known p:   
@@ -1031,7 +1053,7 @@ window.onclick = function(event) {
 
   <div id="TestEstC2" class="w3-container Page" style="display:none">
   <div class = w3-container>
-  	<h3>Estimate a difference in proportions or Test for a particular value</h3>
+  	<h3>Estimate a difference in proportions or Test for equal proportions</h3>
   	
   <div class = "w3-container">
   	<div class = "w3-cell-row w3-mobile">
@@ -1106,7 +1128,7 @@ window.onclick = function(event) {
 
      <!--  Inputs for each inference  (before plotting)  -->
 
-   <div id = "cat2ConfLvl" style = "width: 40%; display: none"> Choose a Confidence Level:
+   <div id = "cat2ConfLvl" style = "width: 70%; display: none"> Choose a Confidence Level:
     	</div>
    <div id = "cat2Test"  class = "w3-cell-row w3-mobile" style = "width: 70%; display: none"> 
     	 <div class = "w3-cell  w3-mobile" style = "width: 60%"> </div>
