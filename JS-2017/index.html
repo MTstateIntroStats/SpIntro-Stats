@@ -364,7 +364,7 @@ function closeCat1() {
 			 </tr>
 			 <tr>
   				<td><input class = "w3-input w3-mobile w3-pale-yellow" type = "text" id="cat1Label1" 
-  		            placeholder = "Success"></input>
+  		            placeholder = "Success"  onchange = "summarizeP1()" ></input>
   			    </td>
   				<td> <input class = "w3-input  w3-mobile w3-pale-yellow" type = "text" id="cat1N1" 
   		            placeholder = "1" onchange = "summarizeP1()"></input>
@@ -372,7 +372,7 @@ function closeCat1() {
 			 </tr>
 			 <tr>
   				<td><input class = "w3-input w3-mobile w3-pale-yellow" type = "text" id="cat1Label2" 
-  		            placeholder = "Failure"></input>
+  		            placeholder = "Failure" onchange = "summarizeP1()"></input>
   				</td>
   				<td> <input class = "w3-input w3-mobile w3-pale-yellow" type = "text" id="cat1N2" 
   		            placeholder = "1" onchange = "summarizeP1()"></input>
@@ -387,7 +387,7 @@ function closeCat1() {
    		</div>
    		<div class = "w3-container w3-cell w3-mobile" id = "cat1SummaryText" style="display:none">
    			p&#770; = <br>
-   			sd(p&#770) = 
+   			se(p&#770) = 
    		</div>
      </div>
    </div> <br>
@@ -427,13 +427,17 @@ function closeCat1() {
     	 	   <h4>&nbsp; &nbsp; &nbsp; Test: Is the true proportion = </h4>  </div>
 		 <div  class = "w3-cell  w3-mobile" style = "width: 20%">  
 			<input class = "w3-input w3-mobile w3-pale-yellow" type = "text" 
-				  id="cat1trueP" placeholder = "0.625" onchange="testP1(noChoice)"  ></input> 
+				  id="cat1trueP" placeholder = "0.625"
+				   onchange="
+    	 				svgCat1.selectAll('g').remove();
+    	 				document.getElementById('cat1Output').style.display = 'none';
+	     				testP1(noChoice)"  ></input> 
   	 	 </div>
   	   <div id = "cat1TestInpt2"  class = "w3-cell-row w3-mobile" style = " display: none">
   	   	  <div class = 'w3-cell-row'> <div class = 'w3-cell' style = 'width:50%'> Stronger evidence is a proportion </div> 
   	 	    <div class = 'w3-cell' style='width:40%'>
   	 	     <select class = 'w3-select w3-card w3-border w3-mobile w3-pale-yellow' id='cat1Extreme'
-  	 	        onchange = 'cat1TestUpdate()' >
+  	 	        onchange = "cat1TestUpdate()" >
   				<option value='lower'>Less Than or =</option>
   				<option value='both' selected >As or More Extreme Than</option>
   				<option value='upper'>Greater Than or =</option>
@@ -454,7 +458,7 @@ function closeCat1() {
     <!-- Show Results -->
 
 
-    <div id = "cat1Results" class="w3-display-container" style = "display:none"> 
+    <div id = "cat1Results" class="w3-display-container" style = "width:400; display:none"> 
      	 </div>
    
     <!-- Input for more simulations -->
@@ -465,20 +469,18 @@ function closeCat1() {
 	  			<input class = 'w3-input w3-mobile w3-pale-yellow' type = 'text'  
 	  			  id='cat1More' placeholder = '0' onchange='cat1MoreSimFn()'></input>	
 	  	  </div>
-	  	  <div class = 'w3-cell  w3-mobile' style = 'width: 40%'> simulated points</div>
+	  	  <div class = 'w3-cell  w3-mobile' style = 'width: 40%'> &nbsp; simulated points</div>
 	     </div>
 	  </div>
 	  
-   
-
    </div>
    <!-- End of c1Output -->
 
    <!-- Setup Modal Box to popup info on a single data point -->
-   <div class = "w3-container w3-modal w3-mobile" style = "width: 33%" >
-      <div class="w3-modal-content w3-card-4" id = "cat1SelectedSample">
-      </div>
-   </div>
+     <div class = "w3-container w3-modal w3-mobile" style = "width: 33%" >
+        <div class="w3-modal-content w3-card-4" id = "cat1SelectedSample">
+        </div>
+     </div>
    
    </div>
 

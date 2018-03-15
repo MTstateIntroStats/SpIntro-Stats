@@ -1,9 +1,8 @@
  // subroutine to estimate a proportion or test for a special value
  // Inputs: 
  //     2 category labels (default = Success/Failure) and a count for each 
- //TODO:
- // need to clear out resamples if data change
-  
+ //
+ //   
     var c1SummDiv = d3.select("#cat1Inference"),
         c1Tstdata,
         c1CIdata,
@@ -49,20 +48,11 @@ function summarizeP1() {
     	barHeight = 20,  
         colors = [],
         w = 300,  
-        h = 60,          
+        h = 50,          
         x = d3.scale.linear()
          .domain([0, 1])
          .range([0, w - margin*2]);
 
-	  var xAxis = d3.svg.axis()
-    	.scale(x)
-    	.ticks(5)
-    	.orient("bottom");
-      
-        resampleC1 = [];
-        sampleC1 = [];
-        discreteChart([], cat1InfSVG, cat1CIinteract);
-        
       cat1Label1 = document.getElementById("cat1Label1").value;
       cat1Label2 = document.getElementById("cat1Label2").value;
       cat1N1 = +document.getElementById("cat1N1").value;
@@ -71,7 +61,11 @@ function summarizeP1() {
       cat1Summ = document.getElementById("cat1SummaryText");
       c1Data = [{"label": cat1Label1, "xx": cat1Phat},
       			{"label": cat1Label2, "xx": 1-cat1Phat}];
-      cat1Summ.innerHTML = "p&#770; =  " + cat1Phat.toPrecision(5) +" <br> sd(p&#770) = " + 
+     
+        resampleC1 = [];
+        sampleC1 = [];
+        
+      cat1Summ.innerHTML = "p&#770; =  " + cat1Phat.toPrecision(5) +" <br> se(p&#770) = " + 
                 (Math.sqrt(cat1Phat*(1-cat1Phat))/(cat1N1+cat1N2)).toPrecision(5);
       cat1Summ.style = "display: block"; 
 
@@ -79,11 +73,10 @@ function summarizeP1() {
 	    chartC1 = d3.select(".chart")
     	  .attr("width", w + margin*2)
       		.attr("height", h + margin);
-     } else{
-     		var oldbars = chartC1.selectAll("g").data(c1Data);
-     		oldbars.remove();
-     		//var oldtxt = chartC1.selectAll("text").data(c1Data);
-     		//oldtxt.remove();
+  } else{   
+     		chartC1.selectAll("g").data(c1Data).remove();
+     		chartC1.selectAll("g").data(c1Data).remove();
+     			// why do I have to do this twice?
      }
    // adding axis throws off the bar heights and doesn't allow nice updates.
    // TODO: use an unfilled rectangle instead??
@@ -138,7 +131,9 @@ function cat1CLChange(arg) {
 		tempColors, twoTail;
 		if(arg.value){
 			cat1CnfLvl = +arg.value;
-		};
+		} else {
+			return;
+		}
 		if(c1CIdata){
 			sC1Len  = c1CIdata[0].length;
 			tempColors = colorP1(c1CIdata[0]);
@@ -146,14 +141,9 @@ function cat1CLChange(arg) {
 			 cat1upperBd = tempColors[2].toPrecision(4);
 			c1CIdata = [c1CIdata[0], tempColors[0] ];
 			cat1InfOutput = discreteChart(c1CIdata, cat1InfSVG, cat1CIinteract);
-			sC1Len = c1CIdata[0].length;
-			twoTail = Math.round((1 - cat1CnfLvl)* sC1Len);
-			if(twoTail % 2 === 1){ // check for odd number
-				cat1CnfLvl = cat1CnfLvl - 1/sC1Len; // reduce to lower confidence
-				//console.log(cat1CnfLvl);
-			}  
+			sC1Len = c1CIdata[0].length;  
 		} else{
-			console.log("No resampled data for CI");
+			//console.log("No resampled data for CI");
 		}
 		cat1ftr = document.getElementById("cat1Results");
 	 	cat1ftr.innerHTML = //"<div style = 'height = 10'> </div>" +
@@ -188,12 +178,13 @@ function colorP1(resample){
 		quantile, twoTail,
 	    sC1Len = resample.length;
 	  if(sC1Len > 0){  
-	  	//console.log(cat1CnfLvl, sC1Len);
-	  	twoTail = (1 - cat1CnfLvl)* sC1Len;
-	  	quantile = Math.floor(twoTail / 2);
-	  	if(! twoTail % 2){ // check for odd number 
-	  		cat1CnfLvl = cat1CnfLvl - 1/sC1Len; // reduce to lower confidence
+	  	twoTail = Math.round((1 - cat1CnfLvl) * sC1Len);
+	  	//console.log(cat1CnfLvl, twoTail, sC1Len);
+	  	if( twoTail % 2 ){ // check for odd number 
+	  		cat1CnfLvl +=  -1/sC1Len; // reduce to lower confidence
+	  		//console.log(cat1CnfLvl);
 	  	} 
+	  	quantile = Math.floor(twoTail / 2);
 	  
 		for(i=quantile; i <= sC1Len-quantile ; i++){
 	      color[i] = 0; // color for middle circles
@@ -304,11 +295,12 @@ function testP1(tailChoice){
 } 	  
 
 function cat1TestUpdate(){
+	// run whenever tail direction changes
 	var check, 
 		extCount = 0,
 		lowP,
 		hiP,
-		sC1Len; //moveOver, oldP;
+		sC1Len; 
  	cat1Inference = 'test';
  	// get direction of evidence:
  	 cat1TestDirection = document.getElementById("cat1Extreme").value;

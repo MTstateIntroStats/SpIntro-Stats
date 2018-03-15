@@ -195,10 +195,10 @@ function colorP2(resample){
 	    sC2Len = resample.length;
 	  if(sC2Len > 0){  
 	  	//console.log(cat2CnfLvl, sC2Len);
-	  	twoTail = (1 - cat2CnfLvl)* sC2Len;
+	  	twoTail  = Math.round((1 - cat2CnfLvl)* sC2Len);
 	  	quantile = Math.floor(twoTail / 2);
-	  	if(! twoTail % 2){ // check for odd number 
-	  		cat2CnfLvl = cat2CnfLvl - 1/sC2Len; // reduce to lower confidence
+	  	if( twoTail % 2){ // check for odd number 
+	  		cat2CnfLvl +=  -1/sC2Len; // reduce to lower confidence
 	  	} 
 	  
 		for(i=quantile; i <= sC2Len-quantile ; i++){
