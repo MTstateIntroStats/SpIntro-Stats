@@ -2,6 +2,11 @@
  // Inputs: 
  //     category labels and relative probabilities
  
+ // TODO:	
+ 		// no color on text labels of each spin
+ 		// colors 3 and 4 are too similar. Use color brewer?
+ 		// zap old summary plot when anything above changes.
+ 
     var margin = [{top: 50}, {right: 20}, {bottom: 50}, {left: 20}],
         width =  Number(400), // - margin.right - margin.left,
         height = Number(300), // - margin.top - margin.bottom;       
@@ -49,10 +54,10 @@
 		       { "x": 0,  "y": -93}, { "x": -4,  "y": -83}, 
                        { "x": 4,  "y": -83}, { "x":  0,  "y": -93}];
       //using this method
-  var lineFunction = d3.svg.line()
+  var lineFunction = d3.line()
                           .x(function(d) { return d.x; })
                           .y(function(d) { return d.y; })
-                         .interpolate("linear");
+                         ;//.interpolate("linear");
        // now draw the pointer
 
 	
@@ -73,7 +78,7 @@ function drawDonut(){
     	spinProb.length = spinNCat;
     }
     
-    arc = d3.svg.arc()  // create <path> elements  in arcs
+    arc = d3.arc()  // create <path> elements  in arcs
        .outerRadius(r)
        .innerRadius(ir);   
 	   
@@ -91,19 +96,19 @@ function drawDonut(){
 	}
 	pieData.length = spinNCat;
 	
-    spinColorFn = d3.scale.ordinal().range(colors);      
+    spinColorFn = d3.scaleOrdinal().range(colors);      
  
     svgSpin.data([pieData])     
        .append("svgSpin:g")
        .attr("transform", "translate(" + (r + 10) + "," + ( r + 35) + ")");
 
-     var pie = d3.layout.pie().sort(null)
+     var pie = d3.pie().sort(null)
               .value(function(d) { return d.value; });  
         // create arc data for us given a list of values
 
 
     arcs = svgSpin.selectAll("g.slice")
-         .data( d3.layout.pie().value(function(d, i) { return d.value; } )
+         .data( d3.pie().value(function(d, i) { return d.value; } )
 		.sort(null))
           //  .data([drawData])
        .enter().append("svgSpin:g")      
@@ -136,14 +141,14 @@ function drawDonut(){
    
 }  //end of drawDonut
 
-  // -----  Transitions --- //
+  // -----  Transitions --- //                     TODO: check timing to be sequential
   // t1  spin it to angle
   // t2  toss out the sampled circle
    var tween = function(i){
 	arrow.transition()
 	.delay((spinSlideDuration + spinDuration) * i)
 	.duration(spinDuration)
-	.ease("cubic-out")
+	.ease(d3.easeCubicOut)
 	.attrTween("transform", function (){
           return d3.interpolateString("rotate( 0, 0, 0)", 
                                    "rotate(" + (Number(spinData[i].angle) * 360 + 360)+ ", 0, 0)");
@@ -158,7 +163,7 @@ function spin1(){
    arrow.transition()
 	//.delay((slideDuration + spinDuration) * i)
 	.duration(spinDuration)
-	.ease("cubic-out")
+	.ease(d3.easeCubicOut)
 	.attrTween("transform", function (){
           return d3.interpolateString("rotate( 0, 0, 0)", 
                                    "rotate(" + (spinAngle + 720) + ", 0, 0)");
@@ -368,7 +373,7 @@ function showSpinSequence(spinData){
           // toss out circle
           .delay(spinDuration + (spinSlideDuration + spinDuration) * i )
           .duration( spinSlideDuration )
-          .ease("linear")
+          .ease(d3.easeLinear)
           .attr("cx", xspace(i))
           .attr("cy", + r + 20)
           .attr("r", 20);
@@ -515,22 +520,18 @@ var dotChart1 = function(plotData){
 	}
 	sampMax = d3.max(myArray, function(d) { return d.y;});
 
-   var DCyScale = d3.scale.linear()
+   var DCyScale = d3.scaleLinear()
     	.range([hght, 0])
     	.domain([0, sampMax + .5]);
 
-	var DCxScale = d3.scale.linear()
+	var DCxScale = d3.scaleLinear()
     	.range([margin, wdth])
     	.domain([-0.1, plotData[nN - 1] +0.5]);
 
 	// change scales to hold all x, all y
-   var DCxAxis = d3.svg.axis()
-      .scale(DCxScale)
-      .orient("bottom");
+   var DCxAxis = d3.axisBottom(DCxScale);
 
-   var DCyAxis = d3.svg.axis()
-      .scale(DCyScale)
-      .orient("left");
+   var DCyAxis = d3.axisLeft(DCyScale);
       
   var graph = d3.select("#spinSmrySVG")
     .attr("width", wdth + margin*2)             // size problems

@@ -1,25 +1,9 @@
 <!DOCTYPE html>
-<title>SpIntro-Stat</title>
+<title lang="en">SpIntro-Stat</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="w3.css">
 <link rel="stylesheet" href="rangeslide/dist/rangeslide.css">
-<!--
-	<link rel="stylesheet" href="rangeslide/example/example.css">
-<!--
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<style>
-body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
-.w3-bar,h1,button {font-family: "Montserrat", sans-serif}
-.fa-anchor,.fa-coffee {font-size:200px}
-</style>
--->
-
-<head>
-<title> SpIntro Stats </title>
-</head>
 
 <style>
 .area {
@@ -36,7 +20,6 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
   stroke: #005;
   shape-rendering: crispEdges;
 }
-
 .overlay {
   fill: none;
   pointer-events: all;
@@ -56,24 +39,26 @@ th, td {
 }
 </style>
 
+<body>
+	
 <!-- Load D3  -->
-<script src="d3.v3.min.js" charset="utf-8"></script>
-<script src="alertify.min.js" charset="utf-8"></script>
+<script src="d3.v5.js" ></script>
+<script src="alertify.min.js" ></script>
 <script src= "costs.js"> </script>
 <script src= "norms.js"> </script>
 <!-- Load jStat  -->
-<script src="jstat.js"     charset="utf-8"></script>
-<script src="papaparse.js" charset="utf-8"></script>
-<script src="helpers.js"   charset="utf-8"></script> 
-<script src="rangeslide/dist/rangeslide.js" charset="utf-8"></script>
+<script src="jstat.js"    ></script>
+<script src="papaparse.js" ></script>
+<script src="helpers.js"  ></script> 
+<script src="rangeslide/dist/rangeslide.js" ></script>
 
 <link rel="stylesheet" href="rangeslide/dist/rangeslide.css" type="text/css" />
 	
 <!-- Load data on textbook cost  -->
 <script src= "../www/costs.js"> </script>
-     <!--  -------------------------------------
+     <!-- ######################################
      		Sidebar Menu Navigator
-     		------------------------------------->
+     	  ###################################### -->
   
 <div class="w3-sidebar w3-bar-block w3-card-2 w3-animate-left" style="display:none" id="mySidebar">
   <button class="w3-bar-item w3-button w3-large"
@@ -82,7 +67,7 @@ th, td {
   	             Variable Type: 
    </div>
    
-   <!--             One Categorical  --------------->
+   <!--     #################  One Categorical #################### -->
   	 <button class="w3-button  w3-hover-white w3-mobile" onclick="actionsFunc('cat1Actions')">
 				1 Cat  <i class="fa fa-caret-down"></i> </button>
    		<div id="cat1Actions" class="w3-dropdown-content w3-hide w3-light-blue w3-card-4">
@@ -100,8 +85,8 @@ th, td {
     			Normal Prob's </button>
     	</div>
     
-   <!--             One Quantitative  --------------->
-  	 <button class="w3-button  w3-hover-white w3-mobile"onclick="actionsFunc('quant1Actions')">
+   <!--             One Quantitative  ########### -->
+  	 <button class="w3-button  w3-hover-white w3-mobile" onclick="actionsFunc('quant1Actions')">
 				1 Quant  <i class="fa fa-caret-down"></i> </button>
    		<div id="quant1Actions" class="w3-dropdown-content w3-hide w3-light-blue w3-card-4">
   			<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('TestEstQ1')">
@@ -118,7 +103,7 @@ th, td {
     			T Prob's </button>
     	</div>
     	
-   <!--             Two Categorical  --------------->
+   <!--             Two Categorical ########################-->
   	 <button class="w3-button  w3-hover-white w3-mobile" onclick="actionsFunc('cat2Actions')">
 				2 Cat  <i class="fa fa-caret-down"></i> </button>
    		<div id="cat2Actions" class="w3-dropdown-content w3-hide w3-light-blue w3-card-4">
@@ -127,12 +112,8 @@ th, td {
       		<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('Ztable')">			
     			Normal Prob's </button>
     	</div>
-  	<!--
-  		 <button class="w3-button w3-hover-white w3-mobile" 
-                 onclick="openVble('TwoCat')">
-                  2 Cat</button>
-    	
-   <!--             Two Quantitative  --------------->
+  	    	
+   <!--             Two Quantitative  ##############  -->
   	 <button class="w3-button  w3-hover-white w3-mobile" onclick="actionsFunc('quant2Actions')">
 				2 Quant  <i class="fa fa-caret-down"></i> </button>
    		<div id="quant2Actions" class="w3-dropdown-content w3-hide w3-light-blue w3-card-4">
@@ -143,13 +124,10 @@ th, td {
       		<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('Ttable')">			
     			T Prob's </button>
     	</div>
-  	<!-- 
-  		<button class="w3-button w3-hover-white w3-mobile" 
-                 onclick="openVble('TwoQuant')">
-                 2 Quant</button>
+  	
     	
-   <!--             One Categorical AND One Quantitative  --------------->
-  	 <button class="w3-button  w3-hover-white w3-mobile"onclick="actionsFunc('cat1quant1Actions')">
+   <!--             One Categorical AND One Quantitative  ################ -->
+  	 <button class="w3-button  w3-hover-white w3-mobile" onclick="actionsFunc('cat1quant1Actions')">
 				1 Cat, 1 Quant  <i class="fa fa-caret-down"></i> </button>
    		<div id="cat1quant1Actions" class="w3-dropdown-content w3-hide w3-light-blue w3-card-4">
   			<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('TestEstC1Q1')">
@@ -157,13 +135,8 @@ th, td {
       		<button class=" w3-button w3-hover-white w3-mobile" onclick="choosePage('Ttable')">			
     			T Prob's </button>
     	</div>
-  	<!--
-  		<button class="w3-button w3-hover-white w3-mobile" 
-                 onclick="openVble('Cat1Quant1')">
-                 1 Cat, 1 Quant</button>
-   
-       	
-   <!--             More Info Button  --------------->
+  	
+   <!--             More Info Button  ############ -->
 
   	<button class="w3-bar-item w3-button w3-light-blue w3-hover-light-blue w3-mobile"
                  onclick="openVble('Info')">
@@ -178,7 +151,7 @@ th, td {
 
  <!--    Header  -->
  
- <div zclass="w3-main" id="main">
+ <div class="w3-main" id="main">
 <div class="w3-cell-row w3-indigo">
   <button class="w3-button w3-cell w3-indigo w3-large" onclick="w3_open(); closePages()">&#9776;</button>
   <div class="w3-container  w3-cell ">
@@ -187,7 +160,7 @@ th, td {
     </h1>
   </div>
   <div class="w3-container w3-cell">
-     <img src = "../www/gradeSpinner4.png" alt = "Spinner_Wheel" width = "80px">
+     <img src = "../www/gradeSpinner4.png" alt = "Spinner_Wheel" width = "80">
   </div>
 </div>
 
@@ -339,13 +312,13 @@ function closeCat1() {
 	document.getElementById('cat1MoreSims').style.display = 'none';
 	document.getElementById('cat1OutputFoot1').style.display = 'none';
 	}
-	// TODO:  close all elements with 'OutputFoot1' or 'MoreSims'
+	
 </script>
 
 
-   <!-- ------- **************************************************
+   <!-- ######- **************************************************
 
-   	---------------------- One Categorical Actions  -----------------
+   	#####################- One Categorical Actions  ###############
    	*****************************************************************
    	*      
    	1) Test or Estimate:   
@@ -364,30 +337,29 @@ function closeCat1() {
 			 </tr>
 			 <tr>
   				<td><input class = "w3-input w3-mobile w3-pale-yellow" type = "text" id="cat1Label1" 
-  		            placeholder = "Success"  onchange = "summarizeP1()" ></input>
+  		            placeholder = "Success"  onchange = "summarizeP1()" >
   			    </td>
   				<td> <input class = "w3-input  w3-mobile w3-pale-yellow" type = "text" id="cat1N1" 
-  		            placeholder = "1" onchange = "summarizeP1()"></input>
+  		            placeholder = "1" onchange = "summarizeP1()">
   					</td>
 			 </tr>
 			 <tr>
   				<td><input class = "w3-input w3-mobile w3-pale-yellow" type = "text" id="cat1Label2" 
-  		            placeholder = "Failure" onchange = "summarizeP1()"></input>
+  		            placeholder = "Failure" onchange = "summarizeP1()">
   				</td>
   				<td> <input class = "w3-input w3-mobile w3-pale-yellow" type = "text" id="cat1N2" 
-  		            placeholder = "1" onchange = "summarizeP1()"></input>
+  		            placeholder = "1" onchange = "summarizeP1()">
   					</td> 				
 			 </tr>
 		    </table>
     </div> &nbsp;&nbsp;
-	 <div class = "w3-cell" style=":40%" style="display:block">
+	 <div class = "w3-cell" style="width:40%; display:block">
 	    	<h4> Summary</h4>
    		<div class = "w3-container w3-cell w3-mobile" id = "cat1SummarySVGgoesHere" >
-   			<svg class="chart" ></svg>
    		</div>
    		<div class = "w3-container w3-cell w3-mobile" id = "cat1SummaryText" style="display:none">
    			p&#770; = <br>
-   			se(p&#770) = 
+   			se(p&#770;) = 
    		</div>
      </div>
    </div> <br>
@@ -423,51 +395,61 @@ function closeCat1() {
       </div>
     	
    <div id = "cat1TestInpt1"  class = "w3-cell-row w3-mobile" style = "width: 70%; display: none"> 
-    	 <div class = "w3-cell  w3-mobile" style = "width: 60%">
-    	 	   <h4>&nbsp; &nbsp; &nbsp; Test: Is the true proportion = </h4>  </div>
-		 <div  class = "w3-cell  w3-mobile" style = "width: 20%">  
-			<input class = "w3-input w3-mobile w3-pale-yellow" type = "text" 
+    	 <div class = "w3-cell  w3-mobile">
+    	 	   &nbsp; &nbsp; &nbsp; Test: Is the true proportion = &nbsp;   </div>
+		 <div  class = "w3-cell  w3-mobile" style = "width: 10%">  
+			<input class = "w3-input w3-card w3-mobile w3-pale-yellow" type = "text" 
 				  id="cat1trueP" placeholder = "0.625"
 				   onchange="
     	 				svgCat1.selectAll('g').remove();
     	 				document.getElementById('cat1Output').style.display = 'none';
-	     				testP1(noChoice)"  ></input> 
+	     				testP1(noChoice)"  >
   	 	 </div>
   	   <div id = "cat1TestInpt2"  class = "w3-cell-row w3-mobile" style = " display: none">
-  	   	  <div class = 'w3-cell-row'> <div class = 'w3-cell' style = 'width:50%'> Stronger evidence is a proportion </div> 
-  	 	    <div class = 'w3-cell' style='width:40%'>
+  	   	  <div class = 'w3-cell' > Stronger evidence is a proportion </div> 
+  	 	    <div class = 'w3-cell' >
   	 	     <select class = 'w3-select w3-card w3-border w3-mobile w3-pale-yellow' id='cat1Extreme'
   	 	        onchange = "cat1TestUpdate()" >
   				<option value='lower'>Less Than or =</option>
   				<option value='both' selected >As or More Extreme Than</option>
   				<option value='upper'>Greater Than or =</option>
-		   	</select> </div>  <div class ='w3-cell' style = 'width:30%'> &nbsp;&nbsp; 
-		   		the p&#770; observed above.
-		   	</div> </div> 		   
+		   	</select> </div>  
+		   	<div class ='w3-cell' > &nbsp;&nbsp; p&#770;  (from above)	
+		   	</div> 
+		   		   
    	  </div>
     </div>
     
   <div id = "cat1Output" style = "display: none">
+  	
     <!--  Show Inference Plot -->
-   
-    <div class = "w3-container w3-cell w3-mobile" id = "cat1Inference">
-        <!--  Inference plot goes here for CI or Test of 1 proportion -->
+   <div class = "w3-cell-row w3-mobile">
+    <div class = "w3-container w3-cell w3-mobile" id = "cat1Inference" style = "width:420px">
+    <!--  Inference plot goes here for CI or Test of 1 proportion -->
   	    <svg id = "cat1InfSVG" height = "300px" width = "400px"> </svg>
      </div>
      
+   <!-- Box to popup info on a single data point -->
+     <div class = "w3-container w3-cell w3-mobile" id="cat1WhichDot" style = "width: 200px; height:10%; display:none;" 
+                 onclick="this.style.display='none'" >
+                 <br><br><br>
+        <div class="w3-card-4 w3-pale-green" id = "cat1SelectedSample"> &nbsp;
+        </div>
+     </div>
+    </div> 
     <!-- Show Results -->
 
 
-    <div id = "cat1Results" class="w3-display-container" style = "width:400; display:none"> 
+    <div id = "cat1Results" class="w3-display-container" style = "width:400px; display:none"> 
      	 </div>
    
     <!-- Input for more simulations -->
-     <div id = "cat1MoreSims" style = "width:360; display:none" >
+     <div id = "cat1MoreSims" style = "width:360px; display:none" >
     	<div class="w3-cell-row"> 
 	      <div class = 'w3-cell  w3-mobile' style = 'width: 20%'>Add </div>
 	      <div  class = 'w3-cell  w3-mobile' style = 'width: 20%'>
 	  			<input class = 'w3-input w3-mobile w3-pale-yellow' type = 'text'  
-	  			  id='cat1More' placeholder = '0' onchange='cat1MoreSimFn()'></input>	
+	  			  id='cat1More' placeholder = '0' onchange='cat1MoreSimFn()'>	
 	  	  </div>
 	  	  <div class = 'w3-cell  w3-mobile' style = 'width: 40%'> &nbsp; simulated points</div>
 	     </div>
@@ -476,19 +458,14 @@ function closeCat1() {
    </div>
    <!-- End of c1Output -->
 
-   <!-- Setup Modal Box to popup info on a single data point -->
-     <div class = "w3-container w3-modal w3-mobile" style = "width: 33%" >
-        <div class="w3-modal-content w3-card-4" id = "cat1SelectedSample">
-        </div>
-     </div>
    
    </div>
 
    <!-- End of cat1 Test- Estimate -->
      
-   <script src="cat1.js" charset="utf-8"></script>
+   <script src="cat1.js" ></script>
 
-   <!-- -------  One Categorical Actions     
+   <!-- ######-  One Categorical Actions     
    	2) CI Demo with known p:   
    	TODO:  Inputs work, need replication and plot of outcomes
    	-->
@@ -538,22 +515,19 @@ function closeCat1() {
 </div>  
 </div>
 
-   <!-- -------  One Categorical Actions     
+   <!-- ######-  One Categorical Actions     
    	3) Lurking Demo  
    	ToDo:  everything -->
  
 <div id="LurkingDemoC1" class="w3-container Page" style="display:none">
 	  <h3>Demo of the effects of a categorical lurking variable on proportion estimates</h3>
 	  <svg id="visualisation" >
-	  	
 	  </svg>
-<script type="text/javascript">
-</script>
 </div>
 
 
 
-   <!-- -------  One Categorical Actions     
+   <!-- ######-  One Categorical Actions     
    	4) Spinner  
    	ToDo:  
    	 summary table Maybe not needed if we switch from dotchart to barchart with text for height of bars.
@@ -565,17 +539,17 @@ function closeCat1() {
 	 <p>Spinner setup: Type as many labels (separated with commas or tabs) in the first box 
 	 as percentages or probability weights in the second. </p>
   	<div class = "w3-form w3-cell-row w3-mobile" id ="spinInputs"> 
-  		<div class = "w3-cell w3-mobile"  style=":40%">
+  		<div class = "w3-cell w3-mobile"  style="width:40%">
   			Labels:
   		<input class = "w3-input w3-border w3-mobile w3-pale-yellow" type = "text" id="spinCats" 
-  		       style="display:block"</input>
+  		       style="display:block">
 		</div> 
   		<div class = "w3-cell w3-mobile">
   		</div>
   		<div class = "w3-cell w3-mobile" style="width:40%"> 
   			Probability weights:
   		<input class = "w3-input w3-border w3-mobile w3-pale-yellow" type = "text" id="spinProbs" 
-  		       style="display:block"</input>	        
+  		       style="display:block">	        
   	    </div>
      </div>
      Stop after: 
@@ -583,12 +557,12 @@ function closeCat1() {
 	  	 <div class = "w3-cell w3-mobile" style="width:30%"> 
   			<input class = "w3-input w3-border w3-mobile w3-pale-blue " type = "text" id="nSpins" 
   			     placeholder="This many spins:" onchange="spinNSpins();"
-  		    	     style="display:block"</input>
+  		    	     style="display:block">
   	 	</div>&nbsp; or&nbsp;
   	 	<div class = "w3-cell w3-mobile"  style="width:30%">  
   			<input class = "w3-input w3-border w3-mobile w3-pale-blue " type = "text" id="spinTil" 
   			     placeholder="getting one of this type:" onchange="spinsTill1();"
-  		    	     style="display:block"</input>
+  		    	     style="display:block">
   	 	</div> 
   	 	<div class = "w3-cell w3-mobile"  style="width:30%"> 
   	 		 <button id = "spinAllButton" onclick="spinsTillAll()" 
@@ -624,16 +598,11 @@ function closeCat1() {
   	<svg id = "spinSmrySVG" > </svg>
   </div>
 
-  <script src="spin.js" charset="utf-8"></script>
+  <script src="spin.js" ></script>
 </div>
 
-   <!-- -------  One Categorical Actions     
-   	5) Mixer:   
-   	ToDo:  get balls and box to show in the svg window
-   	 choose outcome
-   	 replicate number
-   	 summary
-   	 dotplot
+   <!-- ######-  One Categorical Actions     
+   	5) Mixer
    	 -->
  <div id="Mixer" class="w3-container Page" style="display:none">
 	  <h3>Random sampling by drawing balls from a box</h3>
@@ -643,14 +612,14 @@ function closeCat1() {
   		<div class = "w3-cell w3-mobile"  style="width:30%">
   			Labels:
   		<input class = "w3-input w3-border w3-mobile w3-pale-yellow" type = "text" id="mixCats" 
-  		       style="display:block"</input>
+  		       style="display:block">
 		</div> 
   		<div class = "w3-cell w3-mobile">
   		</div>
   		<div class = "w3-cell w3-mobile" style="width:30%"> 
   			Numbers of balls:
   		<input class = "w3-input w3-border w3-mobile w3-pale-yellow" type = "text" id="mixNs" 
-  		       style="display:block"</input>	        
+  		       style="display:block">	        
   	    </div>
   	    <div class = "w3-cell w3-mobile" style="width:40%">
   	    	Replace drawn balls?
@@ -665,12 +634,12 @@ function closeCat1() {
 	  	 <div class = "w3-cell w3-mobile" style="width:30%"> 
   			<input class = "w3-input w3-border w3-mobile w3-pale-blue " type = "text" id="nDraws" 
   			     placeholder="This many draws:" onchange="mixNtimes()"
-  		    	     style="display:block"</input>
+  		    	     style="display:block">
   	 	</div>&nbsp; or&nbsp;
   	 	<div class = "w3-cell w3-mobile"  style="width:30%">  
   			<input class = "w3-input w3-border w3-mobile w3-pale-blue " type = "text" id="mixTil" 
   			     placeholder="getting one of this type:" onchange="mixTill1()"
-  		    	     style="display:block"</input>
+  		    	     style="display:block">
   	 	</div> 
   	 	<div class = "w3-cell w3-mobile"  style="width:30%"> 
   	 		 <button id = "mixAllButton" onclick="mixTillAll()" 
@@ -706,13 +675,13 @@ function closeCat1() {
   	<svg id = "mixSmrySVG" height = 300 width = 400 > </svg>
   </div>
 
-  <script src="mix.js" charset="utf-8"></script>
+  <script src="mix.js" ></script>
 
  
 </div>
 
 
-   <!-- -------  One Categorical Actions     
+   <!-- ######-  One Categorical Actions     
    	6) Z Table:   
    	ToDo:
    	 mostly works, but output doesn't show nicely in the svg
@@ -754,7 +723,7 @@ window.onclick = function(event) {
 		<input class="w3-input w3-cell w3-border w3-mobile w3-margin-left w3-padding-large" 
 		        style="width:25%; float:left;"
 		        type="text" id = "pInput" value = ""  onchange = "changed = 'P'; ">
-		         </input>
+		         >
 		</div> 
   		<div class = "w3-cell w3-mobile">
   			OR
@@ -762,20 +731,20 @@ window.onclick = function(event) {
   		<div class = "w3-cell w3-mobile">
   			  Standardized Value:<br>		 	
   		<input class = "w3-input  w3-cell w3-border w3-mobile w3-padding-large" style="width:25%;" 
-  		        type = "text" id ="zInput" value = ""  onchange = " changed = 'Z'; "</input>	        
+  		        type = "text" id ="zInput" value = ""  onchange = " changed = 'Z'; ">	        
   	 </div>
    </div>
      <br>
      <h3> Fill in Probability or Z-score, then click the desired area below:</h3>
    <div class = "w3-container w3-mobile" id = "zPlotGoesHere" >
     </div>
-        <script type="text/javascript" src = "zplot.js"> </script>
+        <script  src = "zplot.js"> </script>
      
   </div>   
   		
 
    <!-- ************************************************************
-   	    -------  One Quantitative Actions  --------------------------
+   	    ######-  One Quantitative Actions  ########################
    	    ************************************************************    
    	1) Test or Estimate a single Mean 
    	   	ToDo:
@@ -787,13 +756,13 @@ window.onclick = function(event) {
 -->
 
 <div id="TestEstQ1" class="w3-container Page" style="display:none">
-  
+   <h4> Estimate/Test Mean for One Quantitative Variable</h4>  
   <div class = "w3-container">
   	<div class = "w3-cell-row w3-mobile">
   		<div class = "w3-cell" style="width:60%">
   		  <h4>    Enter Data</h4>
   		  <!-- TODO
-  		  	 change input to paste. -- type and plot to dotchart
+  		  	 change input to paste.  type and plot to dotchart
   		  	-->
   		  <table class="w3-table w3-border">
 			 <tr>
@@ -802,22 +771,22 @@ window.onclick = function(event) {
 			 </tr>
 			 <tr>
   				<td><input class = "w3-input w3-mobile w3-pale-yellow" type = "text" id="q1Label" 
-  		            placeholder = "y"></input>
+  		            placeholder = "y">
   			    </td>
   				<td> <input class = "w3-input  w3-mobile w3-pale-yellow" type = "text" id="q1Values" 
-  		             onchange = "summarizeMu1(); dotChart(q1Values, q1SmrySVG);"></input>
+  		             onchange = "summarizeMu1(); dotChart(q1Values, q1SmrySVG);">
   					</td>
 			 </tr>
 		    </table>
     </div>
-	 <div class = "w3-cell" style="width:40%" style="display:block">
+	 <div class = "w3-cell" style="width:40%; display:block">
 	    	<h4> Summary</h4>
    		<div class = "w3-container w3-cell w3-mobile" id = "q1SummarySVGgoesHere" >
    			<svg id = "q1SmrySVG" height=160  width = 300></svg>
    		</div>
    		<div class = "w3-container w3-cell w3-mobile" id = "q1SummaryText" style="display:none">
    			&mu;&#770; = <br>
-   			se(&mu;&#770) = 
+   			se(&mu;&#770;) = 
    		</div>
      </div>
    </div> <br>
@@ -854,7 +823,7 @@ window.onclick = function(event) {
     	 	   <h4>&nbsp; &nbsp; &nbsp; Test: Is the true mean = </h4>  </div>
 		 <div  class = "w3-cell  w3-mobile" style = "width: 20%">  
 			<input class = "w3-input w3-mobile w3-pale-yellow" type = "text" 
-				  id="q1trueMu" placeholder = "0" onchange="testMu1('undefined')"  ></input> 
+				  id="q1trueMu" placeholder = "0" onchange="testMu1('undefined')"  > 
   	 	</div>
       </div>
     <div id = "q1OutputHead1"> </div>
@@ -883,17 +852,17 @@ window.onclick = function(event) {
 	      	</div>
 	      <div  class = 'w3-cell  w3-mobile' style = 'width: 20%'>
 	  			<input class = 'w3-input w3-mobile w3-pale-yellow' type = 'text'  
-	  			  id='q1More' placeholder = '0' onchange='q1MoreSimFn()'></input>	
+	  			  id='q1More' placeholder = '0' onchange='q1MoreSimFn()'>	
 	  	  </div>
 	  	  <div class = 'w3-cell  w3-mobile' style = 'width: 80%'> simulated sample means</div>
 	  </div>
 	   </div>
      </div>
-   </div> 
   
-  <script src="quant1.js" charset="utf-8"></script>
   
-  <!-- -------  One Quantitative Actions    
+  <script src="quant1.js" ></script>
+  
+  <!-- ######-  One Quantitative Actions    
    	2) Bootstrap Demo 
    	 Works, but I'd like to reduce the code for the many resamples buttons using a button builder function.
    	 That displays OK, but doesn't create active buttons.
@@ -928,16 +897,16 @@ window.onclick = function(event) {
    	</form>
 	<div class = "w3-btn w3-cell">      </div>
     <form class = "w3-cell" name="restart">
-    <input name="restartButton" type="w3.btn" value="Get New Sample "  onClick="newSample()" >
+    <input name="restartButton" type="w3-btn" value="New Sample " style = 'width: 50%' onClick="newSample()" >
     </form> 
   </div>
-  <script  src="boot.js" charset="utf-8">  </script>
+  <script  src="boot.js">  </script>
  <!--   <span onclick="openVble('BootDemo')" class="w3-button w3-large w3-display-bottomright">Back</span>
  -->
  </div>
-</div>  
+ 
 
-   <!-- -------  One Quantitative Actions    
+   <!-- ######-  One Quantitative Actions    
    	3) Sampling Demo 
    	text box entry
    	count # words and length of each
@@ -952,7 +921,7 @@ window.onclick = function(event) {
   </div>
   </div>
       		
-    <!-- -------  One Quantitative Actions    
+    <!-- ######-  One Quantitative Actions    
    	4) Lurking Demo for quantitative variables 
    	 ToDo:
    	  everything
@@ -965,7 +934,7 @@ window.onclick = function(event) {
   </div>
   </div>
      		
-     <!-- -------  One Quantitative Actions    
+     <!-- ######-  One Quantitative Actions    
    	5) Power of testing a single mean 
    	 ToDo:
    	 inputs
@@ -979,7 +948,7 @@ window.onclick = function(event) {
   </div>
   </div>
     		
-    <!-- -------  One Quantitative Actions    
+    <!-- ######-  One Quantitative Actions    
    	6) T probabilities    	   
    	ToDo:
    	 mostly works, but output doesn't show nicely in the svg
@@ -1011,7 +980,7 @@ window.onclick = function(event) {
 		<input class="w3-input w3-border w3-mobile" 
 		        style="width:20%; float:left;"
 		        type="text" id = "dfT" value = "" onchange="drawTcurve()">
-		         </input>
+		         
   			
   		</div>
   		<div class = "w3-cell w3-mobile">
@@ -1020,27 +989,27 @@ window.onclick = function(event) {
 		<input class="w3-input w3-cell w3-border w3-mobile w3-margin-left w3-padding-large" 
 		        style="width:35%; float:left;"
 		        type="text" id = "ptInput" value = ""  onchange = "tchanged = 'P'; ">
-		         </input>
+		        
 		</div> 
   		<div class = "w3-cell w3-mobile">
   			  Standardized Value:<br>		 	
   		<input class = "w3-input  w3-cell w3-border w3-mobile w3-padding-large" style="width:35%;" 
-  		        type = "text" id ="tInput" value = ""  onchange = " tchanged = 'T'; "</input>	        
+  		        type = "text" id ="tInput" value = ""  onchange = " tchanged = 'T'; ">
   	 </div>
    </div>
      <br>
      <h3> Then fill in Probability or t-score, and click the desired area below:</h3>
    <div class = "w3-container w3-mobile" id = "tPlotGoesHere" >
     </div>
-        <script type="text/javascript" src = "tplot.js"> </script>
+        <script  src = "tplot.js"> </script>
      
   </div>   
 
 
    		
   		
-   <!-- -------************************************************************
-   	    -------  Two Categorical Actions  ----------------------------------
+   <!-- ######-************************************************************
+   	    ######-  Two Categorical Actions  #################################-
    	    ******************************************************************* 
    	       
    	1) Test or Estimate Difference between two Proportions 
@@ -1057,58 +1026,57 @@ window.onclick = function(event) {
   <div class = w3-container>
   	<h3>Estimate a difference in proportions or Test for equal proportions</h3>
   	
-  <div class = "w3-container">
+  <div class = "w3-container" id = "cat2DataIn&Summary">
   	<div class = "w3-cell-row w3-mobile">
-  		<div class = "w3-cell" style="width:60%">
+  		<div class = "w3-cell" style="width:50%">
   		  <h4>    Enter Data as counts</h4>
-  		  <table class="w3-table w3-border">
+  		  <table class="w3-table w3-border" >
 			 <tr>
-  				<th>Labels:</th>
-			 	 <th> <input class = "w3-input w3-mobile w3-pale-yellow" type = "text" id="cat2LabelPop1" 
-  		            placeholder = "Group A"></input>
+  				<th >Labels:</th>
+			 	 <th > <input class = "w3-input w3-mobile w3-pale-yellow" type = "text" id="cat2LabelPop1" 
+  		            placeholder = "Group A">
   			   </th>
-			 	 <th> <input class = "w3-input w3-mobile w3-pale-yellow" type = "text" id="cat2LabelPop2" 
-  		            placeholder = "Group B"></input>
+			 	 <th > <input class = "w3-input w3-mobile w3-pale-yellow" type = "text" id="cat2LabelPop2" 
+  		            placeholder = "Group B">
   			   </th>
 			 </tr>
 			 <tr>
   				<td><input class = "w3-input w3-mobile w3-pale-yellow" type = "text" id="cat2LabelOut1" 
-  		            placeholder = "Success"></input>
+  		            placeholder = "Success">
   			    </td>
   				<td> <input class = "w3-input  w3-mobile w3-pale-yellow" type = "text" id="cat2N11" 
-  		            placeholder = "1" onchange = "summarizeP2()"></input>
+  		            placeholder = "1" onchange = "summarizeP2()">
   					</td>
   				<td> <input class = "w3-input  w3-mobile w3-pale-yellow" type = "text" id="cat2N12" 
-  		            placeholder = "1" onchange = "summarizeP2()"></input>
+  		            placeholder = "1" onchange = "summarizeP2()">
   					</td>
 			 </tr>
 			 <tr>
   				<td><input class = "w3-input w3-mobile w3-pale-yellow" type = "text" id="cat2LabelOut2" 
-  		            placeholder = "Failure"></input>
+  		            placeholder = "Failure">
   				</td>
   				<td> <input class = "w3-input w3-mobile w3-pale-yellow" type = "text" id="cat2N21" 
-  		            placeholder = "1" onchange = "summarizeP2()"></input>
+  		            placeholder = "1" onchange = "summarizeP2()">
   					</td>
   				<td> <input class = "w3-input w3-mobile w3-pale-yellow" type = "text" id="cat2N22" 
-  		            placeholder = "1" onchange = "summarizeP2()"></input>
+  		            placeholder = "1" onchange = "summarizeP2()">
   					</td> 				
 			 </tr>
 		    </table>
     </div> &nbsp;&nbsp;
-	 <div class = "w3-cell" style="width:40%" style="display:block">
-	    	<h4> Summary</h4>
-   		<div class = "w3-container w3-cell w3-mobile" id = "cat2SummarySVGgoesHere" >
+	 <div class = "w3-cell" style= "display:block">
+	    	<h4> &nbsp; &nbsp;Summary</h4>
+   		<div class = "w3-container w3-cell w3-mobile" id = "cat2SummarySVGgoesHere" 
+   			>
    			<svg class="chartC2" ></svg>
    		</div>
-   		<div class = "w3-container w3-cell w3-mobile" id = "cat2SummaryText" style="display:none">
-   			p&#770; = <br>
-   			sd(p&#770) = 
+   		<div class = "w3-container w3-cell w3-mobile" id = "cat2SummaryText" style="width:310px; display:none">
    		</div>
      </div>
    </div> <br>
   </div>
   <!--                             Select Your Inference                        -->
-  <div class = "w3-container w3-mobile">  
+  <div class = "w3-container w3-mobile" id="c2SelectInf">  
     	Either
   	 		 <button id = "EstimateP2" 
   	 		 onclick="c2Inference = 'estimate';
@@ -1120,7 +1088,7 @@ window.onclick = function(event) {
   	  		&nbsp; OR &nbsp;
   	 		 <button id = "TestP2" 
   	 		  onclick="c2Inference = 'test';
-  	 		   	c2Tstdata = testP2('undefined');
+  	 		   	c2Tstdata = testP2();
   	 		   	c2InfOutput = discreteChart(c2Tstdata, cat2InfSVG, cat2TestInteract ); 
   	 		   	" 
   	 		  class="w3-button w3-pale-blue w3-medium w3-round-xlarge">
@@ -1130,46 +1098,65 @@ window.onclick = function(event) {
 
      <!--  Inputs for each inference  (before plotting)  -->
 
-   <div id = "cat2ConfLvl" style = "width: 70%; display: none"> Choose a Confidence Level:
+   <div id = "cat2ConfLvlInpt" style = "width: 60%; display: none"> Choose a Confidence Level:
     	</div>
-   <div id = "cat2Test"  class = "w3-cell-row w3-mobile" style = "width: 70%; display: none"> 
-    	 <div class = "w3-cell  w3-mobile" style = "width: 60%"> </div>
-       </div>
-    <div id = "cat2OutputHead1"> </div>
+   <div id = "cat2TestInpt"  class = "w3-cell-row w3-mobile" style = "display: none"> 
+  	   	  <div class = 'w3-cell' style = 'width:50%'> Stronger evidence is a difference </div> 
+  	 	    <div class = 'w3-cell' style='width:40%'>
+  	 	     <select class = 'w3-select w3-card w3-border w3-mobile w3-pale-yellow' id='cat2Extreme'
+  	 	        onchange = "cat2TestUpdate()" >
+  				<option value='lower'>Less Than or =</option>
+  				<option value='both' selected >As or More Extreme Than</option>
+  				<option value='upper'>Greater Than or =</option>
+		   	</select> </div>  
+		   	<div class ='w3-cell'  id = "cat2ObsdDiff"> &nbsp;&nbsp; 
+		   		the p&#770;<sub>1</sub> - p&#770;<sub>2</sub> observed above.
+		   	</div> 
+		   		   
+   	  </div>
+   	
+       
+    <div id = "cat2Output" style = "display: none"> 
+   
     
+     </div>
+     <!-- End of c2Output -->
     <!--  Show Inference Plot -->
-    
-  <div class = "w3-container w3-cell w3-mobile" id = "cat2Inference">
-    <!--  Inference plot goes here for CI or Test of 2 proportions -->
-  	<svg id = "cat2InfSVG" height = "300px" width = "400px"> </svg>
-   </div>
-   
-   <!-- Setup Modal Box to popup info on a single data point -->
-   
-   <div class = "w3-container w3-modal w3-mobile" style = "width: 33%" >
-      <div class="w3-modal-content w3-card-4" id = "cat2SelectedSample">
-      </div>
-      </div>
-   </div>
-      <br>
-      
-      <!--  Post-plot footer. Output CI or inputs for p-value and output the p-value -->
-    <div id = "cat2OutputFoot1" class="w3-display-container" style = "display:none"> </div>
+  <div class = "w3-cell-row w3-mobile">
+    <div class = "w3-container w3-cell w3-mobile" id = "cat2Inference" style = "width:420px">
+        <!--  Inference plot goes here for CI or Test of difference in 2 proportion -->
+  	    <svg id = "cat2InfSVG" height = "300px" width = "400px"> </svg>
+     </div>
+     
+   <!-- Box to popup info on a single data point -->
+     <div class = "w3-container w3-cell w3-mobile" id="cat2WhichDot" style = "width: 200px; height:10%; display:none;" 
+                 onclick="this.style.display='none'" >
+                 <br><br><br>
+        <div class="w3-card-4 w3-pale-green" id = "cat2SelectedSample"> &nbsp;
+        </div>
+     </div>
+    </div> 
+       
+    <!-- Show Results -->
+     
+    <div id = "cat2Results" class="w3-display-container" style = "display:none"> 
+    	</div>
       <!--  Increase simulation size -->
-    <div id = "cat2MoreSims" style = "width:360; display:none" >
+    <div id = "cat2MoreSims" style = "width:360px; display:none" >
     	<div class="w3-cell-row"> 
 	      <div class = 'w3-cell  w3-mobile' style = 'width: 20%'>Add </div>
 	      <div  class = 'w3-cell  w3-mobile' style = 'width: 20%'>
 	  			<input class = 'w3-input w3-mobile w3-pale-yellow' type = 'text'  
-	  			  id='cat2More' placeholder = '0' onchange='cat2MoreSimFn()'></input>	
+	  			  id='cat2More' placeholder = '0' onchange='cat2MoreSimFn()'>	
 	  	  </div>
-	  	  <div class = 'w3-cell  w3-mobile' style = 'width: 40%'> simulated points</div>
+	  	  <div class = 'w3-cell  w3-mobile' style = 'width: 40%'> &nbsp;simulated points</div>
 	  </div>
 	   </div>
-     </div>
+ 	</div>
 
-
-  <script src="cat2.js" charset="utf-8"></script>
+   <!-- End of cat2 Test- Estimate -->
+  <script src="cat2.js"></script>
+        <script  src = "hypergeometric-random/hyperGeom.js"> </script>
   	
   	
   </div>
@@ -1177,9 +1164,9 @@ window.onclick = function(event) {
       	span onclick="openVble('TestEstC2')" class="w3-button w3-large w3-display-bottomright">Back</span
       	-->
 
-  </div>   
 
- <!-- -------  Two Categorical Actions    
+
+ <!-- ######-  Two Categorical Actions    
    	2) Z Table 
    	   
    	ToDo:
@@ -1190,11 +1177,13 @@ window.onclick = function(event) {
   <div class = w3-container>
   	<h3>Compute probabilities or cutoffs. </h3>
   </div>
-   	<div class = "w3-form" width = "w3-quarter">
+   	<div class = "w3-form w3-quarter">
 		<input class="w3-input w3-border" type="text" name = "cat2_p_txt" placeholder="Probability" 
 			onchange="var z = document.write(computeZcrit('cat2_p_txt', 'cat2_area');)">  		
+			<!--  this throws an ERROR - bad value -->
+			
   		<Input class = "w3-input w3-border" type = "text" name="cat2_z_txt" placeholder="Standardized Value"> 
-  			</Input><br>
+  			<br>
         <select class="w3-select" name="cat2_area">
   			<option value="" disabled selected>Which area?</option>
   			<option value="L">Lower</option>
@@ -1210,7 +1199,7 @@ window.onclick = function(event) {
    
 
  <!-- ************************************************************
-   	    -------  Two Quantitative Actions ------------------------
+   	    ######-  Two Quantitative Actions ########################
    	    ************************************************************
    	        
    	1) Test or Estimate correlation or slope  
@@ -1230,7 +1219,7 @@ window.onclick = function(event) {
 
   </div>   
 
- <!-- -------  Two Quantitative Actions    
+ <!-- ######-  Two Quantitative Actions    
    	2) Demo of least squares regression  
    	choose or input data
    	allow line to be dragged around
@@ -1245,7 +1234,7 @@ window.onclick = function(event) {
 
   </div>   
 
- <!-- -------  Two Quantitative Actions    
+ <!-- ######-  Two Quantitative Actions    
    	3) T table     
    	ToDo:
    	 mostly works, but output doesn't show nicely in the svg
@@ -1254,11 +1243,13 @@ window.onclick = function(event) {
   <div id="Ttable2" class="w3-container Page" style="display:none">
   <div class = w3-container>
   	<h3>Compute probabilities or cutoffs. </h3>
-  	<div class = "w3-form" width = "w3-quarter">
+  	<div class = "w3-form w3-quarter">
 		<input class="w3-input w3-border" type="text" name = "q2_p_txt" placeholder="Probability" 
-			onchange="var z = document.write(computeZcrit('q2_p_txt', 'q2_area');)">  		
-  		<Input class = "w3-input w3-border" type = "text" name="q2_t_txt" placeholder="Standardized Value"> </Input><br>
-  		<Input class = "w3-input w3-border" type = "text" name="q2_tdf_txt" placeholder="DF"> </Input><br>
+			onchange="var z = document.write(computeZcrit('q2_p_txt', 'q2_area');)">  			
+			<!--  this throws an ERROR - bad value -->
+			
+  		<Input class = "w3-input w3-border" type = "text" name="q2_t_txt" placeholder="Standardized Value"><br>
+  		<Input class = "w3-input w3-border" type = "text" name="q2_tdf_txt" placeholder="DF"><br>
         <select class="w3-select" name="q2_area">
   			<option value="" disabled selected>Which area?</option>
   			<option value="L">Lower</option>
@@ -1274,7 +1265,7 @@ window.onclick = function(event) {
 
 
  <!-- ************************************************************
-   	    -------  One Categorical, One Quantitative Actions -------
+   	    ######-  One Categorical, One Quantitative Actions ######-
    	   ************************************************************
    	        
    	1) Test/ Estimate   
@@ -1294,7 +1285,7 @@ window.onclick = function(event) {
 
   </div>   
 
- <!-- -------  One Categorical, One Quantitative Actions    
+ <!-- ######-  One Categorical, One Quantitative Actions    
    	2) T table   
    	  working except for svg placement of output
    	  -->
@@ -1302,11 +1293,13 @@ window.onclick = function(event) {
   <div id="Ttable3" class="w3-container Page" style="display:none">
   <div class = w3-container>
   	<h3>Compute probabilities or cutoffs. </h3>
-  	<div class = "w3-form" width = "w3-quarter">
+  	<div class = "w3-form w3-quarter">
 		<input class="w3-input w3-border" type="text" name = "c1q1_p_txt" placeholder="Probability" 
 			onchange="var z = document.write(computeZcrit('c1q1_p_txt', 'c1q1_area');)">  		
-  		<Input class = "w3-input w3-border" type = "text" name="c1q1_t_txt" placeholder="Standardized Value"> </Input><br>
-  		<Input class = "w3-input w3-border" type = "text" name="c1q1_tdf_txt" placeholder="DF"> </Input><br>
+			<!--  this throws an ERROR - bad value -->
+				
+  		<Input class = "w3-input w3-border" type = "text" name="c1q1_t_txt" placeholder="Standardized Value"><br>
+  		<Input class = "w3-input w3-border" type = "text" name="c1q1_tdf_txt" placeholder="DF"><br>
         <select class="w3-select" name="c1q1_area">
   			<option value="" disabled selected>Which area?</option>
   			<option value="L">Lower</option>

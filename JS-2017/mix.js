@@ -1,6 +1,11 @@
  // subroutine to draw balls randomly from a box in D3 javascript.
  // Inputs: 
  //     category labels and relative probabilities
+ // TODO:
+ //	 balls are not coming out, no labels
+ //  use discrete summary plot (as in spinner) instead of dotplot. however this is plotting
+ //  fix duration of transitions 
+ //  zap old summary plot when anything above changes.
  
     var margin = [{top: 50}, {right: 20}, {bottom: 50}, {left: 20}],
         w =  Number(400), // - margin.right - margin.left,
@@ -34,10 +39,10 @@
       .append("g")
       .attr("transform", "translate(" +  (w/2 -20) + "," + (h/2 ) +")");
          
-   var lineFunction = d3.svg.line()
+   var lineFunction = d3.line()
          .x(function(d) { return d.x; })
          .y(function(d) { return d.y; })
-         .interpolate("linear");
+         ;//.interpolate("linear");
        // now draw the container
    var box = svgMix.append("path")
          .attr("d", lineFunction(boxData))
@@ -114,7 +119,8 @@ function initialMixState(){
      }           
      mixCircles = svgMix.selectAll("f.circle")
         .data(balls);
-     mixCircles.enter().append("circle")
+     mixCircles.enter()
+     	.append("circle")
          .attr("fill", function(d, i){ return colors[d.group]; } )
          .attr("cx", function(d){ return d.x * mixRadius - w/5;} ) // 
          .attr("cy", function(d){ return d.y * mixRadius - h/4;} )  // 
@@ -132,7 +138,7 @@ function turn(i) {// rotate the whole batch of mixCircles
 	mixCircles.transition()
 		.delay(mixDuration * (i + (i > 0)* 1.4) *2 )
 		.duration(mixDuration )
-		.ease("cubic-out")
+		.ease(d3.easeCubicOut)
 		.attrTween("transform", function() {
 			return d3.interpolateString("rotate( 0, 0, 0)", "rotate(-720, 0, 0)");
 		});
@@ -156,12 +162,12 @@ function mixTest(draws) {
 			.transition()       // moveover to line up at right
 			.delay(mixDuration * 2 * (i + 1.4))
 			.duration(mixDuration)
-		//  .ease("cubic-in")
+		    //.ease(d3.easeCubicIn)
 			.attr("cx", w / 2 + 3 * mixRadius  )
 			.transition()       // move up to its row
 		    .delay( mixDuration * 2 * (i + 1.6) )
 			.duration(mixDuration)
-//			.ease("cubic-out")
+//			.ease(d3.easeCubicOut)
 			.attr("cy",  i * 2*spacing - h/2 + mixRadius);
 		if(mixReplace === "no")  {
 		      balls.splice(balls.length -1, 1);
@@ -354,12 +360,12 @@ function showmixSequence(mixData){
 			.transition()       // moveover to line up at right
 			.delay(mixDuration * 2 * (i + 1.4))
 			.duration(mixDuration)
-		//  .ease("cubic-in")
+		//  .ease(d3.easeCubicIn)
 			.attr("cx", w / 2 + 3 * mixRadius  )
 			.transition()       // move up to its row
 		    .delay( mixDuration * 2 * (i + 1.6) )
 			.duration(mixDuration)
-//			.ease("cubic-out")
+//			.ease(d3.easeCubicOut)
 			.attr("cy",  i *spacing - h/2 + mixRadius)
 			.attr("opacity", 1)
 			.style("stroke", "black");

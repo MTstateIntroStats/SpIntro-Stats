@@ -12,16 +12,16 @@ var changed = "N",
    
 var width = 540 - margin.left - margin.right,
     height = 320 - margin.top - margin.bottom;
-var	xRange = d3.scale.linear().range([0, width]).domain(d3.extent(z)),
-	yRange = d3.scale.linear().range([height, margin.top]).domain([0, jStat.normal.pdf(0, 0, 1)]);
+var	xRange = d3.scaleLinear().range([0, width]).domain(d3.extent(z)),
+	yRange = d3.scaleLinear().range([height, margin.top]).domain([0, jStat.normal.pdf(0, 0, 1)]);
 
-var xAxis = d3.svg.axis().scale(xRange)
-    .orient("bottom").ticks(7);
+var xAxis = d3.axisBottom(xRange)
+    .ticks(7);
 
-var yAxis = d3.svg.axis().scale(yRange)
-    .orient("left").ticks(5);
+var yAxis = d3.axisLeft(yRange)
+    .ticks(5);
            
-var pdfline = d3.svg.line()
+var pdfline = d3.line()
     .x(function(d) { return xRange(d); })
     .y(function(d) { return yRange(jStat.normal.pdf(d, 0, 1)); });
     
@@ -232,8 +232,8 @@ function filterZ( area) {
         }
         var startData = filteredZs.map( function(d) { return 0; } );
         var ydata = filteredZs.map(function(d){return jStat.normal.pdf(d, 0,1); });
-        var area = d3.svg.area()
-            .interpolate("linear")
+        var area = d3.area()
+            //.interpolate("linear")
             .x( function(d, i ) {
               return xRange( filteredZs[i] );  // x_coord's don't change
             })
@@ -251,7 +251,7 @@ function filterZ( area) {
         .transition()
         .duration(2000)
         .attr("fill", "red")
-        .ease("bounce")
+        .ease(d3.easeBounceOut)
         .attrTween( 'd', function() {
            var interpolator = d3.interpolateArray( startData, ydata );
         		return function( t ) {

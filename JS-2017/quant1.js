@@ -2,8 +2,11 @@
  // Inputs: 
  //     2 category labels (default = Success/Failure) and a count for each 
  //TODO:
- // CI is not updating properly when more points are added. 
- // Have to change Conf level and go back to see it.
+ // when null mu changes, take away all the points.
+//  summary plot isn't working
+ // adding more points to an inference - estimating plot gives way too many red points
+ //    (clicking slider again fixes it)
+ //  clicking a point in inference plot shows the sample
  
     var q1SummDiv = d3.select("#q1Inference"),
         q1Tstdata,
@@ -60,7 +63,6 @@ function summarizeMu1() {
       q1Xbar = d3.mean(q1Values);
       q1SD = d3.deviation(q1Values);
       q1SEXbar = q1SD / Math.sqrt(q1N);
-      //console.log(q1Xbar);
              
       q1Summ = document.getElementById("q1SummaryText");
       q1Data = [{"label": "Xbar", "xx": q1Xbar},
@@ -74,38 +76,31 @@ function summarizeMu1() {
 
 }
 	
-function q1OnChange(arg) {
-	// set colors for dots to illustrate confidence interval
-	var sq1Len, 
-		tempColors, twoTail;
+function q1CLChange(arg) {
+	//update plot to illustrate confidence interval
+	var sq1Len, cnfLvl =0.6, 
+		tempColors =[], twoTail;
       q1Label = document.getElementById("q1Label").value;
       q1Values = document.getElementById("q1Values").value.split(",");
       q1N = q1Values.length;
 	 if(arg.value){
-			q1CnfLvl = +arg.value;
+			cnfLvl = +arg.value;
 		};
-		if(q1CIdata){
+	if(q1CIdata){
 			sq1Len  = q1CIdata[0].length;
-			tempColors = colorMu1(q1CIdata[0]);
+			tempColors = ciColor(q1CIdata[0], cnfLvl);
 			 q1lowerBd = tempColors[1].toPrecision(4);
 			 q1upperBd = tempColors[2].toPrecision(4);
+			 cnfLvl = tempColors[3];
 			q1CIdata = [q1CIdata[0], tempColors[0] ];
 			q1InfOutput = discreteChart(q1CIdata, q1InfSVG, q1CIinteract);
-			sq1Len = q1CIdata[0].length;
-			twoTail = Math.round((1 - q1CnfLvl)* sq1Len);
-			if(twoTail % 2 === 1){ // check for odd number
-				q1CnfLvl = q1CnfLvl - 1/sq1Len; // reduce to lower confidence
-				//console.log(q1CnfLvl);
-			}  
-		} else{
-			console.log("No resampled data for CI");
 		}
 		document.getElementById("qt1MoreSims").style.display = 'block';
 		q1ftr = document.getElementById("q1OutputFoot1");
 		q1ftr.style.display = 'block';
 	 	q1ftr.innerHTML = //"<div style = 'height = 10'> </div>" +
 	   "<div style = 'width:360px'> Plot shows Mean "+ q1Label +" in  "+ sq1Len + " Re-samples" +
-	   "<br> <br>"+ Math.round(q1CnfLvl*100)+ 
+	   "<br> <br>"+ Math.round(cnfLvl*100)+ 
 	   "% Confidence Interval: (" + q1lowerBd +", "+ q1upperBd +" )</div>";	   
 }
 	
@@ -120,7 +115,7 @@ var q1CIrangeslide = rangeslide("#q1ConfLvl", {
 		thumbWidth: 24,
 		thumbHeight: 24,
 		handlers: {
-			"valueChanged": [q1OnChange]
+			"valueChanged": [q1CLChange]
 		}
 	});
 
@@ -158,6 +153,9 @@ function colorMu1(resample){
   
 function estimateMu1(){
 	//function to estimate the true mean based on resamples of original numeric data
+	var cnfLvl = 0.60,
+		CI = [];
+	
 	// Gather Inputs:
       
       q1Label = document.getElementById("q1Label").value;
@@ -178,17 +176,18 @@ function estimateMu1(){
 	  resampleq1 = resample1Mean(q1Values,100).sort(function(a,b){return a - b});
 	  sq1Len = resampleq1.length;
 	  
-	  CI =  colorMu1(resampleq1);
+	  CI =  ciColor(resampleq1, q1CnfLvl);
 	  q1Color = CI[0];
 	  q1lowerBd = CI[1].toPrecision(4);
 	  q1upperBd = CI[2].toPrecision(4);
+	  cnfLvl = CI[3];
 	  
 	 q1ftr = document.getElementById("q1OutputFoot1");
 	 q1ftr.style.display = 'block';
 	 q1ftr.innerHTML = 
 	   "<div style='width=50px'></div>"+
 	   "<div style = 'width:360px'> Plot shows mean "+ q1Label +" in  "+ sq1Len + " Re-samples" +
-	   "<br> <br>"+ Math.round(q1CnfLvl*100) + 
+	   "<br> <br>"+ Math.round(cnfLvl*100) + 
 	   "% Confidence Interval: (" + q1lowerBd +", "+ q1upperBd +" )</div>"; 
 	 document.getElementById("qt1MoreSims").style.display = 'block';
  	  
@@ -241,11 +240,10 @@ function testMu1(tailChoice){
 		   "<div  style = 'width:320px'> Mean "+ q1Label +" in samples from H<sub>0</sub>";
 		 	sampleq1 = resample1Mean(q1Shifted, 100);
 		 	sq1Len = sampleq1.length;
-		 	console.log(d3.mean(sampleq1), sq1Len);
+		 	//console.log(d3.mean(sampleq1), sq1Len);
 	 } else{
 	 	
 	 }
-	 // TODO: clicking a point changes a table to show that proportion
 	return(sampleq1);
 } 	  
 
@@ -346,7 +344,7 @@ function q1MoreSimFn(){
 	        resampleq1.push(newValues[i]); 
 	    }
 	  //console.log(q1CnfLvl);
-	  q1OnChange(q1CnfLvl);  
+	  q1CLChange(q1CnfLvl);  
       return(resampleq1);  
 	}
   }
