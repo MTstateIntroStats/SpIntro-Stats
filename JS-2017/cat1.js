@@ -3,8 +3,7 @@
 //     2 category labels (default = Success/Failure) and a count for each
 //
 //  TODO:
-	// summary plot isn't showing now unless i run summarizeP1()
-	// need to better understand the update procedure
+	
 	
 var c1SummDiv = d3.select("#cat1Inference"),
     c1Tstdata,
@@ -51,12 +50,12 @@ var c1SummDiv = d3.select("#cat1Inference"),
   var svgCat1 = d3.select("#cat1InfSVG"),
 	cat1SmryUpDiv = d3.select("#cat1SummarySVGgoesHere");
 
-  var cat1BarSvg = cat1SmryUpDiv.append("svg") 
-		.attr("width", w + margin * 2)
-		.attr("height", h + margin),
-	  c1x = d3.scaleLinear()
-	   	.domain([0, 1])
-	   	.range([0, w - margin * 2]);       
+ // var cat1BarSvg = cat1SmryUpDiv.append("svg") 
+//		.attr("width", w + margin * 2)
+//		.attr("height", h + margin),
+//	  c1x = d3.scaleLinear()
+//	   	.domain([0, 1])
+//	   	.range([0, w - margin * 2]);       
 
 function summarizeP1() {
 	// builds summary table and plot for 1 categorical variable
@@ -72,31 +71,36 @@ function summarizeP1() {
 	resampleC1 = [];
 	sampleC1 = [];
 
-	cat1Summ.innerHTML = "p&#770; =  " + cat1Phat.toPrecision(5) + " <br> se(p&#770) = " + (Math.sqrt(cat1Phat * (1 - cat1Phat)) / (cat1N1 + cat1N2)).toPrecision(5);
+	cat1Summ.innerHTML = "p&#770; =  " + cat1Phat.toPrecision(4) + " <br> se(p&#770) = " + (Math.sqrt(cat1Phat * (1 - cat1Phat)) / (cat1N1 + cat1N2)).toPrecision(3);
 	cat1Summ.style = "display: block";
 
 	c1Data = [{	"label" : cat1Label1,		"xx" : cat1Phat	}, 
 			  //{	"label" : cat1Label2,		"xx" : 1 - cat1Phat	}
 			  ];
 	
-     cat1Bars = cat1BarSvg.selectAll("rect")
-        .data(c1Data);
+	if(typeof(cat1Bars) ==='function'){
+		cat1Bars.data([cat1Phat])
+	} else{
+		cat1Bars = propBarChart().data([cat1Phat]).height(100);		  
+		d3.select('#cat1SummarySVGgoesHere').call(cat1Bars);
+    }
+    // cat1Bars = cat1BarSvg.selectAll("rect").data(c1Data);
         
-     cat1Bars.enter()
-     	.append("rect")
-		.attr("width", function(d) {return c1x(Math.max(0.005, d.xx));})// - 14;} )
-		.attr("height", barHeight - 1)
-		.attr("fill", "blue")
+    // cat1Bars.enter()
+    // 	.append("rect")
+	//	.attr("width", function(d) {return c1x(Math.max(0.005, d.xx));})// - 14;} )
+	//	.attr("height", barHeight - 1)
+	//	.attr("fill", "blue")
 		//.attr("transform", function(d, i) {	return "translate(" + padding + "," + i * barHeight + ")";})
-		;
-	cat1Bars.append("text")
-		.attr("x", function(d) {return padding + 16 + c1x(d.xx);})
-		.attr("y", function(d, i) {return (i + .5) * barHeight;	})
-		.attr("dy", ".35em")
-		.text(function(d) {	return d.label;	})
-		.attr("fill", "black");
+	//	;
+	//cat1Bars.append("text")
+	//	.attr("x", function(d) {return padding + 16 + c1x(d.xx);})
+	//	.attr("y", function(d, i) {return (i + .5) * barHeight;	})
+	//	.attr("dy", ".35em")
+	//	.text(function(d) {	return d.label;	})
+	//	.attr("fill", "black");
 
-      //cat1Bars.exit().remove(); 
+    //  cat1Bars.exit().remove(); 
       
 		//chartC1.selectAll("rect").transition().attr("width", function(d){ return c1x(0 * d.xx)});
 		//chartC1.selectAll("text").transition().attr("fill", "white");
@@ -122,13 +126,12 @@ function summarizeP1() {
 	//	.attr("transform", function(d, i) {	return "translate(" + padding + "," + i * barHeight + ")";});
 
 
-	var c1xAxis = d3.axisBottom(c1x)
-		.ticks(5);
+	//var c1xAxis = d3.axisBottom(c1x).ticks(5);
 
-	cat1Bars.append("g")  //barC1.append("g")
-		.attr("class", "x axis")
+	//cat1Bars.append("g")  //barC1.append("g")
+	//	.attr("class", "x axis")
 		//.attr("transform", "translate(" + padding + "  ," + 1.5 * barHeight + ")")
-		.call(c1xAxis);
+	//	.call(c1xAxis);
 
 	//check for any old output plots. If present, erase them due to change in data
 	if (cat1InfOutput) {

@@ -465,8 +465,153 @@ function ciColor(resample, cnfLvl) {
 	return ([color, lowerBd, upperBd, cnfLvl]);
 }
 
+function propBarChart() {
+	// thanks to Rob Moore https://www.toptal.com/d3-js/towards-reusable-d3-js-charts 
+	// All options that should be accessible to caller
+	var data = [];
+	var width = 400;
+	var height = 100;
+    var barPadding = 1, 
+    	margin = 10;
+    var fillColor = 'steelblue';
+	var updateData;
+	var xScale = d3.scaleLinear()
+		.range([0, width - 2 * margin])
+		.domain([0,1]);
+    
+	function chart(selection){
+        selection.each(function () {
+			var barSpacing = height / (data.length + 1);
+            var barHeight = barSpacing - barPadding;
+            
+ 			var myDiv = d3.select(this);
+ 			var svg = myDiv.append('svg')
+ 					.attr('class', 'bar-chart')
+                    .attr('height', height + margin)
+                    .attr('width', width)
+                    .style('fill', fillColor);
+                    
+            var bars = svg.append('g')
+    				.attr('transform', 'translate(' + margin + ', 0)')
+    				.selectAll('rect.display-bar')
+                    .data(data)
+                	.enter()
+                    .append('rect')
+                    .attr('class', 'display-bar')
+                    .attr('y', function (d, i) { return  i * barSpacing;  })
+                    .attr('height', barHeight)
+					//.attr("transform", "translate(" +margin +",0)")
+                    .attr('x', margin)
+                    .attr('width', function (d) { return xScale(d);});
+        	
+        	var xAxis = d3.axisBottom(xScale).ticks(5);
+        	
+        	svg.append("g")
+        		.attr("class","xaxis")
+        		.attr("transform", "translate(" + (2*margin) + "," + (barSpacing * data.length + 2) +")")
+        		.call(xAxis);
+    	
+            // update functions
+            updateWidth = function() {
+            	//xScale.range([0, width-margin]);
+                //widthScale = width;
+                bars.transition().duration(1000).attr('width', function(d) { return xScale(d); });
+                svg.transition().duration(1000).attr('width', width);
+            };
 
- lnFactorial = [
+            updateHeight = function() {
+                barSpacing = height / (data.length +1);
+                barHeight = barSpacing - barPadding;
+                bars.transition().duration(1000).attr('y', function(d, i) { return i * barSpacing; })
+                    .attr('height', barHeight);   
+                svg.transition().duration(1000).attr('height', height);
+				//svg.selectAll('xaxis')
+					//.transition().duration(1000).attr('y', barSpacing * data.length + 2);
+            };
+
+            updateFillColor = function() {
+                svg.transition().duration(1000).style('fill', fillColor);
+            };
+                    	
+  			updateData = function() {
+                barSpacing = height / (data.length +1);
+                barHeight = barSpacing - barPadding;
+                
+                var update = svg.selectAll('rect.display-bar')
+                    .data(data);
+
+                update
+                    .transition()
+                    .duration(500)
+                    .attr('y', function(d, i) { return i * barSpacing; })
+                    .attr('height', barHeight)
+                    .attr('x', margin)
+                    .attr('width', function(d) { return xScale(d); });
+
+                update.enter()
+                    .append('rect')
+                    .attr('class', 'display-bar')
+                    .attr('y', function(d, i) { return i * barSpacing; })
+                    .attr('height', barHeight)
+                    .attr('x', margin)
+                    .attr('width', 0)
+                    .style('opacity', 0)
+                    .transition()
+                    .duration(500)
+                    .delay(function(d, i) { return (data.length - i) * 40; })
+                    .attr('width', function(d) { return xScale(d); })
+                    .style('opacity', 1);
+
+                update.exit()
+                    .transition()
+                    .duration(350)
+                    .delay(function(d, i) { return (data.length - i) * 20; })
+                    .style('opacity', 0)
+                    .attr('height', 0)
+                    .attr('x', margin)
+                    .attr('width', 0)
+                    .remove();
+            }
+
+        });
+    }
+    chart.width = function(value) {
+        if (!arguments.length) return width;
+        width = value;
+        if (typeof updateWidth === 'function') updateWidth();
+        return chart;
+    };
+
+    chart.height = function(value) {
+        if (!arguments.length) return height;
+        height = value;
+        if (typeof updateHeight === 'function') updateHeight();
+        return chart;
+    };
+
+    chart.fillColor = function(value) {
+        if (!arguments.length) return fillColor;
+        fillColor = value;
+        if (typeof updateFillColor === 'function') updateFillColor();
+        return chart;
+    };
+
+	chart.data = function(value) {
+    	if (!arguments.length) return data;
+    	data = value;
+    	if (typeof updateData === 'function') updateData();
+    	return chart;
+	};
+  
+	return chart;
+}
+
+//  var dataA = [.45,1], dataB = [.06,1],
+//      updatableChart = propBarChart().data(dataA);
+//        d3.select('#cat1SummarySVGgoesHere').call(updatableChart);
+// updatableChart.data(dataB);
+
+ var lnFactorial = [
    0.000000000000000,
    0.000000000000000,
    0.693147180559945,

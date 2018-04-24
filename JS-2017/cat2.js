@@ -98,48 +98,13 @@ function summarizeP2() {
 
 	var c2xAxis = d3.axisBottom(c2xScale)
 					.ticks(3);
+	if(typeof(chartC2) ==='function'){
+		chartC2.data([cat2Phat1,cat2Phat2])
+	} else{
+		chartC2 = propBarChart().data([cat2Phat1,cat2Phat2]).height(140);		  
+		d3.select('#cat2SummarySVGgoesHere').call(chartC2);
+    }
 
-	if (!chartC2) {
-		chartC2 = d3.select(".chartC2").attr("width", w + margin * 3).attr("height", h + 20);
-	} else {
-		chartC2.selectAll("g").data(c2Data).remove();
-		chartC2.selectAll("g").data(c2Data).remove();
-	}
-
-	barC2 = chartC2.selectAll("g").data(c2Data);
-	barC2.enter().append("g").each(function(d) {
-		this._current = d;
-	})
-	//resets the figure to the current data
-	;
-	barC2.append("rect")
-		.attr('class', 'bar')
-		.attr("width", function(d) {return c2xScale(Math.max(0.005, d.xx));	})
-		.attr("height", barHeight - 1)
-		.attr("fill", "blue")
-		.attr("transform", 
-			function(d, i) {return "translate(" + padding + "  ," + i * barHeight + ")";});
-
-	barC2.append("text")
-		.attr("x", function(d) {return padding + 16 + c2xScale(d.xx);})
-		.attr("y", function(d, i) {	return (i + .5) * barHeight;})
-		.attr("dy", ".35em").text(function(d) {	return d.label})
-		.attr("fill", "blue");
-
-	barC2.append("g")
-		.attr("class", "x axis")
-		.attr("transform", "translate(" + padding + "  ," + 3 * barHeight + ")")
-		.call(c2xAxis);
-	//check for any old output plots. If present, erase them due to change in data
-	if (c2InfOutput) {
-		c2CIdata = [];
-		svgCat2.selectAll("g").remove();
-		document.getElementById("cat2Results").style.display = "none";
-		//document.getElementById("cat2MoreSims").style.display = "none";
-		document.getElementById("cat2ConfLvlInpt").style.display = "none";
-		document.getElementById("cat2TestInpt").style.display = "none";
-		//document.getElementById("cat2WhichDot").style.display = "none";
-	}
 }
 
 function cat2CLChange(arg) {
