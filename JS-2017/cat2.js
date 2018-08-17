@@ -2,8 +2,7 @@
 // Inputs:
 //     2 sets of category labels (default = Success/Failure) and a count for each of 4 outcomes
 // TODO:
-// need to clear out 'estimate' header if data change
-//  summary plot isn't working
+// need to clear out 'estimate' header & plot if data change
  // adding more points to an inference - estimating plot gives way too many red points
  //    (clicking slider again fixes it)
 	// for sample/resample store an array of 3 vectors: sample1, sample2, and diff in proportions
@@ -91,8 +90,8 @@ function summarizeP2() {
 	   " <br> p&#770;<sub>1</sub> - p&#770;<sub>2</sub> = " + cat2Diff.toPrecision(5);
 	cat2Summ.style = "display: block";
 	
-	document.getElementById("cat2ObsdDiff").innerHTML = "&nbsp;&nbsp;" + 
-		   		cat2Diff.toPrecision(4) +" from above."
+	//document.getElementById("cat2ObsdDiff").innerHTML = "&nbsp;&nbsp;" + 
+	//	   		cat2Diff.toPrecision(4) +" from above."
 
 	var c2xScale = d3.scaleLinear().domain([0, 1]).range([0, w - 3 * margin]);
 
@@ -109,11 +108,12 @@ function summarizeP2() {
 
 function cat2CLChange(arg) {
 	// set colors for dots to illustrate confidence interval
-	var sC2Len, cnfLvl =0.60,
+	var sC2Len, cnfLvl = cat2CnfLvl,
 	    tempColors = [],
 	    twoTail;
 	if (arg.value) {
 		cnfLvl = +arg.value;
+		cat2CnfLvl = arg.value;
 	} 
 	if (c2CIdata) {
 		sC2Len = c2CIdata[0].length;

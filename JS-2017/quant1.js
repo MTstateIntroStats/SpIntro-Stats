@@ -3,10 +3,10 @@
  //     2 category labels (default = Success/Failure) and a count for each 
  //TODO:
  // when null mu changes, take away all the points.
-//  summary plot isn't working
+//  inference plot isn't working
  // adding more points to an inference - estimating plot gives way too many red points
- //    (clicking slider again fixes it)
- //  clicking a point in inference plot shows the sample
+ //    (clicking slider again fixes it)  I think it defaults to 60% confidence
+ //  clicking a point in inference plot shows the sample in modal box
  
     var q1SummDiv = d3.select("#q1Inference"),
         q1Tstdata,
@@ -25,6 +25,7 @@
         q1SD,
         q1SEXbar,
         q1Xbar,
+        q1Test1,
         q1TestDirection,
         q1Data = [],
         chartq1 ,
@@ -37,13 +38,14 @@
 		], 
 		q1Inference,
 		q1InfOutput,
+    	noChoice = "undefined",
 		targetQuantile,
       	upperBd,
       	upperCI,
         resampleq1,
         sampleq1;
 
- var svgq1 = d3.select("#q1InfSVG");    
+ var svgQ1 = d3.select("#q1InfSVG");    
                
 function summarizeMu1() {
       // builds summary table and dot plot for 1 quantitative variable
@@ -68,23 +70,24 @@ function summarizeMu1() {
       q1Data = [{"label": "Xbar", "xx": q1Xbar},
       			{"label": "SE", "xx": q1SEXbar},
       			{"label": "Sample Size", "xx": q1N}];
-      q1Summ.innerHTML = "x&#773; =  " + q1Xbar.toPrecision(5) +" <br> s = " +
-              q1SD.toPrecision(5) + "<br> Sample Size = " + q1N;
+      q1Summ.innerHTML = "x&#773; =  " + q1Xbar.toPrecision(5) +", &nbsp; &nbsp; s = " +
+              q1SD.toPrecision(5) + 
+              "<br> Sample Size = " + q1N;
       q1Summ.style = "display: block";  
-     
-	// use dotChart(data, svg)
+	dotChart(q1Values, q1SmrySVG);     
+	
 
 }
 	
 function q1CLChange(arg) {
 	//update plot to illustrate confidence interval
-	var sq1Len, cnfLvl =0.6, 
+	var sq1Len, cnfLvl =  q1CnfLvl, 
 		tempColors =[], twoTail;
       q1Label = document.getElementById("q1Label").value;
       q1Values = document.getElementById("q1Values").value.split(",");
       q1N = q1Values.length;
 	 if(arg.value){
-			cnfLvl = +arg.value;
+			q1CnfLvl = cnfLvl = +arg.value;
 		};
 	if(q1CIdata){
 			sq1Len  = q1CIdata[0].length;
@@ -95,8 +98,8 @@ function q1CLChange(arg) {
 			q1CIdata = [q1CIdata[0], tempColors[0] ];
 			q1InfOutput = discreteChart(q1CIdata, q1InfSVG, q1CIinteract);
 		}
-		document.getElementById("qt1MoreSims").style.display = 'block';
-		q1ftr = document.getElementById("q1OutputFoot1");
+		document.getElementById("q1MoreSims").style.display = 'block';
+		q1ftr = document.getElementById("q1Results");
 		q1ftr.style.display = 'block';
 	 	q1ftr.innerHTML = //"<div style = 'height = 10'> </div>" +
 	   "<div style = 'width:360px'> Plot shows Mean "+ q1Label +" in  "+ sq1Len + " Re-samples" +
@@ -163,13 +166,13 @@ function estimateMu1(){
       q1N = q1Values.length;
       q1Xbar = d3.mean(q1Values);
       
-	 q1hdr = document.getElementById("q1OutputHead1");
+	 q1hdr = document.getElementById("q1Output");
 	 q1hdr.innerHTML = 
 	 "<h4>Estimate True Mean with a Confidence Interval</h4>"; 
 	  
  	  q1CLvl = document.getElementById("q1ConfLvl");
 	  q1CLvl.style.display ="";
-	  q1Tst = document.getElementById("q1Test");
+	  q1Tst = document.getElementById("q1Test1");
 	  q1Tst.style.display ="none";
 	 // show plot
 	   
@@ -182,14 +185,14 @@ function estimateMu1(){
 	  q1upperBd = CI[2].toPrecision(4);
 	  cnfLvl = CI[3];
 	  
-	 q1ftr = document.getElementById("q1OutputFoot1");
+	 q1ftr = document.getElementById("q1Results");
 	 q1ftr.style.display = 'block';
 	 q1ftr.innerHTML = 
 	   "<div style='width=50px'></div>"+
 	   "<div style = 'width:360px'> Plot shows mean "+ q1Label +" in  "+ sq1Len + " Re-samples" +
 	   "<br> <br>"+ Math.round(cnfLvl*100) + 
 	   "% Confidence Interval: (" + q1lowerBd +", "+ q1upperBd +" )</div>"; 
-	 document.getElementById("qt1MoreSims").style.display = 'block';
+	 document.getElementById("q1MoreSims").style.display = 'block';
  	  
 	  //console.log(q1lowerBd, q1upperBd);
 	  
@@ -213,8 +216,8 @@ function testMu1(tailChoice){
       q1CLvl = document.getElementById("q1ConfLvl");
 	  q1CLvl.style.display ="none";
 	    
-	  q1Tst = document.getElementById("q1Test");
-	  q1Tst.style.display ="";
+	  q1Tst = document.getElementById("q1Test1");
+	  q1Tst.style.display ="block";
 	 //q1Pval = undefined;
 	  
       var sq1Len,
@@ -225,7 +228,7 @@ function testMu1(tailChoice){
       }
       
 	 if(tailChoice === 'undefined'){ 
-	 	q1hdr = document.getElementById("q1OutputHead1");
+	 	q1hdr = document.getElementById("q1Output");
 	 	q1hdr.innerHTML = "<div class = 'w3-cell-row'> <div class = 'w3-cell' style = 'width:50%'> "+
 	 		" Stronger evidence is sample mean </div>"+ 
   	 	   "<div class = 'w3-cell' style='width:40%'>"+
@@ -288,13 +291,13 @@ function q1TestUpdate(){
  	 q1Tstdata = [sampleq1, q1Color];
   	q1InfOutput = discreteChart(q1Tstdata, q1InfSVG, q1TestInteract ); 	
   	
-	 q1ftr = document.getElementById("q1OutputFoot1");
+	 q1ftr = document.getElementById("q1Results");
 	 q1ftr.style.display = 'block';
 	 q1ftr.innerHTML = 
 	   "<div  style = 'width:320px'> Mean "+ q1Label +
 	   " in " + sq1Len +" Samples from H<sub>0</sub> <br>"+
 	   "p-value (strength of evidence): " + formatPvalue(extCount, sq1Len) + "</div>"; 
-	 document.getElementById("qt1MoreSims").style.display = 'block';
+	 document.getElementById("q1MoreSims").style.display = 'block';
  	  
 }
 
@@ -335,7 +338,7 @@ function q1MoreSimFn(){
 	      sampleq1.push(newValues[i]);
 	    } 
 	  sampleq1 = sampleq1.sort(function(a,b){return a - b});
-	  console.log(d3.mean(sampleq1), sampleq1.length);
+	  //console.log(d3.mean(sampleq1), sampleq1.length);
 	  q1TestUpdate();
 	  return(sampleq1);
 	} else{

@@ -3,6 +3,10 @@
 //     2 category labels (default = Success/Failure) and a count for each
 //
 //  TODO:
+//	  Initial data entry calls summarizeP1 before the second count is entered.
+//		 function needs to check for good data.
+//    align true proportion better with cue: "Test: Is the true proportion ="
+//    When clicking a point, modal popup shifts entire graph over, closing shifts it back. Too jumpy.
 	
 	
 var c1SummDiv = d3.select("#cat1Inference"),
@@ -136,7 +140,7 @@ function summarizeP1() {
 	//check for any old output plots. If present, erase them due to change in data
 	if (cat1InfOutput) {
 		c1CIdata = [];
-		cat1BarSvg.selectAll("g").remove();
+		//cat1BarSvg.selectAll("g").remove();
 		document.getElementById("cat1Output").style.display = "none";
 		document.getElementById("cat1MoreSims").style.display = "none";
 		document.getElementById("cat1ConfLvlInpt").style.display = "none";
@@ -148,7 +152,7 @@ function summarizeP1() {
 
 function cat1CLChange(arg) {
 	// set colors for dots to illustrate confidence interval
-	var cnfLvl = .6,
+	var cnfLvl = cat1CnfLvl,
 		sC1Len,
 	    tempColors,
 	    twoTail;

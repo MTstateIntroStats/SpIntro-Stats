@@ -20,12 +20,12 @@ var width = 540 - margin.left - margin.right,
 drawTcurve = function(){   
 	//var new = true;
   tdf= +document.getElementById("dfT").value;
-  xtRange = d3.scale.linear().range([0, width]).domain(d3.extent(tseq));
-  ytRange = d3.scale.linear().range([height, margin.top]).domain([0, jStat.studentt.pdf(0, tdf)]);
- xtAxis = d3.svg.axis().scale(xtRange)
-    .orient("bottom").ticks(7);
+  xtRange = d3.scaleLinear().range([0, width]).domain(d3.extent(tseq));
+  ytRange = d3.scaleLinear().range([height, margin.top]).domain([0, jStat.studentt.pdf(0, tdf)]);
+ xtAxis = d3.axisBottom(xtRange)
+    .ticks(7);
 
-  pdftline = d3.svg.line()
+  pdftline = d3.line()
     .x(function(d) { return xtRange(d); })
     .y(function(d) { return ytRange(jStat.studentt.pdf(d, tdf)); });
 	
@@ -237,8 +237,8 @@ function filtert( area) {
         }
         var startData = filteredts.map( function(d) { return 0; } );
         var ydata = filteredts.map(function(d){return jStat.studentt.pdf(d, tdf); });
-        var area = d3.svg.area()
-            .interpolate("linear")
+        var area = d3.area()
+            //.interpolate("linear")
             .x( function(d, i ) {
               return xtRange( filteredts[i] );  // x_coord's don't change
             })
@@ -256,7 +256,7 @@ function filtert( area) {
         .transition()
         .duration(2000)
         .attr("fill", "red")
-        .ease("bounce")
+        .ease(d3.easeBounceOut)
         .attrTween( 'd', function() {
            var interpolator = d3.interpolateArray( startData, ydata );
         		return function( t ) {

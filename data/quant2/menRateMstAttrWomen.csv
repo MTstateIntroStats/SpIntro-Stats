@@ -1,32 +1,33 @@
-mansAge,mostAttrWomen
-20,20
-21,20
-22,21
-23,21
-24,21
-25,21
-26,22
-27,21
-28,20
-29,20
-30,20
-31,20
-32,20
-33,20
-34,20
-35,20
-36,20
-37,22
-38,20
-39,20
-40,21
-41,21
-42,20
-43,23
-44,21
-45,24
-46,20
-47,20
-48,23
-49,20
-50,22
+menJudgeWomen = [
+{mansAge:20, mostAttrWomen:20},
+{mansAge:21, mostAttrWomen:20},
+{mansAge:22, mostAttrWomen:21},
+{mansAge:23, mostAttrWomen:21},
+{mansAge:24, mostAttrWomen:21},
+{mansAge:25, mostAttrWomen:21},
+{mansAge:26, mostAttrWomen:22},
+{mansAge:27, mostAttrWomen:21},
+{mansAge:28, mostAttrWomen:20},
+{mansAge:29, mostAttrWomen:20},
+{mansAge:30, mostAttrWomen:20},
+{mansAge:31, mostAttrWomen:20},
+{mansAge:32, mostAttrWomen:20},
+{mansAge:33, mostAttrWomen:20},
+{mansAge:34, mostAttrWomen:20},
+{mansAge:35, mostAttrWomen:20},
+{mansAge:36, mostAttrWomen:20},
+{mansAge:37, mostAttrWomen:22},
+{mansAge:38, mostAttrWomen:20},
+{mansAge:39, mostAttrWomen:20},
+{mansAge:40, mostAttrWomen:21},
+{mansAge:41, mostAttrWomen:21},
+{mansAge:42, mostAttrWomen:20},
+{mansAge:43, mostAttrWomen:23},
+{mansAge:44, mostAttrWomen:21},
+{mansAge:45, mostAttrWomen:24},
+{mansAge:46, mostAttrWomen:20},
+{mansAge:47, mostAttrWomen:20},
+{mansAge:48, mostAttrWomen:23},
+{mansAge:49, mostAttrWomen:20},
+{mansAge:50, mostAttrWomen:22}
+]

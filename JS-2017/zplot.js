@@ -51,9 +51,8 @@ var pdfLine = Zsvg.append("path")
 
 
  //TODO:
-  // controls: when prob changes run computeZ
-  // 			when z changes run computeProb
   //  consider: move prob and z input into the svg?
+
 
 // add buttons for desired area  
         Zsvg.append("text")      // create Lower Area Button
@@ -186,7 +185,7 @@ function filterZ( area) {
 			//Lower end
 			output =  jStat.seq(-4.0, -zAbs, 150);
 			zOut = -zAbs;
-			drawArea( jStat.seq(zAbs, 4.0,  150), false);
+			drawZArea( jStat.seq(zAbs, 4.0,  150), false);
 			add = true;  // add in upper end
 			zOut = zAbs;
 			pOut = (2 * jStat.normal.cdf(-zAbs, 0, 1)).toPrecision(4);
@@ -207,7 +206,7 @@ function filterZ( area) {
 	} else 	if (area === "E") {
    	    zAbs = -jStat.normal.inv(pIn/2.0, 0, 1); 
 		output =  jStat.seq(-4.0, -zAbs, 150);  // lower end
-		drawArea( output, false);
+		drawZArea( output, false);
 		output = jStat.seq(zAbs, 4.0,  150);
 		add = true;
 		zOut = plusminus.concat(zAbs.toPrecision(4));
@@ -218,10 +217,10 @@ function filterZ( area) {
 	}
     printZResults(zOut );  
    }
-   drawArea(output, add) ; 
+   drawZArea(output, add) ; 
 }  
 
-  function drawArea(filteredZs, add){
+  function drawZArea(filteredZs, add){
   	 // clear out old areas
   	 if(add == false){
   	  Zsvg.append("path")

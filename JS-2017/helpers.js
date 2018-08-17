@@ -245,8 +245,8 @@ function dotChart(sample, svgObject, interactFunction){
 	if(typeof(gees) === "object"){
 		gees.remove();
 	}
-	xbinWidth = sturgesFormula(sample).binLength;  
-	  // console.log(xbinWidth); 
+	xbinWidth = (xmax - xmin) /(wdth / radii); //sturgesFormula(sample).binLength;  
+	 //console.log(xbinWidth); 
 	//  first dot goes at y=0, then add one to each from there
 	j = 0;
 	ypos = 1;	            // y value is a count starting at 1
@@ -466,15 +466,19 @@ function ciColor(resample, cnfLvl) {
 }
 
 function propBarChart() {
+	// updatable chart to show proportion bars
+	//TODO:  add text labels (y axis?) for multiple bars
 	// thanks to Rob Moore https://www.toptal.com/d3-js/towards-reusable-d3-js-charts 
 	// All options that should be accessible to caller
 	var data = [];
 	var width = 400;
 	var height = 100;
+    var fillColor = 'steelblue';
+	//var updateData;
+	
+	
     var barPadding = 1, 
     	margin = 10;
-    var fillColor = 'steelblue';
-	var updateData;
 	var xScale = d3.scaleLinear()
 		.range([0, width - 2 * margin])
 		.domain([0,1]);
@@ -609,6 +613,301 @@ function propBarChart() {
 //  var dataA = [.45,1], dataB = [.06,1],
 //      updatableChart = propBarChart().data(dataA);
 //        d3.select('#cat1SummarySVGgoesHere').call(updatableChart);
+// updatableChart.data(dataB);
+
+/* global d3 */
+
+function scatterPlot() {
+
+  var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 400,
+    height = 400,
+    innerWidth = width - margin.left - margin.right,
+    innerHeight = height - margin.top - margin.bottom,
+    xValue = function(d) { return d[0]; },
+    yValue = function(d) { return d[1]; },
+    xScale = d3.scaleLinear(),
+    yScale = d3.scaleLinear();
+
+  function chart(selection) {
+    selection.each(function (data) {
+
+      // Select the svg element, if it exists.
+      var svg = d3.select(this).selectAll("svg").data([data]);
+
+      // Otherwise, create the skeletal chart.
+      var svgEnter = svg.enter().append("svg");
+      var gEnter = svgEnter.append("g");
+      gEnter.append("g").attr("class", "x axis");
+      gEnter.append("g").attr("class", "y axis");
+
+      // Update the outer dimensions.
+      svg.merge(svgEnter).attr("width", width)
+        .attr("height", height);
+
+      // Update the inner dimensions.
+      var g = svg.merge(svgEnter).select("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+      xScale.rangeRound([0, innerWidth])
+        .domain([d3.min(data, function(d) { return d.x; }), 
+        		 d3.max(data, function(d){return d.x;})]);
+      yScale.rangeRound([innerHeight, 0])
+        .domain([0, d3.max(data, function(d) { return d.y; })]);
+
+      g.select(".x.axis")
+          .attr("transform", "translate(0," + innerHeight + ")")
+          .call(d3.axisBottom(xScale))
+        .append("text")
+          .attr("x", 6)
+          .attr("dx", "0.71em")
+          .attr("text-anchor", "end")
+          .text("X Variable");
+
+      g.select(".y.axis")
+          .call(d3.axisLeft(yScale).ticks(10, "%"))
+        .append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 6)
+          .attr("dy", "0.71em")
+          .attr("text-anchor", "end")
+          .text("Y Variable");
+
+      var points = g.selectAll(".point")
+        .data(function (d) { return d; });
+
+      points.enter().append("circle")
+          .attr("class", "point")
+        .merge(points)
+          .attr("cx", X)
+          .attr("cy", Y)
+          .attr("r", 3);
+
+      points.exit().remove();
+    });
+
+  }
+
+// The x-accessor for the path generator; xScale ∘ xValue.
+  function X(d) {
+    return xScale(xValue(d));
+  }
+
+  // The y-accessor for the path generator; yScale ∘ yValue.
+  function Y(d) {
+    return yScale(yValue(d));
+  }
+
+  chart.margin = function(_) {
+    if (!arguments.length) return margin;
+    margin = _;
+    return chart;
+  };
+
+  chart.width = function(_) {
+    if (!arguments.length) return width;
+    width = _;
+    return chart;
+  };
+
+  chart.height = function(_) {
+    if (!arguments.length) return height;
+    height = _;
+    return chart;
+  };
+
+  chart.x = function(_) {
+    if (!arguments.length) return xValue;
+    xValue = _;
+    return chart;
+  };
+
+  chart.y = function(_) {
+    if (!arguments.length) return yValue;
+    yValue = _;
+    return chart;
+  };
+
+  return chart;
+}
+
+
+function xyChart() {
+	// updatable chart to show scatterplot
+	// thanks to Rob Moore https://www.toptal.com/d3-js/towards-reusable-d3-js-charts 
+	// All options that should be accessible to caller
+	//TODO:
+		// yaxis has no labels, xaxis is at top instead of bottom,
+		// need update function to transition axes
+		// data update not working for plot, but consolelog prints it fine 
+	var data =[],
+	 	width = 200,
+	 	height = 200,
+	 	margin =40,
+	 	radius = 5,
+     	fillColor = [];
+	//var updateData;
+    
+	function chart(selection){
+        selection.each(function () {
+			var myDiv = d3.select(this);
+ 			var svg = myDiv.append('svg')
+ 					.attr('class', 'xyChart')
+                    .attr('height', height + margin)
+                    .attr('width', width + margin);
+ 			var xScale = d3.scaleLinear()
+				.range([margin, width - 2 * margin])
+				.domain([d3.min(data, function(d) { return d.x; }), d3.max(data, function(d) { return d.x; })]),
+		
+				yScale = d3.scaleLinear()
+				.range([margin, height - 2*margin])
+				.domain([d3.max(data, function(d) { return d.y; }), d3.min(data, function(d) { return d.y; })]);
+		
+  		    var dots = svg.selectAll(".dot")
+        		.data(data)
+       	 		.enter().append("circle")
+        		.attr("class", "dot")
+       			.attr("r", radius)
+        		.attr("cx", function(d) {
+            		return xScale(d.x);
+        			})
+        		.attr("cy", function(d) {
+            		return yScale(d.y);
+        		});
+                   
+            //var dots = svg.append('g')
+    			//	.attr('transform', 'translate(' + margin + ', 0)')
+    			//	.selectAll('circle')
+                 //   .data(data)
+                //	.enter()
+                //    .append('circle')
+                    //.attr('class', 'display-dot')
+               //     .style('fill', 'lightblue')//function (d,i) { return fillColor[i];})
+               //     .attr('cy', function (d) {  return  d.y ;  })
+               //     .attr('cx', function (d) {  return  d.x ;  })
+               //     .attr('r', radius);
+        	
+        	var xAxis = d3.axisBottom(xScale).ticks(5);
+        	var yAxis = d3.axisLeft(yScale).ticks(5);
+        	
+        	svg.append("g")
+        		.attr("class","xaxis")
+        		.call(xAxis);
+        	svg.append("g")
+        		.attr("class","yaxis")
+        		.call(yAxis);
+    	
+            // update functions
+            updateWidth = function() {
+                svg.transition().duration(1000).attr('width', width);
+            };
+
+            updateHeight = function() {   
+                svg.transition().duration(1000).attr('height', height);
+            };
+
+            updateFillColor = function() {
+                svg.transition().duration(1000).style('fill',  function (d,i) { 
+                	return fillColor[i];});
+            };
+                    	
+  			updateData = function() {
+                var update = svg.selectAll('dot')
+                    .data(data);
+				xScale = d3.scaleLinear()
+					.range([0, width - 2 * margin])
+					.domain([d3.min(data, function(d) { return d.x; }), d3.max(data, function(d) { return d.x; })]),
+		
+				yScale = d3.scaleLinear()
+					.range([margin, height - 2*margin])
+					.domain([d3.max(data, function(d) { return d.y; }), d3.min(data, function(d) { return d.y; })]);
+				 xAxis = d3.axisBottom(xScale).ticks(5);
+        		 yAxis = d3.axisLeft(yScale).ticks(5);
+        	
+        		svg.append("g")
+        			.attr("class","xaxis")
+        			.call(xAxis);
+        		svg.append("g")
+        			.attr("class","yaxis")
+        			.call(yAxis);
+    	
+                update
+                    .transition()
+                    .duration(500)
+                    .style('fill', function (d,i) { return fillColor[i];})
+                    .attr('y', function (d) { return  yScale(d.y);  })
+                    .attr('x', function (d) { return  xScale(d.x);  })
+                    .attr('r', radius);
+                    
+
+                update.enter()
+                    .append('circle')
+                    .attr('class', 'dot')
+                    .style('fill', function (d,i) { return fillColor[i];})
+                    .attr('y', 0)
+                    .attr('x', function (d) { return  xScale(d.x);  })
+                    .attr('r', radius)
+                    .style('opacity', 0)
+                    .transition()
+                    .duration(500)
+                    .delay(function(d, i) { return (data.length - i) * 40; })
+                    .style('fill', function (d,i) { return fillColor[i];})
+                    .attr('y', function (d) { return  yScale(d.y);  })
+                    .attr('x', function (d) { return  xScale(d.x);  })
+                    .attr('r', radius);
+
+                update.exit()
+                    .transition()
+                    .duration(350)
+                    .delay(function(d, i) { return (data.length - i) * 20; })
+                    .style('opacity', 0)
+                    .remove();
+                //console.log(data[0], d3.min(data, function(d) { return d.x; }));
+            }
+
+        });
+    }
+    chart.width = function(value) {
+        if (!arguments.length) return width;
+        width = value;
+        if (typeof updateWidth === 'function') updateWidth();
+        return chart;
+    };
+
+    chart.height = function(value) {
+        if (!arguments.length) return height;
+        height = value;
+        if (typeof updateHeight === 'function') updateHeight();
+        return chart;
+    };
+
+    chart.fillColor = function(value) {
+        if (!arguments.length) return fillColor;
+        if(Array.isArray(value) ){
+        	fillColor = value;
+        } else {
+        	for(i=0; i<data.length; i++){
+        		fillColor[i] = value;
+        	}
+        }
+        if (typeof updateFillColor === 'function') updateFillColor();
+        return chart;
+    };
+
+	chart.data = function(value) {
+    	if (!arguments.length) return data;
+    	data = value;
+    	if (typeof updateData === 'function') updateData();
+    	return chart;
+	};
+  
+	return chart;
+}
+  var dataA = [{x:1, y:2}, {x:2, y:4}, {x:3, y:5}], 
+      dataB = [{x:2, y:2}, {x:1, y:4}, {x:0, y:6}],
+      updatableChart = xyChart().data(dataA);
+//        d3.select('#quant2SummarySVGgoesHere').call(updatableChart);
 // updatableChart.data(dataB);
 
  var lnFactorial = [
