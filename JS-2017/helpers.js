@@ -617,119 +617,87 @@ function propBarChart() {
 
 /* global d3 */
 
-function scatterPlot() {
+function scatterPlot(data, svgObject, interactFunction) {
+ // not updateable
+	var circleColors = ["steelblue","red"],
+		color = [],
+		margin = 40,
+		myArray =[],
+	    nN = data.length,
+	    plotX,
+	    ymin,
+	    ymax,
+	    xmin,
+	    xmax ,
+	    wdth = 440 - margin * 2,
+	    hght = 320 - margin * 2;
+        if(svgObject.getAttribute("width")>50){
+	     wdth= svgObject.getAttribute("width") - margin * 2;
+	    hght = svgObject.getAttribute("height") - margin * 2;
+	}
+	if (nN ===2){
+		color = data[1];
+		sample = data[0];
+		nN = data.length;
+	}
 
-  var margin = {top: 20, right: 20, bottom: 30, left: 40},
-    width = 400,
-    height = 400,
-    innerWidth = width - margin.left - margin.right,
-    innerHeight = height - margin.top - margin.bottom,
-    xValue = function(d) { return d[0]; },
-    yValue = function(d) { return d[1]; },
-    xScale = d3.scaleLinear(),
-    yScale = d3.scaleLinear();
+	//sample.sort(function(a,b){return a - b}) ;   
+    var xScale = d3.scaleLinear()
+				.range([margin, width - 3 * margin])
+				.domain([d3.min(data, function(d) { return d.x; }), d3.max(data, function(d) { return d.x; })]),
+		
+		yScale = d3.scaleLinear()
+				.range([margin, height - 2*margin])
+				.domain([d3.max(data, function(d) { return d.y; }), d3.min(data, function(d) { return d.y; })]);
+		  
 
-  function chart(selection) {
-    selection.each(function (data) {
+	var radii = (nN < 101)? 10:
+	    (nN < 501)? 7:
+	    (nN < 1001)? 5:
+	    (nN < 5001)? 4: 3; // perhaps this should relate to width/height of svg]
+    var gees = d3.select(svgObject).selectAll("g");
+	if(typeof(gees) === "object"){
+		gees.remove();
+	}    
+   var SPxAxis = d3.axisBottom(xScale)
+      .ticks(5);   
 
-      // Select the svg element, if it exists.
-      var svg = d3.select(this).selectAll("svg").data([data]);
+   var SPyAxis = d3.axisLeft(yScale);
+      
+  var graph = d3.select(svgObject)
+    .attr("width", wdth + margin*2)
+    .attr("height", hght + margin*2)
+  .append("g")
+   .attr("transform", "translate("+ (2 * margin) + "," + margin + ")");
+    
+    
+    graph.append("g")
+      .attr("class", "y axis")
+      .call(SPyAxis);
+      
+      
+	graph.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + (radii + hght) +")")
+      .call(SPxAxis);
 
-      // Otherwise, create the skeletal chart.
-      var svgEnter = svg.enter().append("svg");
-      var gEnter = svgEnter.append("g");
-      gEnter.append("g").attr("class", "x axis");
-      gEnter.append("g").attr("class", "y axis");
+  //  graph.append("g")
+  //  	.attr("class", "text")
+  //  	.attr("x", 20)
+  //  	.attr("y", hght + 5)
+  //  	.text(xlegend);  
+      
+   	Dots =  graph.selectAll("g.circle")
+            .data(data); 
+	Dots.enter().append("circle")
+            .attr("cx", function(d){ return xScale(d.x);} ) 
+            .attr("r", radii ) 
+            .attr("cy", function(d){ return yScale(d.y);} ) 
+            .style("fill", function(d){return 'blue';})
+            .style("fill-opacity", 0.6)
+            .on("click", interactFunction ); 
+    //return [Dots, sample];
 
-      // Update the outer dimensions.
-      svg.merge(svgEnter).attr("width", width)
-        .attr("height", height);
-
-      // Update the inner dimensions.
-      var g = svg.merge(svgEnter).select("g")
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-
-      xScale.rangeRound([0, innerWidth])
-        .domain([d3.min(data, function(d) { return d.x; }), 
-        		 d3.max(data, function(d){return d.x;})]);
-      yScale.rangeRound([innerHeight, 0])
-        .domain([0, d3.max(data, function(d) { return d.y; })]);
-
-      g.select(".x.axis")
-          .attr("transform", "translate(0," + innerHeight + ")")
-          .call(d3.axisBottom(xScale))
-        .append("text")
-          .attr("x", 6)
-          .attr("dx", "0.71em")
-          .attr("text-anchor", "end")
-          .text("X Variable");
-
-      g.select(".y.axis")
-          .call(d3.axisLeft(yScale).ticks(10, "%"))
-        .append("text")
-          .attr("transform", "rotate(-90)")
-          .attr("y", 6)
-          .attr("dy", "0.71em")
-          .attr("text-anchor", "end")
-          .text("Y Variable");
-
-      var points = g.selectAll(".point")
-        .data(function (d) { return d; });
-
-      points.enter().append("circle")
-          .attr("class", "point")
-        .merge(points)
-          .attr("cx", X)
-          .attr("cy", Y)
-          .attr("r", 3);
-
-      points.exit().remove();
-    });
-
-  }
-
-// The x-accessor for the path generator; xScale ∘ xValue.
-  function X(d) {
-    return xScale(xValue(d));
-  }
-
-  // The y-accessor for the path generator; yScale ∘ yValue.
-  function Y(d) {
-    return yScale(yValue(d));
-  }
-
-  chart.margin = function(_) {
-    if (!arguments.length) return margin;
-    margin = _;
-    return chart;
-  };
-
-  chart.width = function(_) {
-    if (!arguments.length) return width;
-    width = _;
-    return chart;
-  };
-
-  chart.height = function(_) {
-    if (!arguments.length) return height;
-    height = _;
-    return chart;
-  };
-
-  chart.x = function(_) {
-    if (!arguments.length) return xValue;
-    xValue = _;
-    return chart;
-  };
-
-  chart.y = function(_) {
-    if (!arguments.length) return yValue;
-    yValue = _;
-    return chart;
-  };
-
-  return chart;
 }
 
 

@@ -74,9 +74,20 @@ function summarizeMu1() {
               q1SD.toPrecision(5) + 
               "<br> Sample Size = " + q1N;
       q1Summ.style = "display: block";  
-	dotChart(q1Values, q1SmrySVG);     
+	dotChart(q1Values, q1SmrySVG,q1SumInteract);     
 	
+}
 
+function q1SumInteract(d, i){
+	var q1SumModal = document.getElementById("q1SelectedSampleA");
+	q1SumModal.style.display = "block";
+	q1SumModal.innerHTML = q1Values[i] ;
+	// open modal box to show data value 
+	window.onclick = function(event) {
+    if (event.target == q1SumModal) {
+        q1SumModal.style.display = "none";
+    	}
+	}
 }
 	
 function q1CLChange(arg) {
@@ -229,16 +240,20 @@ function testMu1(tailChoice){
       
 	 if(tailChoice === 'undefined'){ 
 	 	q1hdr = document.getElementById("q1Output");
-	 	q1hdr.innerHTML = "<div class = 'w3-cell-row'> <div class = 'w3-cell' style = 'width:50%'> "+
-	 		" Stronger evidence is sample mean </div>"+ 
-  	 	   "<div class = 'w3-cell' style='width:40%'>"+
-  	 	   "<select class = 'w3-select w3-card w3-border w3-mobile w3-pale-yellow' id='q1Extreme'"+
-  	 	   " onchange = 'q1TestUpdate()' >"+ 
-  				"<option value='lower'>Less Than or =</option>"+
-  				"<option value='both' selected >As or More Extreme Than</option>"+
-  				"<option value='upper'>Greater Than or =</option>"+
-		   	"</select> </div>  <div class ='w3-cell' style = 'width:30%'> &nbsp;&nbsp;" + q1Xbar.toPrecision(4) +
-		   	"</div> </div> ";
+	 	//q1hdr.innerHTML = "<div class = 'w3-cell-row'> <div class = 'w3-cell' style = 'width:50%'> "+
+	 	//	" Stronger evidence is sample mean </div>"+ 
+  	 	//   "<div class = 'w3-cell' style='width:40%'>"+
+  	 	//   "<select class = 'w3-select w3-card w3-border w3-mobile w3-pale-yellow' id='q1Extreme'"+
+  	 	//   " onchange = 'q1TestUpdate()' >"+ 
+  		//		"<option value='lower'>Less Than or =</option>"+
+  		//		"<option value='both' selected >As or More Extreme Than</option>"+
+  		//		"<option value='upper'>Greater Than or =</option>"+
+		//   	"</select> </div>  <div class ='w3-cell' style = 'width:30%'> &nbsp;&nbsp;" + q1Xbar.toPrecision(4) +
+		//   	"</div> </div> ";
+		  	document.getElementById("q1ObsrvedMean").innerHTML =
+					"&nbsp;&nbsp;" + q1Xbar.toPrecision(4) + "(from above)";
+				
+
 		   q1ftr.innerHTML = 
 		   "<div  style = 'width:320px'> Mean "+ q1Label +" in samples from H<sub>0</sub>";
 		 	sampleq1 = resample1Mean(q1Shifted, 100);
@@ -308,7 +323,7 @@ function q1TestUpdate(){
 //}
 
 function q1CIinteract(d,i){
-	console.log(d.x);
+	//console.log(d.x);
 	var q1modal = document.getElementById("q1SelectedSample");
 	q1modal.style.display = "block";
 	q1modal.innerHTML = d.x;

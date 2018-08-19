@@ -363,9 +363,15 @@ function cat1CIinteract(d, i) {
 function cat1TestInteract(d, i) {
 	// open modal box to show success and failure counts in the selected sample;
 	var cat1Modal = document.getElementById("cat1WhichDot"),
-		 cat1ModalContent = document.getElementById("cat1SelectedSample");
+		 cat1ModalContent = document.getElementById("cat1SelectedSample"),
+		 prop;
 	cat1Modal.style.display = "block";
-	cat1ModalContent.innerHTML = "Proportion " + c1Data[0].label + ":  p&#770; =  "   + c1Tstdata[0][i].toPrecision(4) +
+	if(c1Tstdata.length === 2){
+		prop = c1Tstdata[0][i]
+	} else{
+		prop = c1Tstdata[i]
+	}
+	cat1ModalContent.innerHTML = "Proportion " + c1Data[0].label + ":  p&#770; =  "   + prop.toPrecision(4) +
 	  "<br> Click to Close" ;
 	// open modal box to show success and failure counts in the selected resample;
 

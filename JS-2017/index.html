@@ -847,17 +847,22 @@
 						</tr>
 					</table>
 				</div>
-				<div class = "w3-cell" style=" display:block">
+				<div class = "w3-cell" style=" display:block"  id = "q1Summary">
 					<h4> Summary</h4>
 					<div class = "w3-container w3-cell w3-mobile" id = "q1SummaryText" style="width:70%">
 					</div>
 					<div class = "w3-container w3-cell w3-mobile" id = "q1SummarySVGgoesHere" >
 						<svg id = "q1SmrySVG" height=160  width = 300></svg>
 					</div>
+					<div class = "w3-container w3-modal w3-mobile"  >
+			          <div class="w3-modal-content w3-card-4" id = "q1SelectedSampleA" style=" display:none">
+						</div>
+					</div>
 				</div>
+			</div> 
 			</div>
 			<br>
-		</div>
+	
 		<!--                             Select Your Inference                        -->
 		<div class = "w3-container w3-mobile">
 			Either
@@ -917,11 +922,11 @@
 						<option value='upper'>Greater Than or =</option>
 					</select>
 				</div>
-				<div class ='w3-cell' style = "width: 20%">
+				<div class ='w3-cell' style = "width: 20%" id ="q1ObsrvedMean">
 					&nbsp;&nbsp; x&#773;  (from above)
 				</div>
 
-			</div>
+			
 		</div>
 
 		<!--  Show Inference Plot -->
@@ -958,7 +963,7 @@
 		    <div id = "q1Results"></div>
 		</div>
 	</div>
-
+</div>
 	<script src="quant1.js" ></script>
 
 	<!-- ######-  One Quantitative Actions
@@ -1340,6 +1345,15 @@
 						<option value='dental'>Dental distance</option>
 						<option value='other'>Other</option>
 					</select>
+								    <div class = "w3-container w3-cell w3-mobile" id="q2WhichDotA" style = "width: 200px; height:10%; display:none;"
+				onclick="this.style.display='none'" >
+					<br>
+					<br>
+					<br>
+					<div class="w3-card-4 w3-pale-green" id = "q2SelectedSampleA">
+						&nbsp;
+					</div>
+				</div>
 				</div>
 
 				<div class = "w3-cell">
@@ -1347,9 +1361,14 @@
 				</div>
 				<div class = "w3-cell" style= "display:block">
 					<h4> &nbsp; &nbsp;Summary</h4>
-					<div class = "w3-container w3-cell w3-mobile" id = "quant2SummarySVGgoesHere" ></div>
 						
-					<div class = "w3-container w3-cell w3-mobile" id = "quant2SummaryText" style="width:310px; display:none"></div>
+					<div class = "w3-container w3-cell w3-mobile" id = "quant2SummaryText" style="width:310px; display:none">
+					</div>
+					<div class = "w3-container w3-cell w3-mobile" id = "quant2SummarySVGgoesHere" >
+						<svg id = "quant2SumSVG" height = "300px" width = "400px"></svg>
+					
+
+				</div>
 				</div>
 			</div>
 		</div>
@@ -1360,7 +1379,8 @@
 		Either
 		<button id = "EstimateSlope"
 		onclick="q2Inference = 'estimate';
-		q2CIdata = estimateSlope();
+		q2CIdata = resampleSlope4CI(q2Values, 100);
+		q2InfOutput = discreteChart(q2CIdata, quant2InfSVG, q2CIinteract );
 		"
 		class="w3-button w3-pale-blue w3-medium w3-round-xlarge">
 			&nbsp;  Estimate a slope.
@@ -1368,8 +1388,8 @@
 		&nbsp; OR &nbsp;
 		<button id = "TestSlope"
 		onclick="q2Inference = 'test';
-		q2Tstdata = testSlope();
-		q2InfOutput = discreteChart(q2Tstdata, quant2InfSVG, quant2TestInteract );
+		q2Tstdata = resampleSlope4Test(q2Values, 100);
+		q2InfOutput = discreteChart(q2Tstdata, quant2InfSVG, q2TestInteract );
 		"
 		class="w3-button w3-pale-blue w3-medium w3-round-xlarge">
 			&nbsp; Test: Is true slope equal 0?
