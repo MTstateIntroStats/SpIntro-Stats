@@ -136,8 +136,8 @@ function q2InteractFnA(d, i){
 	  							") <br> Click to Close" ;
 	// open modal box to show slope of the selected resample;
 	window.onclick = function(event) {
-    if (event.target == q2modal) {
-        q2modal.style.display = "none";
+    if (event.target == q2Modal) {
+        q2Modal.style.display = "none";
     	}
 	}
 }

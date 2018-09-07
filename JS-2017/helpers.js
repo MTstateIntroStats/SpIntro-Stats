@@ -116,6 +116,41 @@ function resample1Mean(values, nreps){
 	return out ;
 }
 
+function resampleDiffMeans(values1, values2, nreps){
+	//take resamples of each set of values with replacement (nreps times), return the difference in means of each
+	var i, j, k, 
+	    out = [],cumProb1 = [],
+	    nVals1 = values1.length,
+	    prob1 = repeat(1/nVals1, nVals1),
+	    cumProb2 = [],
+	    nVals2 = values2.length,
+	    prob2 = repeat(1/nVals2, nVals2),
+	    resamples = [],
+	    totalProb = 1;
+		cumProb1 = jStat.cumsum(prob1);
+		cumProb1.unshift(0);
+		cumProb2 = jStat.cumsum(prob2);
+		cumProb2.unshift(0);
+	for ( i = 0; i < nreps; i++) {
+		resamples = [];
+		for(j=0; j < nVals1; j++){
+			k = cut(Math.random(), cumProb1);
+			resamples.push( values1[k ] );
+		}
+		out.push( d3.mean(resamples));
+		resamples = [];
+		for(j=0; j < nVals2; j++){
+			k = cut(Math.random(), cumProb2);
+			resamples.push( values2[k ] );
+		}
+		out[i] += -d3.mean(resamples);
+		
+	}
+	//console.log(out);
+	// return the vector of means
+	return out ;
+}
+
 function sample1(nItems) {
 	// draw  one value assuming each is equally likely
 	return Math.floor(Math.random() * nItems);
@@ -223,6 +258,7 @@ function histogram(sample, svgObject, interactFunction){
 	// builds a d3 svg plot in the svg object which will respond to a mouse-click by calling
 	//  interactFunction on that point
 	// input: sample is of length 2 containing (1) x values and (2) color indices
+	//         or it could just be the data -- and color will default to black
 	// returns: Dots (svg objects) and the original sample
 	var circleColors = ["steelblue","red"],
 		color = [],
@@ -247,7 +283,9 @@ function histogram(sample, svgObject, interactFunction){
 		color = sample[1];
 		sample = sample[0];
 		nN = sample.length;
-	}    
+	}   else{
+		color = repeat(0, nN);
+	} 
 	sample.sort(function(a,b){return a - b}) ;   
           // numeric sort to build bins for y values
           // start on left with smallest x.	
