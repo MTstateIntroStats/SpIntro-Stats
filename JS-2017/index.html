@@ -926,7 +926,7 @@
 					&nbsp;&nbsp; x&#773;  (from above)
 				</div>
 
-			
+			</div>
 		</div>
 
 		<!--  Show Inference Plot -->
@@ -944,7 +944,11 @@
 		<br>
 
 		<!--  Post-plot  Output CI or inputs for p-value and output the p-value -->
-		<div id = "q1Output" class="w3-display-container" style = "display: none"></div>
+		<div id = "q1Output" class="w3-display-container" style = "display: none">
+			
+		</div>
+		
+		<div id = "q1Results"></div>
 		<!--  Increase simulation size -->
 		<div id = "q1MoreSims" style = "width: 360px; display:none" >
 			<div class="w3-cell-row">
@@ -960,10 +964,9 @@
 				</div>
 			</div>
 			
-		    <div id = "q1Results"></div>
 		</div>
 	</div>
-</div>
+
 	<script src="quant1.js" ></script>
 
 	<!-- ######-  One Quantitative Actions
@@ -1331,7 +1334,7 @@
 	<div id="TestEstQ2" class="w3-container Page" style="display:none">
 		<script src="data/quant2Data.js"></script>
 		<div class = "w3-container">
-			<h3>Estimate slope and correlation. Also test for specific values. </h3>
+			<h3>Estimate slope and correlation or test to see if slope is zero. </h3>
 		</div>
 		<div class = "w3-container" id = "quant2DataIn-Summary">
 			<div class = "w3-cell-row w3-mobile">
@@ -1345,7 +1348,7 @@
 						<option value='dental'>Dental distance</option>
 						<option value='other'>Other</option>
 					</select>
-								    <div class = "w3-container w3-cell w3-mobile" id="q2WhichDotA" style = "width: 200px; height:10%; display:none;"
+					<div class = "w3-container w3-cell w3-mobile" id="q2WhichDotA" style = "width: 300px; height:10%; display:none;"
 				onclick="this.style.display='none'" >
 					<br>
 					<br>
@@ -1359,28 +1362,25 @@
 				<div class = "w3-cell">
 					&nbsp;&nbsp;
 				</div>
-				<div class = "w3-cell" style= "display:block">
+				<div class = "w3-cell" style= "display:block" id = "quant2Summry">
 					<h4> &nbsp; &nbsp;Summary</h4>
 						
 					<div class = "w3-container w3-cell w3-mobile" id = "quant2SummaryText" style="width:310px; display:none">
 					</div>
 					<div class = "w3-container w3-cell w3-mobile" id = "quant2SummarySVGgoesHere" >
 						<svg id = "quant2SumSVG" height = "300px" width = "400px"></svg>
-					
-
-				</div>
+					</div>
 				</div>
 			</div>
 		</div>
 		<br>
-	</div>
 	<!--                             Select Your Inference                        -->
-	<div class = "w3-container w3-mobile" id="q2SelectInf"  style = "display:none">
+	<div class = "w3-container w3-mobile" id="quant2SelectInf"  style = "display:none">
 		Either
 		<button id = "EstimateSlope"
 		onclick="q2Inference = 'estimate';
-		q2CIdata = resampleSlope4CI(q2Values, 100);
-		q2InfOutput = discreteChart(q2CIdata, quant2InfSVG, q2CIinteract );
+		q2CIdata = estimateSlope(100);
+		q2InfOutput = histogram(q2CIdata, quant2InfSVG, q2CIinteract );
 		"
 		class="w3-button w3-pale-blue w3-medium w3-round-xlarge">
 			&nbsp;  Estimate a slope.
@@ -1388,54 +1388,58 @@
 		&nbsp; OR &nbsp;
 		<button id = "TestSlope"
 		onclick="q2Inference = 'test';
-		q2Tstdata = resampleSlope4Test(q2Values, 100);
-		q2InfOutput = discreteChart(q2Tstdata, quant2InfSVG, q2TestInteract );
+		q2Tstdata = testSlope( noChoice);
+		//q2InfOutput = histogram(q2Tstdata, quant2InfSVG, q2TestInteract );
 		"
 		class="w3-button w3-pale-blue w3-medium w3-round-xlarge">
 			&nbsp; Test: Is true slope equal 0?
 		</button>
+	</div>
+		<div id = "quant2Test"  class = "w3-cell-row w3-mobile" style = "display: none">
+			<div class = "w3-cell  w3-mobile"  style = "width: 35%">
+				&nbsp; &nbsp; &nbsp; Test: Is the true slope zero? &nbsp;
+			</div>	
+						
+			<div id = "quant2TestInpt"  class = "w3-cell-row w3-mobile" >
+				<div class = 'w3-cell' style = "width: 300px">
+					Stronger evidence is a slope
+				</div>
+				<div class = 'w3-cell' style = "width: 30%">
+					<select class = 'w3-select w3-card w3-border w3-mobile w3-pale-yellow' id='quant2Extreme'
+					onchange = "q2TestUpdate()" >
+						<option value='lower'>Less Than or =</option>
+						<option value='both' selected >As or More Extreme Than</option>
+						<option value='upper'>Greater Than or =</option>
+					</select>
+				</div>
+				<div class ='w3-cell' style = "width: 30%" id ="quant2ObsdSlope">
+						&nbsp;&nbsp; the &beta;&#770;<sub>1</sub> observed above.		
+				</div>
 
+		</div>
 	</div>
 	<br>
 
 	<!--  Inputs for each inference  (before plotting)  -->
 
-	<div id = "quant2ConfLvlInpt" style = "width: 60%; display: none">
+	<div id = "quant2ConfLvl" style = "width: 60%; display: none">
 		Choose a Confidence Level:
 	</div>
-	<div id = "quant2TestInpt"  class = "w3-cell-row w3-mobile" style = "display: none">
-		<div class = 'w3-cell' style = 'width:50%'>
-			Stronger evidence is a difference
-		</div>
-		<div class = 'w3-cell' style='width:40%'>
-			<select class = 'w3-select w3-card w3-border w3-mobile w3-pale-yellow' id='quant2Extreme'
-			onchange = "quant2TestUpdate()" >
-				<option value='lower'>Less Than or =</option>
-				<option value='both' selected >As or More Extreme Than</option>
-				<option value='upper'>Greater Than or =</option>
-			</select>
-		</div>
-		<div class ='w3-cell'  id = "quant2ObsdSlope">
-			&nbsp;&nbsp;
-			the &beta;&#770;<sub>1</sub> observed above.
-		</div>
 
-	</div>
 
 	<div id = "quant2Output" style = "display:none">
-
 	</div>
-	<!-- End of q2Output -->
 	<!--  Show Inference Plot -->
 	<div class = "w3-cell-row w3-mobile">
-		<div class = "w3-container w3-cell w3-mobile" id = "quant2Inference" style = "display:none; width:420px">
-			<!--  Inference plot goes here for CI or Test of difference in 2 proportion -->
+		<div class = "w3-container w3-cell w3-mobile" id = "quant2Inference" style = "width:420px">
+			<!--  Inference plot goes here for CI or Test of slope -->
 			<svg id = "quant2InfSVG" height = "300px" width = "400px"></svg>
 		</div>
 
 		<!-- Box to popup info on a single data point -->
-		<div class = "w3-container w3-cell w3-mobile" id="quant2WhichDot" style = "width: 200px; height:10%; display:none;"
-		onclick="this.style.display='none'" >
+		<div class = "w3-container w3-cell w3-mobile" id="quant2WhichSlope" 
+				style = "width: 300px; height:10%; display:none;"
+				onclick="this.style.display='none'" >
 			<br>
 			<br>
 			<br>
@@ -1447,7 +1451,7 @@
 
 	<!-- Show Results -->
 
-	<div id = "quant2Results" class="w3-display-container" style = "display:none"></div>
+	<div id = "quant2Results" class="w3-display-container" style = "width:100%; display:none"></div>
 	<!--  Increase simulation size -->
 	<div id = "quant2MoreSims" style = "width:360px; display:none" >
 		<div class="w3-cell-row">
@@ -1459,11 +1463,14 @@
 				id='quant2More' placeholder = '0' onchange='quant2MoreSimFn()'>
 			</div>
 			<div class = 'w3-cell  w3-mobile' style = 'width: 40%'>
-				&nbsp;simulated points
+				&nbsp;simulated slopes
 			</div>
 		</div>
 	</div>
-	</div>
+	
+	<!-- End of quant2Output -->
+	
+	
 
 	<!-- End of quant2 Test- Estimate -->
 	<script src="quant2.js"></script>

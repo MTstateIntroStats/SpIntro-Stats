@@ -1,12 +1,10 @@
- // subroutine to estimate a proportion or test for a special value
+ // subroutine to estimate a mean or test for a special value
  // Inputs: 
- //     2 category labels (default = Success/Failure) and a count for each 
+ //     a string of numbers separated by commas 
  //TODO:
- // when null mu changes, take away all the points.
-//  inference plot isn't working
- // adding more points to an inference - estimating plot gives way too many red points
- //    (clicking slider again fixes it)  I think it defaults to 60% confidence
- //  clicking a point in inference plot shows the sample in modal box
+ //  make sure summary plot works for values which are all unique
+//   
+ //  clicking a point in inference plot should show the sample in modal box
  
     var q1SummDiv = d3.select("#q1Inference"),
         q1Tstdata,
@@ -74,7 +72,17 @@ function summarizeMu1() {
               q1SD.toPrecision(5) + 
               "<br> Sample Size = " + q1N;
       q1Summ.style = "display: block";  
-	dotChart(q1Values, q1SmrySVG,q1SumInteract);     
+	//check for any old output plots. If present, erase them due to change in data
+	if (q1InfOutput) {
+		q1CIdata = q1TestData = [];
+		document.getElementById("q1Output").style.display = "none";
+		document.getElementById("q1MoreSims").style.display = "none";
+		document.getElementById("q1ConfLvl").style.display = "none";
+		document.getElementById("q1Inference").style.display = "none";
+		document.getElementById("q1Test1").style.display = "none";
+		document.getElementById("q1SelectedSample").style.display = "none";
+	}
+	discreteChart(q1Values, q1SmrySVG, q1SumInteract);     
 	
 }
 
@@ -182,7 +190,7 @@ function estimateMu1(){
 	 "<h4>Estimate True Mean with a Confidence Interval</h4>"; 
 	  
  	  q1CLvl = document.getElementById("q1ConfLvl");
-	  q1CLvl.style.display ="";
+	  q1CLvl.style.display ="block";
 	  q1Tst = document.getElementById("q1Test1");
 	  q1Tst.style.display ="none";
 	 // show plot
@@ -338,6 +346,15 @@ function q1CIinteract(d,i){
 function q1TestInteract(d,i){
 	//console.log(d.x);
 	// open modal box to show success and failure counts in the selected sample;
+	var q1modal = document.getElementById("q1SelectedSample");
+	q1modal.style.display = "block";
+	q1modal.innerHTML = d.x;
+	// open modal box to show success and failure counts in the selected resample;
+	window.onclick = function(event) {
+    if (event.target == q1modal) {
+        q1modal.style.display = "none";
+    	}
+	}
 } ;
 
 function q1MoreSimFn(){

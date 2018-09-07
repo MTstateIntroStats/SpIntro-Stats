@@ -88,54 +88,6 @@ function summarizeP1() {
 		cat1Bars = propBarChart().data([cat1Phat]).height(100);		  
 		d3.select('#cat1SummarySVGgoesHere').call(cat1Bars);
     }
-    // cat1Bars = cat1BarSvg.selectAll("rect").data(c1Data);
-        
-    // cat1Bars.enter()
-    // 	.append("rect")
-	//	.attr("width", function(d) {return c1x(Math.max(0.005, d.xx));})// - 14;} )
-	//	.attr("height", barHeight - 1)
-	//	.attr("fill", "blue")
-		//.attr("transform", function(d, i) {	return "translate(" + padding + "," + i * barHeight + ")";})
-	//	;
-	//cat1Bars.append("text")
-	//	.attr("x", function(d) {return padding + 16 + c1x(d.xx);})
-	//	.attr("y", function(d, i) {return (i + .5) * barHeight;	})
-	//	.attr("dy", ".35em")
-	//	.text(function(d) {	return d.label;	})
-	//	.attr("fill", "black");
-
-    //  cat1Bars.exit().remove(); 
-      
-		//chartC1.selectAll("rect").transition().attr("width", function(d){ return c1x(0 * d.xx)});
-		//chartC1.selectAll("text").transition().attr("fill", "white");
-		//chartC1.selectAll("g").data(c1Data).remove();
-		//chartC1.selectAll("g").data(c1Data).remove();
-		// why do I have to do this twice?
-	
-
-				
-	//barC1 = chartC1.selectAll("g")
-	//	.data(c1Data);
-	//barC1.enter()
-	//	.append("g")
-	//	.each(function(d) {	this.current = d;	});
-	//resets the figure to the current data
-	//.attr("fill", "blue")
-	//.attr("transform", function(d, i) { return "translate(14," + i * barHeight + ")"; })
-
-	//barC1.append("rect")
-	//	.attr("width", function(d) {return c1x(Math.max(0.005, d.xx));})// - 14;} )
-	//	.attr("height", barHeight - 1)
-	//	.attr("fill", "blue")
-	//	.attr("transform", function(d, i) {	return "translate(" + padding + "," + i * barHeight + ")";});
-
-
-	//var c1xAxis = d3.axisBottom(c1x).ticks(5);
-
-	//cat1Bars.append("g")  //barC1.append("g")
-	//	.attr("class", "x axis")
-		//.attr("transform", "translate(" + padding + "  ," + 1.5 * barHeight + ")")
-	//	.call(c1xAxis);
 
 	//check for any old output plots. If present, erase them due to change in data
 	if (cat1InfOutput) {

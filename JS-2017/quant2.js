@@ -3,12 +3,13 @@
  //     choose a prebuilt data set
  //TODO:
 //  allow input of csv file and parse it.
-//  summary plot -- show line of best fit
-// Inference plot: coordinates are getting lost
  //  clicking a point should show resampled slope (and correlation?)
+ //  Clicking [Test] button first time in doesn't show the inference plot
  
     var correlation,
     	intercept,
+    	i, j,
+    	noChoice = "undefined",
     	q2SummDiv = d3.select("#q2Inference"),
         q2Tstdata,
         q2CIdata,
@@ -19,7 +20,7 @@
 		q2CLvl,
 		q2lowerBd,
 		q2upperBd,
-		q2MuNull,
+		q2Null =0,
         q2N,
         q2Pval,
         q2TestDirection,
@@ -38,15 +39,18 @@
 		q2SmryPlot,
 		q2Values,
 		slope,
+        resampleq2 =[],
+        sampleq2 =[],
+        sq2Len,
 		targetQuantile,
       	upperBd,
       	upperCI,
-        resampleq2,
-        sampleq2;
+		x=[],
+		y=[];
 
- var svgq2 = d3.select("#q2InfSVG"),    
+ var svgq2 = d3.select("#quant2InfSVG"),    
       svgSumq2=d3.select("#quant2SumSVG");
- document.getElementById("quant2MoreSims").style.display = 'none';     
+ //document.getElementById("quant2MoreSims").style.display = 'none';     
       
 function summarizeSlope() {
       // builds summary table and dot plot for 2 quantitative variables
@@ -56,8 +60,12 @@ function summarizeSlope() {
         w = 200,  
         h = 200,
         q2Keys,
-        x=[], xbar, xVar,
-        y=[], ybar, yVar, coVar=0;  
+		xbar, xVar,
+        ybar, yVar, 
+        coVar=0;
+		x=[];
+		y=[];  
+		sampleq2 = resampleq2 = []; 
       
       q2DataName = document.getElementById("quant2DataName").value;
       q2RawData = (q2DataName === "shuttle")? shuttle:
@@ -99,14 +107,23 @@ function summarizeSlope() {
                          ;
       q2Summ.style = "display: block";  
       
-	//if(typeof(q2SmryPlot) ==='function'){
-	//	q2SmryPlot.data(q2Values)
-	//} else{
-	//	q2SmryPlot = xyChart().data(q2Values).height(300).width(300).fillColor('blue');		  
-	//	d3.select('#quant2SummarySVGgoesHere').call(q2SmryPlot);
-    //} 
-	scatterPlot(q2Values, quant2SumSVG, q2InteractFnA );	
-	document.getElementById("q2SelectInf").style.display = 'block';
+	//check for any old output plots. If present, erase them due to change in data
+	if (q2InfOutput) {
+		q2CIdata = q2TstData = [];
+		document.getElementById("quant2Results").style.display = "none";
+		document.getElementById("quant2Output").style.display = "none";
+		document.getElementById("quant2MoreSims").style.display = "none";
+		document.getElementById("quant2ConfLvl").style.display = "none";
+		document.getElementById("quant2Test").style.display = "none";
+		document.getElementById("quant2Inference").style.display = "none";
+		document.getElementById("quant2WhichSlope").style.display = "none";
+	}
+      
+	scatterPlot(q2Values, quant2SumSVG, q2InteractFnA, intercept, slope );	
+	// display next step: select inference
+	document.getElementById("quant2SelectInf").style.display = 'block';
+	document.getElementById("quant2ObsdSlope").innerHTML =
+						"&nbsp;&nbsp;" + slope.toPrecision(4) +" from above.";
 }
 
 function q2InteractFnA(d, i){
@@ -117,16 +134,18 @@ function q2InteractFnA(d, i){
 	q2ModalContent.innerHTML = "Coordinates: (" + q2Values[i].x.toPrecision(4) + ", "+
 									q2Values[i].y.toPrecision(4) +
 	  							") <br> Click to Close" ;
-	// open modal box to show success and failure counts in the selected resample;
+	// open modal box to show slope of the selected resample;
+	window.onclick = function(event) {
+    if (event.target == q2modal) {
+        q2modal.style.display = "none";
+    	}
+	}
 }
 	
 function q2CLChange(arg) {
 	//update plot to illustrate confidence interval
 	var sq2Len, cnfLvl = q2CnfLvl, 
 		tempColors =[], twoTail;
-      //q2Label = document.getElementById("q2Label").value;
-      //q2Values = document.getElementById("q2Values").value.split(",");
-      //q2N = q2Values.length;
 	 if(arg.value){
 			cnfLvl = q2CnfLvl =  +arg.value;
 		};
@@ -137,18 +156,20 @@ function q2CLChange(arg) {
 			 q2upperBd = tempColors[2].toPrecision(4);
 			 cnfLvl = tempColors[3];
 			q2CIdata = [q2CIdata[0], tempColors[0] ];
-			q2InfOutput = discreteChart(q2CIdata, q2InfSVG, q2CIinteract);
+			console.log(q2CIdata[0][1]);
+			q2InfOutput = histogram(q2CIdata, quant2InfSVG, q2CIinteract);
 		}
+		document.getElementById("quant2Inference").style.display = "block";
 		q2ftr = document.getElementById("quant2Results");
-		//q2ftr.style.display = 'block';
+		q2ftr.style.display = 'block';
 	 	q2ftr.innerHTML = //"<div style = 'height = 10'> </div>" +
-	   "<div style = 'width:360px'> Plot shows Best Fit Lines in  "+ sq2Len + " Re-samples" +
+	   "<div style = 'width:360px'> Plot shows slopes of Best Fit Lines in  "+ sq2Len + " Re-samples" +
 	   "<br> <br>"+ Math.round(cnfLvl*100)+ 
 	   "% Confidence Interval: (" + q2lowerBd +", "+ q2upperBd +" )</div>";
-		//document.getElementById("quant2MoreSims").style.display = 'block';	   
+		document.getElementById("quant2MoreSims").style.display = 'block';	   
 }
 	
-var q2CIrangeslide = rangeslide("#quant2ConfLvlInpt", {
+var q2CIrangeslide = rangeslide("#quant2ConfLvl", {
 		data: confLevels,
 		showLabels: true,
 		startPosition: 0,
@@ -164,7 +185,7 @@ var q2CIrangeslide = rangeslide("#quant2ConfLvlInpt", {
 	});
 
   
-function estimateSlope(){
+function estimateSlope(nReps){
 	//function to estimate the true mean based on resamples of original numeric data
 	var cnfLvl = q2CnfLvl,
 		CI = [];
@@ -175,13 +196,13 @@ function estimateSlope(){
 	 q2hdr.innerHTML = 
 	 "<h4>Estimate True Slope with a Confidence Interval</h4>"; 
 	  
- 	  q2CLvl = document.getElementById("quant2ConfLvlInpt");
-	  q2CLvl.style.display ="";
-	  q2Tst = document.getElementById("quant2TestInpt");
+ 	  q2CLvl = document.getElementById("quant2ConfLvl");
+	  q2CLvl.style.display ="block";
+	  q2Tst = document.getElementById("quant2Test");
 	  q2Tst.style.display ="none";
 	 // show plot
 	   
-	  resampleq2 = resampleSlope4CI(q2Values,100).sort(function(a,b){return a - b});
+	  resampleq2 = resampleSlope4CI(q2Values, nReps).sort(function(a,b){return a - b});
 	  sq2Len = resampleq2.length;
 	  
 	  CI =  ciColor(resampleq2, q2CnfLvl);
@@ -191,13 +212,13 @@ function estimateSlope(){
 	  cnfLvl = CI[3];
 	  
 	 q2ftr = document.getElementById("quant2Results");
-	 //q2ftr.style.display = 'block';
+	 q2ftr.style.display = 'block';
 	 q2ftr.innerHTML = 
 	   "<div style='width=50px'></div>"+
-	   "<div style = 'width:360px'> Plot shows slopes in  "+ sq2Len + " Re-samples" +
+	   "<div style = 'width:360px'> Plot shows slopes of Best Fit Lines in  "+ sq2Len + " Re-samples" +
 	   "<br> <br>"+ Math.round(cnfLvl*100) + 
 	   "% Confidence Interval: (" + q2lowerBd +", "+ q2upperBd +" )</div>"; 
-	 //document.getElementById("quant2MoreSims").style.display = 'block';
+	 document.getElementById("quant2MoreSims").style.display = 'block';
  	  
 	  //console.log(q2lowerBd, q2upperBd);
 	  
@@ -208,24 +229,20 @@ function estimateSlope(){
 
 function testSlope(tailChoice){
 	//function to test 'Is the true slope  = 0?' for 2 quantitative variables
-	// to force the null hypothesis to be true, we resample from x and y independently 
+	// to force the null hypothesis to be true, we resample from y independent of x 
 	// Gather Inputs:
       
-      //q2Label = document.getElementById("q2Label").value;
-      //q2Values = document.getElementById("q2Values").value.split(",");
-      q2Null = 0.00; //+document.getElementById("q2trueSlope").value;
-      //q2N = q2Values.length;
-      //q2Xbar = d3.mean(q2Values);
-      
-      q2CLvl = document.getElementById("quant2ConfLvlInpt");
+            
+      q2CLvl = document.getElementById("quant2ConfLvl");
 	  q2CLvl.style.display ="none";
 	    
-	  q2Tst = document.getElementById("quant2TestInpt");
+	  q2Tst = document.getElementById("quant2Test");
 	  q2Tst.style.display ="block";
 	 //q2Pval = undefined;
 	  
       
 	 if(tailChoice === 'undefined'){ 
+		document.getElementById("quant2Inference").style.display = "block";
 	 	q2hdr = document.getElementById("quant2Output");
 	 	q2hdr.innerHTML = "<div class = 'w3-cell-row'> <div class = 'w3-cell' style = 'width:50%'> "+
 	 		" Stronger evidence is sample slope </div>"+ 
@@ -238,7 +255,7 @@ function testSlope(tailChoice){
 		   	"</select> </div>  <div class ='w3-cell' style = 'width:30%'> &nbsp;&nbsp;" + slope.toPrecision(4) +
 		   	"</div> </div> ";
 		   q2ftr.innerHTML = 
-		   "<div  style = 'width:320px'> Slope in samples from H<sub>0</sub>";
+		   "<div  style = 'width:320px'> Plot shows slopes of Best Fit lines in  "+ sq2Len + " Re-ssamples from H<sub>0</sub>";
 		 	sampleq2 = resampleSlope4Test(q2Values, 100);
 		 	sq2Len = sampleq2.length;
 		 	//console.log(d3.mean(sampleq2), sq2Len);
@@ -253,31 +270,41 @@ function resampleSlope4Test(data, reps){
 	var coVar, 
 		correlations =[],
 		dataLength = data.length,
+		seq = [],
 		slopes = [],
-		xsample = [],
-		ysample = [],
+		sample = [],
 		xBar, 
 		yBar, 
 		xVar, 
 		yVar,
-	x = d3.map(data, function(d){return d.x}),
-	y = d3.map(data, function(d){return d.y});
+		ysample =[];
+		seq = sequence(0, dataLength-1, 1);
 	
+	    xBar = d3.mean(x);
+     	xVar = d3.variance(x);
+		//console.log(xVar);		
+		
 	for(i=0; i < reps; i++){
-		coVar = xBar = xVar = yBar = yVar =0;
-		xsample = d3.shuffle(x);
-		ysample = d3.shuffle(y);
-		for(j=0; j<dataLength; j++){
-				coVar += xsample[j] * ysample[j];     // add up cross product
+		coVar =0;
+		yBar = 0;
+		//xsample = sampleN(x, dataLength));
+					 // could resample these as well as y's, but then we could get all x values equal
+					 // instead, we'll assume it's a designed experiment with set (fixed) x levels
+					   
+		sample = sampleN(seq, dataLength);
+		for(j=0; j < dataLength; j++){
+				ysample[j] =  y[sample[j]];     // set y values
+				coVar += x[j] * ysample[j];     // add up cross product
 		}	
-		 
-     	xBar = d3.mean(xsample);
-     	xVar = d3.variance(xsample);
-     	yBar = d3.mean(ysample);
+		// console.log(ysample);
+		// console.log(coVar);
+     	// xBar = d3.mean(xsample);
+     	// xVar = d3.variance(xsample);
+     	yBar = d3.mean(ysample);;
      	yVar = d3.variance(ysample);
      	coVar = (coVar - dataLength * xBar * yBar) /(dataLength-1) ;
-     	slopes[j] = coVar / xVar;
-     	correlations[j] = coVar / Math.sqrt(yVar * xVar);
+     	slopes[i] = coVar / xVar;
+     	correlations[i] = coVar / Math.sqrt(yVar * xVar);
     }
 	return(slopes);	
 }
@@ -287,6 +314,7 @@ function resampleSlope4CI(data, reps){
 		correlations =[],
 		dataLength = data.length,
 		sample =[],
+		seq = [],
 		slopes = [],
 		xsample = [],
 		ysample = [],
@@ -294,11 +322,12 @@ function resampleSlope4CI(data, reps){
 		yBar, 
 		xVar, 
 		yVar;
+		seq = sequence(0, dataLength-1, 1);
 	
 	for(i=0; i < reps; i++){
-		coVar = xBar = xVar = yBar = yVar =0;
-		sample = d3.shuffle(sequence(0, dataLength-1,1) );
-		
+		coVar  = 0;
+		sample = sampleN(seq, dataLength );
+		// resample from (x,y) pairs, keeping the connection between the two variables
 		for(j=0; j<dataLength; j++){
 			xsample[j] = data[sample[j]].x;
 			ysample[j] = data[sample[j]].y;
@@ -309,8 +338,8 @@ function resampleSlope4CI(data, reps){
      	yBar = d3.mean(ysample);
      	yVar = d3.variance(ysample);
      	coVar = (coVar - dataLength * xBar * yBar) /(dataLength-1) ;
-     	slopes[j] = coVar / xVar;
-     	correlations[j] = coVar / Math.sqrt(yVar * xVar);
+     	slopes[i] = coVar / xVar;
+     	correlations[i] = coVar / Math.sqrt(yVar * xVar);
     }
 	return(slopes);	
 }
@@ -324,7 +353,7 @@ function q2TestUpdate(){
 		sq2Len;
  	q2Inference = 'test';
  	// get direction of evidence:
- 	 q2TestDirection = document.getElementById("q2Extreme").value;
+ 	 q2TestDirection = document.getElementById("quant2Extreme").value;
  	
  	if(!(sampleq2)){
  		sampleq2 = testSlope();
@@ -332,20 +361,20 @@ function q2TestUpdate(){
  	sq2Len = sampleq2.length;
  	 if(q2TestDirection ==="lower"){
  	 	for(i = 0; i < sq2Len; i++){
- 	 		check = 0 + (sampleq2[i] <= q2Xbar);
+ 	 		check = 0 + (sampleq2[i] <= slope);
  	 		extCount += check;
 			q2Color[i] =  check; 	 		
  	 	}
  	 } else if(q2TestDirection ==="upper"){
  	 	for(i = 0; i < sq2Len; i++){
- 	 		check = 0 + (sampleq2[i] >= q2Xbar) ;
+ 	 		check = 0 + (sampleq2[i] >= slope) ;
  	 		extCount += check;
 			q2Color[i] =  check; 	 		
  	 	}
  	 	
  	 } else{
-		lowP = q2Xbar * (q2Xbar <= q2MuNull) + (2*q2MuNull - q2Xbar)*(q2Xbar > q2MuNull)+ 1/1000000;
-		hiP  = q2Xbar * (q2Xbar >= q2MuNull) + (2*q2MuNull - q2Xbar)*(q2Xbar < q2MuNull)- 1/1000000;
+		lowP = slope * (slope <= q2Null) + (2*q2Null - slope)*(slope > q2Null)+ 1/1000000;
+		hiP  = slope * (slope >= q2Null) + (2*q2Null - slope)*(slope < q2Null)- 1/1000000;
  	 	for(i = 0; i < sq2Len; i++){
  	 		check = 0 + ((sampleq2[i] <= lowP)|(sampleq2[i] >= hiP));
  	 		extCount += check;
@@ -355,23 +384,23 @@ function q2TestUpdate(){
  	 //console.log(d3.sum(q2Color));
  	 q2Pval = extCount / sq2Len;
  	 q2Tstdata = [sampleq2, q2Color];
-  	q2InfOutput = dotChart(q2Tstdata, q2InfSVG, q2TestInteract ); 	
+   	q2InfOutput = histogram(q2Tstdata, quant2InfSVG, q2TestInteract ); 	
+	document.getElementById("quant2Inference").style.display = "block";
   	
-	 q2ftr = document.getElementById("q2OutputResults");
-	 //q2ftr.style.display = 'block';
+	 q2ftr = document.getElementById("quant2Results");
+	 q2ftr.style.display = 'block';
 	 q2ftr.innerHTML = 
-	   "<div  style = 'width:320px'> Mean "+ q2Label +
-	   " in " + sq2Len +" Samples from H<sub>0</sub> <br>"+
+	   "<div  style = 'width:320px'> Slopes in " + sq2Len +" Resamples from H<sub>0</sub> <br>"+
 	   "p-value (strength of evidence): " + formatPvalue(extCount, sq2Len) + "</div>"; 
-	 //document.getElementById("quant2MoreSims").style.display = 'block';
+	 document.getElementById("quant2MoreSims").style.display = 'block';
  	  
 }
 
 function q2CIinteract(d,i){
-	//console.log(d.x);
-	var q2modal = document.getElementById("q2SelectedSample");
+	console.log(d.x,i);
+	var q2modal = document.getElementById("quant2SelectedSample");
 	q2modal.style.display = "block";
-	q2modal.innerHTML = slopes[i];
+	q2modal.innerHTML = "Slope: " + q2CIdata[0][i];
 	// open modal box to show slopes in the selected resample;
 	window.onclick = function(event) {
     if (event.target == q2modal) {
@@ -381,13 +410,12 @@ function q2CIinteract(d,i){
 } ;
 
 function q2TestInteract(d,i){
-	//console.log(d.x);
 	// open modal box to show slope in the selected sample;
-	//console.log(d.x);
-	var q2modal = document.getElementById("q2SelectedSample");
+	console.log(d.x, i);
+	var q2modal = document.getElementById("quant2SelectedSample");
 	q2modal.style.display = "block";
-	q2modal.innerHTML = slopes[i];
-	// open modal box to show success and failure counts in the selected resample;
+	q2modal.innerHTML = "Slope: " + q2Tstdata[0][i];
+	// open modal box to show slope in the selected resample;
 	window.onclick = function(event) {
     if (event.target == q2modal) {
         q2modal.style.display = "none";
@@ -398,30 +426,31 @@ function q2TestInteract(d,i){
 function quant2MoreSimFn(){
 	// function to add more points to an estimate or test of slope
 	var sq2Len,
-		more = +document.getElementById("q2More").value,
+		more = +document.getElementById("quant2More").value,
 		newValues =[];
 	if(more > 0){
 	 	if( q2Inference === 'test'){
 			// assume slope is zero, generate samples of x and of y independently
 	    		// fit new line to each
+	    	newValues = resampleSlope4Test(q2Values, more);
 	    	for(i=0; i < more; i++){
-	    		newx = sampleWoutRep(x, x.len);
-	    		newy = sampleWoutRep(y, y.len);
-	    		//get LSqs line slope & intercept
 	      		sampleq2.push(newValues[i]);
 	    	} 
-	  		sampleq2 = sampleq2.sort(function(a,b){return a - b});
+	  		sampleq2 = sampleq2.sort(function(a,b){return a - b;});
 	  		//console.log(d3.mean(sampleq2), sampleq2.length);
 	  		q2TestUpdate();
 	  		return(sampleq2);
 		} else{
-		  // Estimating slope, so generate data using same (x,y) pairs, resampled errors
-	    for(i=0; i < more; i++){
-	        resampleq2.push(newValues[i]); 
-	 	}
-	 //console.log(q2CnfLvl);
-	 q2CLChange(q2CnfLvl);  
-     return(resampleq2);  
+		  // Estimating slope, so generate data using same (x,y) pairs
+	     	newValues = resampleSlope4CI(q2Values, more)
+	    
+	    	for(i=0; i < more; i++){
+	        	resampleq2.push(newValues[i]); 
+	 		}
+	 		resampleq2 = resampleq2.sort(function(a,b){return a - b;});
+	 	//  console.log(q2CnfLvl);
+	 	q2CLChange(q2CnfLvl);  
+     	return(resampleq2);  
 	}
   }
 }

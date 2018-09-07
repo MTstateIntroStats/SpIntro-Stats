@@ -12,15 +12,17 @@ function toggleContent1() {
   
 function cut(input, dividers) {
 	var i;
+	dividers = dividers.sort(function(a,b){return a - b;});
 	if (input < dividers[0] | input > dividers[dividers.length - 1]) {
-		return (null);
+		return (NaN);
 	}
 	for ( i = 1; i < dividers.length; i++) {
-		if (input < dividers[i]) {
+		if (input <= dividers[i]) {
+			return (i - 1);
 			break;
 		}
 	}
-	return (i - 1);
+	return (i - 1);  // index to the category split by dividers
 }
    
  
@@ -89,30 +91,6 @@ function sequence(start, stop, inc){
 }
 
 
-function sampleWrep(values, nreps, prob) {
-	// draw  values  (with replacement) at random using probs as weights
-	var cumProb = [],
-	    nCat = prob.length,
-	    totalProb = jStat.sum(prob),
-	    i, k,
-	    ids = [],
-	    out = [];
-	stdize = function(x) {
-		return x / totalProb;
-	};
-	prob = jStat.map(prob, stdize);
-	cumProb = jStat.cumsum(prob);
-	cumProb.unshift(0);
-	//console.log(cumProb);
-	for ( i = 0; i < nreps; i++) {
-		k = cut(Math.random(), cumProb);
-		out.push( values[k ] );
-		ids.push(k);
-	}
-	//console.log(out);
-	// return the values in sampled order and their ids or positions in the original list
-	return [out, ids];
-}
 
 function resample1Mean(values, nreps){
 	//take resamples of values with replacement (nreps times), return the mean of each
@@ -163,6 +141,46 @@ function sampleWOrep(values, nreps){
 	return [out, ids];  
 }
 
+function sampleN(values, nreps){
+	// sample nreps with replacement from values assuming equal weights
+  var i, k, 
+  	len = values.length,
+	out = [];
+	
+	for ( i = 0; i < nreps; i++) {
+		k = Math.floor(Math.random() * len);
+		out.push( values[k] );
+	}
+	//console.log(out);
+	return out;  
+}
+
+
+function sampleWrep(values, nreps, prob) {
+	// draw  values  (with replacement) at random using probs as weights
+	var cumProb = [],
+	    nCat = prob.length,
+	    totalProb = jStat.sum(prob),
+	    i, k,
+	    ids = [],
+	    out = [];
+	stdize = function(x) {
+		return x / totalProb;
+	};
+	prob = jStat.map(prob, stdize);
+	cumProb = jStat.cumsum(prob);
+	cumProb.unshift(0);
+	//console.log(cumProb);
+	for ( i = 0; i < nreps; i++) {
+		k = cut(Math.random(), cumProb);
+		out.push( values[k ] );
+		ids.push(k);
+	}
+	//console.log(out);
+	// return the values in sampled order and their ids or positions in the original list
+	return [out, ids];
+}
+
  function inArray(array, value){
  	var i = array.length;
  	while(i--){
@@ -200,15 +218,19 @@ function sampleWOrep(values, nreps){
 //  Need a generic plotting function for dotcharts.
 //
 
-function dotChart(sample, svgObject, interactFunction){
-	//console.log(svgObject.attributes);
+function histogram(sample, svgObject, interactFunction){
+	// stacks dots up creating integer y values (1, 2, 3,...) for each unique x value
+	// builds a d3 svg plot in the svg object which will respond to a mouse-click by calling
+	//  interactFunction on that point
+	// input: sample is of length 2 containing (1) x values and (2) color indices
+	// returns: Dots (svg objects) and the original sample
 	var circleColors = ["steelblue","red"],
 		color = [],
 		j = 0,
 		margin = 40,
 		myArray =[],
 	    nN = sample.length,
-	    plotX,
+	    leftX,
 	    ypos = 0,
 	    radii,
 	    xbinWidth,
@@ -219,7 +241,7 @@ function dotChart(sample, svgObject, interactFunction){
 	
         if(svgObject.getAttribute("width")>50){
 	     wdth= svgObject.getAttribute("width") - margin * 2;
-	    hght = svgObject.getAttribute("height") - margin * 2;
+	     hght = svgObject.getAttribute("height") - margin * 2;
 	}
 	if (nN === 2){
 		color = sample[1];
@@ -246,22 +268,22 @@ function dotChart(sample, svgObject, interactFunction){
 		gees.remove();
 	}
 	xbinWidth = (xmax - xmin) /(wdth / radii); //sturgesFormula(sample).binLength;  
-	 //console.log(xbinWidth); 
-	//  first dot goes at y=0, then add one to each from there
+	 // console.log(xbinWidth); 
+	//  first dot goes at y=1, then add one to each from there
 	j = 0;
 	ypos = 1;	            // y value is a count starting at 1
-	plotX = sample[0];	
+	leftX = sample[0];	
 	sampMax = 1;
     while( j <  nN ){    
-	    if( Math.abs(sample[j] - plotX) > xbinWidth ){
-			 plotX = sample[j];	    // start a fresh bin with left edge at sample[j]
-			 if(ypos > sampMax){ sampMax = ypos; }
+	    if( Math.abs(sample[j] - leftX) > xbinWidth ){
+			 leftX = sample[j];	    // start a fresh bin with left edge at sample[j] xvalue
+			 if(ypos > sampMax){ sampMax = ypos; } // only check max y height at right edge of each bin
 	         ypos = 1;
 	         //console.log(plotX, ypos);
 	    };
 	    myArray[j] = {"x": sample[j], "y": ypos++, "color" : circleColors[color[j++]]};
 	}
-	//console.log(myArray);
+	// console.log(myArray);
 
 
 
@@ -285,8 +307,7 @@ function dotChart(sample, svgObject, interactFunction){
     .attr("height", hght + margin*2)
   .append("g")
    .attr("transform", "translate("+ (2 * margin) + "," + margin + ")");
-    
-    
+        
     graph.append("g")
       .attr("class", "y axis")
       .call(DCyAxis);
@@ -296,7 +317,7 @@ function dotChart(sample, svgObject, interactFunction){
       .attr("class", "x axis")
       .attr("transform", "translate(0," + (radii + hght) +")")
       .call(DCxAxis);
-
+          
   //  graph.append("g")
   //  	.attr("class", "text")
   //  	.attr("x", 20)
@@ -312,11 +333,15 @@ function dotChart(sample, svgObject, interactFunction){
             .style("fill",function(d){return d.color;})
             .style("fill-opacity", 0.6)
             .on("click", interactFunction );
+            
   return [Dots, sample];
 }
 
 function discreteChart(sample, svgObject, interactFunction){
-	// function to plot a pile of points over each discrete value
+	// stacks dots up creating integer y values (1, 2, 3,...) for each unique x value
+	// builds a d3 svg plot in the svg object which will respond to a mouse-click by calling
+	//  interactFunction on that point
+	// returns: Dots (svg objects) and the original sample
 	var circleColors = ["steelblue","red"],
 		color = [],
 		margin = 40,
@@ -617,7 +642,7 @@ function propBarChart() {
 
 /* global d3 */
 
-function scatterPlot(data, svgObject, interactFunction) {
+function scatterPlot(data, svgObject, interactFunction, intercept, slope) {
  // not updateable
 	var circleColors = ["steelblue","red"],
 		color = [],
@@ -625,10 +650,11 @@ function scatterPlot(data, svgObject, interactFunction) {
 		myArray =[],
 	    nN = data.length,
 	    plotX,
-	    ymin,
-	    ymax,
-	    xmin,
-	    xmax ,
+	    regLine,
+	    xmin = d3.min(data, function(d) { return d.x; }),
+	    xmax = d3.max(data, function(d) { return d.x; }),
+	    yhat1,
+	    yhat2,
 	    wdth = 440 - margin * 2,
 	    hght = 320 - margin * 2;
         if(svgObject.getAttribute("width")>50){
@@ -644,7 +670,7 @@ function scatterPlot(data, svgObject, interactFunction) {
 	//sample.sort(function(a,b){return a - b}) ;   
     var xScale = d3.scaleLinear()
 				.range([margin, width - 3 * margin])
-				.domain([d3.min(data, function(d) { return d.x; }), d3.max(data, function(d) { return d.x; })]),
+				.domain([xmin, xmax]),
 		
 		yScale = d3.scaleLinear()
 				.range([margin, height - 2*margin])
@@ -680,6 +706,19 @@ function scatterPlot(data, svgObject, interactFunction) {
       .attr("class", "x axis")
       .attr("transform", "translate(0," + (radii + hght) +")")
       .call(SPxAxis);
+      
+    if (intercept !== 'undefined'){
+    	//console.log(intercept, slope);
+		yhat1 = intercept + slope * xmin;
+		yhat2 = intercept + slope * xmax;
+	 	regLine = graph.append("svg:line")
+            .attr("x1", xScale(xmin))
+            .attr("y1", yScale(yhat1) )
+            .attr("x2", xScale(xmax))
+            .attr("y2", yScale(yhat2))
+            .style("stroke", "black")
+      		.attr("class", "regression line");        
+    }  
 
   //  graph.append("g")
   //  	.attr("class", "text")
