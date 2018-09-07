@@ -116,6 +116,41 @@ function resample1Mean(values, nreps){
 	return out ;
 }
 
+function resampleDiffMeans(values1, values2, nreps){
+	//take resamples of each set of values with replacement (nreps times), return the difference in means of each
+	var i, j, k, 
+	    out = [],cumProb1 = [],
+	    nVals1 = values1.length,
+	    prob1 = repeat(1/nVals1, nVals1),
+	    cumProb2 = [],
+	    nVals2 = values2.length,
+	    prob2 = repeat(1/nVals2, nVals2),
+	    resamples = [],
+	    totalProb = 1;
+		cumProb1 = jStat.cumsum(prob1);
+		cumProb1.unshift(0);
+		cumProb2 = jStat.cumsum(prob2);
+		cumProb2.unshift(0);
+	for ( i = 0; i < nreps; i++) {
+		resamples = [];
+		for(j=0; j < nVals1; j++){
+			k = cut(Math.random(), cumProb1);
+			resamples.push( values1[k ] );
+		}
+		out.push( d3.mean(resamples));
+		resamples = [];
+		for(j=0; j < nVals2; j++){
+			k = cut(Math.random(), cumProb2);
+			resamples.push( values2[k ] );
+		}
+		out[i] += -d3.mean(resamples);
+		
+	}
+	//console.log(out);
+	// return the vector of means
+	return out ;
+}
+
 function sample1(nItems) {
 	// draw  one value assuming each is equally likely
 	return Math.floor(Math.random() * nItems);
