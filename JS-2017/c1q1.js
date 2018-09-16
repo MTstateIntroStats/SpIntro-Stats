@@ -5,6 +5,7 @@
  //TODO:
  // 
 //  summary plot needs labels
+// moved output results to below inference plot
  //  clicking a point in inference plot shows the sample
  
     var c1q1SummDiv = d3.select("#C1Q1Inference"),
@@ -210,6 +211,8 @@ function estimateDiff(){
 	  c1q1upperBd = CI[2].toPrecision(4);
 	  cnfLvl = CI[3];
 	  
+	  
+	 document.getElementById("C1Q1Inference").style.display = "block" 	 ; 
 	 c1q1ftr = document.getElementById("C1Q1Results");
 	 c1q1ftr.style.display = 'block';
 	 c1q1ftr.innerHTML = 
@@ -270,6 +273,8 @@ function testDiff(tailChoice){
 	 } else{
 	 	
 	 }
+	 
+	 document.getElementById("C1Q1Inference").style.display = "block" 	 ; 
 	return(sampleTstc1q1);
 } 	  
 

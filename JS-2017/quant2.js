@@ -156,7 +156,7 @@ function q2CLChange(arg) {
 			 q2upperBd = tempColors[2].toPrecision(4);
 			 cnfLvl = tempColors[3];
 			q2CIdata = [q2CIdata[0], tempColors[0] ];
-			console.log(q2CIdata[0][1]);
+			//console.log(q2CIdata[0][1]);
 			q2InfOutput = histogram(q2CIdata, quant2InfSVG, q2CIinteract);
 		}
 		document.getElementById("quant2Inference").style.display = "block";
