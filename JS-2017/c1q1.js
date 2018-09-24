@@ -43,6 +43,7 @@ var c1q1SummDiv = d3.select("#C1Q1Inference"),
 	value : "0.99"
 }],
     c1q1Inference,
+	c1q1Keys = [],
     c1q1InfOutput,
     c1q1Shifted = [],
     c1q1SumPlot,
@@ -87,7 +88,6 @@ function summarizeDiff() {
 	var margin = 20,
 	    w = 200,
 	    h = 200,
-	    c1q1Keys = [],
 	    c1q1Response;
 
 	if (c1q1SumPlot) {
@@ -346,27 +346,35 @@ function c1q1TestUpdate() {
 }
 
 function c1q1CIinteract(d, i) {
-	console.log(d.x);
-	var c1q1modal = document.getElementById("C1Q1SelectedSample");
-	c1q1modal.style.display = "block";
-	c1q1modal.innerHTML = d.x;
+	//console.log(d.x);
+	var c1q1InfModal = document.getElementById("C1Q1WhichDot"),
+	    c1q1InfModalContent = document.getElementById("C1Q1SelectedSample");
+	c1q1InfModal.style.display = "block";
+	c1q1InfModalContent.innerHTML = c1q1Keys[0] + "\t Mean: " + sampleCIc1q1.mean1[i].toPrecision(4) + 
+							"<br>" + c1q1Keys[1] + "\t Mean: "  + sampleCIc1q1.mean2[i].toPrecision(4) +
+							"<br> Difference: " + sampleCIc1q1.diff[i].toPrecision(4) +
+							"<br> Click to Close"; 
 	// open modal box to show diff in means in the selected resample;
 	window.onclick = function(event) {
-		if (event.target == c1q1modal) {
-			c1q1modal.style.display = "none";
+		if (event.target == c1q1InfModal) {
+			c1q1InfModal.style.display = "none";
 		}
 	}
 }
 
 function c1q1TestInteract(d, i) {
-	console.log(d.x);
-	var c1q1modal = document.getElementById("C1Q1SelectedSample");
-	c1q1modal.style.display = "block";
-	c1q1modal.innerHTML = d.x;
+	//console.log(d.x);
+	var c1q1InfModal = document.getElementById("C1Q1WhichDot"),
+	    c1q1InfModalContent = document.getElementById("C1Q1SelectedSample");
+	c1q1InfModal.style.display = "block";
+	c1q1InfModalContent.innerHTML = c1q1Keys[0] + "\t Mean: " + sampleTstc1q1.mean1[i].toPrecision(4) + 
+							"<br>" + c1q1Keys[1] + "\t Mean: "  + sampleTstc1q1.mean2[i].toPrecision(4) +
+							"<br> Difference: " + sampleTstc1q1.diff[i].toPrecision(4) +
+							"<br> Click to Close"; 
 	// open modal box to show diff in means in the selected resample;
 	window.onclick = function(event) {
-		if (event.target == c1q1modal) {
-			c1q1modal.style.display = "none";
+		if (event.target == c1q1InfModal) {
+			c1q1InfModal.style.display = "none";
 		}
 	}
 }

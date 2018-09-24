@@ -1552,8 +1552,9 @@
 						<option value='REDvsREDA'>RED vs REDA</option>
 						<option value='other'>Other</option>
 					</select>
-					<div class = "w3-container w3-cell w3-mobile" id="c1q1WhichDotA" style = "width: 300px; height:10%; display:none;"
-				onclick="this.style.display='none'" >
+					<div class = "w3-container w3-cell w3-mobile" id="c1q1WhichDotA" 
+						style = "width: 300px; height:10%; display:none;"
+						onclick="this.style.display='none'" >
 					<br>
 					<br>
 					<br>
@@ -1632,20 +1633,19 @@
 	</div>
 	<!-- End of C1Q1Output -->
 	<!--  Show Inference Plot -->
-	<div class = "w3-cell-row w3-mobile">
-		<div class = "w3-container w3-cell w3-mobile" id = "C1Q1Inference" style = "width:420px">
-			<!--  Inference plot goes here for CI or Test of difference in means -->
-			<svg id = "C1Q1InfSVG" height = "300px" width = "400px"></svg>
-		</div>
-
-		<!-- Box to popup info on a single data point -->
-		<div class = "w3-container w3-cell w3-mobile" id="C1Q1WhichDot" style = "width: 200px; height:10%; display:none;"
-		onclick="this.style.display='none'" >
-			<br>
-			<br>
-			<br>
-			<div class="w3-card-4 w3-pale-green" id = "C1Q1SelectedSample">
-				&nbsp;
+	<div class = "w3-cell-row w3-mobile"style = "width:750px">
+		<div class = "w3-cell" style="width:95%">
+			<div class = "w3-cell w3-mobile" id = "C1Q1Inference" style = "width:70%">
+				<!--  Inference plot goes here for CI or Test of difference in means -->
+				<svg id = "C1Q1InfSVG" height = "300px" width = "400px"></svg>
+			</div>
+			<!-- Box to popup info on a single data point -->
+			<div class = "w3-cell w3-mobile" id="C1Q1WhichDot" 
+				style = "width: 30%; height:20%; display:none;"
+				onclick="this.style.display='none'" >
+				<div class="w3-card-4 w3-pale-green" id = "C1Q1SelectedSample">
+					&nbsp;
+				</div>
 			</div>
 		</div>
 	</div>
