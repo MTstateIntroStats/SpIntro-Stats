@@ -157,7 +157,7 @@ function q2CLChange(arg) {
 			 cnfLvl = tempColors[3];
 			q2CIdata = [q2CIdata[0], tempColors[0] ];
 			//console.log(q2CIdata[0][1]);
-			q2InfOutput = histogram(q2CIdata, quant2InfSVG, q2CIinteract);
+			q2InfOutput = histodot(q2CIdata, quant2InfSVG, q2CIinteract);
 		}
 		document.getElementById("quant2Inference").style.display = "block";
 		q2ftr = document.getElementById("quant2Results");
@@ -384,7 +384,7 @@ function q2TestUpdate(){
  	 //console.log(d3.sum(q2Color));
  	 q2Pval = extCount / sq2Len;
  	 q2Tstdata = [sampleq2, q2Color];
-   	q2InfOutput = histogram(q2Tstdata, quant2InfSVG, q2TestInteract ); 	
+   	q2InfOutput = histodot(q2Tstdata, quant2InfSVG, q2TestInteract ); 	
 	document.getElementById("quant2Inference").style.display = "block";
   	
 	 q2ftr = document.getElementById("quant2Results");
@@ -449,7 +449,7 @@ function quant2MoreSimFn(){
 	 		}
 	 		resampleq2 = resampleq2.sort(function(a,b){return a - b;});
 	 	//  console.log(q2CnfLvl);
-	 	q2CLChange(q2CnfLvl);  
+	 	q2CLChange({value:q2CnfLvl});  
      	return(resampleq2);  
 	}
   }

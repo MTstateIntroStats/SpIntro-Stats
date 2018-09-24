@@ -117,37 +117,45 @@ function resample1Mean(values, nreps){
 }
 
 function resampleDiffMeans(values1, values2, nreps){
-	//take resamples of each set of values with replacement (nreps times), return the difference in means of each
-	var i, j, k, 
-	    out = [],cumProb1 = [],
+	//take resamples of each set of values with replacement (nreps times), 
+	// returns a 3-item object: means1, means2 and the difference in means 
+	// each of length nreps 
+	var cumProb1 = [],
+	    cumProb2 = [],
+		diff=[],
+		i, j, k, 
+		mean1 = [],
+		mean2 = [], 
+	    out = [],
 	    nVals1 = values1.length,
 	    prob1 = repeat(1/nVals1, nVals1),
-	    cumProb2 = [],
 	    nVals2 = values2.length,
 	    prob2 = repeat(1/nVals2, nVals2),
 	    resamples = [],
 	    totalProb = 1;
-		cumProb1 = jStat.cumsum(prob1);
-		cumProb1.unshift(0);
-		cumProb2 = jStat.cumsum(prob2);
-		cumProb2.unshift(0);
+	    
+	cumProb1 = jStat.cumsum(prob1);
+	cumProb1.unshift(0);
+	cumProb2 = jStat.cumsum(prob2);
+	cumProb2.unshift(0);
 	for ( i = 0; i < nreps; i++) {
 		resamples = [];
 		for(j=0; j < nVals1; j++){
 			k = cut(Math.random(), cumProb1);
 			resamples.push( values1[k ] );
 		}
-		out.push( d3.mean(resamples));
+		mean1.push(d3.mean(resamples));
 		resamples = [];
 		for(j=0; j < nVals2; j++){
 			k = cut(Math.random(), cumProb2);
 			resamples.push( values2[k ] );
 		}
-		out[i] += -d3.mean(resamples);
-		
+		mean2.push(d3.mean(resamples));
+		diff.push(mean1[i] - mean2[i]);
 	}
+	out = {diff: diff, mean1: mean1, mean2: mean2};
 	//console.log(out);
-	// return the vector of means
+	// return the vector of mean diffs and means
 	return out ;
 }
 
@@ -253,15 +261,14 @@ function sampleWrep(values, nreps, prob) {
 //  Need a generic plotting function for dotcharts.
 //
 
-function histogram(sample, svgObject, interactFunction){
-	// stacks dots up creating integer y values (1, 2, 3,...) for each unique x value
+function histodot(sample, colors, svgObject, interactFunction){
+	// stacks dots up creating integer y values (1, 2, 3,...) for x value within a "bin" of similar values
 	// builds a d3 svg plot in the svg object which will respond to a mouse-click by calling
 	//  interactFunction on that point
 	// input: sample is of length 2 containing (1) x values and (2) color indices
 	//         or it could just be the data -- and color will default to black
 	// returns: Dots (svg objects) and the original sample
 	var circleColors = ["steelblue","red"],
-		color = [],
 		j = 0,
 		margin = 40,
 		myArray =[],
@@ -275,16 +282,12 @@ function histogram(sample, svgObject, interactFunction){
 	    wdth = 440 - margin * 2,
 	    hght = 320 - margin * 2;
 	
-        if(svgObject.getAttribute("width")>50){
+    if(svgObject.getAttribute("width")>50){
 	     wdth= svgObject.getAttribute("width") - margin * 2;
 	     hght = svgObject.getAttribute("height") - margin * 2;
 	}
-	if (nN === 2){
-		color = sample[1];
-		sample = sample[0];
-		nN = sample.length;
-	}   else{
-		color = repeat(0, nN);
+	if(colors === undefined){
+		colors = repeat(0, nN);
 	} 
 	sample.sort(function(a,b){return a - b}) ;   
           // numeric sort to build bins for y values
@@ -319,7 +322,7 @@ function histogram(sample, svgObject, interactFunction){
 	         ypos = 1;
 	         //console.log(plotX, ypos);
 	    };
-	    myArray[j] = {"x": sample[j], "y": ypos++, "color" : circleColors[color[j++]]};
+	    myArray[j] = {"x": sample[j], "y": ypos++, "color" : circleColors[colors[j++]]};
 	}
 	// console.log(myArray);
 

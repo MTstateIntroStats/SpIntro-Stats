@@ -1380,7 +1380,7 @@
 		<button id = "EstimateSlope"
 		onclick="q2Inference = 'estimate';
 		q2CIdata = estimateSlope(100);
-		q2InfOutput = histogram(q2CIdata, quant2InfSVG, q2CIinteract );
+		q2InfOutput = histodot(q2CIdata, quant2InfSVG, q2CIinteract );
 		"
 		class="w3-button w3-pale-blue w3-medium w3-round-xlarge">
 			&nbsp;  Estimate a slope.
@@ -1389,7 +1389,7 @@
 		<button id = "TestSlope"
 		onclick="q2Inference = 'test';
 		q2Tstdata = testSlope( noChoice);
-		//q2InfOutput = histogram(q2Tstdata, quant2InfSVG, q2TestInteract );
+		//q2InfOutput = histodot(q2Tstdata, quant2InfSVG, q2TestInteract );
 		"
 		class="w3-button w3-pale-blue w3-medium w3-round-xlarge">
 			&nbsp; Test: Is true slope equal 0?
@@ -1536,12 +1536,11 @@
 
 	<div id="TestEstC1Q1" class="w3-container Page" style="display:none">
 		<script src="data/C1Q1Data.js"></script>
-		<script src="c1q1.js"></script>
 		<div class = w3-container>
-			<h3>Estimate the difference between two means or test for a particular value. </h3>
+			<h3>Estimate the difference between two means or test for no real difference between groups. </h3>
 		</div>
 		<div class = "w3-container" id = "C1Q1DataIn-Summary">
-			<div class = "w3-cell-row w3-mobile">
+			<div class = "w3-cell-row w3-mobile"  id = "C1Q1Data">
 				<div class = "w3-cell" style="width:50%">
 					<h4> Choose Data</h4>
 					<select class = 'w3-select w3-card w3-border w3-mobile w3-pale-yellow' id='C1Q1DataName'
@@ -1568,7 +1567,7 @@
 					&nbsp;&nbsp;
 				</div>
 				
-				<div class = "w3-cell" style= "display:block">
+				<div class = "w3-cell" style= "display:block"  id = "C1Q1Summary">
 					<h4> &nbsp; &nbsp;Summary</h4>
 					<div class = "w3-container w3-cell w3-mobile" id = "C1Q1SummarySVGgoesHere" >
 						<svg id = "C1Q1SumSVG" height = "300px" width = "400px"></svg>
@@ -1584,16 +1583,18 @@
 		Either
 		<button id = "EstimateDiff"
 		onclick="c1q1Inference = 'estimate';
-		c1q1CIdata = estimateDiff();
+		c1q1CIdata = estimateDiff(100);
+		c1q1InfOutput = histodot(c1q1CIdata.diff, c1q1Colors, C1Q1InfSVG, c1q1CIinteract );
 		"
 		class="w3-button w3-pale-blue w3-medium w3-round-xlarge">
 			&nbsp;  Estimate difference in means.
+			
 		</button>
 		&nbsp; OR &nbsp;
 		<button id = "TestDiff"
 		onclick="c1q1Inference = 'test';
 		c1q1Tstdata = testDiff(noChoice);
-		c1q1InfOutput = histogram(c1q1Tstdata, C1Q1InfSVG, c1q1TestInteract );
+		c1q1InfOutput = histodot(c1q1Tstdata.diff, undefined, C1Q1InfSVG, c1q1TestInteract );
 		"
 		class="w3-button w3-pale-blue w3-medium w3-round-xlarge">
 			&nbsp; Test: Is true difference equal 0?
@@ -1604,14 +1605,14 @@
 
 	<!--  Inputs for each inference  (before plotting)  -->
 
-	<div id = "C1Q1ConfLvlInpt" style = "width: 60%; display: none">
+	<div id = "C1Q1ConfLvl" style = "width: 60%; display: none">
 		Choose a Confidence Level:
 	</div>
-	<div id = "C1Q1TestInpt"  class = "w3-cell-row w3-mobile" style = "display: none">
-		<div class = 'w3-cell' style = 'width:50%'>
+	<div id = "C1Q1Test"  class = "w3-cell-row w3-mobile" style = "display: none">
+		<div class = 'w3-cell' style = 'width:35%'>
 			Stronger evidence is a difference
 		</div>
-		<div class = 'w3-cell' style='width:40%'>
+		<div class = 'w3-cell' style='width:35%'>
 			<select class = 'w3-select w3-card w3-border w3-mobile w3-pale-yellow' id='C1Q1Extreme'
 			onchange = "c1q1TestUpdate()" >
 				<option value='lower'>Less Than or =</option>
@@ -1619,7 +1620,7 @@
 				<option value='upper'>Greater Than or =</option>
 			</select>
 		</div>
-		<div class ='w3-cell'  id = "C1Q1ObsdDiff">
+		<div class ='w3-cell'  style='width:30%' id = "C1Q1ObsdDiff">
 			&nbsp;&nbsp;
 			the difference observed above.
 		</div>
@@ -1670,6 +1671,9 @@
 		</div>
 	</div>
 	</div>
+	<script src="c1q1.js">
+		
+	</script>
 </div>
 
 	<!-- ######-  One Categorical, One Quantitative Actions

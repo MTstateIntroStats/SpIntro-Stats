@@ -347,7 +347,7 @@ function cat2MoreSimFn() {
 				return a - b;
 			});
 			//console.log(cat2CnfLvl);
-			cat2CLChange(cat2CnfLvl);
+			cat2CLChange({value:cat2CnfLvl});
 			return (resampleC2);
 		}
 	}

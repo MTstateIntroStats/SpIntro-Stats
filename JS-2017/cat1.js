@@ -16,7 +16,7 @@ var c1SummDiv = d3.select("#cat1Inference"),
     cat1Label2,
     cat1ftr,
     cat1hdr,
-    cat1CnfLvl = .80,
+    cat1CnfLvl,
     cat1CLvl,
     cat1lowerBd,
     cat1upperBd,
@@ -354,7 +354,7 @@ function cat1MoreSimFn() {
 				resampleC1.push(newValues[i] / total);
 			}
 			resampleC1 = resampleC1.sort(function(a, b) {return a - b;	});
-			cat1CLChange(cat1CnfLvl);
+			cat1CLChange({value:cat1CnfLvl});
 
 			return (resampleC1);
 		}

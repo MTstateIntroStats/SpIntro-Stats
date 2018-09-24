@@ -379,7 +379,7 @@ function q1MoreSimFn(){
 	        resampleq1.push(newValues[i]); 
 	    }
 	  //console.log(q1CnfLvl);
-	  q1CLChange(q1CnfLvl);  
+	  q1CLChange({value:q1CnfLvl});  
       return(resampleq1);  
 	}
   }
