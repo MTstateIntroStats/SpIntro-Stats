@@ -1631,22 +1631,22 @@
 	<div id = "C1Q1Output" style = "display: none">
 
 	</div>
-	<!-- End of C1Q1Output -->
+
 	<!--  Show Inference Plot -->
-	<div class = "w3-cell-row w3-mobile"style = "width:750px">
-		<div class = "w3-cell" style="width:95%">
-			<div class = "w3-cell w3-mobile" id = "C1Q1Inference" style = "width:70%">
+		<div class = "w3-cell-row" style = "width:750px">
+			<div class = "w3-cell " id = "C1Q1Inference" style = "width:420px">
 				<!--  Inference plot goes here for CI or Test of difference in means -->
-				<svg id = "C1Q1InfSVG" height = "300px" width = "400px"></svg>
-			</div>
+				<svg id = "C1Q1InfSVG" height = "300px" width = "400px">
+				</svg>
+			</div>	
+				<div class="w3-cell" id = "C1Q1WhichDot" style = "width:200px; display:'none'" >	
+					<br> <br> <br>
+					<div class = "w3-card-4 w3-pale-green" id="C1Q1SelectedSample"	onclick="this.style.display='none'"  >
+						&nbsp;
+					</div>
+			
 			<!-- Box to popup info on a single data point -->
-			<div class = "w3-cell w3-mobile" id="C1Q1WhichDot" 
-				style = "width: 30%; height:20%; display:none;"
-				onclick="this.style.display='none'" >
-				<div class="w3-card-4 w3-pale-green" id = "C1Q1SelectedSample">
-					&nbsp;
-				</div>
-			</div>
+			&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
 		</div>
 	</div>
 

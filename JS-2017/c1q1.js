@@ -159,13 +159,14 @@ function c1q1InteractFnA(d, i) {
 	var c1q1Modal = document.getElementById("c1q1WhichDotA"),
 	    c1q1ModalContent = document.getElementById("c1q1SelectedSampleA");
 	c1q1Modal.style.display = "block";
-	c1q1ModalContent.innerHTML = "Value: " + x[i].toPrecision(4) + ",  Group: " + c1q1RawData[i].group + " <br> Click to Close";
+	c1q1ModalContent.innerHTML = "Value: " + x[i].toPrecision(4) + ",  Group: " + c1q1RawData[i].group + 
+									" <br> Click to Close";
 	// open modal box to show slope of the selected resample;
-	window.onclick = function(event) {
-		if (event.target == c1q1Modal) {
-			c1q1Modal.style.display = "none";
-		}
-	}
+	//window.onclick = function(event) {
+	//	if (event.target == c1q1Modal) {
+	//		c1q1Modal.style.display = "none";
+	//	}
+	//}
 }
 
 function c1q1CLChange(arg) {
@@ -349,34 +350,34 @@ function c1q1CIinteract(d, i) {
 	//console.log(d.x);
 	var c1q1InfModal = document.getElementById("C1Q1WhichDot"),
 	    c1q1InfModalContent = document.getElementById("C1Q1SelectedSample");
-	c1q1InfModal.style.display = "block";
+	c1q1InfModalContent.style.display = "block";
 	c1q1InfModalContent.innerHTML = c1q1Keys[0] + "\t Mean: " + sampleCIc1q1.mean1[i].toPrecision(4) + 
 							"<br>" + c1q1Keys[1] + "\t Mean: "  + sampleCIc1q1.mean2[i].toPrecision(4) +
 							"<br> Difference: " + sampleCIc1q1.diff[i].toPrecision(4) +
 							"<br> Click to Close"; 
 	// open modal box to show diff in means in the selected resample;
-	window.onclick = function(event) {
-		if (event.target == c1q1InfModal) {
-			c1q1InfModal.style.display = "none";
-		}
-	}
+	//window.onclick = function(event) {
+	//	if (event.target == c1q1InfModal) {
+	//		c1q1InfModal.style.display = "none";
+	//	}
+	//}
 }
 
 function c1q1TestInteract(d, i) {
 	//console.log(d.x);
 	var c1q1InfModal = document.getElementById("C1Q1WhichDot"),
 	    c1q1InfModalContent = document.getElementById("C1Q1SelectedSample");
-	c1q1InfModal.style.display = "block";
+	c1q1InfModalContent.style.display = "block";
 	c1q1InfModalContent.innerHTML = c1q1Keys[0] + "\t Mean: " + sampleTstc1q1.mean1[i].toPrecision(4) + 
 							"<br>" + c1q1Keys[1] + "\t Mean: "  + sampleTstc1q1.mean2[i].toPrecision(4) +
 							"<br> Difference: " + sampleTstc1q1.diff[i].toPrecision(4) +
 							"<br> Click to Close"; 
 	// open modal box to show diff in means in the selected resample;
-	window.onclick = function(event) {
-		if (event.target == c1q1InfModal) {
-			c1q1InfModal.style.display = "none";
-		}
-	}
+	//window.onclick = function(event) {
+	//	if (event.target == c1q1InfModal) {
+	//		c1q1InfModal.style.display = "none";
+	//	}
+	//}
 }
 
 function c1q1MoreSimFn() {

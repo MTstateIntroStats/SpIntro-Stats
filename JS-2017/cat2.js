@@ -166,6 +166,7 @@ function estimateP2() {
 	// show data summary
 	document.getElementById("cat2ConfLvlInpt").style.display = "block";
 	document.getElementById("cat2TestInpt").style.display = "none";
+	document.getElementById("cat2WhichDot").style.display = "none";
 	//document.getElementById("cat2WhichDot").style.display = "none";
 	// show plot starting with 100 points
 	resampleC21 = rbinom(total1, cat2Phat1, 100);
@@ -209,6 +210,7 @@ function testP2(tailChoice) {
 	document.getElementById("cat2ConfLvlInpt").style.display = "none";
 	//document.getElementById("cat2WhichDot").style.display = "none";
 	document.getElementById("cat2TestInpt").style.display = "block";
+	document.getElementById("cat2WhichDot").style.display = "none";
 
 	//if (tailChoice === 'undefined') 
 	{
@@ -297,7 +299,7 @@ function cat2CIinteract(d, i) {
 	var cat2Modal = document.getElementById("cat2WhichDot"),
 		 cat2ModalContent = document.getElementById("cat2SelectedSample");
 	cat2Modal.style.display = "block";
-	cat2ModalContent.innerHTML = "Difference in Proportions " + c2Data[0].label+ ": "+ 
+	cat2ModalContent.innerHTML = "Difference in Proportions " + cat2LabelOut1 + ": "+ 
 			c2CIdata[0][i].toPrecision(4) +	  "<br> Click to Close" ;
 	
 } 
@@ -308,8 +310,11 @@ function cat2TestInteract(d, i) {
 	var cat2Modal = document.getElementById("cat2WhichDot"),
 		 cat2ModalContent = document.getElementById("cat2SelectedSample");
 	cat2Modal.style.display = "block";
-	cat2ModalContent.innerHTML = "Difference in Proportions " + c2Data[0].label+ ": "+ c2Tstdata[0][i].toPrecision(4) +
-	  "<br> Click to Close" ;
+	if(c2Tstdata[0][i]){
+	cat2ModalContent.innerHTML = "Difference in Proportions " + cat2LabelOut1+ ": "+ 
+									c2Tstdata[0][i].toPrecision(4) +
+	  								"<br> Click to Close" ;
+	}
 } ;
 
 function cat2MoreSimFn() {
