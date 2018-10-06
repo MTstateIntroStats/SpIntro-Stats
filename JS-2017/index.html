@@ -36,6 +36,20 @@
 	th, td {
 		border-bottom: 1px solid #ddd;
 	}
+	div.rt {
+    position: absolute;
+    top: 50px;
+    right: 20px;
+    width: 200px;
+} 
+	div.lb {
+    position: absolute;
+    bottom: 50px;
+    left: 20px;
+} 
+	div.cntr {
+		position:absolute;
+	}
 </style>
 
 <body>
@@ -1606,7 +1620,7 @@
 
 	<!--  Inputs for each inference  (before plotting)  -->
 
-	<div id = "C1Q1ConfLvl" style = "width: 60%; display: none">
+	<div id = "C1Q1ConfLvl" class = "w3-container" style = "width: 60%; display: none">
 		Choose a Confidence Level:
 	</div>
 	<div id = "C1Q1Test"  class = "w3-cell-row w3-mobile" style = "display: none">
@@ -1633,18 +1647,19 @@
 	</div>
 
 	<!--  Show Inference Plot -->
-		<div class = "w3-cell-row" style = "width:750px">
-			<div class = "w3-cell " id = "C1Q1Inference" style = "width:420px">
+	<div class = "w3-display-container" style = "width:96%; height:320px"> 
+		<div class = "w3-display-topleft" id = "C1Q1Inference" style = "width:60%;" >
 				<!--  Inference plot goes here for CI or Test of difference in means -->
-				<svg id = "C1Q1InfSVG" height = "300px" width = "400px">
-				</svg>
-			</div>	
-				<div class="w3-cell" id = "C1Q1WhichDot" style = "width:200px; display:'none'" >	
-					<br> <br> <br>
-					<div class = "w3-card-4 w3-pale-green" id="C1Q1SelectedSample"	onclick="this.style.display='none'"  >
-						&nbsp;
-					</div>
+			<svg id = "C1Q1InfSVG" height = "300px" width = "360px">
+			</svg>
+		</div>	
+		<div class="w3-display-right" id = "C1Q1WhichDot" style = "width:36%; height:300px;"  >	
 			
+			<div class = "w3-card-4 w3-pale-green" id="C1Q1SelectedSample"	
+				style = "width:220px;height:150px; display:none;"
+					 align = 'right'  onclick="this.style.display='none'" >
+						&nbsp;
+			</div>
 			<!-- Box to popup info on a single data point -->
 			&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
 		</div>

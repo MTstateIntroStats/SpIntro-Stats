@@ -23,6 +23,7 @@ var c1q1SummDiv = d3.select("#C1Q1Inference"),
     c1q1upperBd,
     c1q1N1,
     c1q1N2,
+    c1q1ObsdDiff,
     c1q1Pval,
     c1q1TestDirection,
     c1q1Data = [],
@@ -101,7 +102,7 @@ function summarizeDiff() {
 		document.getElementById("C1Q1ConfLvl").style.display = "none";
 		document.getElementById("C1Q1Test").style.display = "none";
 		document.getElementById("C1Q1Inference").style.display = "none";
-		document.getElementById("C1Q1WhichDot").style.display = "none";
+		//document.getElementById("C1Q1WhichDot").style.display = "none";
 		document.getElementById("c1q1WhichDotA").style.display = "none";
 	}
 
@@ -149,8 +150,10 @@ function summarizeDiff() {
 	c1q1Summ.style = "display: block";
 	// display next step: select inference
 	document.getElementById("C1Q1SelectInf").style.display = 'block';
-	document.getElementById("C1Q1ObsdDiff").innerHTML = "&nbsp;&nbsp;" + diff.toPrecision(4) + " from above.";
-
+	c1q1ObsdDiff = document.getElementById("C1Q1ObsdDiff")
+	if(c1q1ObsdDiff){
+		c1q1ObsdDiff.innerHTML =  "&nbsp;&nbsp;" + diff.toPrecision(4) + " from above.";
+	}
 }
 
 function c1q1InteractFnA(d, i) {
@@ -347,15 +350,16 @@ function c1q1TestUpdate() {
 }
 
 function c1q1CIinteract(d, i) {
+	// open modal box to show diff in means in the selected resample;
 	//console.log(d.x);
 	var c1q1InfModal = document.getElementById("C1Q1WhichDot"),
 	    c1q1InfModalContent = document.getElementById("C1Q1SelectedSample");
+	c1q1InfModal.style.display = "block";
 	c1q1InfModalContent.style.display = "block";
 	c1q1InfModalContent.innerHTML = c1q1Keys[0] + "\t Mean: " + sampleCIc1q1.mean1[i].toPrecision(4) + 
 							"<br>" + c1q1Keys[1] + "\t Mean: "  + sampleCIc1q1.mean2[i].toPrecision(4) +
 							"<br> Difference: " + sampleCIc1q1.diff[i].toPrecision(4) +
 							"<br> Click to Close"; 
-	// open modal box to show diff in means in the selected resample;
 	//window.onclick = function(event) {
 	//	if (event.target == c1q1InfModal) {
 	//		c1q1InfModal.style.display = "none";
@@ -364,15 +368,16 @@ function c1q1CIinteract(d, i) {
 }
 
 function c1q1TestInteract(d, i) {
+	// open modal box to show diff in means in the selected resample;
 	//console.log(d.x);
 	var c1q1InfModal = document.getElementById("C1Q1WhichDot"),
 	    c1q1InfModalContent = document.getElementById("C1Q1SelectedSample");
+	c1q1InfModal.style.display = "block";
 	c1q1InfModalContent.style.display = "block";
 	c1q1InfModalContent.innerHTML = c1q1Keys[0] + "\t Mean: " + sampleTstc1q1.mean1[i].toPrecision(4) + 
 							"<br>" + c1q1Keys[1] + "\t Mean: "  + sampleTstc1q1.mean2[i].toPrecision(4) +
 							"<br> Difference: " + sampleTstc1q1.diff[i].toPrecision(4) +
 							"<br> Click to Close"; 
-	// open modal box to show diff in means in the selected resample;
 	//window.onclick = function(event) {
 	//	if (event.target == c1q1InfModal) {
 	//		c1q1InfModal.style.display = "none";
