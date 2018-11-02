@@ -84,7 +84,7 @@ function repeat(x, n){
 
 function sequence(start, stop, inc){
 	var i, out = [];
-	for(i =start; i <= stop; i += inc){
+	for(i =start; i < stop; i += inc){
 		out.push(i);
 	}
 	return out;
@@ -261,7 +261,7 @@ function sampleWrep(values, nreps, prob) {
 //  Need a generic plotting function for dotcharts.
 //
 
-function histodot(sample, colors, svgObject, interactFunction){
+function dbl_histodot(sample, colors, labels, svgObject, interactFunction){
 	// stacks dots up creating integer y values (1, 2, 3,...) for x value within a "bin" of similar values
 	// builds a d3 svg plot in the svg object which will respond to a mouse-click by calling
 	//  interactFunction on that point
@@ -269,19 +269,24 @@ function histodot(sample, colors, svgObject, interactFunction){
 	//         or it could just be the data -- and color will default to black
 	// returns: Dots (svg objects) and the original sample
 	var circleColors = ["steelblue","red"],
-		j = 0,
+		i = 0, j = 0,
+	    leftX1, leftX2,
 		margin = 40,
-		myArray =[],
+		myArray = sample,
 	    nN = sample.length,
-	    leftX,
-	    ypos = 0,
+	    nN1, nN2,
+	    ordering = [],
 	    radii,
 	    xbinWidth,
 	    xmin,
 	    xmax ,
+	    ypos = 0, ypos2 = 0,
 	    wdth = 440 - margin * 2,
 	    hght = 320 - margin * 2;
-	
+		nN2 = d3.sum(colors);
+		nN1 = nN - nN2;
+		//console.log(nN1, nN2, sample);
+		
     if(svgObject.getAttribute("width")>50){
 	     wdth= svgObject.getAttribute("width") - margin * 2;
 	     hght = svgObject.getAttribute("height") - margin * 2;
@@ -289,16 +294,16 @@ function histodot(sample, colors, svgObject, interactFunction){
 	if(colors === undefined){
 		colors = repeat(0, nN);
 	} 
-	sample.sort(function(a,b){return a - b}) ;   
+	// need to keep colors aligned with sample values
+
+	//myArray.sort(function(a, b){return a.x - b.x}) ;   
           // numeric sort to build bins for y values
           // start on left with smallest x.	
 	
-	    xmin = sample[0];
-	     xmin *= (sample[0] <= 0)? 1.01: 0.99;
-	    xmax = sample[nN-1] ;
-	     xmax *= (sample[nN-1] >= 0)? 1.01: 0.99;
-	    //console.log([xmin,sample[0], sample[nN-1], xmax])
-	
+	    xmin = d3.min(sample);
+	    xmin *= (xmin <= 0)? 1.01: 0.99;
+	    xmax = d3.max(sample) ;
+	    xmax *= (xmax >= 0)? 1.01: 0.99;	
 	
 	var radii = (nN < 101)? 10:
 	    (nN < 501)? 7:
@@ -308,27 +313,152 @@ function histodot(sample, colors, svgObject, interactFunction){
 	if(typeof(gees) === "object"){
 		gees.remove();
 	}
-	xbinWidth = (xmax - xmin) /(wdth / radii); //sturgesFormula(sample).binLength;  
+	xbinWidth = (xmax - xmin) /(wdth / radii); //sturgesFormula(myArray).binLength;  
 	 // console.log(xbinWidth); 
-	//  first dot goes at y=1, then add one to each from there
+	 //  first dot goes at y=1, then add one to each from there
 	j = 0;
 	ypos = 1;	            // y value is a count starting at 1
-	leftX = sample[0];	
+	leftX1 = leftX2 = d3.min(sample);	
 	sampMax = 1;
+	// assume first nN1 and last nN-nN1 are sorted in sample order
+	// run through the first batch, setting yposition values in the stack of dots
+    while( j <  nN - nN2 ){    
+	    if( Math.abs(sample[j] - leftX1) > xbinWidth ){
+			 leftX1 = sample[j];	    // start a fresh bin with left edge at sample[j] xvalue
+			 if(ypos > sampMax){ sampMax = ypos; } // only check max y height at right edge of each bin
+	         ypos = 1;
+	    };
+	    myArray[j] = {"x": sample[j], "y":ypos++, "color": colors[j++]};
+	}
+	// run through the remaining samples from group 2. ypos should be stepped up
+	
+	ypos2 = sampMax + 2;	            // y value for a 2nd tier  all should all be > those above
+	ypos = ypos2;
+	j = nN1;	
+    while( j <  nN ){    
+	    if( Math.abs(sample[j] - leftX2) > xbinWidth ){
+	    	//console.log(xbinWidth, ypos);
+			 leftX2 = sample[j];	    // start a fresh bin with left edge at sample[j] xvalue
+			 if(sampMax < ypos){ sampMax = ypos; } // only check max y height at right edge of each bin
+	         ypos = ypos2;
+	    };
+	    myArray[j] = {"x": sample[j], "y":ypos++, "color": colors[j++]};
+	}
+	//console.log(myArray);
+	sampMax = d3.max(myArray, function(d){return d.y;});
+
+    var DCyScale = d3.scaleLinear()
+    	.range([hght, 0])
+    	.domain([1, sampMax + .5]);
+
+	var DCxScale = d3.scaleLinear()
+    	.range([margin, wdth - margin/2])
+    	.domain([xmin, xmax]);
+
+	// change scales to hold all x, all y
+   var DCxAxis = d3.axisBottom(DCxScale)
+      .ticks(5);
+
+  // var DCyAxis = d3.axisLeft(DCyScale)
+    //  .ticks(0);
+      
+  var graph = d3.select(svgObject)
+    .attr("width", wdth + margin*2)
+    .attr("height", hght + margin*2)
+  .append("g")
+   .attr("transform", "translate("+ (2 * margin) + "," + margin + ")");
+        
+    //graph.append("g")
+      //.attr("class", "y axis")
+      //.call(DCyAxis);
+      
+      
+	graph.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + (radii + hght) +")")
+      .call(DCxAxis);
+      
+	graph.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + DCyScale(myArray[nN1].y - .5)+radii +")")
+      .call(DCxAxis);
+      
+      
+   	Dots =  graph.selectAll("g.circle")
+            .data(myArray); 
+	Dots.enter().append("circle")
+            .attr("cx", function(d){ return DCxScale(d.x);} ) 
+            .attr("r", radii ) 
+            .attr("cy", function(d){ return DCyScale(d.y);} ) 
+            .style("fill",function(d){return circleColors[d.color];})
+            .style("fill-opacity", 0.6)
+            .on("click", interactFunction );
+            
+  return [Dots, myArray];
+}
+
+function histodot(sample, colors, svgObject, interactFunction){
+	// stacks dots up creating integer y values (1, 2, 3,...) for x value within a "bin" of similar values
+	// builds a d3 svg plot in the svg object which will respond to a mouse-click by calling
+	//  interactFunction on that point
+	// input: sample is the x values. If color is missing, color will default to black
+	// returns: Dots (svg objects) and the original sample
+	var circleColors = ["steelblue","red"],
+		i = 0, j = 0,
+	    leftX, 
+		margin = 40,
+		myArray = sample,
+	    nN = sample.length,
+	    ordering = [],
+	    radii,
+	    xbinWidth,
+	    xmin,
+	    xmax ,
+	    ypos = 0,
+	    wdth = 440 - margin * 2,
+	    hght = 320 - margin * 2;
+		
+    if(svgObject.getAttribute("width")>50){
+	     wdth= svgObject.getAttribute("width") - margin * 2;
+	     hght = svgObject.getAttribute("height") - margin * 2;
+	}
+	if(colors === undefined){
+		colors = repeat(0, nN);
+	} 
+	// need to keep colors aligned with sample values
+
+	xmin = d3.min(sample);
+	xmin *= (xmin <= 0)? 1.01: 0.99;
+	xmax = d3.max(sample) ;
+	xmax *= (xmax >= 0)? 1.01: 0.99;	
+	
+	var radii = (nN < 101)? 10:
+	    (nN < 501)? 7:
+	    (nN < 1001)? 5:
+	    (nN < 5001)? 4: 3; // perhaps this should relate to width/height of svg]
+    var gees = d3.select(svgObject).selectAll("g");
+	if(typeof(gees) === "object"){
+		gees.remove();
+	}
+	xbinWidth = (xmax - xmin) /(wdth / radii); //sturgesFormula(myArray).binLength;  
+	 // console.log(xbinWidth); 
+	 //  first dot goes at y=1, then add one to each from there
+	j = 0;
+	ypos = 1;	            // y value is a count starting at 1
+	leftX = xmin;	
+	sampMax = 1;
+	// assume sample is sorted 
     while( j <  nN ){    
 	    if( Math.abs(sample[j] - leftX) > xbinWidth ){
 			 leftX = sample[j];	    // start a fresh bin with left edge at sample[j] xvalue
 			 if(ypos > sampMax){ sampMax = ypos; } // only check max y height at right edge of each bin
 	         ypos = 1;
-	         //console.log(plotX, ypos);
 	    };
-	    myArray[j] = {"x": sample[j], "y": ypos++, "color" : circleColors[colors[j++]]};
+	    myArray[j] = {"x": sample[j], "y":ypos++, "color": colors[j++]};
 	}
-	// console.log(myArray);
+	sampMax = d3.max(myArray, function(d){return d.y;});
 
-
-
-   var DCyScale = d3.scaleLinear()
+    var DCyScale = d3.scaleLinear()
     	.range([hght, 0])
     	.domain([1, sampMax + .5]);
 
@@ -341,7 +471,7 @@ function histodot(sample, colors, svgObject, interactFunction){
       .ticks(5);
 
    var DCyAxis = d3.axisLeft(DCyScale)
-      .ticks(5);
+      .ticks(0);
       
   var graph = d3.select(svgObject)
     .attr("width", wdth + margin*2)
@@ -352,18 +482,11 @@ function histodot(sample, colors, svgObject, interactFunction){
     graph.append("g")
       .attr("class", "y axis")
       .call(DCyAxis);
-      
-      
+            
 	graph.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + (radii + hght) +")")
       .call(DCxAxis);
-          
-  //  graph.append("g")
-  //  	.attr("class", "text")
-  //  	.attr("x", 20)
-  //  	.attr("y", hght + 5)
-  //  	.text(xlegend);  
       
    	Dots =  graph.selectAll("g.circle")
             .data(myArray); 
@@ -371,11 +494,11 @@ function histodot(sample, colors, svgObject, interactFunction){
             .attr("cx", function(d){ return DCxScale(d.x);} ) 
             .attr("r", radii ) 
             .attr("cy", function(d){ return DCyScale(d.y);} ) 
-            .style("fill",function(d){return d.color;})
+            .style("fill",function(d){return circleColors[d.color];})
             .style("fill-opacity", 0.6)
             .on("click", interactFunction );
             
-  return [Dots, sample];
+  //return [Dots, sample];
 }
 
 function discreteChart(sample, svgObject, interactFunction){
@@ -501,7 +624,7 @@ function ciColor(resample, cnfLvl) {
 	    quantile,
 	    twoTail,
 	    sLen = resample.length;
-	resample = resample.sort(function(a,b){return a - b});    
+	resample = resample.sort(function(a, b){return a - b});    
 	if (sLen > 0) {
 		twoTail = Math.round((1 - cnfLvl) * sLen);
 		quantile = Math.floor(twoTail / 2);
@@ -690,6 +813,7 @@ function scatterPlot(data, svgObject, interactFunction, intercept, slope) {
 		margin = 40,
 		myArray =[],
 	    nN = data.length,
+	    ordering =[],
 	    plotX,
 	    regLine,
 	    xmin = d3.min(data, function(d) { return d.x; }),
@@ -707,8 +831,8 @@ function scatterPlot(data, svgObject, interactFunction, intercept, slope) {
 		sample = data[0];
 		nN = data.length;
 	}
-
-	//sample.sort(function(a,b){return a - b}) ;   
+	ordering = sequence(0, nN-1, 1); // used if we need colors in the scatterplot -- matched to points
+ 
     var xScale = d3.scaleLinear()
 				.range([margin, width - 3 * margin])
 				.domain([xmin, xmax]),
