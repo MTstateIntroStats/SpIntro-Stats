@@ -1,28 +1,23 @@
 # IntroStatApps #
 
-Web Apps built in R/Shiny to provide permutation tests and bootstrap confidence intervals for use in Introductory Statistics classes.
+Web Apps built in R/Shiny to provide permutation tests and bootstrap confidence intervals
+for use in Introductory Statistics classes. This repo is intended to build and share
+R/Shiny web apps which automate permutation testing and bootstrapping.  
 
-
-We are now teaching introductory statistics at Montana State
-University using active learning lessons which get students right
-into permutation tests and bootstrap confidence intervals very early
-in the course.  (Materials are available on our companion site, [https://github.com/MTstateIntroStats/IntroStatActivities](https://github.com/MTstateIntroStats/IntroStatActivities) )  
-
-This repo is intended to build and share R/Shiny web apps which automate
-permutation testing and bootstrapping.  
-
-Initially, students need to understand the difference between categorical and quantitative data, as the menu system divides summaries and analysis into these type:  
+Initially, students need to understand the difference between categorical and quantitative data,
+as the menu system divides summaries and analysis into these type:  
   - One Categorical  
   - One Quantitative  
   - Two Categorical  
   - Two Categorical  
   - One of Each  (currently expects a quantitative variable and a two level categorical variable.)
 
-In the last 1/3  of our course, normal and t distribution methods are
-be used as short cut approximations of the simulation based
-inference, so the lookup tables are part of this suite.  Standard normal lookups are under both the One and the Two Categorical menus while t distributions are available under 1  Quantitative or "One of Each".
+If validity conditions are met, normal and t distribution methods may be used as
+short cut approximations of the simulation-based inference, so the lookup tables are part of this suite.
+Standard normal lookups are under both the One and the Two Categorical menus while
+t distributions are available under One Quantitative or "One of Each."
 
-To use the app choose the type of data and enter or import it.
+To use the app, choose the type of data and enter or import it.
 
  * Data input  
   -- for 1 and 2 categorical variables, user will type counts into a form.  
@@ -65,7 +60,8 @@ You can also run them without cloning in this way:
  * install.packages("shiny")  
  * shiny::runGitHub("MTstateIntroStats/SpIntro-Stats")  
  
- Alternately, you could explore them on our departmental server:  [http://shiny.math.montana.edu/jimrc/IntroStatShinyApps/](http://shiny.math.montana.edu/jimrc/IntroStatShinyApps/)
+ Alternately, you could explore them on our shinyapps.io page:
+ [https://msustat.shinyapps.io/SpIntro-Stats/](https://msustat.shinyapps.io/SpIntro-Stats/)
  
 ### Known issues:  
 
